@@ -7,10 +7,8 @@ import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { PortalProvider, usePortal } from "../../context";
 import { HelpdeskRequestService } from "../../services/mvp/HelpdeskRequestService";
 import { HelpdeskApiClient } from "../../services/mvp/http/HelpdeskApiClient";
-import {
-  bootstrapHelpdeskSession,
-  sameOriginHelpdeskTransport,
-} from "../../services/mvp/http/sameOriginTransport";
+import { BffSessionClient } from "../../services/mvp/bff/BffSessionClient";
+import { createHelpdeskBffTransport } from "../../services/mvp/bff/createHelpdeskBffTransport";
 import { HelpdeskPortal } from "./HelpdeskPortal";
 
 function Login() {
@@ -33,36 +31,70 @@ function SessionPortal() {
   );
 }
 
-/** Separate local composition: no demo persona or mock service grants access. */
+function requireLocalHttps() {
+  if (
+    location.protocol !== "https:" ||
+    !["localhost", "127.0.0.1", "[::1]"].includes(location.hostname)
+  )
+    throw new Error("Helpdesk integration requires a trusted local HTTPS origin.");
+}
+
+/**
+ * Integration-local composition only. MOCK remains the default entry point.
+ * This local mode is not authorization for public LIVE/APISIX integration.
+ * The BFF owns OIDC credentials; the browser holds only per-session CSRF in memory.
+ */
 export default function LocalHelpdeskIntegration() {
   const [session, setSession] = useState<
     "loading" | "anonymous" | "expired" | "failed" | HelpdeskRequestService
   >("loading");
+
   useEffect(() => {
     let active = true;
-    bootstrapHelpdeskSession()
-      .then((result) => {
+    const bffSession = new BffSessionClient((path, init) => fetch(path, init));
+    try {
+      requireLocalHttps();
+    } catch {
+      setSession("failed");
+      return () => {
+        active = false;
+        bffSession.invalidate();
+      };
+    }
+
+    bffSession
+      .load()
+      .then((state) => {
         if (!active) return;
+        if (!state.authenticated) {
+          setSession("anonymous");
+          return;
+        }
         setSession(
-          result
-            ? new HelpdeskRequestService(
-                new HelpdeskApiClient(
-                  sameOriginHelpdeskTransport(result.csrfToken),
-                  () => {
-                    if (active) setSession("expired");
-                  },
-                ),
-              )
-            : "anonymous",
+          new HelpdeskRequestService(
+            new HelpdeskApiClient(
+              createHelpdeskBffTransport(bffSession, (path, init) =>
+                fetch(path, init),
+              ),
+              () => {
+                if (!active) return;
+                bffSession.invalidate();
+                setSession("expired");
+              },
+            ),
+          ),
         );
       })
       .catch(() => {
         if (active) setSession("failed");
       });
+
     return () => {
       active = false;
+      bffSession.invalidate();
     };
   }, []);
+
   return (
     <main id="main-content" className="page">
       <header>
