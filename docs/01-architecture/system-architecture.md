@@ -400,12 +400,12 @@ Use these as **future gates**; no PASS is implied without pinned runnable eviden
 
 | Design element | Source / canonical docs | Status represented |
 |---|---|---|
-| System boundary | [`docs/architecture/README.md`](../architecture/README.md) | Baseline architecture statement |
-| Persistence boundary | [`docs/architecture/data-persistence-boundaries.md`](../architecture/data-persistence-boundaries.md) | Baseline ownership and limits |
-| Identity contract | [`docs/contracts/identity-core.md`](../contracts/identity-core.md) | Baseline contract |
-| Workflow contract | [`docs/contracts/workflow-core.md`](../contracts/workflow-core.md) | Baseline contract |
-| Workflow authorization | [`docs/contracts/workflow-authorization.md`](../contracts/workflow-authorization.md) | Baseline semantics, not full E2E |
-| Data storage contract | [`docs/contracts/data-core.md`](../contracts/data-core.md) | Baseline contract |
+| System boundary | [`docs/architecture/README.md`](https://github.com/tricore-opentrix/opentrix/blob/0f0c3ba0c3eecda0a5c4a798a3cc14b808351bed/docs/architecture/README.md) | Baseline architecture statement |
+| Persistence boundary | [`docs/architecture/data-persistence-boundaries.md`](https://github.com/tricore-opentrix/opentrix/blob/0f0c3ba0c3eecda0a5c4a798a3cc14b808351bed/docs/architecture/data-persistence-boundaries.md) | Baseline ownership and limits |
+| Identity contract | [`docs/contracts/identity-core.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/identity-core.md) | Baseline contract |
+| Workflow contract | [`docs/contracts/workflow-core.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/workflow-core.md) | Baseline contract |
+| Workflow authorization | [`docs/contracts/workflow-authorization.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/workflow-authorization.md) | Baseline semantics, not full E2E |
+| Data storage contract | [`docs/contracts/data-core.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/data-core.md) | Baseline contract |
 | Workflow runtime | `backend/src/main/java/com/tricore/dxos/core/workflow/WorkflowRuntime.java` | Domain orchestration |
 | Workflow persistence port | `backend/src/main/java/com/tricore/dxos/core/workflow/WorkflowPersistencePort.java` | Durable-commit and error semantics |
 | PostgreSQL adapter | `backend/src/main/java/com/tricore/dxos/infrastructure/workflow/PostgresWorkflowPersistence.java` | Provider-specific implementation; needs integration evidence |

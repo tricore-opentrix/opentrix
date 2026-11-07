@@ -27,4 +27,4 @@ On the exact adapter commit, test real MinIO store/read/metadata/delete, full me
 
 Separately test Application authorization before object access and PostgreSQL-to-object consistency and orphan recovery. Preserve JUnit XML, command, Java/MinIO versions, sanitized configuration and commit SHA. Mock or in-memory tests alone do not establish real integration PASS.
 
-See [ADR-007](../../08-decisions/ADR-007-data-storage.md), [Data architecture](data-architecture.md), and the [canonical Data contract](../../contracts/data-core.md).
+See [ADR-007](../../08-decisions/ADR-007-data-storage.md), [Data architecture](data-architecture.md), and the [canonical Data contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/data-core.md).

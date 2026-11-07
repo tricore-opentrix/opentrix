@@ -128,8 +128,8 @@ Only record PASS with exact commit, environment, commands and artifacts. PR-leve
 - [Problem Statement](problem-statement.md)
 - [Project Overview](project-overview.md)
 - [System Architecture](../01-architecture/system-architecture.md)
-- [Workflow Core Contract](../contracts/workflow-core.md)
-- [Identity Core Contract](../contracts/identity-core.md)
-- [Data Core Contract](../contracts/data-core.md)
+- [Workflow Core Contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/workflow-core.md)
+- [Identity Core Contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/identity-core.md)
+- [Data Core Contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/data-core.md)
 
 **Scope acceptance:** PENDING. This file does not authorize production route activation or merge.

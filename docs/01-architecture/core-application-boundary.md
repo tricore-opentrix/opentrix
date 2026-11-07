@@ -276,12 +276,12 @@ Reference repository: https://github.com/tricore-opentrix/opentrix . Pinned base
 ## 14. References
 
 - [System Architecture](system-architecture.md) — system overview and foundation options.
-- [Architecture baseline](../architecture/README.md) — legacy canonical overview during migration.
-- [Identity Core contract](../contracts/identity-core.md).
-- [Workflow Core contract](../contracts/workflow-core.md).
-- [Data Core contract](../contracts/data-core.md).
-- [Data & persistence boundaries](../architecture/data-persistence-boundaries.md).
-- [Workflow authorization](../contracts/workflow-authorization.md).
+- [Architecture baseline](https://github.com/tricore-opentrix/opentrix/blob/0f0c3ba0c3eecda0a5c4a798a3cc14b808351bed/docs/architecture/README.md) — legacy canonical overview during migration.
+- [Identity Core contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/identity-core.md).
+- [Workflow Core contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/workflow-core.md).
+- [Data Core contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/data-core.md).
+- [Data & persistence boundaries](https://github.com/tricore-opentrix/opentrix/blob/0f0c3ba0c3eecda0a5c4a798a3cc14b808351bed/docs/architecture/data-persistence-boundaries.md).
+- [Workflow authorization](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/workflow-authorization.md).
 - [PR #47 AuthorizedWorkflowService](https://github.com/tricore-opentrix/opentrix/pull/47).
 - [PR #48 Exact Workflow Authorities](https://github.com/tricore-opentrix/opentrix/pull/48).
 - [PR #63 Helpdesk Backend](https://github.com/tricore-opentrix/opentrix/pull/63).

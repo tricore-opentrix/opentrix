@@ -118,8 +118,8 @@ A source file, open/draft PR, passing fake test or design sign-off **is not** by
 
 This document explains **what DX-OS is intended to be**, not the current completion percentage. Review current state using commit-pinned evidence, not product-level descriptions.
 
-- [Existing Core contracts](../contracts/README.md) — existing contract baseline during docs migration.
-- [Evidence index](../evidence/README.md) — current legacy evidence index; legacy paths remain canonical until approved migration.
+- [Existing Core contracts](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/README.md) — existing contract baseline during docs migration.
+- [Evidence index](https://github.com/tricore-opentrix/opentrix/blob/2b4989054c99821ca1347d15da4600af4f9ce4cb/docs/evidence/README.md) — current legacy evidence index; legacy paths remain canonical until approved migration.
 
 **Reference snapshot:** `origin/main` `e06fa429cfd92b032c166eb3ebf32803d13191c2`. Check subsequent merges and independent evidence before reporting implementation or release status.
 

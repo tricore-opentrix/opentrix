@@ -208,9 +208,9 @@ Passing unit tests does not substitute for restart, concurrent writer, failure/r
 |---|---|---|
 | Object Storage contract | `backend/src/main/java/com/tricore/dxos/core/data/ObjectStoragePort.java` | Verified source contract |
 | Domain values/errors | `backend/src/main/java/com/tricore/dxos/core/data/` | Verified provider-neutral model |
-| Contract text | [`docs/contracts/data-core.md`](../../contracts/data-core.md) | Existing canonical contract; not overwritten by this proposal |
-| Data ownership baseline | [`docs/architecture/data-persistence-boundaries.md`](../../architecture/data-persistence-boundaries.md) | Current architecture boundary |
-| Workflow persistence contract | [`docs/contracts/workflow-core.md`](../../contracts/workflow-core.md) | Separate owner and atomicity guarantees |
+| Contract text | [`docs/contracts/data-core.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/data-core.md) | Existing canonical contract; not overwritten by this proposal |
+| Data ownership baseline | [`docs/architecture/data-persistence-boundaries.md`](https://github.com/tricore-opentrix/opentrix/blob/0f0c3ba0c3eecda0a5c4a798a3cc14b808351bed/docs/architecture/data-persistence-boundaries.md) | Current architecture boundary |
+| Workflow persistence contract | [`docs/contracts/workflow-core.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/workflow-core.md) | Separate owner and atomicity guarantees |
 | In-memory fake and tests | `backend/src/test/java/com/tricore/dxos/core/data/` | Contract-level test coverage, not real-provider proof |
 | MinIO candidate | [PR #34](https://github.com/tricore-opentrix/opentrix/pull/34) | Unmerged Draft; real MinIO integration NOT VERIFIED |
 | Supabase candidate | [PR #35](https://github.com/tricore-opentrix/opentrix/pull/35) | Closed without merge; historical, excluded from new scope |

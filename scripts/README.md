@@ -26,7 +26,7 @@ phải các bước setup mặc định. Giữ hai custom roles hiện có ở `
 Các runtime-privilege/SECURITY DEFINER/event-trigger audit launchers cũng là công cụ
 review optional; guard trong adapter/migrations và integration tests vẫn giữ nguyên.
 Danh sách file cần giữ hoặc có thể loại khỏi PR nằm trong
-[`issue-25-readiness.md`](../docs/evidence/issue-25-readiness.md).
+[`issue-25-readiness.md`](https://github.com/tricore-opentrix/opentrix/blob/2b4989054c99821ca1347d15da4600af4f9ce4cb/docs/evidence/issue-25-readiness.md).
 
 `workflowDevelopmentSmoke` là task riêng trong backend, yêu cầu argument và opt-in
 development chính xác, schema cố định, tài khoản postgres, Direct verify-full và
