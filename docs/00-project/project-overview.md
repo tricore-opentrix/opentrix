@@ -130,7 +130,7 @@ This document explains **what DX-OS is intended to be**, not the current complet
 | [Problem Statement](problem-statement.md) | Which needs and current-process hypotheses motivate DX-OS? |
 | [Product Vision](product-vision.md) | What reusable platform value does DX-OS aspire to create? |
 | [Scope and MVP](scope-and-mvp.md) | What is committed or proposed for the demo? |
-| [Glossary](glossary.md) | What do key business and technical terms mean? |
+| [Glossary](../../GLOSSARY.md) | What do key business and technical terms mean? |
 | [System Architecture](../01-architecture/system-architecture.md) | How is the product structured? |
 | [Identity Architecture](../02-core/identity/identity-architecture.md) | How is trusted identity abstracted? |
 | [Workflow Architecture](../02-core/workflow/workflow-architecture.md) | How are state transitions and concurrency handled? |
