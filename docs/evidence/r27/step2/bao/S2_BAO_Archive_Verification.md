@@ -39,7 +39,18 @@ SPDX-License-Identifier: Apache-2.0
 5. For each metadata member compared with `MANIFEST.json`, register #143 archive rows and, where a tracked twin exists, the frozen file.
 6. Listed tracked paths absent from the archive and checked them against the packaging rules.
 
-Full member table: [`S2_BAO_Archive_Members.csv`](S2_BAO_Archive_Members.csv) (357 rows). Commands: [`S2_BAO_Reproduction.md`](S2_BAO_Reproduction.md).
+Full member table: [`S2_BAO_Archive_Members.csv`](S2_BAO_Archive_Members.csv) (357 rows), produced **byte-for-byte** by [`S2_BAO_verify_archive.py`](S2_BAO_verify_archive.py) with no post-processing (output SHA-256 `e16f5450d4505ec5560e55bfed8593f9ab6a2507d81d192f1e49151154e74436`). Register input pinned to commit `6cb5a32897563df018cf79dd66b92a20a3e823f1`, `docs/verification/r27/r27-rights-remediation-register-187dbd2.csv`, SHA-256 `4b90d48f4b5b8591c16226468282695075ef07da4703996590490072d54f85f2`. The script enforces two-way set equality (register ↔ tree, MANIFEST ↔ members, source ↔ tree minus exclusions, metadata ↔ register rows), exact counts, no duplicates and no `FAIL`, and exits non-zero otherwise. Commands: [`S2_BAO_Reproduction.md`](S2_BAO_Reproduction.md).
+
+### Revision 2026-11-08 (review findings S2-FIND-01…04)
+
+| Finding | Change |
+|---|---|
+| S2-FIND-01 working directory | Reproduction rewritten around a single `$WORKDIR` with absolute paths; every command re-executed literally |
+| S2-FIND-02 script ≠ CSV | Published script replaced by the exact generator `S2_BAO_verify_archive.py`; fresh-clone run reproduces the committed CSV byte-for-byte |
+| S2-FIND-03 register input | Register commit, path, SHA-256 and extraction command documented; script reads the pinned commit and checks the hash |
+| S2-FIND-04 completeness | Global two-way assertions and non-zero exit added; negative test (member removed) exits `1` |
+
+Results and verdicts below are unchanged.
 
 ## 3. Verification Results (S2-03)
 
@@ -94,6 +105,6 @@ This technical verdict does not establish source ownership, licensing rights or 
 
 - Archive / manifest: artifacts [13516853708](https://github.com/tricore-opentrix/opentrix/actions/runs/42244683510/artifacts/13516853708), [13517790376](https://github.com/tricore-opentrix/opentrix/actions/runs/42245290247/artifacts/13517790376)
 - Member inventory CSV: [`S2_BAO_Archive_Members.csv`](S2_BAO_Archive_Members.csv)
-- Reproduction script or command log: [`S2_BAO_Reproduction.md`](S2_BAO_Reproduction.md)
+- Reproduction script or command log: [`S2_BAO_verify_archive.py`](S2_BAO_verify_archive.py), [`S2_BAO_Reproduction.md`](S2_BAO_Reproduction.md)
 - Rights Register reference: [PR #143 @ `6cb5a328`](https://github.com/tricore-opentrix/opentrix/pull/143)
 - Reviewer verdict: _pending — Yến_
