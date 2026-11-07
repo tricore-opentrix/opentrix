@@ -5,6 +5,7 @@
 import {
   errorFromHttpStatus,
   MvpApplicationError,
+  MvpSessionError,
   networkFailure,
 } from "../errors";
 import {
@@ -16,6 +17,7 @@ import {
   validateVersion,
 } from "./codecs";
 import { HelpdeskClientError } from "./errors";
+import { isPredispatchFailure, predispatchFailure } from "./predispatch";
 import type { HelpdeskHttpRequest, HelpdeskHttpTransport } from "./transport";
 import type {
   HelpdeskAssignInput,
@@ -29,7 +31,7 @@ const BASE = "/api/v1/mvp/requests";
 
 /**
  * PR #63 wire client, unbound to Portal, RequestService and MvpRequestPort.
- * Construction requires an explicit transport; the local BFF adapter is separate.
+ * No concrete network transport is shipped. Construction requires injection.
  * Nine explicit routes only; /start maps to start_work inside Backend, not here.
  */
 export class HelpdeskApiClient {
@@ -43,7 +45,7 @@ export class HelpdeskApiClient {
       typeof transport !== "function" ||
       typeof onSessionInvalid !== "function"
     ) {
-      throw new HelpdeskClientError("INVALID_INPUT");
+      throw predispatchFailure(new HelpdeskClientError("INVALID_INPUT"));
     }
   }
 
@@ -68,7 +70,7 @@ export class HelpdeskApiClient {
         input.limit < 1 ||
         input.limit > 100
       ) {
-        throw new HelpdeskClientError("INVALID_INPUT");
+        throw predispatchFailure(new HelpdeskClientError("INVALID_INPUT"));
       }
       query.set("limit", String(input.limit));
     }
@@ -162,7 +164,16 @@ export class HelpdeskApiClient {
     let response;
     try {
       response = await this.transport(request); // Exactly one attempt; never replay.
+      response?.assertSessionCurrent?.();
     } catch (cause) {
+      if (isPredispatchFailure(cause)) throw cause;
+      // A local preflight rejection proves no fetch occurred. A stale read is a
+      // lifecycle result; an attempted write remains uncertain even if stale.
+      if (
+        cause instanceof MvpSessionError &&
+        (!write || cause.phase === "before-fetch")
+      )
+        throw cause;
       throw networkFailure(write ? "write" : "read", cause);
     }
     if (
