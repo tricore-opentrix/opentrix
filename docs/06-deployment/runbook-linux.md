@@ -47,7 +47,7 @@ export WORKFLOW_LOCAL_DB_PASSWORD
 docker compose -f ../infra/compose.workflow-postgres.yml up -d --wait
 ```
 
-This creates container `workflow-postgres` on `127.0.0.1:55425` with database and owner `workflow_test`, and a named volume `workflow-postgres-17-data`. Provision a volume only once; when reusing it, keep the same password and skip to step 6.
+This creates container `infra-workflow-postgres-1` (compose service `workflow-postgres`) on `127.0.0.1:55425` with database and owner `workflow_test`, and a named volume `infra_workflow-postgres-17-data`. Provision a volume only once; when reusing it, keep the same password and skip to step 6.
 
 ## 4. Create the runtime role and schema
 
@@ -101,7 +101,29 @@ Optional smoke check (writes one test instance; a run id cannot be reused):
 ./gradlew workflowSmoke --args="read local-first-run" --no-daemon    # RESTART_READ_PASS
 ```
 
-## 6. Start the backend
+## 6. Start a throwaway Keycloak
+
+The backend fetches `OIDC_ISSUER_URI/.well-known/openid-configuration` while starting, so a Keycloak realm named `tricore` must answer on port 8180 first. The repository does not ship a realm export; this creates an empty realm, which is enough for the backend to start.
+
+```bash
+read -rs -p 'Keycloak admin password: ' KC_PW; echo
+docker run -d --name kc-local -p 127.0.0.1:8180:8080 \
+  -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD="$KC_PW" \
+  quay.io/keycloak/keycloak:26.0 start-dev
+```
+
+Wait until `docker logs kc-local | tail -3` shows `Listening on`, then create the realm and check it:
+
+```bash
+docker exec kc-local /opt/keycloak/bin/kcadm.sh config credentials \
+  --server http://localhost:8080 --realm master --user admin --password "$KC_PW"
+docker exec kc-local /opt/keycloak/bin/kcadm.sh create realms -s realm=tricore -s enabled=true
+curl -s http://localhost:8180/realms/tricore/.well-known/openid-configuration | head -c 150; echo
+```
+
+The JSON must contain `"issuer":"http://localhost:8180/realms/tricore"`.
+
+## 7. Start the backend
 
 ```bash
 export DB_HOST=127.0.0.1 DB_PORT=55425 DB_NAME=workflow_test DB_USER=workflow_runtime
@@ -115,7 +137,7 @@ export OIDC_RESOURCE_CLIENT_ID=tricore-api
 ./gradlew bootRun
 ```
 
-## 7. Check health
+## 8. Check health
 
 From another terminal:
 
@@ -124,14 +146,15 @@ curl -fsS http://localhost:8080/api/v1/health
 # {"status":"UP"}
 ```
 
-`UP` means the HTTP application started. It does not prove login, Workflow, or Portal behaviour. Protected routes need a token from a Keycloak realm whose issuer equals `OIDC_ISSUER_URI` exactly; Keycloak setup is not part of this runbook yet.
+`UP` means the HTTP application started. It does not prove login, Workflow, or Portal behaviour. Protected routes need a client, a user and a token from a realm whose issuer equals `OIDC_ISSUER_URI` exactly; creating those is not part of this runbook yet.
 
-## 8. Stop and clean up
+## 9. Stop and clean up
 
 ```bash
 # Ctrl+C in the bootRun terminal, then:
-unset DB_PASSWORD RUNTIME_DB_PASSWORD WORKFLOW_LOCAL_DB_PASSWORD \
+unset DB_PASSWORD RUNTIME_DB_PASSWORD WORKFLOW_LOCAL_DB_PASSWORD KC_PW \
       WORKFLOW_SMOKE_MIGRATOR_PASSWORD WORKFLOW_SMOKE_RUNTIME_PASSWORD
+docker rm -f kc-local
 docker compose -f ../infra/compose.workflow-postgres.yml down        # keeps data
 docker compose -f ../infra/compose.workflow-postgres.yml down -v     # deletes the volume
 ```
@@ -142,7 +165,8 @@ Use `down` (without `-v`) when you want to restart and verify persistence.
 
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
-| `Could not resolve placeholder 'OIDC_ISSUER_URI'` (or `OIDC_AUDIENCE`, `dxos.workflow.schema`) | Variable not exported in this shell | Export every variable in step 6 |
+| `Could not resolve placeholder 'OIDC_ISSUER_URI'` (or `OIDC_AUDIENCE`, `dxos.workflow.schema`) | Variable not exported in this shell | Export every variable in step 7 |
+| `Unable to resolve the Configuration with the provided Issuer` / `Connection refused` on 8180 | Keycloak is not running or the realm `tricore` does not exist | Do step 6 and re-check the discovery URL |
 | `Unable to obtain connection` / `Connection refused` on 55425 | Container not running | `docker compose -f ../infra/compose.workflow-postgres.yml ps`, then `up -d --wait` |
 | `password authentication failed` | Volume was created with another password | Reuse the original password, or `down -v` and start again from step 3 |
 | `relation ... does not exist` / schema errors at startup | Step 4–5 skipped or different schema name | Check `DXOS_WORKFLOW_SCHEMA` and `currentSchema` match the provisioned schema |

@@ -112,7 +112,7 @@ Push-Location frontend; npm.cmd ci; npm.cmd run build; npm.cmd test; Pop-Locatio
 
 The backend refuses to start unless all variables below are set; there are no defaults. Spring Boot does **not** read `.env` automatically, so export the values in the shell that starts the process, and never commit real credentials.
 
-You need a PostgreSQL 17 database with the Workflow schema already provisioned (`DXOS_WORKFLOW_SCHEMA` names it). The repository ships a disposable local database: [`infra/compose.workflow-postgres.yml`](infra/compose.workflow-postgres.yml). The step-by-step provisioning (roles, schema, migrations) is in the [backend guide](backend/README.md#chạy-backend-local-từ-clone-mới).
+You need two things running before `bootRun`: a PostgreSQL 17 database with the Workflow schema already provisioned (`DXOS_WORKFLOW_SCHEMA` names it), and a Keycloak realm reachable at `OIDC_ISSUER_URI`. The backend downloads the realm's OIDC discovery document at startup and exits with `Connection refused` if Keycloak is not there. The repository ships a disposable local database: [`infra/compose.workflow-postgres.yml`](infra/compose.workflow-postgres.yml). Step-by-step provisioning for both (PostgreSQL roles, schema, migrations, and a throwaway Keycloak realm) is in the [Linux/macOS runbook](docs/06-deployment/runbook-linux.md).
 
 ```bash
 cd backend
@@ -143,7 +143,7 @@ curl http://localhost:8080/api/v1/health
 # {"status":"UP"}
 ```
 
-`UP` only shows the HTTP application is running. Calling protected routes needs a token from a real Keycloak realm whose issuer matches `OIDC_ISSUER_URI` exactly.
+`UP` only shows the HTTP application is running. An empty realm is enough to start the backend; calling protected routes needs a client, a user and a token from a realm whose issuer matches `OIDC_ISSUER_URI` exactly.
 
 <details>
 <summary>Windows PowerShell version</summary>
@@ -192,7 +192,7 @@ Copy [`.env.example`](.env.example) as a reference for the variable names.
 
 - The MOCK Portal is a demonstration, not a live application or a security check.
 - The full browser login (Keycloak + PKCE) and the three-persona Helpdesk flow have not been accepted end to end yet.
-- A one-command Docker Compose demo is planned; today the full stack needs manual Keycloak, PostgreSQL, and Caddy setup.
+- A one-command Docker Compose demo is planned; today the full stack needs manual Keycloak, PostgreSQL, and Caddy setup. The repository does not yet ship a Keycloak realm export or compose file.
 - APISIX (gateway), an object-storage provider and Node-RED are planned and not part of the current runtime; Facility reuse is shown only in the MOCK Portal.
 - The local setup guides under `scripts/` and `portal-bff/` are written for Windows PowerShell.
 
