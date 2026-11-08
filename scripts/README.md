@@ -9,6 +9,8 @@ SPDX-License-Identifier: Apache-2.0
 Nơi lưu script hỗ trợ phát triển và kiểm tra khi cần.
 Build và test hiện dùng Gradle Wrapper trong `backend/`.
 
+`check_md_links.py` kiểm tra link tương đối và `#anchor` trong mọi file `.md` được git theo dõi (không kiểm URL có scheme); chạy `python3 scripts/check_md_links.py`, thoát mã 1 nếu có link hỏng.
+
 `workflow-verify-local.ps1` tạo PostgreSQL 17.11 disposable trên loopback, CA đúng/sai
 và credentials ngẫu nhiên trong bộ nhớ, chạy full JDK 21 `test build`, rồi dọn fixture.
 Cần Docker, JDK 21 trên PATH và OpenSSL (có trong Git for Windows). Script yêu cầu
