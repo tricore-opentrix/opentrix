@@ -31,7 +31,7 @@ Historical PR #98 had security re-review by Yến at exact `25f73d1`: focused 33
 2. `HelpdeskApiClient` depends on injected `HelpdeskHttpTransport`; UI does not own BFF HTTP headers/credentials. No vendor-specific endpoint or OIDC token storage is added to Core.
 3. BFF session is explicitly loaded; CSRF is kept in instance memory. Current 401 retires that session, with no refresh, POST replay or implicit reconciliation. Stale attempted POST remains `COMMIT_OUTCOME_UNKNOWN`.
 4. Existing logical nine-route API remains unchanged. Route `/apps/helpdesk` via APISIX **not implemented in this patch**; requires R27/R35 approved gateway/contract. No claim of R36 real browser OIDC acceptance.
-5. SPDX markers `SPDX-FileCopyrightText` and `SPDX-License-Identifier: Apache-2.0` are present for all new/modified source and this document. They state project attribution metadata, not proof of ownership or permission to license AI/third-party material.
+5. New and modified files carry project copyright and license metadata according to REUSE conventions. This metadata does not prove copyright ownership or permission to license AI-assisted or third-party material.
 6. No new dependency, binary archive, generated build output, SQL migration, SBOM or third-party code is intentionally introduced. Check REUSE/CI on exact R33 HEAD, and reconcile any deviations. License and provenance rights remain unresolved in #138.
 
 ## Review and acceptance remaining
