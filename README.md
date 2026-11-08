@@ -96,7 +96,7 @@ cd opentrix
 (cd frontend && npm ci && npm run build && npm test)
 ```
 
-Artifacts: `backend/build/libs/dxos-backend-0.0.1-SNAPSHOT.jar` and `frontend/dist/`. To run a single backend test class: `cd backend && ./gradlew test --tests 'com.tricore.dxos.core.workflow.*'`.
+Artifacts: `backend/build/libs/dxos-backend-<version>.jar` (the version comes from `backend/build.gradle`, currently `0.1.0`; the `-plain.jar` beside it is not executable) and `frontend/dist/`. To run a single backend test class: `cd backend && ./gradlew test --tests 'com.tricore.dxos.core.workflow.*'`.
 
 ### Windows (PowerShell)
 

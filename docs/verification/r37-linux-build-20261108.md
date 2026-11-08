@@ -64,9 +64,37 @@ All 171 are conditional tests that did not run in this build, none are failures:
 
 The 157 environment-gated tests were not run with their variables set, so this build says nothing about them. The smoke runner above covers only the migration, grants, write and read-after-restart path.
 
+## Clean-clone rerun by the README author (2026-11-08)
+
+Run to follow the README text on a fresh clone; it is **not** an independent reproduction.
+
+| Item | Value |
+| --- | --- |
+| Commit | `468eed09463e9f441e48871b7d91788e336aa4fc` (checked with `git rev-parse HEAD`) |
+| Machine | Ubuntu 26.04.1 LTS, x86_64, VirtualBox VM on a Windows host |
+| Tools | git 2.53.0, OpenJDK 21.0.12.1 (Ubuntu package), Node.js 22.23.4 via nvm, npm 10.9.9; all already installed on this VM |
+| Run by | @lexuanbao258-collab, the README author |
+| Preparation | New clone in an empty directory; `~/.gradle` and `~/.npm` renamed aside so dependencies were downloaded again |
+
+| Step (README "Build from source → Linux / macOS" and "Quick start") | Result |
+| --- | --- |
+| `(cd backend && ./gradlew build)` | PASS, `BUILD SUCCESSFUL in 2m 11s`, 8 tasks executed |
+| `./backend/gradlew -p portal-bff build` | PASS, 19 s |
+| `(cd frontend && npm ci && npm run build && npm test)` | PASS, 16 test files, 385 / 385 tests, `found 0 vulnerabilities` |
+| Artifacts | `frontend/dist/` present; backend JAR present as `dxos-backend-0.1.0.jar` (see deviations) |
+| MOCK Portal (`npm run dev`, <http://127.0.0.1:5173>) | PASS, demo dashboard rendered with mock data and the "not real SSO" notice |
+| Backend with PostgreSQL and Keycloak (runbook) | Not rerun on this commit; see the earlier run above |
+
+Deviations:
+
+- The README named the JAR `dxos-backend-0.0.1-SNAPSHOT.jar`; since the v0.1.0 release commit the build produces `dxos-backend-0.1.0.jar` and `dxos-backend-0.1.0-plain.jar`. `README.md` and `backend/README.md` were corrected to `dxos-backend-<version>.jar`.
+- The Gradle Wrapper download returned HTTP 504 from GitHub Releases (`github.com` itself answered 200 and no proxy was set). To continue, only the Gradle 8.14.3 distribution was copied back from the renamed cache; `~/.gradle/caches` stayed empty, so all dependencies were downloaded fresh. This is an environment issue, not a documentation one.
+- The VM was not freshly installed (tools preinstalled; `sudo` was not used).
+
 ## Findings
 
 - The backend requires a reachable Keycloak realm at `OIDC_ISSUER_URI` to start, even for the health endpoint. The previous README did not say so; the README and runbook were corrected.
+- The README named a JAR file that the build no longer produces (`0.0.1-SNAPSHOT` instead of `0.1.0`); found by the clean-clone rerun and corrected.
 - `docker compose down` needs `WORKFLOW_LOCAL_DB_PASSWORD` defined even when only stopping; the runbook cleanup step was corrected.
 - The smoke runner prints only `WORKFLOW_SMOKE_FAIL` when a login fails, so a mistyped runtime password is easy to miss; a troubleshooting row was added to the runbook.
 
@@ -77,4 +105,4 @@ The 157 environment-gated tests were not run with their variables set, so this b
 | The 157 environment-gated integration tests | Not run with their environment variables set (see above). | @lexuanbao258-collab |
 | The 14 Windows-only launcher tests | Cannot run on Linux; they exercise the PowerShell scripts. | Not assigned |
 | Authenticated routes, Helpdesk flow, Portal BFF login, Caddy ingress | Not exercised; no client, user or token was created in Keycloak. `{"status":"UP"}` shows the process started and the database connected; it is not an end-to-end result. | Not assigned |
-| Reproduction on a clean machine by someone outside the team | Not done. This run was made on a VM by a team member. | Not assigned |
+| Reproduction on a clean machine by someone outside the team | Not done. Both runs were made by a team member (the second by the README author on a fresh clone, see above). No outside tester is available to the team; whether this satisfies the R37 gate is for the reviewer to decide. | @phanyen06ym-ien (decision) |

@@ -53,7 +53,7 @@ java -version
 .\gradlew.bat build
 ```
 
-Build tạo executable JAR tại `build/libs/dxos-backend-0.0.1-SNAPSHOT.jar`.
+Build tạo executable JAR tại `build/libs/dxos-backend-<version>.jar`; version lấy từ `build.gradle` (hiện là `0.1.0`).
 Test health dùng `@WebMvcTest`, kiểm tra HTTP 200, Content-Type JSON và chính
 xác body `{"status":"UP"}`. Build và test này không cần PostgreSQL hay biến
 môi trường database. Không có database giả hoặc dependency H2.
@@ -112,7 +112,7 @@ $env:DB_PASSWORD = $dbCredential.GetNetworkCredential().Password
 Cũng có thể chạy JAR đã build, với cùng các biến môi trường:
 
 ```powershell
-java -jar .\build\libs\dxos-backend-0.0.1-SNAPSHOT.jar
+java -jar .\build\libs\dxos-backend-0.1.0.jar
 ```
 
 Spring Boot không tự đọc file `.env`. Nếu dùng file này qua công cụ local,
