@@ -73,7 +73,7 @@ SPDX-License-Identifier: Apache-2.0
 | Term | Meaning |
 |---|---|
 | Data Core | Provider-neutral shared object-storage capability in current contracts; not universal owner of all DB tables |
-| Object Storage | Key-addressed storage of bytes and metadata; selected MVP target is local Docker MinIO using an S3-compatible protocol, not AWS S3 deployment |
+| Object Storage | Key-addressed storage of bytes and metadata. `ObjectStoragePort` is the contract; no production adapter or running object-storage service is implemented yet. ADR-007 records MinIO (S3-compatible, local Docker) as the accepted direction, with implementation pending; a later ADR may revise the provider |
 | `ObjectStoragePort` | Shared `store`, `read`, `metadata`, `delete` contract |
 | `ObjectKey` | Opaque, case-sensitive logical object identifier |
 | `ObjectMetadata` | Content type, exact byte length and custom metadata |

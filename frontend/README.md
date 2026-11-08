@@ -50,7 +50,7 @@ tests/portal.spec.ts          Browser smoke, WCAG checks and real screenshots
 scripts/check-security.mjs    Source/bundle credential-pattern check
 ```
 
-MOCK mặc định dùng `RequestService` qua composition root. `HttpApiClient` tách biệt và luôn trả `LIVE_BLOCKED`. APP-10/11/13/14 đã có mapper, Assignment Form, typed HTTP adapter cho chín route candidate PR #63 và Portal feature riêng qua optional `helpdeskService` injection; chỉ kiểm thử bằng fake transport, chưa có concrete LIVE transport, token hay cờ mở LIVE. Không coi view model mock là DTO backend. Xem kiểm kê MVP và checklist kết nối thật (chưa có trên `main`).
+MOCK mặc định dùng `RequestService` qua composition root. `HttpApiClient` tách biệt và luôn trả `LIVE_BLOCKED`. APP-10/11/13/14 đã có mapper, Assignment Form, typed HTTP adapter cho chín route candidate PR #63 và Portal feature riêng qua optional `helpdeskService` injection; chỉ kiểm thử bằng fake transport, chưa có concrete LIVE transport, token hay cờ mở LIVE. Không coi view model mock là DTO backend. Xem [kiểm kê MVP và checklist kết nối thật](https://github.com/tricore-opentrix/opentrix/blob/c73bbc306a698141169304e5da848ea0686700db/docs/application/issue39-mvp-readiness-20261027.md) (permalink tới commit `c73bbc3` trên nhánh `feature/a05-portal-bff-integration`, chưa có trên `main`).
 
 Logout, đổi vai trò và 401 vô hiệu hóa kết quả async của phiên cũ. Response muộn không chuyển trang, phát thông báo hay làm hết hạn phiên mới; 401 của phiên hiện tại vẫn kết thúc phiên sau khi rời màn hình. Assignment không bắt đầu GET Detail sau logout. Lệnh ghi đã gửi không bị hủy/replay; unknown outcome của MVP vẫn khóa để chờ đối soát. Đây là vòng đời phiên demo/fake, chưa phải logout hoặc thu hồi phiên OIDC/BFF.
 
@@ -95,7 +95,7 @@ npm.cmd run test:smoke
 npm.cmd run check:security
 ```
 
-Smoke suite khởi chạy production preview tại `127.0.0.1:4173`, kiểm tra hai luồng UI, lỗi/empty/validation, chặn API, keyboard/modal, desktop/tablet/mobile và axe WCAG 2 A/AA + 2.1 AA. Screenshot được tạo trực tiếp từ localhost tại evidence (chưa có trên `main`). Không dùng ảnh dựng làm bằng chứng. Script security chỉ là kiểm tra mẫu credentials phổ biến, đi kèm review source và staged diff.
+Smoke suite khởi chạy production preview tại `127.0.0.1:4173`, kiểm tra hai luồng UI, lỗi/empty/validation, chặn API, keyboard/modal, desktop/tablet/mobile và axe WCAG 2 A/AA + 2.1 AA. Screenshot được tạo trực tiếp từ localhost tại [evidence](https://github.com/tricore-opentrix/opentrix/blob/05c5d9967e88d24cfb4b41f4134dcc2522ac9253/docs/evidence/issue39-portal/README.md) (permalink tới commit `05c5d99`, chưa có trên `main`). Không dùng ảnh dựng làm bằng chứng. Script security chỉ là kiểm tra mẫu credentials phổ biến, đi kèm review source và staged diff.
 
 Python không có trong môi trường triển khai nên browser suite dùng Playwright TypeScript, có thể chạy bằng dependencies đã khóa của dự án.
 
@@ -124,7 +124,7 @@ storage, fixtures, logs hoặc gửi qua mạng. Đăng ký chỉ có Sinh viên
 từ chối giá trị vai trò bị sửa thành admin/processor. Không có quyền thực được cấp.
 
 Test mới nằm tại `src/pages/Auth.test.tsx` và `tests/auth.spec.ts`. Xem
-ảnh Login/Register (chưa có trên `main`) ở desktop,
+[ảnh Login/Register](https://github.com/tricore-opentrix/opentrix/blob/00b10fa43d01cc3dcca725b2ed66a43bdaa92268/docs/evidence/issue39-portal/auth/README.md) (permalink tới commit `00b10fa`, chưa có trên `main`) ở desktop,
 tablet, mobile 390px và 320px. Bộ smoke hiện có tiếp tục kiểm tra tạo yêu cầu,
 phê duyệt, xử lý, timeline và `HttpApiClient` fail-closed. Theme chỉ tăng tương
 phản một số màu chữ phụ để các kiểm tra WCAG hiện có đạt; không đổi bố cục dashboard.

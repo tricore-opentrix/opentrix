@@ -47,7 +47,18 @@ export WORKFLOW_LOCAL_DB_PASSWORD
 docker compose -f ../infra/compose.workflow-postgres.yml up -d --wait
 ```
 
-This creates container `infra-workflow-postgres-1` (compose service `workflow-postgres`) on `127.0.0.1:55425` with database and owner `workflow_test`, and a named volume `infra_workflow-postgres-17-data`. Provision a volume only once; when reusing it, keep the same password and skip to step 6.
+This creates container `infra-workflow-postgres-1` (compose service `workflow-postgres`) on `127.0.0.1:55425` with database and owner `workflow_test`, and a named volume `infra_workflow-postgres-17-data`. The database password is fixed when the volume is first initialised, so provision the volume only once.
+
+**Reusing an existing volume.** You may skip steps 4 and 5 and go to step 6 only if all of these hold: the volume `infra_workflow-postgres-17-data` already exists, you export the **same** `WORKFLOW_LOCAL_DB_PASSWORD` it was created with, and steps 4 and 5 (role, schema, migrations, grants) were completed against it earlier. Check with:
+
+```bash
+docker compose -f ../infra/compose.workflow-postgres.yml exec workflow-postgres \
+  psql -U workflow_test -d workflow_test -tAc \
+  "SELECT count(*) FROM pg_roles WHERE rolname='workflow_runtime'
+   UNION ALL SELECT count(*) FROM information_schema.schemata WHERE schema_name='dxos_wf25_smoke_01'"
+```
+
+Expected output is two lines, `1` and `1`. If either is `0`, or `psql` reports an authentication failure, do not skip: run steps 4 and 5, or remove the volume (step 9, `down -v`) and start again.
 
 ## 4. Create the runtime role and schema
 

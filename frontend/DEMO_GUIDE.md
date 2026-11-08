@@ -47,4 +47,4 @@ Mở Trạng thái tích hợp và bấm **Kiểm tra chặn LIVE**. Nêu rõ:
 - Identity/Gateway/Workflow chờ security gate #22/#23/#24; API contract chờ #37; attachments chờ API có kiểm quyền #26.
 - Chỉ khi có HTTP end-to-end thật sau security review mới đánh giá DoD của Issue #39. **Giữ Issue OPEN.**
 
-Các screenshot trong evidence (chưa có trên `main`) được tạo bằng browser automation trên localhost, không phải mockup hình ảnh.
+Các screenshot trong [evidence](https://github.com/tricore-opentrix/opentrix/blob/05c5d9967e88d24cfb4b41f4134dcc2522ac9253/docs/evidence/issue39-portal/README.md) (permalink tới commit `05c5d99` trên nhánh `feature/a05-portal-bff-integration`, chưa có trên `main`) được tạo bằng browser automation trên localhost, không phải mockup hình ảnh.
