@@ -105,7 +105,7 @@ Python is not in the deployment environment, so the browser suite uses Playwrigh
 
 `/login` and `/register` use the DX-OS branding, Be Vietnam Pro and Lucide, with a
 two-column layout on desktop and one column on mobile. Open them from the link on
-`/session` or directly by URL. The **Vào phiên Demo** (Enter the Demo session) button
+`/session` or directly by URL. The Enter the Demo session link (UI label: **Vào phiên Demo**)
 always opens the existing, separate Demo flow.
 
 The email, full name, password length (registration: 12–128 characters) and password
@@ -119,7 +119,7 @@ password also shows **BLOCKED FEATURE**. There is no endpoint or switch that ena
 authentication. The real flow must be handled by the backend Identity service through an
 approved and protected API.
 
-Only when the user selects **Ghi nhớ email** (Remember email) is a valid email stored in
+Only when the user selects Remember email (checkbox: **Ghi nhớ email**) is a valid email stored in
 `localStorage` under the key `dxos-remembered-email-v1`; unchecking it deletes it
 immediately. The password exists only temporarily in the input field and in memory during
 validation; it is not stored in browser storage, fixtures or logs and is not sent over the

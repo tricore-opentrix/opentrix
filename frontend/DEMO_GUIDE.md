@@ -14,26 +14,26 @@ The Portal UI is in Vietnamese, so UI labels are quoted verbatim in bold with an
 
 1. Run `npm.cmd ci` and `npm.cmd run dev` in `frontend/` (on Linux/macOS use `npm ci` and `npm run dev`).
 2. Open `http://127.0.0.1:5173/session`. You can use a 1440 px desktop viewport, 390 px mobile or 834 px tablet.
-3. Choose **Nhân viên — Ngọc Ánh** (Employee), click **Vào phiên demo** (Enter the demo session). All data and names in the UI are demo fixtures.
-4. To start over: Integration status (**Trạng thái tích hợp**) → **Khôi phục dữ liệu demo** (Restore demo data). Reloading also resets the request data.
+3. Select the Employee demo persona (UI label: **Nhân viên**, demo user *Ngọc Ánh*) and enter the demo session (button: **Vào phiên demo**). All data and names in the UI are demo fixtures.
+4. To start over: Integration status (**Trạng thái tích hợp**) → Restore demo data (**Khôi phục dữ liệu demo**). Reloading also resets the request data.
 
 ## Main scenario: two services, one platform
 
 1. Dashboard: point out the statistics taken from fixtures and shown for the current role, the request table and the recent activity.
-2. Click **Tạo yêu cầu mới** (Create a new request) and choose **Hỗ trợ CNTT** (IT support). Submit the empty form to show validation and focus on the first field with an error.
+2. Create a new request (button: **Tạo yêu cầu mới**) and choose IT support (service: **Hỗ trợ CNTT**). Submit the empty form to show validation and focus on the first field with an error.
 3. Enter a title of at least 8 characters, a description of at least 20 characters, a location and a priority. Attachments are marked **BLOCKED FEATURE** and no file is accepted.
 4. Submit: the button shows loading and prevents duplicate submits, then the detail page opens with a success message. Note the request ID, usually `DX-1049` in a new session.
-5. Use the **sidebar** to open Session status (**Trạng thái phiên**) → choose **Người xử lý — Lê Xuân Bảo** (Handler) → Continue. Do not reload the page during the demo flow.
+5. Use the **sidebar** to open Session status (**Trạng thái phiên**) → choose the Handler persona (UI label: **Người xử lý**, demo user *Lê Xuân Bảo*) → Continue. Do not reload the page during the demo flow.
 6. Open the handler desk (**Bàn xử lý**) or My requests (**Yêu cầu của tôi**) and select the request you just created. Approve → enter a note → confirm. Continue with Start work → Complete; each step adds a timeline event. The request ends with no further actions.
 7. Open Activity history (**Lịch sử hoạt động**) to follow the latest events.
-8. Switch back to Employee and repeat with **Cơ sở vật chất** (Facilities). Explain that both services share the same form, model, service and timeline; the responses are currently mocks, and Core will own the real runtime.
+8. Switch back to Employee and repeat with Facilities (service: **Cơ sở vật chất**). Explain that both services share the same form, model, service and timeline; the responses are currently mocks, and Core will own the real runtime.
 
 ## States to demonstrate
 
 - **Search/filter/empty:** open the list, search for `cap quyen`, and combine it with the Facilities filter to reach the empty state. Clear the filters and use the Previous/Next buttons.
-- **Loading:** open the list or a detail page; the mock has a 350 ms delay. Submitting the form shows the "Đang gửi" (Sending) state.
-- **Network error:** Integration status → choose the simulated connection loss (**Mất kết nối mô phỏng**) → Apply → open the request list. Click "Tải lại dữ liệu" (Reload data) to recover; there is no automatic retry.
-- **401:** apply the session-expired error (**Phiên hết hạn**) and then open the list. The demo session ends and the session page shows the simulated 401 message.
+- **Loading:** open the list or a detail page; the mock has a 350 ms delay. Submitting the form shows the Sending state (label: "Đang gửi").
+- **Network error:** Integration status → choose the simulated connection loss (option: **Mất kết nối mô phỏng**) → Apply → open the request list. Click Reload data (button: "Tải lại dữ liệu") to recover; there is no automatic retry.
+- **401:** apply the session-expired error (option: **Phiên hết hạn**) and then open the list. The demo session ends and the session page shows the simulated 401 message.
 - **403/404:** apply the matching error and then open the list. No data is shown in the error. An employee who opens `/requests/DX-1047` gets the same message as for a non-existent ID. Do not present this as a real security test.
 - **Unknown write result:** apply this error, use the sidebar to return to Overview, then open a new form and submit it completely. The error is kept for the next write even if data is read in between; the submit button is disabled after the error and nothing is resent automatically. Check the list and history as instructed.
 - **Rejection:** choose a pending request, use the Handler role, enter a reason and confirm. The timeline shows the reason and the request ends.
@@ -41,7 +41,7 @@ The Portal UI is in Vietnamese, so UI labels are quoted verbatim in bold with an
 
 ## Finish with Integration status
 
-Open Integration status and click **Kiểm tra chặn LIVE** (Check the LIVE block). State clearly that:
+Open Integration status and click Check the LIVE block (button: **Kiểm tra chặn LIVE**). State clearly that:
 
 - Portal tier 2 builds and runs on its own; the backend is not modified.
 - `RequestService` is a shared interface; the composition root currently binds `MockRequestService`.
