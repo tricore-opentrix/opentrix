@@ -1,0 +1,13 @@
+SPDX-FileCopyrightText: 2026 TRICORE contributors
+SPDX-License-Identifier: Apache-2.0
+
+# schema_version: 1
+# applicable_sha: 9aaff5854eb386d0602fb4575c4204d359881d73
+# evidence_kind: living
+# recorded_at_utc: 2026-11-08T22:25:59Z
+# evidence_status: BLOCKED
+# evidence_source: git:9aaff5854eb386d0602fb4575c4204d359881d73; REUSE 6.3.0
+# owner: Yen (evidence coordination; not presumed rightsholder)
+# reviewer: Bao/Anh proposed; actual noncontributor review required
+# blockers: Full REUSE lint returned nonzero
+# update_conditions: Regenerate after committed file/metadata/dependency changes; re-review before release freeze

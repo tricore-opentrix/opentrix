@@ -18,3 +18,5 @@ backend/build/
 Thumbs.db
 .serena/
 .worktrees/
+/build/license-evidence/
+/build/r23-inputs/

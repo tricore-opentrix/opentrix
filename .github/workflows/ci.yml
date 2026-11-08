@@ -6,7 +6,8 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    # The second base is the explicit, unmerged #161 integration dependency.
+    branches: [main, docs/license-evidence-consolidation]
   push:
     branches: [main]
   workflow_dispatch:
@@ -236,3 +237,44 @@ jobs:
           fi
       - name: REUSE licensing check
         uses: fsfe/reuse-action@v5
+
+  license-evidence:
+    needs: [r23-compliance]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned evidence tool
+        run: python -m pip install -r scripts/requirements-license-evidence.txt
+      - name: Test evidence integrity and deterministic generation
+        run: python -B -m unittest discover -s scripts -p 'test_license_evidence.py'
+      - name: Reuse canonical R23 artifact from this run
+        uses: actions/download-artifact@v4
+        with:
+          name: r23-sbom-and-notices
+          path: build/r23-inputs
+      - name: Generate committed-source snapshot (lint failure remains failure)
+        run: |
+          python -B scripts/license_evidence.py --ref "$GITHUB_SHA" --kind snapshot \
+            --output "build/license-evidence/snapshots/$GITHUB_SHA" \
+            --backend build/r23-inputs/backend/build/reports/cyclonedx/bom.json \
+            --portal-bff build/r23-inputs/portal-bff/build/reports/cyclonedx/bom.json \
+            --frontend build/r23-inputs/frontend-sbom.json \
+            --r23-inventory build/r23-inputs/build/r23/license-inventory.json \
+            --sbom-source-sha "$GITHUB_SHA" \
+            --sbom-source-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      - name: Retain evidence including failed lint output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-evidence-${{ github.sha }}
+          path: build/license-evidence/
+          retention-days: 30
+          if-no-files-found: warn

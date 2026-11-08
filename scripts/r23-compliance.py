@@ -176,8 +176,10 @@ def audit(paths, destination):
     destination.mkdir(parents=True, exist_ok=True)
     (destination / "license-inventory.json").write_text(
         json.dumps(rows, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    header = ["<!--", "SPDX-FileCopyrightText: 2026 TRICORE contributors",
-              "SPDX-License-Identifier: Apache-2.0", "-->", "",
+    # Keep emitted notices identical while avoiding embedded header literals
+    # being mistaken for this Python file's own metadata by REUSE 6.3.0.
+    header = ["<!--", "SPDX-" + "FileCopyrightText: 2026 TRICORE contributors",
+              "SPDX-" + "License-Identifier: Apache-2.0", "-->", "",
               "# THIRD-PARTY-NOTICES — generated inventory", "",
               "Generated from resolved CycloneDX SBOMs. This is not a legal",
               "certification or a substitute for upstream license and NOTICE texts.", "",

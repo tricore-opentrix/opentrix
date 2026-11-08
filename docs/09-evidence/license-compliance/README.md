@@ -32,8 +32,63 @@ Use the existing [R27 document register](../../verification/r27/README.md) for d
 
 ## Boundaries
 
-- Use existing R23 SBOMs and generated license inventory. Do not copy datasets or lint logs into this directory.
+- Use existing R23 SBOMs and license-inventory.json as canonical inputs. LIC-02/03/04 are replaceable generated views, not competing inventories or rights registers. Raw SBOMs stay in existing R23 artifacts; immutable SHA snapshots are stored separately.
 - Keep all stable source/document IDs and original Git/blob/archive identities. A canonical source path may have a corrected routing version without changing its underlying rights decision.
 - #151/#152 remain open until the corrected content is preserved, independently reviewed and closure is explicitly authorized. Original PR branches remain unchanged.
 - #129 is already closed unmerged; never merge its canary payload. #153's closed state does not erase its unique evidence.
 - #138 remains open; #139 remains Draft/BLOCKED. No license-compliant, rights-cleared, G0-approved, R27-accepted or release-ready conclusion follows from this navigation.
+
+## Phase 2 — living deliverables and SHA snapshots
+
+Status: PENDING (framework review); NOT_VERIFIED for source rights; release BLOCKED. Evidence sources: the canonical records above, pinned REUSE 6.3.0 and existing R23/R24 tooling. Applicable integration base: `9aaff5854eb386d0602fb4575c4204d359881d73` (#161 verified OPEN/Draft). Owner: Yến coordinates; Bảo maintains automation. Reviewers: Bảo/Ánh proposed subject to actual portion independence. Blockers: historical baseline results, remaining R24/link failures and all substantive rights/NOTICE gates remain; see LIC-01 for the explicit REUSE emitter-literal correction. Update this map when deliverables, inputs, source scope or review evidence change.
+
+| Deliverable | Group | Automated or manual / canonical boundary |
+| --- | --- | --- |
+| README.md | LIC-G1..LIC-G5 | Navigation and update contract only |
+| [LIC-01 policy](LIC-01-license-policy.md) | LIC-G1; LIC-G2 | Manual policy, links existing executable R23 policy |
+| [LIC-02 lint report](LIC-02-reuse-lint-report.txt) | LIC-G1 | Generated complete output/version/SHA/timestamp/exit; failure preserved |
+| [LIC-03 file metadata view](LIC-03-file-spdx-inventory.csv) | LIC-G1; LIC-G3 | Generated tracked-tree/effective REUSE metadata; not ownership |
+| [LIC-04 dependency view](LIC-04-third-party-inventory.csv) | LIC-G2 | Generated projection of existing three R23 SBOMs and inventory; no new policy |
+| [LIC-05 source rights](LIC-05-source-rights-evidence.md) | LIC-G3 | Manual declarations and canonical register/case links |
+| [LIC-06 compatibility](LIC-06-license-compatibility.md) | LIC-G2 | Manual upstream/distribution assessment |
+| [LIC-07 notices](LIC-07-notice-and-license-audit.md) | LIC-G1; LIC-G2; LIC-G5 | Manual actual license/NOTICE and packaging audit |
+| [LIC-08 review](LIC-08-independent-review.md) | LIC-G4 | Actual independent review records; no prefilled approval |
+| [LIC-09 release gate](LIC-09-release-license-verification.md) | LIC-G5 | Manual R24 acceptance; publication separately authorized |
+
+### Regeneration
+
+Run from the repository root with Python 3.11 and the pinned dependency:
+
+```sh
+python -m pip install -r scripts/requirements-license-evidence.txt
+python -B scripts/license_evidence.py --repo . --ref HEAD --kind living --output docs/09-evidence/license-compliance --backend build/r23-inputs/backend/build/reports/cyclonedx/bom.json --portal-bff build/r23-inputs/portal-bff/build/reports/cyclonedx/bom.json --frontend build/r23-inputs/frontend-sbom.json --r23-inventory build/r23-inputs/build/r23/license-inventory.json --sbom-source-sha <full-R23-source-sha> --sbom-source-url <actual-CI-run-URL>
+```
+
+Supply existing R23 artifacts (`gh run download <run-id> --repo tricore-opentrix/opentrix --name r23-sbom-and-notices --dir build/r23-inputs`) or outputs of the unchanged R23 commands in `.github/workflows/ci.yml`. Do not invent the run URL or source SHA. Read the actual workflow-run `head_sha`/checkout source; PR checkouts may use a synthetic merge SHA. In the shared CI job, both R23 and this generator analyze the same checkout SHA.
+
+For an immutable snapshot use the same command with `--kind snapshot --ref <full-sha> --output build/license-evidence/snapshots/<full-sha>`. The directory must not exist. For a replaceable development view use `--kind living` and a separate output location. To reproduce bytes, repeat the same source/input digests, REUSE/Python versions, OS and `--timestamp <recorded-UTC-timestamp>` into a fresh output directory. Timestamp is a declared reproducibility input, not a fabricated assertion of execution time.
+
+The generator analyzes committed Git objects only; dirty/untracked edits are not covered. Living means the latest analyzed commit, not an automatic HEAD-compliance badge. Commit source changes before generation, and commit regenerated documentation separately if desired. Input SBOM source differing from the analyzed source is explicitly flagged; never imply fresh dependency evidence. Snapshots are not overwritten, and changed inputs at a frozen SHA require investigation/new recorded evidence, not silent replacement.
+
+Exit 0 means generation completed with full lint exit 0, no blocked selected metadata rows, policy-approved canonical R23 inputs bound to the analyzed SHA, and an input run URL. A supplied URL is a provenance reference, not independently verified legal evidence. It does not mean rights or release clearance. Exit 1 retains reports but indicates lint/metadata failure, missing/rejected R23 inputs or a mismatched/unbound SBOM source. Exit 2 is input/tool failure. The generator writes full failed lint output; never use `|| true` to turn it into a PASS. If R23 inputs are absent, LIC-04 has a header only and its sidecar/manifest explicitly records NOT_VERIFIED and missing inputs; no synthetic dependency rows are invented.
+
+### Schemas and provenance
+
+Both CSVs use schema version 1, UTF-8, LF, a header, deterministic record order and standard CSV quoting. JSON-valued columns retain arrays/maps and unknown/empty values. Every row records applicable SHA, living/snapshot kind, recorded timestamp, evidence status/source, owner, proposed reviewer, blockers and update conditions. `.license` sidecars provide the same document metadata even for a zero-row CSV. `generation-manifest.json` binds generated files to input/source identities and output SHA-256 values; it is a tool manifest, not a new source-rights register.
+
+- LIC-03 key: `path`. Fields after common metadata: `path,git_blob_sha1,file_sha256,git_mode,reuse_version,reuse_selection,effective_copyright_json,effective_license_expressions_json,metadata_sources_json,metadata_error`. All tracked blobs are included, even ones REUSE excludes. `TOOL_EXCLUDED_NOT_RIGHTS_EXCLUDED` does not clear a distribution obligation. Effective sources come from REUSE's own precedence engine: file header, `.license`, REUSE.toml and supported external metadata. Row PASS is only metadata presence/syntax for a selected file, not full lint/license-text/ownership acceptance.
+- LIC-04 key: `(project,package,version,purl)`. Fields after common metadata: `project,package,version,purl,licenses_json,raw_bom_licenses_json,license_choice,approved,license_policy_status,release_distribution_status,release_distribution_owner,release_distribution_requirements_json,license_reference_links_json,upstream_sources_json,sbom_source_sha,sbom_sha256,r23_inventory_sha256`. Source references are actual CycloneDX externalReferences, not guessed package URLs. Input inventory must exactly equal existing R23 policy output over supplied SBOMs; mismatches and duplicate keys fail closed. Empty/UNKNOWN fields and existing PENDING values are preserved.
+- LIC-02 includes the complete combined lint streams after replacing only its random isolation-root prefix with `<SOURCE_ROOT>`; it records that normalization, exact tool/command/exit and SHA. The manifest also records generator and R23-policy SHA-256, Python version and platform. No finding or exit code is removed. Sidecars prevent a log's embedded diagnostic metadata from being parsed as the log's own license.
+
+### Update triggers
+
+| Change | Required updates | Manual gate |
+| --- | --- | --- |
+| New source file | Add approved metadata; declaration; regenerate LIC-02/03 after commit | Actual author/portion/upstream authority; link LIC-05/#138 |
+| Rename/remove | Regenerate path/blob inventory; retain origin refs and record rename/removal | Do not infer rights clearance; prove exclusion against final archive |
+| Dependency add/upgrade | Regenerate canonical R23 SBOMs/inventory/notices, then LIC-04 | Re-review version-specific choices, upstream terms and packaging in LIC-06/07 |
+| Third-party asset | Metadata/declaration and asset/source URL; include relevant package evidence | Actual font/icon/SVG/template rights and NOTICE; do not assume runtime SBOM covers assets |
+| Contributor evidence changes | Link genuine declaration/review to existing canonical R27 case | Independent portion review; no automated CLEARED transition |
+| Release SHA frozen | Delta reconciliation, same-SHA R23 generation and new immutable LIC snapshot | All five groups and separate LIC-09/R24 acceptance; no publication inferred |
+
+The extra CI job tests the generator and uploads generated snapshots from the same existing R23 artifact. A failure remains visible and artifacts are retained. Existing R23 policy and release gates are not relaxed. The stacked PR targets #161's branch; review its delta separately from the unmerged integration package.
