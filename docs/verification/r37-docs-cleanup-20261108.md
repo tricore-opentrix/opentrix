@@ -10,22 +10,22 @@ Docs-only checks for PR #158. They do not show that the software builds or runs;
 
 ## Scope of this evidence
 
-- Base: `main@187dbd2`. Checked commit: `17956ec` (last commit before this file was added). Later commits on the branch change only files under `docs/verification/`; the PR head SHA and CI check-run links are posted in the PR conversation, because a file cannot contain the SHA of the commit that adds it.
+- Base: `main@187dbd2`. The link check below was run on the full tracked tree of the PR head at the time of writing; the exact PR head SHA and CI check-run links are posted in the PR conversation, because a file cannot contain the SHA of the commit that adds it.
 - Changes against `main@187dbd2` outside Markdown: only the removal of nine empty `.gitkeep` files (listed below) and the new `scripts/check_md_links.py`. Nothing under `backend/src`, `portal-bff/` or `frontend/src` was changed.
 
 ## Link check
 
 ```text
 $ python3 scripts/check_md_links.py
-files 39 broken 0
+files 40 broken 0
 $ echo $?
 0
 ```
 
-- Scope: all files returned by `git ls-files '*.md'` (39 files). Fenced code blocks are ignored.
+- Scope: all files returned by `git ls-files '*.md'` (40 files). Fenced code blocks and inline code spans are ignored.
 - Checked: relative link targets and `#anchor` fragments (GitHub-style heading slugs, an approximation).
 - Not checked: links with a URL scheme (`https:`, `mailto:`). The script has no network access by design.
-- Negative test: a temporary file containing `[x](nope.md) [y](README.md#no-such)` made the script print `missing target` and `missing anchor`, report `broken 2` and exit with status 1.
+- Negative test: a temporary tracked file containing `[x](nope.md) [y](README.md#no-such)` made the script print `missing target` and `missing anchor`, report `broken 2` and exit with status 1.
 - Four references to Issue #39 material that exists only on the unmerged branch `feature/a05-portal-bff-integration` (in `frontend/README.md` and `frontend/DEMO_GUIDE.md`) now point to commit permalinks. Each target was confirmed to exist at that commit with `git cat-file -e <sha>:<path>`:
 
 | Target | Commit |
@@ -59,3 +59,18 @@ Conclusions and open points:
 - The nine `.gitkeep` files are empty (`e69de29`, the empty-blob hash), so no authored content is lost.
 - The register is pinned to `187dbd2`; deleting files later does not alter that snapshot or Git history. If the R27 owners want the register to describe the post-merge tree, they must regenerate it.
 - Not resolved by this PR: the terms moved from `docs/00-project/glossary.md` into `GLOSSARY.md` keep the provenance status the register assigned to the source file (`RIGHTS_PENDING`, owner `@phanyen06ym-ien`). The same applies to the registered files that this PR edits (`README.md`, `GLOSSARY.md`, `docs/README.md`, `frontend/README.md`, `scripts/README.md`): their blobs no longer equal the register's. Both are for the R27 owners to decide.
+
+## Object-storage wording (MinIO dropped)
+
+The team's technology checklist records MinIO as dropped on 2026-11-05 (upstream stopped publishing community images and binaries in October 2025 and archived the repository in 2026) and SeaweedFS with its S3 API as the planned replacement (v0.3.0). Docs that still presented MinIO as the selected target were reworded to a provider-neutral "S3-compatible object store (SeaweedFS planned)", with a note that the SeaweedFS ADR is pending and no adapter exists:
+
+`GLOSSARY.md`, `docs/00-project/project-overview.md`, `docs/00-project/scope-and-mvp.md`, `docs/01-architecture/{core-application-boundary,dependency-rules,deployment-topology,repository-layout-and-ownership,system-architecture}.md`, `docs/02-core/data/{data-architecture,storage-adapters}.md`, `docs/06-deployment/prerequisites.md`.
+
+Left unchanged on purpose:
+
+- `docs/08-decisions/ADR-007-data-storage.md`: owned by the ADR work; it is to be marked Superseded by the SeaweedFS ADR (pending).
+- `docs/verification/issue53-*.md` and `issue90-*.md`: historical evidence that must not be rewritten.
+- References to PR #34 (a MinIO candidate that was never merged): historical facts, kept and labelled as such.
+- `scripts/setup-github.sh`: label and milestone descriptions that mention MinIO; changing them would not change labels already created on GitHub.
+
+SeaweedFS is described only as planned. Nothing here claims it is selected by an accepted ADR or implemented.

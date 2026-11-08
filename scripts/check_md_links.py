@@ -6,8 +6,8 @@
 
 Usage: python3 scripts/check_md_links.py   (run from anywhere inside the repo)
 
-Scope: every file matched by `git ls-files '*.md'`. Fenced code blocks are
-ignored. Links with a URL scheme (https:, mailto:, ...) are NOT checked.
+Scope: every file matched by `git ls-files '*.md'`. Fenced code blocks and inline code
+spans are ignored. Links with a URL scheme (https:, mailto:, ...) are NOT checked.
 Anchors are derived from headings using GitHub-style slugs (approximation).
 Exit status: 0 if no broken link, 1 otherwise.
 """
@@ -49,6 +49,7 @@ def main():
     for f in files:
         with open(f, encoding="utf-8-sig") as fh:
             text = re.sub(r"```.*?```", "", fh.read(), flags=re.S)
+            text = re.sub(r"`[^`\n]*`", "", text)
         for m in re.finditer(r"\]\(([^)\s]+)\)", text):
             url = m.group(1)
             if re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*:", url):

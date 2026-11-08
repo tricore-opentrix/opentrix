@@ -73,7 +73,7 @@ SPDX-License-Identifier: Apache-2.0
 | Term | Meaning |
 |---|---|
 | Data Core | Provider-neutral shared object-storage capability in current contracts; not universal owner of all DB tables |
-| Object Storage | Key-addressed storage of bytes and metadata. `ObjectStoragePort` is the contract; no production adapter or running object-storage service is implemented yet. ADR-007 records MinIO (S3-compatible, local Docker) as the accepted direction, with implementation pending; a later ADR may revise the provider |
+| Object Storage | Key-addressed storage of bytes and metadata. `ObjectStoragePort` is the contract; no production adapter or running object-storage service is implemented yet. MinIO (ADR-007, 2026-10-28) was dropped on 2026-11-05; SeaweedFS with its S3 API is the planned replacement (v0.3.0) and its ADR is pending, so ADR-007 is to be marked Superseded |
 | `ObjectStoragePort` | Shared `store`, `read`, `metadata`, `delete` contract |
 | `ObjectKey` | Opaque, case-sensitive logical object identifier |
 | `ObjectMetadata` | Content type, exact byte length and custom metadata |
