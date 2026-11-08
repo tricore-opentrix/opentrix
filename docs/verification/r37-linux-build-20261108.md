@@ -8,6 +8,8 @@ SPDX-License-Identifier: Apache-2.0
 
 Evidence that the repository builds from source and the backend starts on Linux by following the root README and [the Linux runbook](../06-deployment/runbook-linux.md). Output below is copied from the terminal; no passwords, tokens, or personal paths are included.
 
+**What this covers.** The runs were made on `main@187dbd2`. PR #158 changes only Markdown, removes nine empty `.gitkeep` files and adds `scripts/check_md_links.py`; it does not touch `backend/src`, `portal-bff/` or `frontend/src`, so the build results apply to the PR head as well. CI results for the PR head are linked in the PR conversation. Docs-only checks (link check, removed paths) are in [r37-docs-cleanup-20261108.md](r37-docs-cleanup-20261108.md).
+
 ## Environment
 
 | Item | Value |
@@ -40,10 +42,12 @@ The backend and Portal BFF were also built earlier in the same session with the 
 - The backend requires a reachable Keycloak realm at `OIDC_ISSUER_URI` to start, even for the health endpoint. The previous README did not say so; the README and runbook were corrected.
 - `docker compose down` needs `WORKFLOW_LOCAL_DB_PASSWORD` defined even when only stopping; the runbook cleanup step was corrected.
 
-## Not covered
+## Not covered (open items)
 
-- The runtime privilege grants in runbook step 5 (`GRANT SELECT/INSERT/UPDATE`) were not confirmed in this run; the health check does not exercise them, and the optional smoke runner was not run.
-- No client, user, or token was created in Keycloak, so authenticated routes, the Helpdesk flow, the Portal BFF login, and Caddy ingress were not exercised.
-- The 171 skipped backend tests were not individually reviewed.
-- The Portal BFF test count was not collected.
-- The run was done on a VM by a team member. Acceptance still calls for an outside person to follow the README on a clean machine.
+| Item | Status | Owner |
+| --- | --- | --- |
+| Runtime privilege grants (runbook step 5) and the optional smoke runner (`SMOKE_PASS`, `RESTART_READ_PASS`) | Not run. `{"status":"UP"}` shows the process started and the database connected; it is not an end-to-end result and does not prove the grants. | @lexuanbao258-collab |
+| 171 skipped backend tests | Not classified; no reason recorded per test. | @lexuanbao258-collab |
+| Portal BFF test count | Not collected. | @lexuanbao258-collab |
+| Authenticated routes, Helpdesk flow, Portal BFF login, Caddy ingress | Not exercised; no client, user or token was created in Keycloak. | Not assigned |
+| Reproduction on a clean machine by someone outside the team | Not done. This run was made on a VM by a team member. | Not assigned |

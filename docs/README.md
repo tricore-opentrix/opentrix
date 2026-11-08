@@ -15,7 +15,7 @@ Start with the [root README](../README.md) to build and run the project. This in
 | 02-core | [Identity](02-core/identity/identity-architecture.md) · [Workflow](02-core/workflow/workflow-architecture.md) · [Data](02-core/data/data-architecture.md) · [Storage adapters](02-core/data/storage-adapters.md) · [Gateway](02-core/gateway/gateway-architecture.md) |
 | 06-deployment | [Runbook — Linux/macOS](06-deployment/runbook-linux.md) · [Prerequisites](06-deployment/prerequisites.md) · [R23 SBOM/licence plan](06-deployment/r23-plan.md) · [R24 release](06-deployment/r24-release.md) · [R26 repository cutover](06-deployment/r26-repository-cutover.md) |
 | 08-decisions | [ADR-007 object storage](08-decisions/ADR-007-data-storage.md) · [ADR-008 dashboard tool](08-decisions/ADR-008-dashboard-tool.md) |
-| verification | [Issue #53 Helpdesk integration](verification/issue53-java-helpdesk-mvp-integration-20261028.md) · [Issue #53 local closeout](verification/issue53-helpdesk-local-closeout-20261029.md) · [Issue #90 ArchUnit](verification/issue90-8a-archunit-foundation.md) · [R37 Linux build and run](verification/r37-linux-build-20261108.md) |
+| verification | [Issue #53 Helpdesk integration](verification/issue53-java-helpdesk-mvp-integration-20261028.md) · [Issue #53 local closeout](verification/issue53-helpdesk-local-closeout-20261029.md) · [Issue #90 ArchUnit](verification/issue90-8a-archunit-foundation.md) · [R37 Linux build and run](verification/r37-linux-build-20261108.md) · [R37 docs cleanup](verification/r37-docs-cleanup-20261108.md) |
 | evidence | Pinned SQL review queries used by `scripts/` (Issue #25) |
 
 Terminology is in the root [GLOSSARY.md](../GLOSSARY.md).
