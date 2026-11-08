@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Runbook — build and run on Linux / macOS
 
-This runbook takes a fresh clone to a running backend on a disposable local PostgreSQL 17. It is the bash version of [Chạy backend local từ clone mới](../../backend/README.md#chạy-backend-local-từ-clone-mới) in the backend guide; the PowerShell steps there remain the reference for Windows.
+This runbook takes a fresh clone to a running backend on a disposable local PostgreSQL 17. It is the bash version of [Run the backend locally from a fresh clone](../../backend/README.md#run-the-backend-locally-from-a-fresh-clone) in the backend guide; the PowerShell steps there remain the reference for Windows.
 
 Everything here uses loopback-only resources created by the repository's compose file. Do not point these commands at a shared or cloud database.
 

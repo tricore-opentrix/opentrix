@@ -93,3 +93,14 @@ SPDX header coverage is 100%, but REUSE compliance is **not** a full PASS: `reus
 - `backend/README.md`: added a Linux/macOS build section and a `curl` health check; listed the Keycloak realm and the three `OIDC_*` variables as run-time requirements (all four have no default in `application.yml`; checked by reading the file, not by running it); the intro no longer presents the removed Request prototype as current. The Windows-only content and the Issue #25 history sections are unchanged.
 - `docs/01-architecture/repository-layout-and-ownership.md`: section 2 now matches `git ls-files` on the branch head (`frontend/` and `portal-bff/` tracked, `request/` removed, `application/helpdesk/` and `gateway/helpdesk/` present, `application/facility/` is only a `.gitkeep`). Section 3 (the target tree) is otherwise unchanged and may still describe `helpdesk` as a target.
 - Not checked: the other claims in these two files that I did not touch, for example the CI job count and every Issue #25 cloud statement.
+
+## English-language pass (third batch)
+
+Requested in the review of `468eed0` and `fd14592`. The Vietnamese prose in the documents this PR touches was translated into English: `backend/README.md`, `frontend/README.md`, `frontend/DEMO_GUIDE.md`, `scripts/README.md` and the ten section headings of `docs/01-architecture/system-architecture.md`.
+
+- Commands, environment variable names, paths, SHAs, permalinks, identifiers and historical statements were kept. A script compared the fenced code blocks before and after: the only differences are translated comments, the `<version>` JAR name, and the new `OIDC_*` lines in the two `bootRun` examples of `backend/README.md`.
+- The Portal UI labels that the user sees (for example **Vào phiên demo**) stay in Vietnamese with an English gloss, because they are the literal text on screen.
+- Two historical strings in `backend/README.md` were left verbatim on purpose: the Windows worktree path of the historical V3/V4 launcher command and the Supabase Direct host name. They are not rewritten here.
+- The anchor in `docs/06-deployment/runbook-linux.md` that pointed at the renamed Vietnamese heading was updated; `scripts/check_md_links.py` found the broken anchor and now reports `files 40 broken 0`.
+- `docs/01-architecture/repository-layout-and-ownership.md`: the ownership row no longer tells contributors to preserve `request/`.
+- Not done: no other Vietnamese text outside the documents listed above was searched for or translated. The translation was done by the PR author's assistant and has not been proofread by a native English speaker.

@@ -6,13 +6,13 @@ SPDX-License-Identifier: Apache-2.0
 
 # DX-OS Internal Service Portal — Issue #39
 
-**MOCK / DEVELOPMENT · Giao diện prototype Tầng 2. Chưa có HTTP end-to-end thật. Issue #39 phải giữ OPEN.**
+**MOCK / DEVELOPMENT · Tier 2 UI prototype. There is no real end-to-end HTTP yet. Issue #39 must stay OPEN.**
 
-Ứng dụng SPA độc lập, tiếng Việt, trình diễn hai dịch vụ IT Support và Facility trên cùng components, request view model, service interface và timeline. Không thay đổi Core, Gateway, Identity, Workflow, Flyway V1–V4 hay PR #35.
+A standalone single-page application with a Vietnamese user interface. It demonstrates two services, IT Support and Facility, on the same components, request view model, service interface and timeline. It changes nothing in Core, Gateway, Identity, Workflow, Flyway V1–V4 or PR #35.
 
-## Chạy localhost
+## Run on localhost
 
-Yêu cầu Node.js >= 22.12 (đã kiểm tra bằng Node 24.19.0), npm và trình duyệt hiện đại.
+Requires Node.js >= 22.12 (checked with Node 24.19.0), npm and a modern browser.
 
 ```powershell
 Set-Location D:\olp\issue39-university-ui\frontend
@@ -20,18 +20,18 @@ npm.cmd ci
 npm.cmd run dev
 ```
 
-Mở **http://127.0.0.1:5173**. Trên macOS/Linux dùng `npm` thay cho `npm.cmd`. Không cần backend, database, `.env` hoặc credentials.
+Open **http://127.0.0.1:5173**. On macOS/Linux use `npm` instead of `npm.cmd`. No backend, database, `.env` file or credentials are needed.
 
 ```powershell
 npm.cmd run build
 npm.cmd run preview -- --port 4173
 ```
 
-Production hosting phải có SPA fallback về `index.html` cho các deep links. Không có deployment trong phạm vi này.
+Production hosting must provide an SPA fallback to `index.html` for deep links. Deployment is out of scope here.
 
-## Stack và cấu trúc
+## Stack and structure
 
-React 19, Vite 8, TypeScript strict, React Router 7, Lucide, Be Vietnam Pro được phục vụ cục bộ, CSS tokens; phiên bản chính xác nằm trong `package-lock.json`. Stack được người dùng xác nhận sau audit. Không tải font, analytics hoặc tài nguyên bên thứ ba khi sử dụng app.
+React 19, Vite 8, strict TypeScript, React Router 7, Lucide, Be Vietnam Pro served locally, and CSS tokens; exact versions are in `package-lock.json`. The stack was confirmed by the user after an audit. The app does not load fonts, analytics or any third-party resource at run time.
 
 ```text
 src/
@@ -50,42 +50,42 @@ tests/portal.spec.ts          Browser smoke, WCAG checks and real screenshots
 scripts/check-security.mjs    Source/bundle credential-pattern check
 ```
 
-MOCK mặc định dùng `RequestService` qua composition root. `HttpApiClient` tách biệt và luôn trả `LIVE_BLOCKED`. APP-10/11/13/14 đã có mapper, Assignment Form, typed HTTP adapter cho chín route candidate PR #63 và Portal feature riêng qua optional `helpdeskService` injection; chỉ kiểm thử bằng fake transport, chưa có concrete LIVE transport, token hay cờ mở LIVE. Không coi view model mock là DTO backend. Xem [kiểm kê MVP và checklist kết nối thật](https://github.com/tricore-opentrix/opentrix/blob/c73bbc306a698141169304e5da848ea0686700db/docs/application/issue39-mvp-readiness-20261027.md) (permalink tới commit `c73bbc3` trên nhánh `feature/a05-portal-bff-integration`, chưa có trên `main`).
+By default MOCK uses `RequestService` through the composition root. `HttpApiClient` is separate and always returns `LIVE_BLOCKED`. APP-10/11/13/14 already have a mapper, the Assignment Form, a typed HTTP adapter for the nine candidate routes of PR #63, and a separate Portal feature through optional `helpdeskService` injection. They are tested only with a fake transport; there is no concrete LIVE transport, token or flag that enables LIVE. Do not treat the mock view model as a backend DTO. See the [MVP inventory and real-connection checklist](https://github.com/tricore-opentrix/opentrix/blob/c73bbc306a698141169304e5da848ea0686700db/docs/application/issue39-mvp-readiness-20261027.md) (a permalink to commit `c73bbc3` on the branch `feature/a05-portal-bff-integration`, which is not on `main`).
 
-Logout, đổi vai trò và 401 vô hiệu hóa kết quả async của phiên cũ. Response muộn không chuyển trang, phát thông báo hay làm hết hạn phiên mới; 401 của phiên hiện tại vẫn kết thúc phiên sau khi rời màn hình. Assignment không bắt đầu GET Detail sau logout. Lệnh ghi đã gửi không bị hủy/replay; unknown outcome của MVP vẫn khóa để chờ đối soát. Đây là vòng đời phiên demo/fake, chưa phải logout hoặc thu hồi phiên OIDC/BFF.
+Logout, a role change and a 401 invalidate the async results of the old session. A late response does not navigate, announce anything or expire the new session; a 401 for the current session still ends the session after the user leaves the screen. Assignment does not start a GET Detail after logout. A write that was already sent is neither cancelled nor replayed; an MVP unknown outcome stays locked until it is reconciled. This is a demo/fake session lifecycle, not an OIDC/BFF logout or session revocation.
 
-Hai workflow UX dùng chung form, bảng, metadata, action dialog và timeline. Những phản hồi cố định trong mock chỉ phục vụ demo; **không phải frontend Workflow engine**, không thực thi definition, không có BPMN editor, persistence hay orchestration Core. Các thao tác được cho phép thật phải do backend quyết định sau security gate.
+The two workflow UX flows share the form, table, metadata, action dialog and timeline. The fixed responses in the mock exist only for the demo; this is **not a frontend Workflow engine**: it does not execute definitions and has no BPMN editor, persistence or Core orchestration. The actions that are really allowed must be decided by the backend after the security gate.
 
-## Các màn hình
+## Screens
 
-| Route           | Nội dung                                                            |
+| Route           | Content                                                             |
 | --------------- | ------------------------------------------------------------------- |
-| `/session`      | Vào/kết thúc phiên demo, đổi vai trò, mô phỏng hết hạn; SSO bị chặn |
-| `/login`        | Form email/mật khẩu, ghi nhớ riêng email; submit và khôi phục mật khẩu bị chặn |
-| `/register`     | Form đăng ký Sinh viên/Giảng viên; không tạo tài khoản hoặc cấp quyền |
-| `/`             | Dashboard và truy cập nhanh hai dịch vụ                             |
-| `/requests`     | Search không dấu, filter dịch vụ/trạng thái, phân trang             |
-| `/requests/new` | Form dùng chung, validation, loading, success/error                 |
-| `/approvals`    | Bàn xử lý dành cho vai trò người xử lý mô phỏng                     |
-| `/requests/:id` | Chi tiết, phiên bản mock, thao tác xử lý và timeline                |
-| `/history`      | Lịch sử từng yêu cầu, mới nhất trước                                |
-| `/integration`  | Trạng thái các capability, kiểm tra chặn LIVE và fault controls     |
+| `/session`      | Enter/end the demo session, change role, simulate expiry; SSO is blocked |
+| `/login`        | Email/password form, remembers only the email; submit and password recovery are blocked |
+| `/register`     | Student/Lecturer registration form; creates no account and grants no permission |
+| `/`             | Dashboard and quick access to the two services                      |
+| `/requests`     | Accent-insensitive search, service/status filters, pagination       |
+| `/requests/new` | Shared form, validation, loading, success/error                     |
+| `/approvals`    | Handler desk for the simulated handler role                         |
+| `/requests/:id` | Detail, mock version, handling actions and timeline                 |
+| `/history`      | History of each request, newest first                               |
+| `/integration`  | Capability status, LIVE-block check and fault controls              |
 
-Loading được mô phỏng với độ trễ 350 ms. Không có kết quả: hướng dẫn đổi bộ lọc. Lỗi đọc có nút tải lại do người dùng chủ động. Form giữ nội dung khi lỗi mạng. Ghi có khóa chống double-submit và không tự retry. Khi `COMMIT_OUTCOME_UNKNOWN`, UI vô hiệu hóa gửi tiếp và hướng dẫn kiểm tra lịch sử. Lỗi 401 mô phỏng kết thúc phiên và hiển thị thông báo; 403 và hidden/missing 404 có thông báo an toàn. Đây không phải bằng chứng kiểm quyền backend.
+Loading is simulated with a 350 ms delay. With no results, the screen guides the user to change the filters. A read error has a reload button that the user triggers. The form keeps its content on a network error. Writes are locked against double submit and are never retried automatically. On `COMMIT_OUTCOME_UNKNOWN` the UI disables further submits and tells the user to check the history. A simulated 401 ends the session and shows a message; 403 and hidden/missing 404 show safe messages. None of this is evidence of backend authorization checks.
 
-## Ranh giới bảo mật và BLOCKED API
+## Security boundary and BLOCKED APIs
 
-| Capability               | Điều kiện còn thiếu                                                                                                               |
+| Capability               | Missing condition                                                                                                                 |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
 | Identity / SSO           | Verified browser login, OIDC Authorization Code + PKCE, #24                                                                       |
-| Gateway / Workflow HTTP  | Registration, resource ACL, tenant binding và security gate #22/#23/#24; mọi create/activate/transition/snapshot/history đều chặn |
-| Data persistence         | HTTP application contract được duyệt; không nối PostgreSQL hoặc Java trực tiếp                                                    |
-| Attachments              | Backend Storage API có kiểm quyền #26: **BLOCKED FEATURE**, không có file input hoặc upload giả                                   |
-| HTTP DTO / error mapping | OpenAPI và review contract #37                                                                                                    |
+| Gateway / Workflow HTTP  | Registration, resource ACL, tenant binding and security gate #22/#23/#24; every create/activate/transition/snapshot/history call is blocked |
+| Data persistence         | An approved HTTP application contract; no direct PostgreSQL or Java connection                                                    |
+| Attachments              | Backend Storage API with authorization checks #26: **BLOCKED FEATURE**, no file input and no fake upload                          |
+| HTTP DTO / error mapping | OpenAPI and contract review #37                                                                                                   |
 
-Không có secret, admin token, service-role key, database credential hay `X-User`/`X-Role` làm nguồn định danh. Chỉ có tên/vai trò demo trong `sessionStorage`; sửa giá trị này không phải chứng minh authentication/authorization. Fixture visibility (nhân viên xem yêu cầu mẫu của mình; người xử lý xem bộ dữ liệu mẫu) chỉ là hành vi UX.
+There is no secret, admin token, service-role key, database credential, and no `X-User`/`X-Role` used as an identity source. Only the demo name/role is stored in `sessionStorage`; editing that value is not proof of authentication/authorization. Fixture visibility (an employee sees their own sample requests; a handler sees the sample data set) is only UX behavior.
 
-## Kiểm thử
+## Testing
 
 ```powershell
 npm.cmd run build
@@ -95,45 +95,49 @@ npm.cmd run test:smoke
 npm.cmd run check:security
 ```
 
-Smoke suite khởi chạy production preview tại `127.0.0.1:4173`, kiểm tra hai luồng UI, lỗi/empty/validation, chặn API, keyboard/modal, desktop/tablet/mobile và axe WCAG 2 A/AA + 2.1 AA. Screenshot được tạo trực tiếp từ localhost tại [evidence](https://github.com/tricore-opentrix/opentrix/blob/05c5d9967e88d24cfb4b41f4134dcc2522ac9253/docs/evidence/issue39-portal/README.md) (permalink tới commit `05c5d99`, chưa có trên `main`). Không dùng ảnh dựng làm bằng chứng. Script security chỉ là kiểm tra mẫu credentials phổ biến, đi kèm review source và staged diff.
+The smoke suite starts a production preview at `127.0.0.1:4173` and checks the two UI flows, error/empty/validation states, API blocking, keyboard/modal behavior, desktop/tablet/mobile layouts, and axe WCAG 2 A/AA + 2.1 AA. Screenshots are produced directly from localhost at [evidence](https://github.com/tricore-opentrix/opentrix/blob/05c5d9967e88d24cfb4b41f4134dcc2522ac9253/docs/evidence/issue39-portal/README.md) (a permalink to commit `05c5d99`, not on `main`). Composited images are not used as evidence. The security script only checks for common credential patterns and goes with a source and staged-diff review.
 
-Python không có trong môi trường triển khai nên browser suite dùng Playwright TypeScript, có thể chạy bằng dependencies đã khóa của dự án.
+Python is not in the deployment environment, so the browser suite uses Playwright with TypeScript and can run with the project's locked dependencies.
 
-## Giới hạn
+## Limits
 
-### Email/mật khẩu: chỉ xem trước giao diện
+### Email/password: UI preview only
 
-`/login` và `/register` dùng thương hiệu DX-OS, Be Vietnam Pro và Lucide, bố cục
-hai cột trên desktop và một cột trên mobile. Truy cập từ liên kết tại `/session`
-hoặc mở trực tiếp URL. Nút **Vào phiên Demo** luôn mở luồng Demo hiện có riêng.
+`/login` and `/register` use the DX-OS branding, Be Vietnam Pro and Lucide, with a
+two-column layout on desktop and one column on mobile. Open them from the link on
+`/session` or directly by URL. The **Vào phiên Demo** (Enter the Demo session) button
+always opens the existing, separate Demo flow.
 
-Email, họ tên, độ dài mật khẩu (đăng ký: 12–128 ký tự) và xác nhận mật khẩu được
-kiểm tra tại form. Đây là quy tắc UI tạm thời, không phải chính sách Identity đã
-được duyệt. Chỉ dùng dữ liệu giả; không nhập mật khẩu thật để thử nghiệm.
+The email, full name, password length (registration: 12–128 characters) and password
+confirmation are checked in the form. These are temporary UI rules, not an approved
+Identity policy. Use fake data only; do not type a real password to test.
 
-Submit hợp lệ chỉ kiểm tra form cục bộ, xóa các ô mật khẩu rồi hiển thị
-**BLOCKED FEATURE**. Không gửi HTTP, không tạo JWT, không tạo tài khoản, không
-thay đổi vai trò/phiên Demo và không báo đăng nhập thành công. Quên mật khẩu cũng
-hiển thị **BLOCKED FEATURE**. Không có endpoint hoặc công tắc mở authentication.
-Luồng thật phải do backend Identity xử lý qua API được phê duyệt và bảo vệ.
+A valid submit only checks the form locally, clears the password fields and then shows
+**BLOCKED FEATURE**. It sends no HTTP request, creates no JWT, creates no account,
+does not change the Demo role/session and never reports a successful sign-in. Forgot
+password also shows **BLOCKED FEATURE**. There is no endpoint or switch that enables
+authentication. The real flow must be handled by the backend Identity service through an
+approved and protected API.
 
-Chỉ khi người dùng chọn **Ghi nhớ email**, email hợp lệ được lưu trong
-`localStorage` dưới khóa `dxos-remembered-email-v1`; bỏ chọn sẽ xóa ngay. Mật khẩu
-chỉ tồn tại tạm trong ô nhập và bộ nhớ lúc validation, không được lưu vào browser
-storage, fixtures, logs hoặc gửi qua mạng. Đăng ký chỉ có Sinh viên/Giảng viên và
-từ chối giá trị vai trò bị sửa thành admin/processor. Không có quyền thực được cấp.
+Only when the user selects **Ghi nhớ email** (Remember email) is a valid email stored in
+`localStorage` under the key `dxos-remembered-email-v1`; unchecking it deletes it
+immediately. The password exists only temporarily in the input field and in memory during
+validation; it is not stored in browser storage, fixtures or logs and is not sent over the
+network. Registration offers only Student/Lecturer and rejects a role value that was
+edited to admin/processor. No real permission is granted.
 
-Test mới nằm tại `src/pages/Auth.test.tsx` và `tests/auth.spec.ts`. Xem
-[ảnh Login/Register](https://github.com/tricore-opentrix/opentrix/blob/00b10fa43d01cc3dcca725b2ed66a43bdaa92268/docs/evidence/issue39-portal/auth/README.md) (permalink tới commit `00b10fa`, chưa có trên `main`) ở desktop,
-tablet, mobile 390px và 320px. Bộ smoke hiện có tiếp tục kiểm tra tạo yêu cầu,
-phê duyệt, xử lý, timeline và `HttpApiClient` fail-closed. Theme chỉ tăng tương
-phản một số màu chữ phụ để các kiểm tra WCAG hiện có đạt; không đổi bố cục dashboard.
+The new tests are in `src/pages/Auth.test.tsx` and `tests/auth.spec.ts`. See the
+[Login/Register screenshots](https://github.com/tricore-opentrix/opentrix/blob/00b10fa43d01cc3dcca725b2ed66a43bdaa92268/docs/evidence/issue39-portal/auth/README.md) (a permalink to commit `00b10fa`, not on `main`) at desktop,
+tablet, 390 px mobile and 320 px. The existing smoke suite continues to check request
+creation, approval, handling, the timeline and the fail-closed `HttpApiClient`. The theme
+only raises the contrast of some secondary text colors so that the existing WCAG checks
+pass; it does not change the dashboard layout.
 
-- Request và lịch sử chỉ ở bộ nhớ trong **một tab**. Reload hoặc khôi phục demo sẽ reset fixtures; đổi route bằng sidebar giữ dữ liệu.
-- Phiên demo chỉ lưu lựa chọn vai trò trong tab, không có SSO, access token hay quyền thực.
-- Kết quả ghi chưa xác định chỉ là mô phỏng lỗi; mock không xác nhận một commit thật đã xảy ra.
-- Chưa kiểm chứng real 401/403/404, cross-tenant denial, concurrency/persistence hoặc HTTP end-to-end.
-- Browser coverage hiện là Chromium; axe không thay thế audit accessibility thủ công đầy đủ. Bảng cuộn ngang bên trong ở màn hình nhỏ.
-- Chưa upload/read file, chưa gửi thông báo thực, chưa triển khai hosting.
+- Requests and history exist only in memory in **one tab**. Reloading or restoring the demo resets the fixtures; changing routes through the sidebar keeps the data.
+- The demo session stores only the role choice in the tab; there is no SSO, access token or real permission.
+- An unknown write result is only a simulated error; the mock does not confirm that a real commit happened.
+- Real 401/403/404, cross-tenant denial, concurrency/persistence and end-to-end HTTP have not been verified.
+- Browser coverage is currently Chromium; axe does not replace a full manual accessibility audit. Tables scroll horizontally inside their container on small screens.
+- No file upload/read, no real notifications and no hosting yet.
 
-Xem [hướng dẫn demo](DEMO_GUIDE.md). Refs #39; chỉ ghi nhận **mock UI prototype hoàn thành** khi local checks đạt, không đóng Issue #39.
+See the [demo guide](DEMO_GUIDE.md). Refs #39; only record **mock UI prototype complete** when the local checks pass, and do not close Issue #39.

@@ -105,7 +105,7 @@ The selected MVP path naming is `frontend/` and `portal-bff/` because PRs #51/#7
 | `gateway/` and HTTP security boundary | Yến | Bảo Backend / Ánh Portal | Never trust caller headers or replace Application resource ACL with edge-only checks. |
 | `core/workflow` and Workflow persistence semantics | Bảo | Yến / Ánh | Application must consume reviewed contracts; Flowable is a proposed adapter, not the Core runtime definition. |
 | `core/data` and `infrastructure/{storage,persistence}` | Bảo | Ánh (PR #34 handoff), Yến | ObjectStoragePort is provider-neutral; application business data ownership is distinct. |
-| `application/helpdesk/`, `application/facility/` | Ánh business owner, Bảo Backend implementer | Yến security | Domain rules and resource eligibility belong to Application; preserve current `request/` until an approved bounded migration. No separate top-level Java `modules/` package is selected. |
+| `application/helpdesk/`, `application/facility/` | Ánh business owner, Bảo Backend implementer | Yến security | Domain rules and resource eligibility belong to Application; the legacy `request/` module no longer exists (removed in R25), so any further layout change needs its own approved, bounded migration. No separate top-level Java `modules/` package is selected. |
 | `frontend/` | Ánh | Yến session, Bảo API | No direct database, Keycloak admin, object-store SDK or unregistered Workflow HTTP dependency. |
 | `portal-bff/` | Yến security, Ánh consumer integration | Bảo Backend | Server-side OAuth session, CSRF and trusted token handoff; verify real E2E separately. |
 | `infra/`, reproducible release scripts | Bảo integration lead | Yến / Ánh | Private local credentials, no destructive shared database operations. |

@@ -6,59 +6,67 @@ SPDX-License-Identifier: Apache-2.0
 
 # Scripts
 
-Nơi lưu script hỗ trợ phát triển và kiểm tra khi cần.
-Build và test hiện dùng Gradle Wrapper trong `backend/`.
+Helper scripts for development and verification, added when needed.
+Build and test currently use the Gradle Wrapper in `backend/`.
 
-`check_md_links.py` kiểm tra link tương đối và `#anchor` trong mọi file `.md` được git theo dõi (không kiểm URL có scheme); chạy `python3 scripts/check_md_links.py`, thoát mã 1 nếu có link hỏng.
+`check_md_links.py` checks relative links and `#anchor` fragments in every Markdown file tracked by Git. It does not check URLs that have a scheme (external URLs). Run `python3 scripts/check_md_links.py`; it exits with code 1 if any link is broken.
 
-`workflow-verify-local.ps1` tạo PostgreSQL 17.11 disposable trên loopback, CA đúng/sai
-và credentials ngẫu nhiên trong bộ nhớ, chạy full JDK 21 `test build`, rồi dọn fixture.
-Cần Docker, JDK 21 trên PATH và OpenSSL (có trong Git for Windows). Script yêu cầu
-chín Workflow integration suites chạy và không có FAIL/SKIP; không nhận endpoint cloud.
-Xem `backend/README.md` để chạy database local giữ dữ liệu và boot ứng dụng từ source.
+`workflow-verify-local.ps1` creates a disposable PostgreSQL 17.11 on loopback, valid and
+invalid CAs and random in-memory credentials, runs the full JDK 21 `test build`, then
+removes the fixtures. It needs Docker, JDK 21 on PATH and OpenSSL (included in Git for
+Windows). The script requires all nine Workflow integration suites to run with no
+FAIL/SKIP, and it does not accept cloud endpoints. See `backend/README.md` for running a
+local database that keeps its data and for booting the application from source.
 
-Luồng Supabase mặc định của Issue #25: dùng Direct Connection, tài khoản `postgres`
-hiện có và `DB_*`/`PGSSLROOTCERT` từ secret environment; chạy
-`workflow-read-only-preflight.ps1` để kiểm tra JDBC `verify-full` chỉ đọc trước.
-Migrations/smoke cloud cần phê duyệt ghi riêng; không chạy trong bước kết nối.
+Default Supabase flow for Issue #25: use the Direct Connection, the existing `postgres`
+account, and `DB_*`/`PGSSLROOTCERT` from a secret environment; first run
+`workflow-read-only-preflight.ps1` to check the connection read-only with JDBC
+`verify-full`. Cloud migrations and smoke runs need a separate write approval and must not
+be run in the connection step.
 
-`workflow-stage-1a.ps1`, `workflow-stage-1b-1-readonly-audit.ps1` và
-`workflow-provisioning-local-test.ps1` là công cụ hardening lịch sử/optional, không
-phải các bước setup mặc định. Giữ hai custom roles hiện có ở `NOLOGIN`.
-Các runtime-privilege/SECURITY DEFINER/event-trigger audit launchers cũng là công cụ
-review optional; guard trong adapter/migrations và integration tests vẫn giữ nguyên.
-Danh sách file cần giữ hoặc có thể loại khỏi PR nằm trong
+`workflow-stage-1a.ps1`, `workflow-stage-1b-1-readonly-audit.ps1` and
+`workflow-provisioning-local-test.ps1` are historical or optional hardening tools, not
+default setup steps. Keep the two existing custom roles at `NOLOGIN`.
+The runtime-privilege, SECURITY DEFINER and event-trigger audit launchers are also
+optional review tools; the guards in the adapter and migrations, and the integration
+tests, stay in place.
+The list of files to keep or that may be dropped from the PR is in
 [`issue-25-readiness.md`](https://github.com/tricore-opentrix/opentrix/blob/2b4989054c99821ca1347d15da4600af4f9ce4cb/docs/evidence/issue-25-readiness.md).
 
-`workflowDevelopmentSmoke` là task riêng trong backend, yêu cầu argument và opt-in
-development chính xác, schema cố định, tài khoản postgres, Direct verify-full và
-phê duyệt riêng cho lệnh ghi. Runner production không kích hoạt chế độ này qua
-environment/profile. Fixture local kiểm tra đường development và regression
-production; xem lệnh preflight/cloud approval trong `backend/README.md`.
+`workflowDevelopmentSmoke` is a separate backend task. It requires the exact argument and
+development opt-in, a fixed schema, the postgres account, a Direct `verify-full`
+connection, and a separate approval for write commands. The production runner does not
+enable this mode through environment or profile. The local fixtures check the development
+path and the production regression; see the preflight and cloud-approval commands in
+`backend/README.md`.
 
 `workflow-schema-bootstrap.ps1 -ExecuteApprovedBootstrap -CaCertificate <CA file>`
-chỉ thực thi CREATE schema rỗng đã được owner phê duyệt, với conditional commit và
-fresh read-only audit. Không hỏi lại approval; password qua secure environment hoặc
-prompt ẩn. Cấu hình sai/precheck không đạt thì dừng, không tự sửa hoặc cleanup.
-Không dùng launcher này cho Flyway hoặc smoke ghi.
+only executes a CREATE of an empty schema that the owner has approved, with a conditional
+commit and a fresh read-only audit. It does not ask for approval again; the password comes
+through a secure environment or a hidden prompt. If the configuration is wrong or the
+precheck fails, it stops and does not fix or clean up on its own. Do not use this launcher
+for Flyway or for write smoke runs.
 
-Schema Bootstrap đã hoàn tất theo owner report COMMITTED_PASS/POSTCOMMIT_AUDIT=PASS,
-BOOTSTRAP_EXIT=0: không chạy lại workflow-schema-bootstrap.ps1 hoặc CREATE SCHEMA.
-Owner đã duyệt riêng V3/V4 pin; xem inventory/precheck/postcheck/recovery trong
-kế hoạch Issue #25. Không chạy smoke cùng batch khi chỉ migration được duyệt.
+The schema bootstrap is complete according to the owner report (COMMITTED_PASS,
+POSTCOMMIT_AUDIT=PASS, BOOTSTRAP_EXIT=0): do not run workflow-schema-bootstrap.ps1 or
+CREATE SCHEMA again. The owner approved the pinned V3/V4 separately; see the
+inventory, precheck, postcheck and recovery sections in the Issue #25 plan. Do not run
+smoke in the same batch when only the migration is approved.
 
-workflow-approved-migrations.ps1 -ExecuteApprovedMigrations là launcher một mục đích
-cho approval này: Direct endpoint/project cố định, WARP IPv6/JDK21/verify-full,
-secure password prompt, fail-closed prechecks và fresh read-only audit.
-Không bootstrap/smoke/role changes/recovery/retry. Codex chưa chạy cloud vì thiếu
-credentials/CA. Thiếu child report sau handoff luôn COMMIT_UNKNOWN.
+`workflow-approved-migrations.ps1 -ExecuteApprovedMigrations` is a single-purpose launcher
+for that approval: fixed Direct endpoint and project, WARP IPv6, JDK 21, `verify-full`,
+a secure password prompt, fail-closed prechecks and a fresh read-only audit.
+No bootstrap, smoke, role changes, recovery or retry. Codex has not run the cloud step
+because credentials and the CA were not available. A missing child report after handoff
+is always COMMIT_UNKNOWN.
 
-Owner đã báo V3/V4 COMMITTED_PASS, checksum/inventory/seed/postcommit audit PASS,
-MIGRATIONS_EXIT=0. Không chạy lại bootstrap hoặc launcher migrations.
-Cloud smoke đã được owner nghiệm thu COMMITTED_PASS, run-id cloud-20261015-01,
-precheck/postcheck/fresh-JVM PASS, 2 instances / 4 history, exit 0.
-Không chạy lại smoke và không xóa dữ liệu thử. Xem evidence và kế hoạch lịch sử ở phần
-“Cloud smoke sau migrations” trong `docs/evidence/issue-25-readiness.md`.
-`workflow-approved-smoke.ps1` chỉ cho phép `-ExecuteApprovedSmoke` sau approval,
-hoặc `-AuditOnly` chỉ đọc để đối chiếu khi có lỗi. Run-id được cố định trong launcher;
-password luôn qua prompt ẩn, không nhận qua tham số hay ghi file.
+The owner reported V3/V4 COMMITTED_PASS, with checksum, inventory, seed and post-commit
+audit PASS and MIGRATIONS_EXIT=0. Do not run the bootstrap or the migrations launcher again.
+The owner accepted the cloud smoke as COMMITTED_PASS, run-id cloud-20261015-01, with
+precheck, postcheck and fresh-JVM PASS, 2 instances / 4 history rows, exit 0.
+Do not run the smoke again and do not delete the test data. The historical evidence and
+plan are in the section "Cloud smoke after migrations" of `docs/evidence/issue-25-readiness.md`.
+`workflow-approved-smoke.ps1` only allows `-ExecuteApprovedSmoke` after approval, or a
+read-only `-AuditOnly` to reconcile after a failure. The run-id is fixed in the launcher;
+the password always comes through a hidden prompt and is never accepted as a parameter or
+written to a file.

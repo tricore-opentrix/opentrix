@@ -19,9 +19,9 @@ reviewers: Backend / Identity-Security / Application — to confirm
 
 **Document role:** system-level architecture and architecture-review record, not a substitute for capability contracts, immutable migrations, PR-specific evidence or individual ADRs. **Destination:** `docs/01-architecture/system-architecture.md`. The existing `docs/contracts/*`, `docs/evidence/*`, `docs/poc/*` remain canonical until reviewed migration.
 
-## 1. Mục đích và phạm vi kiến trúc
+## 1. Purpose and architecture scope
 
-### 1.1 Mục đích
+### 1.1 Purpose
 
 DX-OS is a reusable foundation for internal digital service applications. It is **not a computer operating system**. The architectural claim is: independent applications consume stable capability contracts, while provider technologies live behind adapters. IT Helpdesk demonstrates a complete golden path; a Facility vertical slice demonstrates reuse with distinct business rules.
 
@@ -44,13 +44,13 @@ Architecture objectives, ranked:
 | Portal/BFF/API boundary, secure exposure and errors | Public generic Workflow API without verified authorization and resource guards |
 | PostgreSQL baseline, clean deployment and migration strategy | Claim of seamless DB/IdP switching without migration |
 
-### 1.3 Quy trình chấp thuận
+### 1.3 Approval process
 
 - Design-selected decisions: **SYS-ADR-01=B Modular Monolith; 02=B Ports & Adapters/DIP; 06=B capability/application data ownership; 08=B generic state machine**. Implementation and acceptance gates remain separate.
 - Other decisions in this document are **recommendations only**; reviewers must record rationale, owner, date and revised constraints in `docs/08-decisions/`.
 - Traceability chain: Problem → Use Case → Architecture → ADR → Contract → Source → Test → Evidence → Review sign-off.
 
-## 2. Bối cảnh hệ thống DX-OS
+## 2. DX-OS system context
 
 ### 2.1 Business problem
 
@@ -79,7 +79,7 @@ Internal requests enter through messaging/email/manual channels, creating incons
 
 **Source baseline SHA:** [`e06fa429`](https://github.com/tricore-opentrix/opentrix/commit/e06fa429cfd92b032c166eb3ebf32803d13191c2). The root README contains an older source-baseline paragraph: use its conceptual descriptions but do not treat its historical test counts as tests on this SHA. This document is a source review, **not an independently executed build**.
 
-## 3. Các quyết định Modular Monolith, Hexagonal, DIP
+## 3. Modular Monolith, Hexagonal and DIP decisions
 
 ### 3.1 SYS-ADR-01 — B: Modular Monolith (design direction selected)
 
@@ -137,7 +137,7 @@ Workflow Core models definition versions, transitions, instance lifecycle, versi
 | SYS-ADR-06 | Selected by team | Contract ownership documented | Business SQL coupling review pending |
 | SYS-ADR-08 | Selected by team | Generic workflow core exists | Two-application live reuse proof pending |
 
-## 4. Bốn Core Capabilities và trách nhiệm
+## 4. The four Core Capabilities and their responsibilities
 
 | Capability | Owns (WHY / WHAT) | Public internal contract | Does **not** own | Current caution |
 |---|---|---|---|---|
@@ -148,7 +148,7 @@ Workflow Core models definition versions, transitions, instance lifecycle, versi
 
 **Cross-cutting invariant:** exact operation authority may be necessary, but resource authorization is decided at the Application use-case boundary; neither a valid token nor Gateway authorization alone grants access to arbitrary ticket/resource.
 
-## 5. Application Layer: Helpdesk và Facility
+## 5. Application Layer: Helpdesk and Facility
 
 ### 5.1 Responsibility split
 
@@ -234,7 +234,7 @@ A *modular monolith* describes the backend's code/runtime architecture. Browser,
 
 Workflow: concurrent transitions one winner, compare full snapshot, terminal rejection, no partial instance/history, `COMMIT_OUTCOME_UNKNOWN` reconciliation, exact `Instant` preservation. Data: concurrent `CREATE_ONLY`, read resource close, lazy-read errors, metadata version consistency. Identity: token issuer/audience/sub, exact role mapping, forged-header rejection, identifier continuity. Gateway: route flags, CSRF, header/body limits, allowed operations and HTTP errors.
 
-## 8. Request Flow và Trust Boundaries
+## 8. Request Flow and Trust Boundaries
 
 ### 8.1 End-to-end resolve flow (target; candidate components noted)
 
@@ -277,7 +277,7 @@ sequenceDiagram
 - 401 for missing/invalid authentication; 403 for authenticated but forbidden operation; 404 where hiding a resource is intentional. Specify precedence and leak-resistance in Gateway/Application contracts.
 - Logging must avoid JWT, session cookies, DB credentials, PII and raw provider errors.
 
-## 9. Transaction, Concurrency và Consistency
+## 9. Transaction, Concurrency and Consistency
 
 ### 9.1 Write invariants
 
@@ -394,7 +394,7 @@ Use these as **future gates**; no PASS is implied without pinned runnable eviden
 
 **Reviewer acceptance threshold:** ARC-01–08, 11–13 must not be waived for production-style security/integrity claims; P1 gates may be explicitly deferred only with recorded risk, owner and date. Source review and mock tests never substitute for live acceptance.
 
-## 14. Mapping đến source và PR
+## 14. Mapping to source and PRs
 
 ### 14.1 `main` reference map at `e06fa429`
 
