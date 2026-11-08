@@ -62,7 +62,7 @@ The following packages have distinct paths and blobs. None is deleted or absorbe
 | #144 | Ánh Data/Frontend/Portal/asset disposition queue | Contributor/portion routing, not a replacement rights register |
 | #150 | Identity S6-01/S6-02 exact-source verification CSV/report | Adds candidate reconciliation and unresolved origin checks |
 | #153 | 22 selected frozen blobs plus wider Identity/root/exception/CHANGELOG caveats | CLOSED unmerged; #155 covers only the 15 Group C paths; preserve both report and crosswalk links |
-| #154 | Historical Git/blob crosswalk (34,094 CSV data rows) and bounded technical narrative | Historical mapping, not 34,094 copyright decisions |
+| #154 | Historical Git/blob crosswalk (602 CSV data records with multiline fields) and bounded technical narrative | Historical mapping, not 34,094 copyright decisions |
 | #155 | 15-path Group C survival check; six same blobs and nine leading-header-only differences | Does not adjudicate human creative role or V5 copied SQL licensing |
 | #157 | Archive member crosswalk and verifier/reproduction documentation | Four unresolved threads and CHANGES_REQUESTED remain; later comment is not a new approval |
 
@@ -149,7 +149,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #59 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/59); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/af21ae5ff59d8eb9b3c0fef0bc8a78295aeb588d...42f8899f68ec8d963a3cc63ffcadcf973913c67f); state `MERGED`; mergeability `None/unknown`.
-- HEAD `42f8899f68ec8d963a3cc63ffcadcf973913c67f`; base `af21ae5ff59d8eb9b3c0fef0bc8a78295aeb588d`; Git diff SHA-256 `45dc933ca7e0705758450d3ab7a6efb4e7ddf39730deaea1b4e902e3d71ee9b7`.
+- HEAD `42f8899f68ec8d963a3cc63ffcadcf973913c67f`; base `af21ae5ff59d8eb9b3c0fef0bc8a78295aeb588d`; Git diff SHA-256 `e31f96c01448a2daf6759689122630e2aec5e76fd86aa1b8f2400178e4b220e8`.
 - Apache-2.0 LICENSE and initial NOTICE history. Target: #59 / existing paths.
 - 2 changed paths; 1 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/59/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/42f8899f68ec8d963a3cc63ffcadcf973913c67f/checks). Full individual states/SHAs are in the matrix.
@@ -158,7 +158,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #122 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/122); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/0e789cffa11447f3acef25d0e582bf25ed46c7b4...35e90c47ae95da23dac75c157a4a816d3b73ce08); state `OPEN`; mergeability `True/behind`.
-- HEAD `35e90c47ae95da23dac75c157a4a816d3b73ce08`; base `0e789cffa11447f3acef25d0e582bf25ed46c7b4`; Git diff SHA-256 `a8ba4bb5a94e738ec4fc0921703cdaaa295145e8750ef427151ff35b3f5cf68a`.
+- HEAD `35e90c47ae95da23dac75c157a4a816d3b73ce08`; base `0e789cffa11447f3acef25d0e582bf25ed46c7b4`; Git diff SHA-256 `105843e277843d0d4f9d46ccc8cf9fd48104f512761a53a324e28de5c993bc5a`.
 - Historical R25 inventory, 37 exceptions, immutable Flyway checksum record and baseline lint output. Target: #122 / existing paths.
 - 4 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/122/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/35e90c47ae95da23dac75c157a4a816d3b73ce08/checks). Full individual states/SHAs are in the matrix.
@@ -175,7 +175,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #127 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/127); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/733117cba591dc54c71f8e19e8d94c91a19658b4...4d0f10552938bf25afdfbc8aeec6e0ffa686fa5c); state `MERGED`; mergeability `None/unknown`.
-- HEAD `4d0f10552938bf25afdfbc8aeec6e0ffa686fa5c`; base `733117cba591dc54c71f8e19e8d94c91a19658b4`; Git diff SHA-256 `bbfe2e1849a061d3e3d9a021cb21220a57267d29f3123099333f3df10994110f`.
+- HEAD `4d0f10552938bf25afdfbc8aeec6e0ffa686fa5c`; base `733117cba591dc54c71f8e19e8d94c91a19658b4`; Git diff SHA-256 `11219d1bb65e79bd6fc706a37d56751eb933bcda852ae367c1b853ac42a78812`.
 - Repository-wide SPDX coverage and REUSE enforcement implementation. Target: #127 / existing paths.
 - 302 changed paths; 258 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/127/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/4d0f10552938bf25afdfbc8aeec6e0ffa686fa5c/checks). Full individual states/SHAs are in the matrix.
@@ -184,7 +184,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #129 — DO-NOT-MERGE
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/129); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/fa16f30d5c67a49186b1c36f2babe58d54a15e38...a87204ca1ea17ac83cce983cb3235d2ecc6511e5); state `CLOSED`; mergeability `True/behind`.
-- HEAD `a87204ca1ea17ac83cce983cb3235d2ecc6511e5`; base `fa16f30d5c67a49186b1c36f2babe58d54a15e38`; Git diff SHA-256 `e9c3933fb5a58ebd9eb34dd629940a465ec6ad4bec8866e5ad84e58e2ddb15bd`.
+- HEAD `a87204ca1ea17ac83cce983cb3235d2ecc6511e5`; base `fa16f30d5c67a49186b1c36f2babe58d54a15e38`; Git diff SHA-256 `3241f93f90fdd68aca9e9e20134c16c42fdfce29b93621946b1714b902a811c7`.
 - Deliberate missing-SPDX negative merge-gate canary; already CLOSED unmerged. Target: #129 / existing paths.
 - 1 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/129/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/a87204ca1ea17ac83cce983cb3235d2ecc6511e5/checks). Full individual states/SHAs are in the matrix.
@@ -198,7 +198,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #131 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/131); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/84a7ca9e5b5f1012b95f676c86c2ec1d95dd3ea7...10817cd92361511291a1d5d8ac777725d68c7786); state `MERGED`; mergeability `None/unknown`.
-- HEAD `10817cd92361511291a1d5d8ac777725d68c7786`; base `84a7ca9e5b5f1012b95f676c86c2ec1d95dd3ea7`; Git diff SHA-256 `7dfaa49f027ae9b3d44c16316ab5126de4507e11102c07f176a188aae2e2da1f`.
+- HEAD `10817cd92361511291a1d5d8ac777725d68c7786`; base `84a7ca9e5b5f1012b95f676c86c2ec1d95dd3ea7`; Git diff SHA-256 `e60dbd8c2f388deab59f680641c3981697c6d1bed3a29a8ec8005044594dc976`.
 - Canonical R23 executable SBOM generation and fail-closed license policy. Target: #131 / existing paths.
 - 7 changed paths; 6 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/131/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/10817cd92361511291a1d5d8ac777725d68c7786/checks). Full individual states/SHAs are in the matrix.
@@ -218,7 +218,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #133 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/133); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/88162e9c3acbc8cad8ce7b15c2bd328226e1f545...e81719ecf9cd16b63b5487218d6e24ec0bec4350); state `MERGED`; mergeability `None/unknown`.
-- HEAD `e81719ecf9cd16b63b5487218d6e24ec0bec4350`; base `88162e9c3acbc8cad8ce7b15c2bd328226e1f545`; Git diff SHA-256 `e522e2e3f7a27e7683d9efc4bc17f3bc1d2fc609e1a4290041d1ef0908a7256e`.
+- HEAD `e81719ecf9cd16b63b5487218d6e24ec0bec4350`; base `88162e9c3acbc8cad8ce7b15c2bd328226e1f545`; Git diff SHA-256 `04cceba7fa5de56e0f4cffca1ce10aef7fd50376dc35a73a933a6b8b5a9a4529`.
 - Merged JDBC dependency cleanup; obsolete Hibernate ORM waiver removed later in #131. Target: #133 / existing paths.
 - 3 changed paths; 2 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/133/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/e81719ecf9cd16b63b5487218d6e24ec0bec4350/checks). Full individual states/SHAs are in the matrix.
@@ -227,7 +227,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #134 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/134); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/3e049488dda57cf155ef1804f524b96c9e499e25...dc67bda58758d4ebc4f51bf421eb5ab082fba12c); state `MERGED`; mergeability `None/unknown`.
-- HEAD `dc67bda58758d4ebc4f51bf421eb5ab082fba12c`; base `3e049488dda57cf155ef1804f524b96c9e499e25`; Git diff SHA-256 `e06c4ec5b9da58ebf1191d17149339801cf33f316a5e73e9e558c61c9c7d2c3a`.
+- HEAD `dc67bda58758d4ebc4f51bf421eb5ab082fba12c`; base `3e049488dda57cf155ef1804f524b96c9e499e25`; Git diff SHA-256 `3fb3f8c30c41b0b108689c7fae269d0117da703944c19937d446e2258250f755`.
 - Gated R24 release tooling; not publication authorization. Target: #134 / existing paths.
 - 10 changed paths; 5 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/134/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/dc67bda58758d4ebc4f51bf421eb5ab082fba12c/checks). Full individual states/SHAs are in the matrix.
@@ -236,7 +236,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #139 — BLOCKED
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/139); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...2f6b8d7608214983be92db1f5ba0e4b8703885db); state `DRAFT`; mergeability `True/blocked`.
-- HEAD `2f6b8d7608214983be92db1f5ba0e4b8703885db`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `f12f091d910767edb0d114ee2b9a81e6243f359e552b6c4a8a3c35ce181db05a`.
+- HEAD `2f6b8d7608214983be92db1f5ba0e4b8703885db`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `c195c7519ee75bbc886e8d8a5eae1f07371b8282ec9762edabe68e772a5a7418`.
 - Unique source-only acceptance records, exact-source ledger, two-run archive evidence and Backend provenance. Target: #139 / existing paths.
 - 16 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/139/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/2f6b8d7608214983be92db1f5ba0e4b8703885db/checks). Full individual states/SHAs are in the matrix.
@@ -265,7 +265,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #140 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/140); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/e03fb1aeeafa59dffa18a30a4108d6a67f2c8008...d0194a1f9bab07842deee50b5c9739adec348fc1); state `MERGED`; mergeability `None/unknown`.
-- HEAD `d0194a1f9bab07842deee50b5c9739adec348fc1`; base `e03fb1aeeafa59dffa18a30a4108d6a67f2c8008`; Git diff SHA-256 `6c898d56f98d7791082f622de80b2e9e4bd22b17960d65f8918f2a0840f4e27e`.
+- HEAD `d0194a1f9bab07842deee50b5c9739adec348fc1`; base `e03fb1aeeafa59dffa18a30a4108d6a67f2c8008`; Git diff SHA-256 `34dce0729345ca2e27f806ad9ce92b7b4ba2b0e0797c09feea9250aafb593a98`.
 - Merged deterministic SBOM normalization; later R24 tooling differs legitimately. Target: #140 / existing paths.
 - 2 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/140/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/d0194a1f9bab07842deee50b5c9739adec348fc1/checks). Full individual states/SHAs are in the matrix.
@@ -280,7 +280,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #141 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/141); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/92bd46bd8386b07fa4618eac077caa6cd1dbd714...7c2bdbedc89fec96c7136f44254d9a08623cee3b); state `MERGED`; mergeability `None/unknown`.
-- HEAD `7c2bdbedc89fec96c7136f44254d9a08623cee3b`; base `92bd46bd8386b07fa4618eac077caa6cd1dbd714`; Git diff SHA-256 `33fd71db3cc6acfc9addd1ca8c25a2037d7e5fcc6a1ca84cc8bad8dd59789f77`.
+- HEAD `7c2bdbedc89fec96c7136f44254d9a08623cee3b`; base `92bd46bd8386b07fa4618eac077caa6cd1dbd714`; Git diff SHA-256 `5489dd3a41d0e85660f615cf69ca1402263c8e9f8d24a38b39108f15478f002f`.
 - Merged stable source-only freeze/CHANGELOG/release adjustments. Target: #141 / existing paths.
 - 5 changed paths; 5 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/141/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/7c2bdbedc89fec96c7136f44254d9a08623cee3b/checks). Full individual states/SHAs are in the matrix.
@@ -298,7 +298,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #142 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/142); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/5daa145d3b5f20f2f16fe0799c6d0808fd6c3e33...2844530125ef884a047f976a91b3202103da3c91); state `DRAFT`; mergeability `True/behind`.
-- HEAD `2844530125ef884a047f976a91b3202103da3c91`; base `5daa145d3b5f20f2f16fe0799c6d0808fd6c3e33`; Git diff SHA-256 `501825dc8cc6b10290781c8737aa70b161e444b8465a2f8d2708e0d9c01f28af`.
+- HEAD `2844530125ef884a047f976a91b3202103da3c91`; base `5daa145d3b5f20f2f16fe0799c6d0808fd6c3e33`; Git diff SHA-256 `8d07c30f3edefd0cce5fff489453b78061b068e3745ad318d3b0a9ca1754c39b`.
 - Identity history, first-person declaration, 39-record origin register and G3/G4 technical evidence. Target: #142 / existing paths.
 - 7 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/142/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/2844530125ef884a047f976a91b3202103da3c91/checks). Full individual states/SHAs are in the matrix.
@@ -318,7 +318,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #143 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/143); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...6cb5a32897563df018cf79dd66b92a20a3e823f1); state `DRAFT`; mergeability `True/blocked`.
-- HEAD `6cb5a32897563df018cf79dd66b92a20a3e823f1`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `a9f38831ff7f10e8fbac114478842291666cdefc8a3d31c08c5fa322b448acbe`.
+- HEAD `6cb5a32897563df018cf79dd66b92a20a3e823f1`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `cfe5fef357dd95b07229e5ed397152dd98a803f6ab0226de990eea60548eaed1`.
 - Canonical R27-REG-001 remediation package, 357 records and routing companions. Target: #143 / existing paths.
 - 4 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/143/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/6cb5a32897563df018cf79dd66b92a20a3e823f1/checks). Full individual states/SHAs are in the matrix.
@@ -335,7 +335,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #144 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/144); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...188969ada812e0016ed952b5ad422e210b9b0055); state `DRAFT`; mergeability `True/clean`.
-- HEAD `188969ada812e0016ed952b5ad422e210b9b0055`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `60651de5f40ab606e6703523174afaac3b4db31f5d053421e39487ea7b63a4ec`.
+- HEAD `188969ada812e0016ed952b5ad422e210b9b0055`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `60b92d46fb3555a351e99158e7412a3515af5ee35c8b365efe5a9c899d0a3afc`.
 - Distinct Data/Frontend/Portal/asset contributor-disposition queue. Target: #144 / existing paths.
 - 1 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/144/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/188969ada812e0016ed952b5ad422e210b9b0055/checks). Full individual states/SHAs are in the matrix.
@@ -349,7 +349,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #146 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/146); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...8492abd20e3e7fe00ad18d687f4674fa339fe20c); state `DRAFT`; mergeability `True/clean`.
-- HEAD `8492abd20e3e7fe00ad18d687f4674fa339fe20c`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `1077e84ffd563a0285ac8e819323ffd6a6a47d15bad93c918f2521b431aac94d`.
+- HEAD `8492abd20e3e7fe00ad18d687f4674fa339fe20c`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `4c587bdb147954703993df98f6d2038b000dcdf904d4e407350eae70ebdb5dba`.
 - Canonical R27-REG-DOC-001 navigation index. Target: #146 / existing paths.
 - 1 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/146/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/8492abd20e3e7fe00ad18d687f4674fa339fe20c/checks). Full individual states/SHAs are in the matrix.
@@ -363,7 +363,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #147 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/147); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...94a998978e811a546fdd7a8840af3e4b9686f286); state `DRAFT`; mergeability `True/clean`.
-- HEAD `94a998978e811a546fdd7a8840af3e4b9686f286`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `2607c8ea1e55b67304396703303c701b5417ebc51c82147bd9b4b674e0b0bce3`.
+- HEAD `94a998978e811a546fdd7a8840af3e4b9686f286`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `c742ac409bdcf45ab9770791f57312f2159f4b395a75f7b5b4135c3bb466a1e0`.
 - Canonical R27-REG-DOC-002 vocabulary; companion to #146, not redundant. Target: #147 / existing paths.
 - 1 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/147/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/94a998978e811a546fdd7a8840af3e4b9686f286/checks). Full individual states/SHAs are in the matrix.
@@ -377,7 +377,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #148 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/148); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...25faa214835093d591eb381be910e1efc1b8c085); state `DRAFT`; mergeability `True/clean`.
-- HEAD `25faa214835093d591eb381be910e1efc1b8c085`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `9ba9293d22823406bf40b1808954746b38807ee563d5db5b7db5061c8c047ee1`.
+- HEAD `25faa214835093d591eb381be910e1efc1b8c085`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `3a5f21de594a9afc97ab0930c9c598918b1bc4862cddbc75f4d7066b105ebf9f`.
 - R27-LIC-001 LIC-01 through LIC-10 obligations and R27-RPT-001 handoff, distinct from R23 implementation. Target: #148 / existing paths.
 - 2 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/148/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/25faa214835093d591eb381be910e1efc1b8c085/checks). Full individual states/SHAs are in the matrix.
@@ -392,7 +392,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #149 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/149); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...329670d5768c34020828523c65a321494a5b1518); state `DRAFT`; mergeability `True/clean`.
-- HEAD `329670d5768c34020828523c65a321494a5b1518`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `3cb7fd8613b0685aca8ddb2ceb44bc4e4424c58bb4efce647c2b9a014b6744ee`.
+- HEAD `329670d5768c34020828523c65a321494a5b1518`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `eddee658d87728ff6e95d95429438147ac1dca664e83b666ecc1176287e92f66`.
 - Canonical R27-EVD-006 first-person/portion provenance queue with 13 work cases. Target: #149 / existing paths.
 - 3 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/149/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/329670d5768c34020828523c65a321494a5b1518/checks). Full individual states/SHAs are in the matrix.
@@ -408,7 +408,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #150 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/150); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...0b4c79f1935db6974ac7b425e586110a229a9036); state `DRAFT`; mergeability `True/clean`.
-- HEAD `0b4c79f1935db6974ac7b425e586110a229a9036`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `c96a96ab7046c87421e9985f38c5162057aec3f28a95048d9b8dac453e959280`.
+- HEAD `0b4c79f1935db6974ac7b425e586110a229a9036`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `3a3527c392399adc9ce70f0127b69d029faa26bb8fe1514af09f869f65b1eb3c`.
 - 24-file exact-source Identity G3/G4 reconciliation; different baseline/scope from #142. Target: #150 / existing paths.
 - 3 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/150/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/0b4c79f1935db6974ac7b425e586110a229a9036/checks). Full individual states/SHAs are in the matrix.
@@ -424,7 +424,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #151 — CONSOLIDATE
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/151); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/6cb5a32897563df018cf79dd66b92a20a3e823f1...146ff78f3ea0f177b5dbb712679971dbd61302e0); state `DRAFT`; mergeability `True/clean`.
-- HEAD `146ff78f3ea0f177b5dbb712679971dbd61302e0`; base `6cb5a32897563df018cf79dd66b92a20a3e823f1`; Git diff SHA-256 `a5a7eba62b49011d1c4462ca3748efb2b2c6c7aa79c8eb1fc6c81e21f8b71fb4`.
+- HEAD `146ff78f3ea0f177b5dbb712679971dbd61302e0`; base `6cb5a32897563df018cf79dd66b92a20a3e823f1`; Git diff SHA-256 `17fc8baddd28e3c69531b43855f9827ea17534ace188fe22cb872067a83a0b59`.
 - Ten archive-metadata routing corrections, with declaration and independence references. Target: #143 / R27-REG-001.
 - 3 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/151/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/146ff78f3ea0f177b5dbb712679971dbd61302e0/checks). Full individual states/SHAs are in the matrix.
@@ -440,7 +440,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #152 — CONSOLIDATE
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/152); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/329670d5768c34020828523c65a321494a5b1518...4618777ce3525afe63a45cb67f99363f20ed26d1); state `DRAFT`; mergeability `True/clean`.
-- HEAD `4618777ce3525afe63a45cb67f99363f20ed26d1`; base `329670d5768c34020828523c65a321494a5b1518`; Git diff SHA-256 `ebccbc118f8da6d69b7288baf9255801fc046601fb5f1e5c908807568d86fd4c`.
+- HEAD `4618777ce3525afe63a45cb67f99363f20ed26d1`; base `329670d5768c34020828523c65a321494a5b1518`; Git diff SHA-256 `4b8851e66b02f24b58247cebe9940ad9abae8acbe6225919ed12f05a3c036bbe`.
 - S6-13 action-matrix and narrative routing correction. Target: #149 / R27-EVD-006.
 - 2 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `APPROVED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/152/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/4618777ce3525afe63a45cb67f99363f20ed26d1/checks). Full individual states/SHAs are in the matrix.
@@ -455,7 +455,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #153 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/153); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...fde4159d324bfe483aa083074923b3ad1bf94ecd); state `CLOSED`; mergeability `True/blocked`.
-- HEAD `fde4159d324bfe483aa083074923b3ad1bf94ecd`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `7d10fb8f953a64f62ecbce5228b2ceeff4ac0abd6762ecdf0c43a120e0937d06`.
+- HEAD `fde4159d324bfe483aa083074923b3ad1bf94ecd`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `5da26265b2ebf9e2b5e0b0600b270489f74a787394a9ce2273175abdb57fd518`.
 - Closed unmerged, unique 22-row selected frozen-blob crosswalk and partial historical narrative; NOT proven superseded. Target: #153 / existing paths.
 - 3 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/153/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/fde4159d324bfe483aa083074923b3ad1bf94ecd/checks). Full individual states/SHAs are in the matrix.
@@ -471,7 +471,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #154 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/154); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...fcc146370b1c5f1dbbba0747143e9dc3b9184f23); state `DRAFT`; mergeability `True/blocked`.
-- HEAD `fcc146370b1c5f1dbbba0747143e9dc3b9184f23`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `fc7c375e8812664ca635f8d9b893f8b9c2582bc1f0b22bf4fd57d9829c44ace8`.
+- HEAD `fcc146370b1c5f1dbbba0747143e9dc3b9184f23`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `052401b3d8881e7393228aece1d6f56118bc382b0130264cbae9be4e206e9f50`.
 - Distinct Anh historical commit/blob crosswalk, not a rights register. Target: #154 / existing paths.
 - 3 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/154/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/fcc146370b1c5f1dbbba0747143e9dc3b9184f23/checks). Full individual states/SHAs are in the matrix.
@@ -487,7 +487,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #155 — KEEP
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/155); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...47ac885fcdf0cd09453aca1413753afaa47828cc); state `DRAFT`; mergeability `True/blocked`.
-- HEAD `47ac885fcdf0cd09453aca1413753afaa47828cc`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `5431d72e127ba757720ce9d73dd566bf9cfd0a6385edf0e60548e0c112b32017`.
+- HEAD `47ac885fcdf0cd09453aca1413753afaa47828cc`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `a404b48ce616e36bc8b04cd5051f55a19dcf5f2d3d96e1d4f304d148781aea19`.
 - 15-path Group C historical/frozen content-survival reconciliation, 6 exact blobs plus 9 leading-header-only differences. Target: #155 / existing paths.
 - 3 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/155/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/47ac885fcdf0cd09453aca1413753afaa47828cc/checks). Full individual states/SHAs are in the matrix.
@@ -503,7 +503,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #157 — BLOCKED
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/157); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...59e66e570fda14ea050076cf67555faf76581db7); state `DRAFT`; mergeability `True/blocked`.
-- HEAD `59e66e570fda14ea050076cf67555faf76581db7`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `45ac690f56e42546e0cd9b26cdff72dc389e0f3d0f1320749d494d2c2c9d582e`.
+- HEAD `59e66e570fda14ea050076cf67555faf76581db7`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `44ff41bccb39532d3c5eb351eb419ff14f5f32cd72ea6b2ddda1c9bcd5535bc2`.
 - Frozen archive/member verification and producer; four unresolved review threads, fresh verification required. Target: #157 / existing paths.
 - 5 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `CHANGES_REQUESTED`; unresolved threads 4; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/157/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/59e66e570fda14ea050076cf67555faf76581db7/checks). Full individual states/SHAs are in the matrix.
@@ -521,7 +521,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #158 — OUT-OF-SCOPE
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/158); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...5b0a01c6f9d537fb07d360e805c9a6bd86aedcc3); state `OPEN`; mergeability `True/blocked`.
-- HEAD `5b0a01c6f9d537fb07d360e805c9a6bd86aedcc3`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `d420a5efbad05cb097732f8f31fbaac1878e62ba84647ee13f969bbbf2d510d5`.
+- HEAD `5b0a01c6f9d537fb07d360e805c9a6bd86aedcc3`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `33199603456b665f24908b99f4fd9577a277679bcdf6517ab65765515bfac3a6`.
 - R37 docs/Linux runbook and placeholder cleanup; leave branch untouched. Target: #158 / existing paths.
 - 36 changed paths; 11 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `CHANGES_REQUESTED`; unresolved threads 17; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/158/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/5b0a01c6f9d537fb07d360e805c9a6bd86aedcc3/checks). Full individual states/SHAs are in the matrix.
@@ -570,7 +570,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #159 — OUT-OF-SCOPE
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/159); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...ef4b9484369c94ed7e5674e4b056b0d8f673e1ba); state `OPEN`; mergeability `True/blocked`.
-- HEAD `ef4b9484369c94ed7e5674e4b056b0d8f673e1ba`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `b9ace4bfea52bd34d7a3b1390aba4d195bd7cb20c8380c968139db13730e4fe8`.
+- HEAD `ef4b9484369c94ed7e5674e4b056b0d8f673e1ba`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `49541730819afcc94fc8c41121cf98a5dfa4c0ccb800da78d74225c36883bcd2`.
 - ADR-010 and Core HTTP/authorization proposal; leave untouched. Target: #159 / existing paths.
 - 3 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/159/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/ef4b9484369c94ed7e5674e4b056b0d8f673e1ba/checks). Full individual states/SHAs are in the matrix.
@@ -586,7 +586,7 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 ### PR #160 — OUT-OF-SCOPE
 
 - [PR](https://github.com/tricore-opentrix/opentrix/pull/160); [full frozen diff](https://github.com/tricore-opentrix/opentrix/compare/187dbd2ea6935966f5c4cceb95ad9c3c53708a2e...eb6d7b0effbd9ebdc467a4a197097db37a5f9cd8); state `DRAFT`; mergeability `True/blocked`.
-- HEAD `eb6d7b0effbd9ebdc467a4a197097db37a5f9cd8`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `c865488c56b7eac32e321219e4c0837160013033baea7388ab7b3b4fea72dbf1`.
+- HEAD `eb6d7b0effbd9ebdc467a4a197097db37a5f9cd8`; base `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`; Git diff SHA-256 `9458850e4b4c3b5f2ac867cf3802e093937275a57c775f5a3f451f280daaf37a`.
 - ADR-015 G0 proposed contract; leave Draft and untouched. Target: #160 / existing paths.
 - 1 changed paths; 0 exact resulting blobs at current main. Other paths can be unmerged, subsequently changed, or removed; counts alone do not prove redundancy.
 - Review decision `REVIEW_REQUIRED`; unresolved threads 0; [formal reviews](https://github.com/tricore-opentrix/opentrix/pull/160/files), [check evidence](https://github.com/tricore-opentrix/opentrix/commit/eb6d7b0effbd9ebdc467a4a197097db37a5f9cd8/checks). Full individual states/SHAs are in the matrix.
@@ -596,3 +596,79 @@ The linked full diff and saved Git diff SHA-256 let a reviewer reproduce every i
 | --- | --- | --- |
 | `docs/08-decisions/ADR-015-core-workflow-acl-v3-g0.md` | `e2ea6a8f74e2e11ecfdeda47b3321ddf2cdd517a` | added: +451/-0 |
 
+## Integration verification record
+
+The read-only audit was committed separately at `86a533e` before importing any canonical evidence package. Its staged diff-check initially detected one extra blank line at EOF (exit 2); that whitespace was corrected in the integration change. No failure is represented as PASS.
+
+Prepared on `docs/license-evidence-consolidation`, based on frozen `main@187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`, in a new clone under `C:/Users/Admin/opentrix-consolidation`. Existing contributor-owned branches, original R27 worktrees and frozen source files were not modified.
+
+### Exact retained content
+
+- Register CSV equals #151 blob `30148667c9a09c984222daf8063e748d50dc7cc1` byte-for-byte; its original 357 composite keys, 347 source blob hashes, ten archive hashes and 357 RIGHTS_PENDING values are preserved.
+- Action matrix equals #152 blob `8f34e01f76a62a80b617b0b319283bfc5c2b7dc1` byte-for-byte: 13 unique case IDs and all PENDING; the other 12 records equal #149.
+- Both CSV sidecars equal original #143/#149 blobs. Independent-review gates equal #151 blob `d65ea87209c43b0e34422cd9a92f7fc49f9799c0`. Vocabulary equals #147 blob `9a69bd9516189d09f98e2564f7067a9e87b78c97`.
+- Original #151 declaration/routing narrative and #152 queue narrative are retained as exact prefixes; only immutable supporting-evidence links are appended. #146 keeps document IDs and historical checkpoints; repeated ID/status definitions are replaced by the #147 link. No datasets are copied into the LIC navigation directory.
+- All 347 register source blob IDs were recomputed from the frozen source Git tree. No source, SQL migration, resource, runtime configuration, GitHub workflow, R23/R24 script, LICENSE, NOTICE, REUSE.toml or third-party inventory is changed.
+
+### Commands and results
+
+| Command / comparison | Exit | Result / tested scope |
+| --- | ---: | --- |
+| CSV/Git preservation verifier | 0 | PASS: exact retained blobs, counts, keys, status/column restrictions, 347 frozen source blobs |
+| Relative and immutable-blob link verifier | 0 | PASS for supported inline Markdown destinations: 18 relative destinations and 65 GitHub blob targets; no exhaustive external HTTP/anchor validation claimed |
+| `python <audit-tools>/check_md_links.py` (exact #158 checker blob `dd2f6aa8b2613b78c5c58cab8623934c6167ad05`) | 1 | FAIL: 34 legacy missing relative targets; every broken path/link and missing target independently checked against frozen main. No new evidence link failure detected within supported subset |
+| `python -m reuse lint` (6.3.0) | 1 | FAIL: pre-existing invalid SPDX expression in `scripts/r23-compliance.py`. Initial rerun also detected six generated `.pyc` files; those local test byproducts were removed, and bytecode output disabled before clean rerun. No ignore rule or tracked code changed to conceal the baseline error |
+| `python -m unittest discover -s scripts -p test_r23_*.py` | 0 | PASS: 4 existing policy tests; not fresh SBOM generation |
+| `python -m unittest discover -s scripts -p test_r24_*.py` | 1 | FAIL: 20 tests, 6 failures and 3 errors, standalone release-note/archive mismatch on Windows; reproduced with per-process `core.autocrlf=false`. No distribution gate exercised against real artifacts |
+| `git diff --check <baseline>` / `git diff --cached --check` after staging all imports | 2 | FAIL: original imported Markdown hard-break/trailing spaces. Earlier unstaged/tracked-only check returned 0 but excluded new imports. Original evidence bytes were preserved rather than silently normalized; this is not a PASS |
+| `git diff --exit-code <baseline> -- .github backend frontend portal-bff scripts infra REUSE.toml LICENSE NOTICE THIRD-PARTY-NOTICES.md` | 0 | PASS: protected source/runtime/release inputs unchanged |
+
+These local results concern the prepared integration tree on the stated baseline; final content commit SHA and hosted CI are attached in the integration PR. Adding this verification record changes documentation only. No new upstream license review, complete source-rights decision, archive download/rebuild, Linux install, R27 service test or release acceptance was performed. Those claims remain NOT_VERIFIED / PENDING / BLOCKED as applicable.
+
+### Remaining blockers by evidence group
+
+- LIC-G1: local v6.3.0 lint expression defect remains; metadata alone cannot establish ownership. Historical R25 exceptions need disposition.
+- LIC-G2: existing inventory is reused, but upstream license/NOTICE and actual source-only packaging obligations in LIC-01..LIC-10 remain PENDING; no fresh artifact inspection in this task.
+- LIC-G3: 357 RIGHTS_PENDING rows and 13 PENDING cases; first-person scope, fixture/V5 origins, mixed portions and collective-label authority unresolved. Closed #153 evidence preserved, not assumed cleared.
+- LIC-G4: fresh exact-integration-SHA independent documentation review, per-portion source-rights independence and #157 unresolved threads. No old review is transferred automatically.
+- LIC-G5: #138 remains OPEN; #139 Draft/BLOCKED; acceptance JSON retains null/empty evidence/review fields. Changed future distribution inputs require re-freeze and repeat reproducibility; no source tag/release publication authorized.
+
+### Reproducible routing and frozen-blob assertions
+
+Run from a clone containing the audited PR refs (fetch #143/#149/#151/#152 if needed). This snippet reproduces the critical preservation tests; it does not adjudicate rights.
+
+```python
+import csv, io, subprocess
+def blob(ref, path):
+    return subprocess.check_output(["git", "show", ref + ":" + path])
+def rows(data):
+    return list(csv.DictReader(io.StringIO(data.decode("utf-8"))))
+root = "docs/verification/r27/"
+reg = root + "r27-rights-remediation-register-187dbd2.csv"
+mat = root + "r27-step6-contributor-rights-action-matrix.csv"
+from pathlib import Path
+a = rows(blob("6cb5a32897563df018cf79dd66b92a20a3e823f1", reg))
+b = rows(Path(reg).read_bytes())
+assert Path(reg).read_bytes() == blob("146ff78f3ea0f177b5dbb712679971dbd61302e0", reg)
+assert len(a) == len(b) == 357
+assert len({(x["entry_type"], x["tracked_git_path"], x["archive_member"]) for x in b}) == 357
+assert sum(x != y for x, y in zip(a, b)) == 10
+for x, y in zip(a, b):
+    assert {k for k in x if x[k] != y[k]} <= {"additional_contributor_check", "independent_reviewer"}
+    assert y["licensing_authority"] == "RIGHTS_PENDING"
+    if x["entry_type"] == "TRACKED_GIT_PATH":
+        actual = subprocess.check_output(["git", "rev-parse", "187dbd2ea6935966f5c4cceb95ad9c3c53708a2e:" + x["tracked_git_path"]]).decode().strip()
+        assert actual == x["git_blob_sha1"]
+c = rows(blob("329670d5768c34020828523c65a321494a5b1518", mat))
+d = rows(Path(mat).read_bytes())
+assert Path(mat).read_bytes() == blob("4618777ce3525afe63a45cb67f99363f20ed26d1", mat)
+assert len(c) == len(d) == 13 and c[:12] == d[:12]
+assert len({x["case_id"] for x in d}) == 13
+for x, y in zip(c, d):
+    for key in ("case_id", "source_candidate_sha", "external_origin_fact", "rights_status", "step6_stage"):
+        assert x[key] == y[key]
+    assert y["rights_status"] == "PENDING"
+print("ROUTING_AND_FROZEN_BLOB_PRESERVATION_PASS")
+```
+
+The per-PR diff hashes above are SHA-256 of the raw bytes from `git diff --no-ext-diff BASE...HEAD`, without PowerShell text redirection/newline conversion. Large REST patches are not used as a substitute for the full Git diff.
