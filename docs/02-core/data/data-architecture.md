@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 
 This document answers four questions: (1) what data belongs to Data Core; (2) who owns business data; (3) how stable contracts support replaceable storage providers; and (4) which tests constitute evidence of real reuse and portability.
 
-Infrastructure adapters realize the target through an S3-compatible object store. MinIO was dropped on 2026-11-05; SeaweedFS (S3 API) is the planned replacement and its ADR is pending. AWS S3 deployment is not selected.
+Infrastructure adapters realize the target through an S3-compatible object store. MinIO was dropped on 2026-11-05; SeaweedFS (S3 API) is the planned replacement (container v0.2.0 / R32b; adapter, integration tests and application use v0.3.0 / R43 - planned milestones) and its ADR is pending. AWS S3 deployment is not selected.
 
 **Out of scope:** an all-purpose CRUD service; ownership of Workflow tables, Helpdesk tickets or Facility records; an identity database; a general-purpose ORM abstraction; distributed XA transaction guarantees; automatic object migration merely by changing configuration; a new storage REST endpoint without application authorization. Future shared data capabilities require independent contracts and ADRs, not a silent expansion of this Core.
 
@@ -122,7 +122,7 @@ Diagram arrows represent **logical invocation/implementation**, not Java import 
 
 ## 9. Provider adapter analysis and technology choice (Provider Adapter)
 
-**Selected architecture target:** private PostgreSQL 17 for relational state, an S3-compatible object store for object storage, and Keycloak for identity. MinIO was dropped on 2026-11-05 (upstream stopped publishing community images and binaries in October 2025 and archived the repository in 2026); SeaweedFS with its S3 API is the planned replacement and its ADR is pending. This is not AWS S3 deployment. Supabase Storage and filesystem-only object storage are excluded from the new implementation scope. Core remains provider-neutral, but no provider substitution has been demonstrated.
+**Selected architecture target:** private PostgreSQL 17 for relational state, an S3-compatible object store for object storage, and Keycloak for identity. MinIO was dropped on 2026-11-05 (upstream stopped publishing community images and binaries in October 2025 and archived the repository in 2026); SeaweedFS with its S3 API is the planned replacement (container v0.2.0 / R32b; adapter, integration tests and application use v0.3.0 / R43 - planned milestones) and its ADR is pending. This is not AWS S3 deployment. Supabase Storage and filesystem-only object storage are excluded from the new implementation scope. Core remains provider-neutral, but no provider substitution has been demonstrated.
 
 **Source baseline:** at e06fa429cfd92b032c166eb3ebf32803d13191c2, the Core contract and in-memory fake exist; no production object-storage adapter exists in infrastructure.storage. [PR #34](https://github.com/tricore-opentrix/opentrix/pull/34) is an unmerged Draft MinIO candidate; its description reports real MinIO integration tests NOT VERIFIED. [PR #35](https://github.com/tricore-opentrix/opentrix/pull/35) and [PR #43](https://github.com/tricore-opentrix/opentrix/pull/43) are closed without merge and remain historical context, not alternate MVP targets.
 

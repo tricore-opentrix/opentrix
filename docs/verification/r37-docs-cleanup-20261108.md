@@ -62,7 +62,7 @@ Conclusions and open points:
 
 ## Object-storage wording (MinIO dropped)
 
-The team's technology checklist records MinIO as dropped on 2026-11-05 (upstream stopped publishing community images and binaries in October 2025 and archived the repository in 2026) and SeaweedFS with its S3 API as the planned replacement (v0.3.0). Docs that still presented MinIO as the selected target were reworded to a provider-neutral "S3-compatible object store (SeaweedFS planned)", with a note that the SeaweedFS ADR is pending and no adapter exists:
+The team's technology checklist records MinIO as dropped on 2026-11-05 (upstream stopped publishing community images and binaries in October 2025 and archived the repository in 2026) and SeaweedFS with its S3 API as the planned replacement (container v0.2.0 / R32b in Docker Compose; `ObjectStoragePort` adapter, integration tests and application use v0.3.0 / R43). These are planned milestones, not implemented or accepted. Docs that still presented MinIO as the selected target were reworded to a provider-neutral "S3-compatible object store (SeaweedFS planned)", with a note that the SeaweedFS ADR is pending and no adapter exists:
 
 `GLOSSARY.md`, `docs/00-project/project-overview.md`, `docs/00-project/scope-and-mvp.md`, `docs/01-architecture/{core-application-boundary,dependency-rules,deployment-topology,repository-layout-and-ownership,system-architecture}.md`, `docs/02-core/data/{data-architecture,storage-adapters}.md`, `docs/06-deployment/prerequisites.md`.
 
@@ -74,3 +74,16 @@ Left unchanged on purpose:
 - `scripts/setup-github.sh`: label and milestone descriptions that mention MinIO; changing them would not change labels already created on GitHub.
 
 SeaweedFS is described only as planned. Nothing here claims it is selected by an accepted ADR or implemented.
+
+## SPDX coverage and REUSE status
+
+Measured with `reuse lint` 6.3.0 on the branch head before this wording change (`1f57dba`, 337 files):
+
+| Measure | Result |
+| --- | --- |
+| Files with copyright information | 337 / 337 |
+| Files with license information | 337 / 337 |
+| Missing or unused licences | 0 |
+| Invalid SPDX License Expressions | 1 (`scripts/r23-compliance.py`, a pre-existing file) |
+
+SPDX header coverage is 100%, but REUSE compliance is **not** a full PASS: `reuse lint` exits non-zero because of the invalid expression above. It is not fixed here (out of scope for R37); the repo-hygiene CI job passes with it. On `main@187dbd2` the same check reports 336 / 336 files with the same single invalid expression.

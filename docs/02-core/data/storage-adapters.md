@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Data storage adapters
 
-**Status:** MinIO dropped 2026-11-05; SeaweedFS (S3 API) planned, ADR pending; no production adapter, real integration UNVERIFIED
+**Status:** MinIO dropped 2026-11-05; SeaweedFS (S3 API) planned (container v0.2.0 / R32b; adapter v0.3.0 / R43), ADR pending; no production adapter, real integration UNVERIFIED
 **Baseline:** e06fa429cfd92b032c166eb3ebf32803d13191c2
 
 ## Ownership and baseline
