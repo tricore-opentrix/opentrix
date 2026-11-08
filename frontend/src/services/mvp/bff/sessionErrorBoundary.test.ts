@@ -385,9 +385,9 @@ describe("A05-R06 session lifecycle through transport → HelpdeskApiClient", ()
     },
   );
 
-  it("a CSRF 403 stays FORBIDDEN and keeps the current session without refresh or replay", async () => {
+  it("a bare 403 stays FORBIDDEN and keeps the current session without refresh or replay", async () => {
     const f = await fixture();
-    f.fetchBff.mockResolvedValueOnce(json({ code: "CSRF_REJECTED" }, 403));
+    f.fetchBff.mockResolvedValueOnce(new Response(null, { status: 403 }));
     await expect(
       f.client.create({ title: "Test", description: "Test" }),
     ).rejects.toMatchObject({ code: "FORBIDDEN" });
