@@ -152,11 +152,15 @@ curl -fsS http://localhost:8080/api/v1/health
 
 ```bash
 # Ctrl+C in the bootRun terminal, then:
-unset DB_PASSWORD RUNTIME_DB_PASSWORD WORKFLOW_LOCAL_DB_PASSWORD KC_PW \
+unset DB_PASSWORD RUNTIME_DB_PASSWORD KC_PW \
       WORKFLOW_SMOKE_MIGRATOR_PASSWORD WORKFLOW_SMOKE_RUNTIME_PASSWORD
 docker rm -f kc-local
-docker compose -f ../infra/compose.workflow-postgres.yml down        # keeps data
-docker compose -f ../infra/compose.workflow-postgres.yml down -v     # deletes the volume
+# compose needs the variable defined even to stop; any value works here
+export WORKFLOW_LOCAL_DB_PASSWORD=unused
+docker compose -f ../infra/compose.workflow-postgres.yml down        # stop, keep data
+# or, to also delete the data volume (wipes the database):
+docker compose -f ../infra/compose.workflow-postgres.yml down -v
+unset WORKFLOW_LOCAL_DB_PASSWORD   # do not reuse 'unused' as a real password
 ```
 
 Use `down` (without `-v`) when you want to restart and verify persistence.
