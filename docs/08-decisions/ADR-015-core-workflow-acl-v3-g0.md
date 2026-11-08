@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 TRICORE contributors
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # ADR-015 — Core Workflow ACL V3 / G0: Atomic Authorization Contract
 
 **Status:** PROPOSED — AWAITING INDEPENDENT REVIEW  
