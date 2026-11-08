@@ -188,6 +188,7 @@ Use `down` (without `-v`) when you want to restart and verify persistence.
 | `Set WORKFLOW_LOCAL_DB_PASSWORD` from compose | Password not exported | Repeat the `read`/`export` in step 3 |
 | `Address already in use` on 8080 | Another process holds the port | Stop it, or set `SERVER_PORT=8081` |
 | Smoke runner refuses a run id | Run ids are single-use | Use a new id, e.g. `local-run-2` |
+| `WORKFLOW_SMOKE_FAIL` with no other message, in step 5 | The runner hides the reason. Likely cause: `RUNTIME_DB_PASSWORD` differs from the password set with `\password` | Reset it: `docker compose -f ../infra/compose.workflow-postgres.yml exec -T workflow-postgres psql -U workflow_test -d workflow_test -v ON_ERROR_STOP=1 -v pw="$RUNTIME_DB_PASSWORD" <<'SQL'` then `ALTER ROLE workflow_runtime PASSWORD :'pw';` then `SQL`, and run the migration again |
 
 ## Planned
 
