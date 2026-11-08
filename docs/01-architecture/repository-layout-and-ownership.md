@@ -17,28 +17,30 @@ SPDX-License-Identifier: Apache-2.0
 
 Give contributors a stable navigation and ownership model without renaming Java packages, breaking imports, changing Flyway migrations, duplicating provider contracts, or disturbing stacked PRs. Distinguish **OBSERVED** files from **TARGET** locations; an unmerged PR is not part of `main`.
 
-## 2. Verified current state on main
+## 2. Verified current state (R37 reconciliation, branch `docs/r37-readme-linux`)
 
 ```text
 dxos-open-core/
-├── .github/workflows/
+├── .github/{workflows,ISSUE_TEMPLATE,CODEOWNERS,PULL_REQUEST_TEMPLATE.md}
 ├── backend/
 │   └── src/main/java/com/tricore/dxos/
-│       ├── application/{authorization,identity}/
+│       ├── application/{authorization,identity,helpdesk,facility}/
 │       ├── core/{identity,workflow,data}/
-│       ├── gateway/workflow/
+│       ├── gateway/{workflow,helpdesk}/
 │       ├── infrastructure/{identity,persistence,storage,workflow}/
-│       ├── request/{controller,domain,dto,repository,service}/
 │       └── common/{error,health}/
-├── docs/{00-project,01-architecture,02-core,03-applications,
-│         04-integration,05-testing,06-deployment,07-open-source,
-│         08-decisions,09-evidence,10-reviews,11-poc}/
-├── infra/
+├── frontend/
+├── portal-bff/
+├── docs/{00-project,01-architecture,02-core,06-deployment,
+│         08-decisions,evidence,verification}/
+├── infra/{compose.workflow-postgres.yml,release,README.md}
 └── scripts/
 ```
 
-- The existing `request/` module is source code, not a folder that may be silently renamed or removed.
-- No tracked `frontend/` or `portal-bff/` exists on the inspected `main`. PR #51 has `frontend/`; PR #70 has `portal-bff/`.
+`application/facility/` contains only a `.gitkeep`. Checked with `git ls-files` and `ls` on the branch head; this is a snapshot of the tree, not a statement about what runs.
+
+- The legacy `request/` module (`com.tricore.dxos.request`) was removed in R25 and is no longer compiled. The supported Helpdesk API is `/api/v1/mvp/requests`.
+- `frontend/` and `portal-bff/` are tracked at the repository root (the earlier statement that they existed only in PRs #51/#70 is out of date).
 - PR #77 proposes 75 placeholder `.gitkeep` paths, including `portal/frontend/` and `portal/bff/`. They are **not** a verified modular migration or permission to move provider adapters into `core`.
 - The generic Workflow HTTP controller is not production-registered at this baseline. Do not enable it as a side effect of layout work.
 
@@ -68,11 +70,10 @@ dxos-open-core/
 │       │   │   ├── persistence/
 │       │   │   ├── storage/
 │       │   │   └── workflow/
-│       │   ├── request/                    # OBSERVED legacy/current request module
 │       │   └── common/
 │       └── test/                            # mirrors tested behavior
-├── frontend/                                # target from PR #51/#71
-├── portal-bff/                              # target from PR #70
+├── frontend/                                # OBSERVED on the branch head
+├── portal-bff/                              # OBSERVED on the branch head
 ├── infra/                                   # current assets plus reviewed setup
 │   ├── keycloak/                            # target
 │   ├── postgres/                            # target
@@ -104,7 +105,7 @@ The selected MVP path naming is `frontend/` and `portal-bff/` because PRs #51/#7
 | `gateway/` and HTTP security boundary | Yến | Bảo Backend / Ánh Portal | Never trust caller headers or replace Application resource ACL with edge-only checks. |
 | `core/workflow` and Workflow persistence semantics | Bảo | Yến / Ánh | Application must consume reviewed contracts; Flowable is a proposed adapter, not the Core runtime definition. |
 | `core/data` and `infrastructure/{storage,persistence}` | Bảo | Ánh (PR #34 handoff), Yến | ObjectStoragePort is provider-neutral; application business data ownership is distinct. |
-| `application/helpdesk/`, `application/facility/`, observed `request/` | Ánh business owner, Bảo Backend implementer | Yến security | Domain rules and resource eligibility belong to Application; preserve current `request/` until an approved bounded migration. No separate top-level Java `modules/` package is selected. |
+| `application/helpdesk/`, `application/facility/` | Ánh business owner, Bảo Backend implementer | Yến security | Domain rules and resource eligibility belong to Application; preserve current `request/` until an approved bounded migration. No separate top-level Java `modules/` package is selected. |
 | `frontend/` | Ánh | Yến session, Bảo API | No direct database, Keycloak admin, object-store SDK or unregistered Workflow HTTP dependency. |
 | `portal-bff/` | Yến security, Ánh consumer integration | Bảo Backend | Server-side OAuth session, CSRF and trusted token handoff; verify real E2E separately. |
 | `infra/`, reproducible release scripts | Bảo integration lead | Yến / Ánh | Private local credentials, no destructive shared database operations. |
@@ -127,8 +128,8 @@ Provider-specific adapters belong under `infrastructure/` (or an explicitly revi
 - [ ] Confirm current vs target paths with the reviewed Git tree.
 - [ ] Architecture owners approve the provider-neutral Core vs infrastructure split.
 - [x] Team layout direction selects Application children `application/helpdesk/` and `application/facility/` rather than `modules/`.
-- [ ] Confirm `frontend/` + `portal-bff/` as the effective integration paths when their PRs are brought into the baseline.
-- [ ] Bảo confirms no impact on `request/`, build graph or Flyway V1–V4.
+- [x] `frontend/` + `portal-bff/` are the effective integration paths (tracked at the repository root).
+- [ ] Bảo confirms no impact on the build graph or Flyway V1–V4 from any further layout change (`request/` was already removed in R25).
 - [ ] Review PR #77: accept only useful placeholders, or supersede its unused scaffold with recorded rationale.
 - [ ] Agree how docs canonical ownership and Document Register relate to #82 → #83 → #84.
 - [ ] Run link/lint checks on the final documentation PR.

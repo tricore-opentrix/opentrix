@@ -9,18 +9,36 @@ SPDX-License-Identifier: Apache-2.0
 Nền backend cho Internal Service Portal của TRICORE, theo kiến trúc Modular
 Monolith. Base package: `com.tricore.dxos`. Core cung cấp cơ chế; application
 sở hữu ngữ nghĩa nghiệp vụ. Issue #1 tạo nền dự án và health API;
-Issue #5 bổ sung tạo, danh sách và chi tiết Request; Issue #7 bổ sung workflow IT Support.
+Issue #5 từng bổ sung prototype Request (đã gỡ ở R25, xem bên dưới); Issue #7 bổ sung workflow IT Support.
 
 ## Yêu cầu
 
 - JDK **21**, với `JAVA_HOME` trỏ đến thư mục JDK.
-- PowerShell trên Windows.
+- PowerShell trên Windows, hoặc bash trên Linux/macOS (xem
+  [runbook Linux/macOS](../docs/06-deployment/runbook-linux.md)).
 - Internet ở lần build đầu để Gradle Wrapper tải Gradle và dependency.
 - PostgreSQL khả dụng khi chạy toàn bộ ứng dụng; môi trường Docker/PostgreSQL
   do Issue #3 cung cấp.
+- Một Keycloak realm (OIDC) truy cập được khi chạy toàn bộ ứng dụng: backend tải
+  `OIDC_ISSUER_URI/.well-known/openid-configuration` lúc khởi động. Build và test
+  không cần Keycloak.
 
 Dự án sử dụng Spring Boot 3.5.16, Gradle Groovy và Gradle Wrapper 8.14.3.
 Không cần cài Gradle riêng. Các lệnh bên dưới chạy từ thư mục `backend/`.
+
+## Build và test trên Linux/macOS
+
+```bash
+cd backend
+java -version          # phải là 21
+./gradlew test
+./gradlew build
+./gradlew test --tests com.tricore.dxos.common.health.HealthControllerTest
+```
+
+Không cần PostgreSQL hay Keycloak để build và test. Các lệnh chạy ứng dụng với
+PostgreSQL và Keycloak trên Linux/macOS nằm trong
+[runbook Linux/macOS](../docs/06-deployment/runbook-linux.md).
 
 ## Build và test trên Windows
 
@@ -48,7 +66,9 @@ Chạy riêng test health:
 
 ## PostgreSQL và biến môi trường
 
-Cần cung cấp đủ năm biến sau trong process chạy ứng dụng:
+Cần cung cấp đủ năm biến sau trong process chạy ứng dụng. Ngoài ra ứng dụng
+đòi `OIDC_ISSUER_URI`, `OIDC_AUDIENCE` và `OIDC_RESOURCE_CLIENT_ID`; ba biến này
+cũng không có giá trị mặc định (xem `application.yml`):
 
 | Biến | Ý nghĩa |
 | --- | --- |
@@ -110,6 +130,12 @@ Sau khi ứng dụng khởi động, từ cửa sổ PowerShell khác:
 
 ```powershell
 Invoke-RestMethod -Uri 'http://localhost:8080/api/v1/health'
+```
+
+Trên Linux/macOS:
+
+```bash
+curl -s http://localhost:8080/api/v1/health
 ```
 
 `GET /api/v1/health` trả HTTP 200 với JSON `{"status":"UP"}`. Controller

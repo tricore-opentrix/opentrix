@@ -87,3 +87,9 @@ Measured with `reuse lint` 6.3.0 on the branch head before this wording change (
 | Invalid SPDX License Expressions | 1 (`scripts/r23-compliance.py`, a pre-existing file) |
 
 SPDX header coverage is 100%, but REUSE compliance is **not** a full PASS: `reuse lint` exits non-zero because of the invalid expression above. It is not fixed here (out of scope for R37); the repo-hygiene CI job passes with it. On `main@187dbd2` the same check reports 336 / 336 files with the same single invalid expression.
+
+## Reconciliation with code (second batch)
+
+- `backend/README.md`: added a Linux/macOS build section and a `curl` health check; listed the Keycloak realm and the three `OIDC_*` variables as run-time requirements (all four have no default in `application.yml`; checked by reading the file, not by running it); the intro no longer presents the removed Request prototype as current. The Windows-only content and the Issue #25 history sections are unchanged.
+- `docs/01-architecture/repository-layout-and-ownership.md`: section 2 now matches `git ls-files` on the branch head (`frontend/` and `portal-bff/` tracked, `request/` removed, `application/helpdesk/` and `gateway/helpdesk/` present, `application/facility/` is only a `.gitkeep`). Section 3 (the target tree) is otherwise unchanged and may still describe `helpdesk` as a target.
+- Not checked: the other claims in these two files that I did not touch, for example the CI job count and every Issue #25 cloud statement.
