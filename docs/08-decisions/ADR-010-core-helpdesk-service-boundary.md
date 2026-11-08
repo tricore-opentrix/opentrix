@@ -37,7 +37,7 @@ ADR-010 is PROPOSED. **No approval of "Ý 2" exists in the repository.** If acce
 
 | ID | Rule |
 |---|---|
-| D1 | Core is headless and provider-neutral. It owns shared Identity, Workflow and Data mechanisms. It must not encode Helpdesk tickets, assignment, resolution or Helpdesk tables. |
+| D1 | Core is headless and provider-neutral. It owns shared Identity, Workflow and Data mechanisms. These include the registration, versioning, validation, runtime execution, persistence and authorization of workflow definitions, subject to the approved contract. It must not encode Helpdesk tickets, assignment, resolution or Helpdesk tables. The business semantics, lifecycle and authoring of an application definition such as `it-helpdesk` belong to Helpdesk. That content reaches Core only through a controlled, authorized registration/provisioning process, never through direct Helpdesk writes to Core tables. No such provisioning API exists yet. Who may register or replace a definition, and how versions are approved, is **PROPOSED / REQUIRES REVIEW** (review R1). |
 | D2 | Helpdesk owns ticket use cases, ticket data and its business membership. |
 | D3 | Helpdesk must not call `PostgresWorkflowPersistence` or any Core JDBC adapter, must not hold grants on Core tables, and must not query the Core schema. Core must not query the Helpdesk schema. |
 | D4 | Cross-service interaction uses only an explicitly approved, authenticated Core API contract. The candidate is the [R27 Core Workflow HTTP contract](../01-architecture/r27-core-workflow-http-contract.md); R28 owns the OpenAPI form. |
@@ -64,6 +64,8 @@ Use **B: controlled new private Core and Helpdesk schemas** as the target. Fresh
 | `db/helpdesk/runtime-grants.sql` | Helpdesk runtime SELECT on policy, ticket **and Workflow** tables; INSERT on Workflow instance/history; UPDATE on instance state | Offline disposable grant script | Separate Core/Helpdesk grants | Never apply this grant file to the target schemas. Revoke legacy grants only after cutover and validation. |
 
 The old schema has **same-schema** FKs; its Helpdesk request → Workflow instance and policy binding → Workflow definition FKs must not be reproduced across target schemas. Target Core SQL may refer only to Core relations. Target Helpdesk SQL may refer only to Helpdesk relations. Cross-service consistency is an authenticated command/acknowledgment and reconciliation problem, not a cross-schema join.
+
+**[Clarification, review R1]** In the `db/helpdesk/definition.sql` row, "Core definition content" means that Core registers, persists and executes the definition. Authoring and business semantics remain Helpdesk-owned under D1. The "Core-owned provisioner" is the controlled registration path described in D1, and it is not implemented.
 
 ### Legacy Helpdesk runtime privileges [Correction]
 
@@ -102,6 +104,14 @@ These are file SHA-256 values, **not Flyway's stored checksum values**. The actu
 
 **[Correction, local audit 09/11/2026, not repository evidence]** Since the draft, the local `core-service` JAR also packages candidate Core `V1__create_core_workflow.sql` and `V2__create_core_acl.sql` under `db/migration`. A version collision with the backend's V1/V2 on the backend classpath is possible but UNVERIFIED.
 
+**[ADR-010 addition, review R5] Proposed migration isolation rule for PR-1 / PR-2a (not implemented; Flyway not run):**
+
+- Core and Helpdesk migrations must not be located at, or discoverable through, the backend's `classpath:db/migration`. Each service declares an explicit, service-specific Flyway location. The exact path is decided in PR-1/PR-2a.
+- Each service has its own `flyway_schema_history` and migration owner (D6). A service must never discover another service's migration resources.
+- A library JAR consumed by another module must not expose migration resources to that module's Flyway unless an explicit test proves this is intended.
+- The legacy V1–V4 content and the SHA-256 values above stay unchanged.
+- Verification required before acceptance: the packaged JAR contents, the resolved runtime classpath of every module, and per-service migrations on disposable PostgreSQL. No destructive migration is prescribed here.
+
 ## Strategy comparison [Draft, verbatim]
 
 | Criterion | A: additive staged changes in legacy schema | B: new private schemas and controlled data migration |
@@ -127,6 +137,32 @@ These are file SHA-256 values, **not Flyway's stored checksum values**. The actu
 
 Core grant/revoke and Workflow mutation must lock policy generation first, then exact resource/actor facts, then the Workflow instance row in one Core transaction. This serializes a committed revoke against a transition. A write committed before the revoke may complete; a revoke committed first must deny the write. Deadlock/lock-timeout aborts fail closed. Unknown commit outcomes require authorized reconciliation and must not be retried blindly. This design is not yet implemented.
 
+### Proposed shared lock order and consistency model [ADR-010 addition, review R2]
+
+**Status: PROPOSED.** To be validated at G0 (proposed ADR-015). Not implemented. T08 is NOT RUN. This section extends the draft rule above to every operation that needs a consistent authorization snapshot. All of them use one order inside a single Core transaction:
+
+1. Core-owned policy generation / tenant guard.
+2. The exact facts used for the operation, where applicable: resource, actor membership, grant and definition binding. Rows within one step are locked in a deterministic key order.
+3. The Workflow instance row, where applicable.
+4. Workflow history or other operation-specific rows, where applicable.
+
+| Operation | Steps | Notes |
+| --- | --- | --- |
+| GRANT / REVOKE | 1, 2 | Commits a new policy generation and audit record |
+| CREATE | 1, 2 (binding), 3 | Duplicate instance ID → 409 |
+| ACTIVATE / TRANSITION | 1, 2, 3, 4 | `expectedVersion` checked against the locked instance |
+| READ / HISTORY | 1, 2, then read 3–4 | Authorization and returned data must come from one transactionally consistent snapshot that reflects any revoke committed before it. Whether this uses shared locks or a consistent snapshot plus a generation check is **PROPOSED / REQUIRES G0 REVIEW**. Exclusive row locks are not mandated. |
+
+**T08 acceptance (two-connection PostgreSQL tests, required; NOT RUN):**
+
+- Revoke versus CREATE, ACTIVATE, TRANSITION, and READ/HISTORY.
+- Grant versus each authorized operation.
+- Stale policy generation.
+- Lock timeout and deadlock, both failing closed.
+- Deterministic commit-order outcomes.
+- No unauthorized write after a committed revoke.
+- No partial state or history mutation.
+
 ## Test and CI scope [Draft, verbatim]
 
 The latest disposable PostgreSQL 17.11 run executed nine legacy Workflow integration suites: 195 cases, zero failures or skips. Its full wrapper gate **failed** because 37 Helpdesk tests require `HELPDESK_DISPOSABLE_URL` at the exact loopback `:55439/helpdesk_disposable_test` plus setup/token prerequisites, and six Keycloak tests require a Keycloak/OIDC fixture. The Workflow script uses a random port and does not supply either fixture. Do not relax its zero-skip gate or treat the 43 skipped cases as PASS. New-schema migration, row-copy, role-denial, reconciliation and two-connection Core ACL tests are **NOT RUN** until the target migration chain and cutover mappings are reviewed.
@@ -141,6 +177,17 @@ The latest disposable PostgreSQL 17.11 run executed nine legacy Workflow integra
 | D4 Core HTTP contract | Specified, not registered | [contract](../01-architecture/r27-core-workflow-http-contract.md) |
 | D6 schema/role/Flyway ownership | Not demonstrated | Local Flyway execution BLOCKED; runtime roles NOLOGIN; no grants approved |
 | T07 Core transaction tests (5 cases) | Local developer evidence, not CI | Disposable PostgreSQL 17.11, run as superuser; least privilege not shown |
+
+## Helpdesk integration constraints [ADR-010 addition, review A1–A4]
+
+**Status: PROPOSED.** Nothing in this section is implemented. Each item needs a contract decision in R28/R29 before any route is registered, and G0 where noted. In legacy `HelpdeskService` (`main@187dbd2`), create (`:60-94`), assign (`:192-206`) and resolve (`:148-159`, `:207-208`) each run in **one local transaction**. After the split, no transaction spans both services. Within Core, only Core rows can be atomic.
+
+| Review | Constraint | Conflict / owner | Required tests |
+| --- | --- | --- | --- |
+| **A1** Create + activate | Legacy creates and activates in one transaction. Split CREATE/ACTIVATE leaves a committed `NOT_STARTED` instance if ACTIVATE fails. Options: (a) a Core-side composite create-and-activate in one Core transaction — **PROPOSED — CONTRACT DECISION REQUIRED (R28/R29)**; (b) two steps, where a `NOT_STARTED` instance is found by authorized read and activated once with mandatory `expectedVersion`. Option (a) is recommended because it keeps the invariant inside Core. Either way, the Helpdesk ticket row is outside the Core transaction and needs A2/A4-style reconciliation. ACTIVATE stays unregistered until `activateInstance` accepts `expectedVersion`. | **CONTRACT CONFLICT — R27/R29 DECISION REQUIRED**: R29 `Create` requires "atomic business/instance create". Owner: R28 + PR-2c (Core), PR-2d (Helpdesk) | Failure injection between create and activate; double activate → conflict without extra history; lost response → reconcile by authorized read |
+| **A2** Create idempotency | A caller-chosen instance ID with 409 cannot distinguish a replay from a conflict. Candidate contract: key transport (header or body is an R28 decision); scope = verified tenant + canonical caller + operation; canonical payload fingerprint; a durable dedup record committed in the **same transaction** as the created rows, with a uniqueness constraint. Same key + same payload → prior outcome. Same key + different payload → conflict, never the prior result. Concurrent same key → one winner. Unknown commit → authorized lookup by key. Status codes and retention are **contract decisions**. Helpdesk needs its own ledger for ticket rows. | Owner: R28, PR-2c (Core ledger), PR-2d (Helpdesk ledger) | First request, replay, mismatched payload, timeout before commit, lost response after commit, concurrent submissions |
+| **A3** Assign / Core ACL | Helpdesk owns the assignee and `assignmentVersion`. Core owns effective grants and the policy generation. These are distinct from the Workflow runtime version. A business assignment never grants Core access by itself. Helpdesk records the assignment as `PENDING_SYNCHRONIZATION`, then sends one authenticated Core ACL command (grant new, revoke previous) carrying a durable idempotency key, exact tenant/resource/actor IDs and an expected business version. Core verifies the caller's authority (no forged actor/owner/scope/tenant header), commits a new generation with audit, and acknowledges it. Synchronization is complete only when that acknowledgment arrives. A lost acknowledgment → status lookup. Until then, access fails closed for the new assignee, and the previous assignee's revocation is not reported complete. No such command exists. | **PROPOSED — CONTRACT DECISION REQUIRED (R28/R29)**; G0/ADR-015 before route registration. Owner: PR-0b, PR-2b, PR-2c, PR-2d | Grant/revoke idempotent retry; stale versions; revoke vs TRANSITION race (T08); forged header denial; audit row per command |
+| **A4** Resolve | Helpdesk owns `resolution`; Core owns the transition and history. Core-first ordering risks Core `RESOLVED` without a Helpdesk resolution, and Confirm requires one (`:209`). Helpdesk-first ordering risks a stored intent with a rejected or unknown transition. Candidate (PROPOSED): Helpdesk durably records a pending resolution intent with an idempotency key, then calls the Core transition with `expectedVersion`, then finalizes after the Core commit. Rejection → the intent is marked failed. `COMMIT_OUTCOME_UNKNOWN` → reconcile from authorized Core history, never a blind retry. No compensation exists, because there is no reverse transition. The user sees "resolved" only after finalization. | **CONTRACT CONFLICT — R27/R29 DECISION REQUIRED**: R29 `Resolve` requires an "atomic resolution write with Core workflow transition". Owner: R29, PR-2c, PR-2d | Duplicate and concurrent resolves (one winner); lost response after Core commit; revoke race; no orphaned `RESOLVED` without a final resolution |
 
 ## Unresolved decisions
 

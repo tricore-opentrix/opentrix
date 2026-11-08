@@ -62,3 +62,20 @@ The legacy `HelpdeskService` also calls Core's JDBC adapter directly. These
 are blockers to registering the routes. The original unregistered
 `WorkflowController` remains unchanged. Existing Identity and negative tests
 remain in `:backend`; no test of a proposed route is reported as passing.
+
+## Open contract decisions from review A1–A4 (PR #159)
+
+**Status: PROPOSED — CONTRACT DECISION REQUIRED (R28/R29).** The routes
+above are **not extended** here. The constraints and tests are in
+[ADR-010](../08-decisions/ADR-010-core-helpdesk-service-boundary.md#helpdesk-integration-constraints-adr-010-addition-review-a1a4).
+
+- **A1:** decide whether CREATE and ACTIVATE become one Core-side composite
+  command or stay two steps with recovery of `NOT_STARTED` instances. Either
+  way, ACTIVATE stays unregistered until it validates `expectedVersion`.
+- **A2:** the instance-ID 409 above is not idempotency. Decide the key
+  transport, scope (tenant, caller, operation), payload-fingerprint conflict
+  semantics, status codes and retention.
+- **A3:** no Core ACL synchronization command exists for assignment. Its
+  shape and authority require G0 (proposed ADR-015).
+- **A4:** Resolve cannot be atomic across services. Decide the orchestration
+  and the `COMMIT_OUTCOME_UNKNOWN` reconciliation.
