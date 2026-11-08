@@ -33,7 +33,7 @@ Evidence that the repository builds from source and the backend starts on Linux 
 | Migrations | `./gradlew workflowSmokeBundle workflowSmoke --args=migrate --no-daemon` | `MIGRATION_PASS` |
 | Backend without Keycloak | `./gradlew bootRun` | **Fails to start**: `Connection refused` on `http://localhost:8180/realms/tricore/.well-known/openid-configuration` |
 | Keycloak 26.0 `start-dev`, empty realm `tricore` | runbook step 6 | discovery document served on port 8180 |
-| Backend with Keycloak | `./gradlew bootRun`, then `curl http://localhost:8080/api/v1/health` | `{"status":"UP"}` |
+| Backend with Keycloak | `./gradlew bootRun`, then `curl http://localhost:8080/api/v1/health` | The Spring application started and the health route answered `{"status":"UP"}`. `HealthController` returns a constant and does not query PostgreSQL, so this is not a database check |
 
 The backend and Portal BFF were also built earlier in the same session with the same commands; those runs reported `BUILD SUCCESSFUL` and are not repeated here.
 
@@ -103,6 +103,7 @@ Deviations:
 | Item | Status | Owner |
 | --- | --- | --- |
 | The 157 environment-gated integration tests | Not run with their environment variables set (see above). | @lexuanbao258-collab |
+| Windows installation (root README PowerShell steps, Windows provisioning path in `backend/README.md`) | **NOT VERIFIED for R37.** The Ubuntu runs above are not Windows evidence. No Windows run is recorded in this PR. | Not assigned |
 | The 14 Windows-only launcher tests | Cannot run on Linux; they exercise the PowerShell scripts. | Not assigned |
-| Authenticated routes, Helpdesk flow, Portal BFF login, Caddy ingress | Not exercised; no client, user or token was created in Keycloak. `{"status":"UP"}` shows the process started and the database connected; it is not an end-to-end result. | Not assigned |
+| Authenticated routes, Helpdesk flow, Portal BFF login, Caddy ingress | Not exercised; no client, user or token was created in Keycloak. `{"status":"UP"}` shows only that the application started and the route answered (the controller returns a constant and does not touch PostgreSQL); it is not a database or end-to-end result. | Not assigned |
 | Reproduction on a clean machine by someone outside the team | Not done. Both runs were made by a team member (the second by the README author on a fresh clone, see above). No outside tester is available to the team; whether this satisfies the R37 gate is for the reviewer to decide. | @phanyen06ym-ien (decision) |

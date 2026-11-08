@@ -192,7 +192,7 @@ if (resourceType.equals("IT_HELPDESK") && role.equals("TECHNICIAN")) {
 
 ## 9. ArchUnit strategy: incremental, non-deceptive CI enforcement
 
-The pinned `backend/build.gradle` includes Spring Boot/JUnit dependencies but **does not include ArchUnit**. Therefore the following is a **proposed test**, not a claim of an existing passing suite. Add a reviewed `testImplementation` ArchUnit dependency before compiling any test code; select a tested compatible release at implementation time and pin the version through the project's dependency practice. No dependency change is authorized by this document.
+`backend/build.gradle` already declares ArchUnit (`testImplementation 'com.tngtech.archunit:archunit-junit5:1.5.1'`), and `backend/src/test/java/com/tricore/dxos/architecture/CoreDependencyRulesTest.java` exists (added in #96). It covers only part of the rules: Core packages (`core.identity`, `core.workflow`, `core.data`) may depend only on the JDK and their own package tree (`java.sql` is forbidden), the three Core capabilities must not depend on each other, and a negative canary checks that a forbidden dependency is detected. This document does not state that these tests pass at any commit; see the CI run for that. Every other rule in the table above (for example DR-05 and DR-08) has no ArchUnit test yet, so the example below is a **proposed** test, not an existing one. Any new dependency or version change still needs review.
 
 **Example Java test (proposed, compile once ArchUnit is configured):**
 
@@ -256,7 +256,7 @@ No broad `ignoreDependency` suppression; every waiver specifies file/class, rule
 | `infrastructure.identity.security.SpringSecurityCurrentPrincipal` | Spring Security adapter for port | Valid DIP inversion | JWT adversarial tests |
 | `core.data.ObjectStoragePort` | Provider-neutral contract | Complies in principle with DR-03 | Verify real adapters separately |
 | `gateway.workflow.controller.WorkflowController` | Workflow HTTP candidate code, not registered as production controller | Not production-ready by existence alone | Route policy & authorized use case |
-| `backend/build.gradle` | No ArchUnit test dependency | Enforcement not implemented | Propose dependency + tests |
+| `backend/build.gradle` | ArchUnit 1.5.1 declared; `CoreDependencyRulesTest` covers Core packages only | Enforcement partial (Core rules only) | Add tests for the remaining rules |
 | PR #47 / #48 | Stacked AuthorizedWorkflowService / exact-authority regression proposals | Not merged evidence on this baseline | Verify exact head/CI/route handoff |
 | PR #63 | Helpdesk candidate using SQL guarded transaction | Direct SQL/provider coupling at Application boundary | Approved transaction seam + resource-policy test |
 | PR #70 / #71 | BFF and React Portal candidates | External deployment/protocol concerns, not Core imports | BFF CSRF/session/auth integration |

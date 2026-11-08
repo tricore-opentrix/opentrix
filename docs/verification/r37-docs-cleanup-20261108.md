@@ -22,6 +22,8 @@ $ echo $?
 0
 ```
 
+Interpretation: no broken link was detected **within the supported subset** (simple inline `[label](target)` links, relative paths and approximate `#anchor`s in Git-tracked Markdown). The script does not check reference-style links, angle-bracket destinations, destinations with spaces or parentheses, complex image links, percent-encoded fragments or repeated-heading anchors, and it does not check external URLs. This is not a comprehensive audit of every link; no regression tests were added for the script.
+
 - Scope: all files returned by `git ls-files '*.md'` (40 files). Fenced code blocks and inline code spans are ignored.
 - Checked: relative link targets and `#anchor` fragments (GitHub-style heading slugs, an approximation).
 - Not checked: links with a URL scheme (`https:`, `mailto:`). The script has no network access by design.
@@ -77,7 +79,7 @@ SeaweedFS is described only as planned. Nothing here claims it is selected by an
 
 ## SPDX coverage and REUSE status
 
-Measured with `reuse lint` 6.3.0 on the branch head before this wording change (`1f57dba`, 337 files):
+**Historical measurement** (not the current head): `reuse lint` 6.3.0 on `1f57dba` (337 files). Later commits changed the file set; the measurement at the reviewed head is reported in the PR conversation, not here:
 
 | Measure | Result |
 | --- | --- |
@@ -86,7 +88,7 @@ Measured with `reuse lint` 6.3.0 on the branch head before this wording change (
 | Missing or unused licences | 0 |
 | Invalid SPDX License Expressions | 1 (`scripts/r23-compliance.py`, a pre-existing file) |
 
-SPDX header coverage is 100%, but REUSE compliance is **not** a full PASS: `reuse lint` exits non-zero because of the invalid expression above. It is not fixed here (out of scope for R37); the repo-hygiene CI job passes with it. On `main@187dbd2` the same check reports 336 / 336 files with the same single invalid expression.
+SPDX header coverage is 100%, but REUSE compliance is **not** a full PASS: `reuse lint` exits non-zero because of the invalid expression above. It is not fixed here (out of scope for R37); the repo-hygiene CI job passes with it. A green repo-hygiene job is therefore not evidence of full REUSE compliance or distribution clearance; the invalid expression stays tracked outside this PR. On `main@187dbd2` the same check reports 336 / 336 files with the same single invalid expression.
 
 ## Reconciliation with code (second batch)
 

@@ -9,7 +9,7 @@ SPDX-License-Identifier: Apache-2.0
 Helper scripts for development and verification, added when needed.
 Build and test currently use the Gradle Wrapper in `backend/`.
 
-`check_md_links.py` checks relative links and `#anchor` fragments in every Markdown file tracked by Git. It does not check URLs that have a scheme (external URLs). Run `python3 scripts/check_md_links.py`; it exits with code 1 if any link is broken.
+`check_md_links.py` checks relative links and `#anchor` fragments in every Markdown file tracked by Git. It does not check URLs that have a scheme (external URLs). It supports only simple inline links of the form `[label](target)`; reference-style links, angle-bracket destinations, destinations with spaces or parentheses, complex image/badge links, percent-encoded fragments and repeated-heading anchors (`-1`, `-2`) are not checked, and the heading-to-anchor conversion is an approximation of GitHub's. A clean run therefore means "no broken link detected within the supported subset", not a complete link audit. Run `python3 scripts/check_md_links.py`; it exits with code 1 if a broken link is detected.
 
 `workflow-verify-local.ps1` creates a disposable PostgreSQL 17.11 on loopback, valid and
 invalid CAs and random in-memory credentials, runs the full JDK 21 `test build`, then

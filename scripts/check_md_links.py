@@ -9,6 +9,11 @@ Usage: python3 scripts/check_md_links.py   (run from anywhere inside the repo)
 Scope: every file matched by `git ls-files '*.md'`. Fenced code blocks and inline code
 spans are ignored. Links with a URL scheme (https:, mailto:, ...) are NOT checked.
 Anchors are derived from headings using GitHub-style slugs (approximation).
+Supported subset only: inline links of the simple form [label](target). NOT checked:
+reference-style links, angle-bracket destinations, destinations containing spaces or
+parentheses, complex image/badge links, percent-encoded fragments, and repeated-heading
+suffixes (-1, -2). A pass means "no broken link detected within this subset", not a
+complete audit of all Markdown links.
 Exit status: 0 if no broken link, 1 otherwise.
 """
 import os

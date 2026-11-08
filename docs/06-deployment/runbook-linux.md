@@ -49,16 +49,30 @@ docker compose -f ../infra/compose.workflow-postgres.yml up -d --wait
 
 This creates container `infra-workflow-postgres-1` (compose service `workflow-postgres`) on `127.0.0.1:55425` with database and owner `workflow_test`, and a named volume `infra_workflow-postgres-17-data`. The database password is fixed when the volume is first initialised, so provision the volume only once.
 
-**Reusing an existing volume.** You may skip steps 4 and 5 and go to step 6 only if all of these hold: the volume `infra_workflow-postgres-17-data` already exists, you export the **same** `WORKFLOW_LOCAL_DB_PASSWORD` it was created with, and steps 4 and 5 (role, schema, migrations, grants) were completed against it earlier. Check with:
+**Reusing an existing volume.** Do not decide from memory or from a quick query that steps 4 and 5 can be skipped. Two rows saying that the role and the schema exist do not show that migrations V3/V4 were applied, that their checksums match, that the runtime role has exactly the intended privileges, or that you know the right passwords. Run the read-only preflight of the smoke runner instead. It is the same check that the `smoke` step runs before it writes anything:
 
 ```bash
-docker compose -f ../infra/compose.workflow-postgres.yml exec workflow-postgres \
-  psql -U workflow_test -d workflow_test -tAc \
-  "SELECT count(*) FROM pg_roles WHERE rolname='workflow_runtime'
-   UNION ALL SELECT count(*) FROM information_schema.schemata WHERE schema_name='dxos_wf25_smoke_01'"
+read -rs -p 'Runtime password (the one set with \password in step 4): ' RUNTIME_DB_PASSWORD; echo
+export WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE=true
+export WORKFLOW_SMOKE_LOCAL_DISPOSABLE=true
+export WORKFLOW_SMOKE_JDBC_URL='jdbc:postgresql://127.0.0.1:55425/workflow_test'
+export WORKFLOW_SMOKE_MIGRATOR_USER=workflow_test
+export WORKFLOW_SMOKE_MIGRATOR_PASSWORD="$WORKFLOW_LOCAL_DB_PASSWORD"
+export WORKFLOW_SMOKE_RUNTIME_USER=workflow_runtime
+export WORKFLOW_SMOKE_RUNTIME_PASSWORD="$RUNTIME_DB_PASSWORD"
+export WORKFLOW_SMOKE_BUNDLE="$PWD/build/workflow-smoke-bundle"
+./gradlew workflowSmokeBundle workflowSmoke --args=check --no-daemon
 ```
 
-Expected output is two lines, `1` and `1`. If either is `0`, or `psql` reports an authentication failure, do not skip: run steps 4 and 5, or remove the volume (step 9, `down -v`) and start again.
+The preflight only reads. Reading `WorkflowSmokeRunner.check()` shows what it verifies: it opens one connection as the owner and one as the runtime role (so both passwords and roles must work); it compares the Flyway history against the V3/V4 files in the bundle (state and checksum); it requires the schema to contain exactly the expected tables; and it checks the runtime role's table and column privileges. Any mismatch stops with a failure and exit code 1, and the runner hides the reason (see Troubleshooting). Treat the result as follows:
+
+| Output | Meaning | What to do |
+| --- | --- | --- |
+| `PREFLIGHT_READY` | Migrations are applied with matching checksums and the runtime privileges are as expected | Skip steps 4 and 5 and go to step 6 |
+| `PREFLIGHT_EMPTY` | The schema exists and is empty, with no migration applied | Go to step 5 |
+| `WORKFLOW_SMOKE_FAIL` or any other failure | The volume is in an unknown or partly initialised state, or a password is wrong | Do **not** run steps 4 and 5 again on this volume, because their statements are not idempotent. Either investigate the volume with `psql`, or discard it and start over with `down -v` (step 9), which **deletes** the local database |
+
+This preflight was not run by the author on a reused volume for this document; the description above comes from reading the runner source. On the author's VM the same check was exercised indirectly: `smoke` calls it and printed `SMOKE_PASS`.
 
 ## 4. Create the runtime role and schema
 
@@ -116,23 +130,31 @@ Optional smoke check (writes one test instance; a run id cannot be reused):
 
 The backend fetches `OIDC_ISSUER_URI/.well-known/openid-configuration` while starting, so a Keycloak realm named `tricore` must answer on port 8180 first. The repository does not ship a realm export; this creates an empty realm, which is enough for the backend to start.
 
+Limits of this setup: `start-dev` is Keycloak's development mode (embedded database, relaxed HTTP settings) and is not a production configuration. The realm is intentionally empty: it has no client, user or token. It satisfies only the backend's start-up dependency and is **not** evidence that SSO, login, or any authenticated route works.
+
+The admin password is passed to the container through the environment of the Docker client (`-e NAME` without a value), so it does not appear in the command line of `docker run`:
+
 ```bash
-read -rs -p 'Keycloak admin password: ' KC_PW; echo
+read -rs -p 'Keycloak admin password: ' KC_BOOTSTRAP_ADMIN_PASSWORD; echo
+export KC_BOOTSTRAP_ADMIN_PASSWORD
 docker run -d --name kc-local -p 127.0.0.1:8180:8080 \
-  -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD="$KC_PW" \
+  -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD \
   quay.io/keycloak/keycloak:26.0 start-dev
+unset KC_BOOTSTRAP_ADMIN_PASSWORD
 ```
 
-Wait until `docker logs kc-local | tail -3` shows `Listening on`, then create the realm and check it:
+Wait until `docker logs kc-local | tail -3` shows `Listening on`, then log in with `kcadm.sh` and create the realm. `kcadm.sh config credentials` prompts for the password when `--password` is not given, so type it at the prompt (the `-it` flags are needed for that); nothing is placed on a command line:
 
 ```bash
-docker exec kc-local /opt/keycloak/bin/kcadm.sh config credentials \
-  --server http://localhost:8080 --realm master --user admin --password "$KC_PW"
+docker exec -it kc-local /opt/keycloak/bin/kcadm.sh config credentials \
+  --server http://localhost:8080 --realm master --user admin
 docker exec kc-local /opt/keycloak/bin/kcadm.sh create realms -s realm=tricore -s enabled=true
 curl -s http://localhost:8180/realms/tricore/.well-known/openid-configuration | head -c 150; echo
 ```
 
-The JSON must contain `"issuer":"http://localhost:8180/realms/tricore"`.
+The JSON must contain `"issuer":"http://localhost:8180/realms/tricore"`. The login token that `kcadm.sh` stores lives inside the container, and `docker rm -f kc-local` (step 9) removes it together with the container.
+
+This prompt-based login is documented behaviour of `kcadm.sh`; it was not re-run when this passage was written. The earlier run on the author's VM used the previous command form.
 
 ## 7. Start the backend
 
@@ -163,7 +185,7 @@ curl -fsS http://localhost:8080/api/v1/health
 
 ```bash
 # Ctrl+C in the bootRun terminal, then:
-unset DB_PASSWORD RUNTIME_DB_PASSWORD KC_PW \
+unset DB_PASSWORD RUNTIME_DB_PASSWORD KC_BOOTSTRAP_ADMIN_PASSWORD \
       WORKFLOW_SMOKE_MIGRATOR_PASSWORD WORKFLOW_SMOKE_RUNTIME_PASSWORD
 docker rm -f kc-local
 # compose needs the variable defined even to stop; any value works here
@@ -188,7 +210,7 @@ Use `down` (without `-v`) when you want to restart and verify persistence.
 | `Set WORKFLOW_LOCAL_DB_PASSWORD` from compose | Password not exported | Repeat the `read`/`export` in step 3 |
 | `Address already in use` on 8080 | Another process holds the port | Stop it, or set `SERVER_PORT=8081` |
 | Smoke runner refuses a run id | Run ids are single-use | Use a new id, e.g. `local-run-2` |
-| `WORKFLOW_SMOKE_FAIL` with no other message, in step 5 | The runner hides the reason. Likely cause: `RUNTIME_DB_PASSWORD` differs from the password set with `\password` | Reset it: `docker compose -f ../infra/compose.workflow-postgres.yml exec -T workflow-postgres psql -U workflow_test -d workflow_test -v ON_ERROR_STOP=1 -v pw="$RUNTIME_DB_PASSWORD" <<'SQL'` then `ALTER ROLE workflow_runtime PASSWORD :'pw';` then `SQL`, and run the migration again |
+| `WORKFLOW_SMOKE_FAIL` with no other message, in step 3 or 5 | The runner hides the reason. **Suspected** cause (not proven): the runtime password differs from the one set with `\password` | Reset the password interactively: open `psql` as in step 4, run `\password workflow_runtime` (the prompt hides the input), then `\q`, re-enter the same value at your `RUNTIME_DB_PASSWORD` prompt, and run the failed step again. Do not put the password in a command line or a `psql -v` argument |
 
 ## Planned
 
