@@ -1,0 +1,76 @@
+<!--
+SPDX-FileCopyrightText: 2026 TRICORE contributors
+SPDX-License-Identifier: Apache-2.0
+-->
+
+# M5 — prototype kiểm chứng, không phải migration runtime
+
+Phạm vi duy nhất: thay thế assignment trên ACL synthetic đã provision trước;
+G cấp tenant, fence cấp resource, audit và receipt trong cùng transaction.
+Core xác nhận principal theo ADR-015 T1; PostgreSQL kiểm tra lại authority hiện tại.
+Không có API/Java bridge, CREATE/Workflow, Helpdesk CAS hoặc quyền triển khai production.
+
+Chạy từ repository root, Python standard library và Docker Linux engine cục bộ:
+
+```powershell
+python -B -m unittest discover -s tests/r28_m5 -p test_harness.py -v
+python -B tests/r28_m5/run.py --run-id m5-review-001
+```
+
+Image `postgres:17` phải có sẵn cùng official RepoDigest. Runner không pull image,
+không nhận DSN, không đọc `.env`, không dùng Docker registry credentials.
+Nó dùng Docker config rỗng, local socket/Windows DockerDesktopLinuxEngine pipe cố định,
+image ID bất biến sau inspect, container mới mang UUID + task label,
+`--network none`, không port/bind mount, PGDATA trên tmpfs. Host connections bị reject;
+psql dùng Unix socket bên trong container với actual LOGIN role và local trust chỉ
+trong container bị cô lập. PostgreSQL bootstrap superuser chỉ dùng để tạo fixture,
+publish fault và chụp catalog; không thay cho actor runtime.
+
+Runner từ chối các biến credential/DSN PostgreSQL/database hoặc Docker remote target
+được nhận diện trước khi chạm Docker. Nó chỉ truyền allow-list môi trường OS cho process con;
+không quét toàn máy hay chứng nhận host không chứa bất kỳ credential nào.
+Không mount file host/credential vào container. PostgreSQL phải báo major version 17,
+đúng database `m5_disposable`; isolation không chứng minh được thì dừng.
+
+Exit `2` = BLOCKED/infrastructure, `1` = có ca FAIL, `0` = các ca đã chạy đạt oracle.
+Ngay cả exit `0` cũng chỉ là **PARTIAL_NOT_ACCEPTED**, không phải toàn bộ X-25/T07/T08 PASS.
+Mỗi run ID chỉ dùng một lần. JSON evidence + checksum nằm ở
+`docs/verification/r28/evidence/<TEST_ID>/<RUN_ID>/`; lỗi preflight tạo evidence BLOCKED,
+`database_cases_executed=0`. `source_commit` là HEAD lúc bắt đầu chạy; hash file đi kèm
+xác định chính xác SQL/grant/harness nếu working tree có thay đổi.
+Container được xóa theo ID + task label được kiểm tra lại; không dọn container/volume khác.
+
+`schema.sql` sở hữu mọi protected object bằng `core_acl_owner NOLOGIN`.
+Migrator không có membership owner khi admission OPEN. Executor chỉ được EXECUTE;
+reader/Workflow SELECT đúng policy tables + helper; Helpdesk không có table privilege;
+observer test-only SELECT tất cả. Schema USAGE cho Helpdesk chỉ để kiểm tra table denial.
+Receipt không sửa/xóa/truncate; không có cleanup. Trigger capture delta thực tế và
+validator deferred trên cả ACL/G/fence/audit/receipt lẫn membership/registry/binding/
+authority/admission. Validator đối chiếu toàn bộ old/new ACL/G/fence với audit và
+receipt cuối transaction, thay vì chỉ đối chiếu hai digest tự khai.
+
+Tenant guard độc quyền serialize mọi key trong tenant (mạnh hơn scoped-key lock);
+không có persistent early reservation. Executor yêu cầu READ COMMITTED và chưa có xid
+trước khi bắt đầu; một command/transaction. Managed slice là hai operation synthetic,
+mọi hàng ACL được seed trước; không suy rộng thành schema/canonical wire contract Q04.
+G/fence conflict rollback, chưa có terminal rejection receipt vì Q02 chưa được chốt.
+Reader helper chỉ có mapping synthetic T1; không phải authorization adapter dùng thật.
+
+Fault executor được tạo offline bằng bản sao có một defect, grant tạm cho actual A,
+rồi drop sau từng ca. Không có fault argument/config trên entrypoint bình thường.
+Các probe legacy grant chỉ tồn tại trong disposable DB và được revoke sau probe.
+Concurrency dùng hai psql session và `pg_blocking_pids`, giữ lock tới khi observer
+xác nhận cạnh waiter/blocker; polling không được dùng làm suy đoán lịch chạy.
+
+Các gap còn bắt buộc: kill-backend ở mọi stage, network COMMIT-ACK drop thật,
+unique-conflict autonomous injection, reader/revoke-first fresh authorization,
+lock/statement timeout + deadlock, đủ lịch X-12, X-13 revoke và transport/latency mapping,
+X-23 restore/retention/admission, X-24 terminal rejection, X-16/X-26 với Ánh,
+privileged maintenance closure/reconciliation và W-17 deployed inventory.
+Chủ sở hữu/superuser có thể sửa function/trigger/journal và bypass toàn bộ prototype;
+không có claim bảo vệ họ bằng grants. No live maintenance procedure is verified here.
+
+Tham chiếu semantics để review, không thay kết quả thực thi:
+[deferred constraint triggers](https://www.postgresql.org/docs/17/sql-createtrigger.html),
+[trigger visibility](https://www.postgresql.org/docs/17/trigger-datachanges.html),
+[SECURITY DEFINER](https://www.postgresql.org/docs/17/sql-createfunction.html).
