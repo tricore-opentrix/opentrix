@@ -85,13 +85,13 @@ Status responses must not expose raw ACL internals or another tenant's command. 
 
 ## 4. Contract test design (NOT RUN)
 
-Before handler integration, add contract/integration tests for: Create + Activate partial failure and same-key replay; Assign state transitions and UI-safe status; lost ACK before/after Core commit; Helpdesk finalization failure after Core commit; duplicate/same-key-different-payload/concurrent commands; late older fenced assignment; atomic ACL replacement; cross-tenant denial and hidden 404 vs visible 403; Resolve partial failure and recovery; Confirm before finalization denial; Core `RESOLVED` plus Helpdesk finalized success; rollback/no partial writes; READ/HISTORY vs revoke; lock timeout/deadlock fail-closed. The [G0 verification matrix](../verification/r27/adr015-g0-contract-verification-matrix.md) records each case and actual current status.
+Before handler integration, add contract/integration tests for: Create + Activate partial failure and same-key replay; Assign state transitions and UI-safe status; lost ACK before/after Core commit; Helpdesk finalization failure after Core commit; duplicate/same-key-different-payload/concurrent commands; late older fenced assignment; atomic ACL replacement; cross-tenant denial and hidden 404 vs visible 403; Resolve partial failure and recovery; Confirm before finalization denial; Core `RESOLVED` plus Helpdesk finalized success; rollback/no partial writes; READ/HISTORY vs revoke; lock timeout/deadlock fail-closed. The [G0 verification matrix](../../verification/r27/adr015-g0-contract-verification-matrix.md) records each case and actual current status.
 
 All these tests are **NOT RUN** for this documentation amendment. PostgreSQL, service handlers, ACL command API, ledgers, and cross-service E2E are not implemented/verified at the reviewed commits. This list does not convert PR #145 from candidate to R29 complete.
 
 ## 5. Required review actions
 
-- **Ánh:** decide the business authorization-lag policy in ADR-015 §8.3; apply or amend these R29 changes on the PR #145 branch; resolve API-visible intermediate status and retry/retention choices; run R29 contract tests when handlers exist.
+- **Ánh:** apply or amend these R29 changes on the PR #145 branch; confirm the recorded Option A pending-state/UI behavior is reflected in R29; resolve remaining API-visible intermediate-status and retry/retention choices; run R29 contract tests when handlers exist. Option A was selected by Yến and confirmed by Ánh and Bảo at reviewed SHA `af7506d26fbe33f4e634012389bde9c6553c31ab` (evidence linked in ADR-015 §8.3).
 - **Bảo:** review Core command fencing/ledger/atomic replacement and the proposed Core-vs-Helpdesk transaction/error boundary; confirm PostgreSQL design only after actual disposable-DB verification.
 - **Yến:** reconcile the amendments with ADR-010/ADR-015 and record any decision only after independent review. No reviewer verdict is inferred from this proposal.
 

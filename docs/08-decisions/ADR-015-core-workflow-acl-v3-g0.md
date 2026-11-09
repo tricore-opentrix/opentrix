@@ -5,10 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 # ADR-015 — Core Workflow ACL V3 / G0: Atomic Authorization Contract
 
-**Status:** PROPOSED — AWAITING INDEPENDENT REVIEW  
+**Status:** PROPOSED — OD-06 Option A confirmed as contract direction; G0-CONTRACT remains BLOCKED
 **Decision owner:** Yến  
 **Reviewers:** Bảo (Core, PostgreSQL, transactions, security), Ánh (Helpdesk, service contracts, assignment synchronization)  
-**Decision date:** Pending formal acceptance  
+**Decision date:** OD-06 owner decision recorded 2026-11-09; overall ADR acceptance pending
 **Tracking:** R27 Step 03 / PR-0b  
 **Related:** ADR-010 (PR #159), R28, R29 (PR #145; proposed amendment: [R29 contract amendment](../03-applications/helpdesk/r29-pr145-contract-amendment.md)), R31, T07/T08, Issue #138
 **Reference baseline:** `main@187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`  
@@ -248,13 +248,13 @@ The proposed command envelope is:
 | `grantOperations`, `revokeOperations` | Explicit operation sets; the replacement set is validated as one request. |
 | `expectedPolicyGeneration` | Core-owned generation precondition, distinct from both Helpdesk assignment and Workflow versions. |
 | `helpdeskVersionToken` | Opaque business correlation/concurrency token; Core does not infer ticket or assignment semantics from it. |
-| `fencingSequence` | Helpdesk-issued, strictly increasing per resource. Core only applies the protocol comparison “greater than last accepted”; it does not interpret business meaning. It exists to reject delayed older commands. |
+| `fencingSequence` | Helpdesk-issued, strictly increasing within the tenant/resource assignment stream and advanced with the Helpdesk assignment version. Core compares it only with the last accepted fence for that tenant/resource to reject delayed older commands; it does not interpret ticket or assignment business meaning. |
 | `idempotencyKey` | Stable key scoped as defined in OD-07. |
 | `correlationId` | End-to-end tracing identifier; not an authorization credential or uniqueness substitute. |
 
 The identities remain distinct: (1) initiating business user, (2) authenticated service principal, (3) affected actor(s), and (4) recorded audit actor/source. The audit records both the verified service principal and the initiating user when supplied through a trusted, signed/verified context; an untrusted caller-supplied identity is never treated as verified.
 
-Within one Core transaction, an accepted replacement performs the authorized old-grant revocation, new-grant insertion, audit record, policy-generation increment, command ledger COMMITTED outcome and accepted fencing-sequence update atomically. The Core API must not expose a partial replacement. A pre-commit failure rolls back all of these; a potentially committed but unacknowledged request is OUTCOME_UNKNOWN until looked up.
+Within one Core transaction, Core authenticates and authorizes the ACL administrator for the tenant/resource, checks the expected fence and policy generation, revokes the old grant, grants the new actor, writes the audit record, increments policy generation, records the authoritative committed outcome, and advances the accepted fence. The fence check and update are in this same transaction as ACL replacement. The Core API must not expose a partial replacement. A pre-commit failure rolls back all replacement effects; a possibly committed but unacknowledged request is reconciled by authenticated command-status lookup.
 
 Proposed stable outcomes (transport mapping remains R28 work):
 
@@ -274,7 +274,7 @@ HTTP status/body and exact visibility mapping are DECISION REQUIRED in R28. This
 
 ## 8. Helpdesk assignment/reassignment state machine (OD-06)
 
-Helpdesk owns `assignee`, `assignmentVersion`, assignment intent, and its synchronization state. Core owns effective ACL state, `policyGeneration`, command history and the last accepted per-resource `fencingSequence`. Workflow runtime version remains independent. None of these versions may be substituted for another.
+Helpdesk owns `assignee`, `assignmentVersion`, durable assignment intent and synchronization state. Core owns effective ACL state, `policyGeneration`, command outcome and the last accepted tenant/resource-scoped `fencingSequence`. Workflow runtime version remains independent. None of these versions may be substituted for another.
 
 Each Helpdesk assignment attempt has a durable command identity. The Helpdesk transaction validates the actor and expected business version, serializes/CASes the current assignment row to issue a monotonically increasing `assignmentVersion`/`fencingSequence`, records the new assignment intent and durable outbox command, and commits `PENDING_SYNCHRONIZATION`. Only after that commit may an authenticated Core ACL replacement command be sent. The Core transaction atomically revokes the old effective grant, grants the replacement actor, writes audit and command outcome, increments policy generation, and advances the accepted fence.
 
@@ -284,47 +284,56 @@ The state is attached to the current Helpdesk assignment version and command ID;
 
 | State | Entry condition / event | Retry and reconciliation | Effective Core access | UI behavior | Completion condition / failure handling |
 |---|---|---|---|---|---|
-| `PENDING_SYNCHRONIZATION` | Helpdesk has committed the validated intent/version and durable command/outbox identity; dispatch has not yet been authoritatively confirmed. Also used while a new command is in flight before any timeout is observed. | Dispatch the same authenticated command with the same scoped idempotency key. On timeout/lost response, move to `RECONCILIATION_REQUIRED`; never issue a new key merely because the response is late. | Under proposed atomic replacement, the previous Core ACL remains effective until Core commits. The new actor is not guaranteed access yet. This lag is **DECISION REQUIRED** as described below. | Show “Assignment pending”; do not say old access was revoked or new access granted. Expose the pending state and last update; prevent downstream workflows that require a synchronized assignment. | Leave only after authoritative Core COMMITTED result is verified and Helpdesk durably records matching version, command ID and policy generation as `SYNCHRONIZED`, or Core returns a definitive rejection and Helpdesk records `SYNCHRONIZATION_FAILED`. |
+| `PENDING_SYNCHRONIZATION` | Helpdesk has committed the validated intent/version and durable command/outbox identity; dispatch has not yet been authoritatively confirmed. Also used while a new command is in flight before any timeout is observed. | Dispatch the same authenticated command with the same scoped idempotency key. On timeout/lost response, move to `RECONCILIATION_REQUIRED`; never issue a new key merely because the response is late. | **Selected Option A:** the previous Core ACL may remain effective until Core commits atomic replacement. The new actor is not guaranteed access yet. | Show `PENDING_SYNCHRONIZATION`; never claim immediate revocation or completion. Gate operations that require synchronized assignment. | Leave only after authoritative Core committed outcome is verified and Helpdesk durably records the matching assignment version, command ID and policy generation as `SYNCHRONIZED`, or Core returns a definitive rejection and Helpdesk records `SYNCHRONIZATION_FAILED`. |
 | `SYNCHRONIZED` | Core status/ACK proves this exact command committed, including its accepted fencing sequence and policy generation; Helpdesk finalization compare-and-set confirms it is still the current assignment version/command. | No retry for the completed command. A new desired assignment creates a new version/key. A replay/status lookup returns historical command result, not a guarantee the grants remain current. | Current ACL is read from Core; a later policy mutation may have changed it. The ACK establishes only that this command committed at the returned generation. | Show assignment complete only after Helpdesk finalization. Current access decisions still come from Core. | Terminal for that assignment attempt. If Helpdesk finalization fails after Core commit, show/recover as `RECONCILIATION_REQUIRED`, not completed. |
 | `RECONCILIATION_REQUIRED` | Timeout, lost ACK, transport interruption after send, uncertain commit, Helpdesk finalization failure, or inconsistency between Helpdesk record and Core status. | First perform authenticated status lookup with the same tenant, caller scope and idempotency key. `COMMITTED`: validate the command/fence/generation and finalize with CAS. `IN_PROGRESS`: poll with bounded backoff. `REJECTED`: record failure. Definitive `NOT_FOUND` may retry the same key/payload only while retention guarantees it is authoritative. Status unavailable/ambiguous stays in this state and is retried; never blind retry with a new key. | Core's actual ACL is authoritative; it may reflect the previous grant or the committed replacement. Helpdesk must not infer effective permissions from this state. | Show “Assignment status being reconciled”; no success claim. Gate actions that require completed assignment. | Exit only after authoritative committed status and matching Helpdesk finalization, or definitive rejection is durably recorded. Timeout budget exhaustion raises an operational alert but does not convert unknown to failure/success. |
 | `SYNCHRONIZATION_FAILED` | Core returns a definitive durable `REJECTED` outcome or a stable non-retryable validation/authorization result, and Helpdesk persists the failure against that version. | Do not retry unchanged payload/key as a new assignment. Corrected intent requires an authorized new business decision/version and new key; transient failures use reconciliation policy rather than this terminal state. | No mutation for the rejected command. A previous Core grant can remain effective unless the separately approved immediate-revocation policy applies. | Show assignment not completed and a safe reason/action; do not expose sensitive ACL details. Require authorized correction or reassignment. | Terminal for this attempt. If Core definitively rejected but Helpdesk cannot persist that result, remain `RECONCILIATION_REQUIRED` until Helpdesk has recorded it. |
 
 ### 8.2 Ordering, fencing and version ownership
 
-`assignmentVersion` is the Helpdesk business version; `policyGeneration` is the Core ACL revision; `workflowRuntimeVersion` is the Core Workflow optimistic-concurrency version. The proposed `fencingSequence` is a separate monotonic per-resource command-order token persisted with the Helpdesk intent. Core stores and compares it only to reject values less than or equal to the last accepted fence. The opaque Helpdesk version token is correlation, not the fencing mechanism. Idempotency prevents duplicate execution of one command; it does not order distinct commands and cannot replace fencing.
+`assignmentVersion` is the Helpdesk business version; `policyGeneration` is the Core ACL revision; `workflowRuntimeVersion` is the Core Workflow optimistic-concurrency version. The proposed `fencingSequence` is a separate monotonic tenant/resource-scoped command-order token persisted with the Helpdesk intent and tied to that assignment version. Core stores and compares it only to reject values less than or equal to the last accepted fence. The opaque Helpdesk version token is correlation, not the fencing mechanism. Idempotency prevents duplicate execution of one command; it does not order distinct commands and cannot replace fencing.
 
 If a delayed older command reaches Core after a newer command has committed, Core rejects it as `STALE_ASSIGNMENT_COMMAND`. If an older command commits before the newer command arrives, the newer higher fence may replace it; until that newer command commits, the old command's ACL is the actual Core ACL. Helpdesk must not report its latest intent as synchronized until its own matching command is acknowledged and finalized.
 
-### 8.3 Authorization lag and immediate-revocation decision
+### 8.3 Selected authorization-lag policy — OD-06 Option A
 
-Atomic replacement avoids a committed interval in which the old grant is revoked but the new grant has not yet been granted. It does **not** eliminate the interval before Core receives/commits the replacement: the old grant can remain effective and the new actor can lack access. Fail-closed behavior for unavailable Core means protected operations fail closed when authority cannot be checked; it does not by itself revoke a still-committed old grant.
+**Selected for R27 MVP / Helpdesk assignment and reassignment:** atomic Core ACL replacement with observable authorization lag.
 
-**DECISION REQUIRED — Ánh (business/security), with Bảo (Core feasibility) and Yến (decision owner):**
+| Decision record | Evidence |
+|---|---|
+| Decision owner Yến — SELECT OPTION A; reviewed SHA `af7506d26fbe33f4e634012389bde9c6553c31ab` | [Owner decision comment](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6731860971) |
+| Ánh — ACCEPT, contract direction only | [Ánh confirmation](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6731987954) |
+| Bảo — CONFIRM, contract direction only | [Bảo confirmation](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6732025189) |
+| Prior independent review scope | [Bảo's initial review](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6731595550); [Ánh's initial review](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6731716719) |
 
-1. **Option A — Atomic replacement with bounded/observable lag:** retain the old Core grant until the replacement transaction commits; show pending and gate Helpdesk actions requiring synchronization. Define acceptable lag/SLO and escalation. This gives no assertion that old access is immediately revoked.
-2. **Option B — Fail-closed assignment fence:** before declaring the assignment change pending, Core must accept a tenant/resource-scoped deny/fence that blocks protected operations for the resource until replacement is committed. Then apply replacement and clear the fence transactionally according to an approved protocol. This may reduce availability and requires a reviewed Core protocol/state beyond a plain ACL replacement.
-3. **Option C — Revoke-first:** commit revocation of old access before a later grant; this creates an intentional no-access interval and requires durable staged commands, fencing, reconciliation and explicit handling of partial completion.
+These comments confirm the OD-06 **contract policy direction**, not ADR-015 as a whole. ADR-015 remains `PROPOSED`; G0-CONTRACT remains `BLOCKED`; no PostgreSQL/runtime acceptance is claimed.
 
-No option is selected by this amendment. G0-CONTRACT remains blocked on the policy decision. A response timeout always enters reconciliation; it cannot be used as proof that access was revoked.
+Under Option A, the old Core grant may remain effective from Helpdesk's durable intent commit until Core commits the atomic replacement. The new assignment is not effective merely because Helpdesk recorded it. Only after Core's authoritative committed outcome is durably acknowledged by Helpdesk may the assignment become `SYNCHRONIZED`. Helpdesk must never claim immediate revocation. Timeout or lost ACK does not prove that the old grant was revoked. If Core does not complete synchronization, authorization lag may continue without a guaranteed upper bound; no SLA or hard revocation bound is asserted.
+
+While pending or reconciling, Helpdesk must show the pending state and block business actions that require a synchronized assignment. Core remains the authority for actual access. Option A gates operations requiring synchronized Helpdesk assignment; it does not silently revoke the still-committed old Core grant.
+
+**OPEN — OWNER DECISION REQUIRED before runtime acceptance:** define timeout monitoring, alerting and escalation policy without assuming a numeric limit until approved. Approve a separate emergency-revocation procedure for urgent access removal. These controls are not implemented or verified by this ADR. Option B's resource deny fence and Option C's revoke-first/no-access interval are not selected for the R27 MVP; any future use requires separate approval and evidence.
 
 ## 9. Idempotency, command ledger and recovery (OD-07)
 
 The proposed uniqueness scope is `(tenantId, authenticatedServicePrincipal, operationType, idempotencyKey)`. Resource ID, actor set, operation sets, expected generation, opaque Helpdesk version token, fencing sequence and relevant command semantics are part of a canonical payload fingerprint. Correlation ID is stored for tracing but is not part of uniqueness. Canonicalization rules (encoding, field normalization, set ordering and hash algorithm) must be frozen in R28/G0-DESIGN before implementation.
 
-Proposed transaction lifecycle: reserve the unique key/fingerprint and commit an `IN_PROGRESS` ledger row before execution; then apply the ACL replacement, audit, generation, accepted fence and transition of that ledger row to `COMMITTED` in one Core transaction. A definitive rejection is recorded as `REJECTED` without ACL mutation. If process/connection recovery cannot yet determine whether the transaction committed, expose `OUTCOME_UNKNOWN` as a reconciliation status and do not execute another mutation until the original transaction/ledger outcome is authoritatively resolved. The exact transition/recovery mechanism is a G0-DESIGN item; an `IN_PROGRESS` row is never permission to duplicate execution.
+**G0-DESIGN preference from Bảo, supported by Ánh's review:** when key reservation and command execution can occur in one Core database transaction, prefer a durable `COMMITTED` outcome written atomically with ACL replacement, audit, policy generation and accepted fence. A process crash before commit then rolls back the mutation; after commit, the ledger has the authoritative outcome, while a lost ACK leaves the client uncertain and is resolved by authenticated status lookup. In that single-transaction design, persistent server-side `IN_PROGRESS` and `OUTCOME_UNKNOWN` rows are not required by default. `OUTCOME_UNKNOWN` can describe the caller's knowledge while it reconciles, not necessarily a stored ledger state.
+
+This is a G0-DESIGN preference, **not an approved ledger schema**. If Core cannot safely use the single-transaction uniqueness/serialization approach and needs a separately committed reservation or long-running command, the design must justify persistent `IN_PROGRESS`/recovery states and prove their transitions, crash recovery and retention before approval. Do not add persistent states or migration schema by assumption. Stable rejection storage/replay semantics also remain for G0-DESIGN/R28.
 
 | Ledger status | Meaning and transition | Same-key replay/status response |
 |---|---|---|
-| `IN_PROGRESS` | Unique key and fingerprint reserved; transaction/command processing has not reached a durable terminal outcome. May transition to `COMMITTED` or `REJECTED`; after recovery timeout it is not assumed rolled back. | Return `IN_PROGRESS` with retry guidance; do not run a concurrent duplicate mutation. |
-| `COMMITTED` | ACL replacement, audit, policy generation, accepted fence and committed result are durable in the same Core transaction. | Return the original historical command result and generation. Separately report current ACL/policy state if authorized; do not imply this grant is still effective after later policy changes. |
-| `REJECTED` | Definitive no-mutation outcome with stable error classification. | Replay original rejection for same fingerprint. New intent/payload needs a new authorized key/version. |
-| `OUTCOME_UNKNOWN` | Recovery cannot yet establish whether commit occurred; not a durable success or failure assertion. | Authenticated status endpoint returns unknown/reconciling and correlation metadata only; client must continue lookup. Core recovery must resolve against transactional ledger/audit state. |
+| `IN_PROGRESS` | Logical processing state while a request/transaction is active. Under the preferred one-transaction design, this need not be a separately committed ledger row. Persistent reservation is only considered if G0-DESIGN justifies it. | Concurrent same-key request waits/receives a safe in-progress response or reads the terminal result; it must not execute a second mutation. Exact transport behavior is R28 work. |
+| `COMMITTED` | Durable authoritative outcome for the command, committed atomically with ACL replacement, audit, policy generation and accepted fence. | Same-key/same-fingerprint replay returns the original historical outcome and commit generation. Separately report current ACL only if authorized; do not imply the grant remains effective after a later policy change. |
+| `REJECTED` | Stable semantic no-mutation outcome. Whether this outcome is durably stored for replay is a G0-DESIGN/R28 decision. | Same command must not produce a different mutation through blind retry; use the defined rejection and conflict semantics. |
+| `OUTCOME_UNKNOWN` | Client/reconciliation state when ACK is lost or the transaction outcome cannot yet be confirmed; not automatically a persistent Core ledger row. | Authenticated status lookup returns the authoritative committed outcome when available. If the authoritative store is still unavailable/ambiguous, remain reconciling and do not retry blindly. |
 
-Different fingerprint under the same unique scope is `IDEMPOTENCY_PAYLOAD_CONFLICT` (409 candidate). Concurrent same-key/same-fingerprint requests serialize on the unique key: one executes; others receive the current status/result and never apply a second mutation. Same-key/different-fingerprint requests fail without mutation. Distinct keys are ordered only by the per-resource fencing sequence and expected Core generation, not by idempotency.
+Different fingerprint under the same unique scope is `IDEMPOTENCY_PAYLOAD_CONFLICT` (409 candidate). Concurrent same-key/same-fingerprint requests must serialize on the unique key: one executes; others receive a safe in-progress/terminal response and never apply a second mutation. Same-key/different-fingerprint requests fail without mutation. Distinct keys are ordered only by the tenant/resource fencing sequence and expected Core generation, not by idempotency.
 
 The authenticated command-status lookup must bind the verified service principal and tenant to the original ledger scope; it must not reveal another tenant's command. A status lookup is not a fresh authorization grant. For a committed command, distinguish (a) historical command outcome, (b) generation at commit and (c) current effective ACL state, read independently under current Core authorization.
 
-Retention/cleanup is a DECISION REQUIRED for Bảo and Ánh in G0-DESIGN/R28: retain deduplication identity, payload fingerprint, outcome and fence sufficiently long to cover supported retries/reconciliation and prevent replay after deletion; do not delete entries while status is IN_PROGRESS/OUTCOME_UNKNOWN or while a client retry window remains open. After expiry, Core must have an explicit tombstone/epoch or reject old keys/fences so an expired request cannot be replayed as new. Retention duration, cleanup schedule, tombstone period and post-expiry outcome are not selected here.
+Retention/cleanup is a DECISION REQUIRED for Bảo and Ánh in G0-DESIGN/R28: retain committed deduplication identity, payload fingerprint, outcome and fence sufficiently long to cover supported retries/reconciliation and prevent replay after deletion. If a future design stores persistent IN_PROGRESS/OUTCOME_UNKNOWN states, it must also define their cleanup/recovery. After committed-record expiry, Core needs an approved tombstone/epoch or rejection rule so an expired request cannot be replayed as new. Retention duration, cleanup schedule, tombstone period and post-expiry outcome are not selected here.
 
 ## 9.1 R28/R29 amendment boundary
 
@@ -440,17 +449,19 @@ Legacy local PostgreSQL tests running as a superuser do not establish least-priv
 | OD-03 | ACL identity keys and tenant/resource uniqueness | Bảo |
 | OD-04 | Policy generation increment and batch semantics | Bảo |
 | OD-05 | Grant/revoke administrative authority and command schema | Bảo + Ánh |
-| OD-06 | Assignment replacement ordering and pending-state behavior | Ánh |
-| OD-07 | Ledger retention, in-progress outcomes and replay | Bảo + Ánh |
+| OD-06 | Timeout monitoring/escalation and separately approved emergency-revocation procedure before runtime acceptance; Option A contract direction is confirmed | Ánh + Yến; Bảo reviews feasibility |
+| OD-07 | Single-transaction COMMITTED-ledger design vs any justified persistent reservation/recovery states; retention, rejection replay and expiry | Bảo + Ánh |
 | OD-08 | R28/R29 error mappings and cross-service reconciliation | Ánh + Yến |
 | OD-09 | Role/privilege matrix and T07/T08 acceptance criteria | Bảo + Yến |
 
-### Review disposition recorded at reviewed HEAD `eb6d7b0e`
+### Independent review and OD-06 decision record
 
-- **Bảo:** accepts T1 trusted Core runtime for MVP (OD-01); READ COMMITTED and tenant guard first, shared for protected operations and READ/HISTORY, exclusive for policy writes, with `lock_timeout` and `statement_timeout` failing closed (OD-02); accepts the direction for OD-03, OD-04, OD-05 and OD-09, with details deferred to G0-DESIGN. This records his review comment, not PostgreSQL verification or formal ADR approval.
-- **Bảo's G0-DESIGN notes:** the `FOR SHARE`/UPDATE privilege issue and removal of cross-service FKs/Helpdesk trigger are listed above. His review says these do not block the ADR direction, but must be resolved before design/cutover.
-- **Ánh:** accepts OD-05/OD-07/READ-HISTORY direction with conditions; OD-06 and OD-08 requested changes before G0-CONTRACT/integration acceptance. This amendment makes the contract more explicit but does not convert her verdict to approval.
-- **Yến:** decision owner action remains outstanding; this file stays PROPOSED pending fresh independent re-review.
+- **Initial review at `eb6d7b0e`:** Bảo accepted T1 for the MVP, READ COMMITTED and the stated lock order/timeouts, and accepted the direction for OD-03/04/05/09; Ánh accepted OD-05/07/READ-HISTORY with conditions and requested changes for OD-06/08. See [Bảo's initial review](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6731595550) and [Ánh's initial review](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6731716719).
+- **Decision owner Yến:** selected Option A for R27 MVP, Helpdesk assignment/reassignment, at reviewed SHA `af7506d26fbe33f4e634012389bde9c6553c31ab`; [decision record](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6731860971).
+- **Ánh:** ACCEPTED Option A as contract direction, including pending UI/action gating and no immediate-revocation claim; [confirmation](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6731987954).
+- **Bảo:** CONFIRMED Option A, fencing and transaction boundary as contract direction; [confirmation](https://github.com/tricore-opentrix/opentrix/pull/163#issuecomment-6732025189). He prefers a single-Core-transaction durable COMMITTED outcome when feasible; persistent IN_PROGRESS/OUTCOME_UNKNOWN storage is not assumed and remains G0-DESIGN unless justified.
+- **Bảo's G0-DESIGN notes remain:** resolve the `FOR SHARE`/UPDATE privilege issue without request-path ability to mutate `acl_revision`; remove cross-service FKs/Helpdesk trigger at approved cutover; execute T07/T08 under least-privilege PostgreSQL roles. No PostgreSQL/runtime verification was run.
+- **Decision boundary:** OD-06 policy direction is confirmed, but this is not formal ADR-015 acceptance, G0-CONTRACT PASS, G0-DESIGN approval, or implementation authorization. OD-08's R29 amendment remains Ánh's dependency in PR #145. This ADR remains PROPOSED.
 
 ## 15. Consequences
 
@@ -492,4 +503,4 @@ Until these gates are satisfied:
 - No production cutover occurs.
 - No G0 or R27 acceptance is claimed.
 
-**Final status: PROPOSED — SELECTED DIRECTION, INDEPENDENT REVIEW REQUIRED.**
+**Final status: PROPOSED — OD-06 OPTION A CONFIRMED AS CONTRACT DIRECTION; G0-CONTRACT BLOCKED; OTHER G0 DECISIONS/VERIFICATION REMAIN OPEN.**
