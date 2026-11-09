@@ -12,6 +12,8 @@ SPDX-License-Identifier: Apache-2.0
 
 **Q06 = NOT FROZEN; RESEND = DISABLED; G0-CONTRACT = BLOCKED; PR #168 = DRAFT.**
 
+**Revision note (post-`9254fd9`).** Since this pack was written: (a) a Core-owner decision comment [6736174188](https://github.com/tricore-opentrix/opentrix/pull/168#issuecomment-6736174188) records `Q03 = FINAL_ONLY_RECEIPT_PREFERRED_CONDITIONALLY` as a **scope-limited design direction** (posted on the owner's behalf; enforcement stays `CHANGES_REQUIRED`); (b) Yến's [review 5823691176](https://github.com/tricore-opentrix/opentrix/pull/168#pullrequestreview-5823691176) at `9254fd933a1ed03d0ae67a28f5ff87dc0fe53182` is **ACCEPT WITH CONDITIONS — DESIGN DIRECTION ONLY** with five P0 conditions. This revision adds [the enforcement design](r28-q03-core-enforcement-design.md), [the all-writer coverage matrix](r28-q03-all-writer-coverage-matrix.md) and [the verification test specifications](r28-q03-verification-test-specs.md), and corrects the assumptions listed in §6. No runtime test was executed; all of X-12/X-13/X-23/X-24/X-25, T07, T08/X-09 and X-16/X-26 remain **NOT RUN/BLOCKED**.
+
 ## Pinned sources and scope
 
 | Source | Full commit SHA | Scope |
@@ -92,6 +94,8 @@ Rejected MVP assumptions: unique INSERT only after mutation without pre-serializ
 | Migration/setup/maintenance/elevated role | Offline setup uses owner; actual role graph unavailable | No online ACL-changing maintenance while S admission active unless it follows the same reviewed writer protocol. Offline owner/break-glass writes require admission closure and revalidation before reopen, not blanket exemption. |
 | Direct SQL/SET ROLE/owner/superuser | Legacy explicit DML; effective live membership unknown | Actual runtime/request/W/H cannot direct guard/ACL/receipt bypass, TRIGGER/DDL/owner switching or replication-role escape. PostgreSQL superuser/owner cannot be constrained by ordinary grants alone; exclude from online execution and prove controlled access/admission closure. Universal safety against compromised owner is NOT CLAIMED. |
 
+**Detailed, source-SHA-pinned inventory with per-writer required change and proof: [all-writer coverage matrix](r28-q03-all-writer-coverage-matrix.md) (W-01..W-17; W-17 deployed/dynamic/external writers are UNINVENTORIED). The candidate boundary and its limits are specified in the [enforcement design](r28-q03-core-enforcement-design.md).**
+
 **Enforcement decision still BLOCKED:** Java callback plus broad DML fails the requirement even when every checked Java caller inserts a receipt. Candidate stronger boundary for independent review: remove direct table DML from callable runtime/maintenance roles and expose only a restricted transaction operation which cannot return successfully after mutation without complete terminal receipt; internal helpers not executable by callers. Alternatively a reviewed mutation-side commit invariant could cover missing receipt creation. No SQL signature, DDL or grants selected here; this would change privilege/transaction design and must reconcile with ADR-015 T1 boundary. Final-only is not automatically cheaper if this requires wider redesign. If no reviewed enforceable boundary is chosen, Q03 remains CHANGES_REQUIRED; X-25 cannot be waived to preserve the preference.
 
 ### 2.3 Atomic invariant and PostgreSQL proof boundary
@@ -146,9 +150,9 @@ Common setup: reset #165 F0 for each phase; T1/R1 G10/fence5, verified S1 with d
 | Closure item | Current status |
 | --- | --- |
 | **Core owner (Bảo)** personal choice of S, scoped to ACL-admin and Q02–Q05/Q07 selected details | **PENDING explicit owner confirmation**; design analysis and repository comments are not signatures |
-| **Q03 Core recommendation** | **FINAL_ONLY_RECEIPT_PREFERRED_CONDITIONALLY**; current enforcement **CHANGES_REQUIRED**, Bảo personal selection and Yến independent review pending |
+| **Q03 Core direction** | **FINAL_ONLY_RECEIPT_PREFERRED_CONDITIONALLY — owner-selected direction, scope-limited** (comment 6736174188, posted on the owner's behalf; not a personal signature on the mechanism). Yến review 5823691176 at 9254fd9: **ACCEPT WITH CONDITIONS, direction only**. Enforcement **CHANGES_REQUIRED**: candidate boundary M5 now specified in the enforcement design, **unproven** |
 | **Helpdesk owner (Ánh)** consumer choices | **Q06 B conditional S / Q08 B durable reservation + authorized manual reconciliation SELECTED — CONSUMER DIRECTION ONLY**, durable per-attempt CAS conflict; automated worker DEFERRED. Evidence comment 6735579551 at b327239e671df15a57122397302a315dd9344443; not joint freeze |
-| **Security/architecture (Yến)** independent review of the *new exact package SHA*, auth/status disclosure, all-writer serialization, cancellation and retention | **PENDING new-head review** |
+| **Security/architecture (Yến)** independent review of the *new exact package SHA*, auth/status disclosure, all-writer serialization, cancellation and retention | **PENDING review of the post-`9254fd9` head** (enforcement design, writer matrix, test specs); prior review covers the direction only |
 | **R29 #145** producer/consumer amendment replacing non-commit-before-resend rule | **PENDING** on separate owner branch; must pin new reviewed R29 SHA |
 | **Q06 contract freeze** | **NOT FROZEN / BLOCKED**, RESEND DISABLED until owner-selected details, exact API/security/ledger/retention/admission text, R29 amendment and reviewed SHAs align |
 | **R27A implementation permission** | **0/6 P0 READY**; no runtime/DDL/cutover from this package |
@@ -167,3 +171,15 @@ Common setup: reset #165 F0 for each phase; T1/R1 G10/fence5, verified S1 with d
 5. Automated recovery worker remains **DEFERRED**. MVP still needs durable work visibility, authorized monitoring/manual runbook and operations owner; none grants resend. Reference X-12/X-13/X-23/X-24/X-25 and X-16/X-26 requirements at reviewed full SHAs; NOT RUN/BLOCKED until actual evidence.
 
 Residual blockers: enforceable all-writer+complete-receipt boundary (Q03/Q07), Q02 classes, Q04 canonical golden bytes, Q05 compaction/restore admission and operating authority, Q01 managed slice/admin invalidation, Q08 closure/cancellation/convergence, exact authenticated API/status/error mapping, independent Core/security signatures and new reviewed R29 SHA. Full-receipt/tombstone growth, tenant-wide contention, privileged break-glass/restore gaps, possible indefinite authorization lag and manual backlog remain explicit risks. No runtime/DDL/grants/cutover change or G0 acceptance follows from this recommendation.
+
+## 6. Assumptions corrected in this revision
+
+| # | Earlier text | Correction |
+| --- | --- | --- |
+| 1 | Header/§4: Q03 shown as a Core *recommendation* with owner selection pending | An owner direction comment and Yến's direction-only acceptance now exist (see revision note). They accept **direction only**, not the mechanism, freeze or implementation |
+| 2 | §2.2: "Final-only is not automatically cheaper if this requires wider redesign" left open | Specified: the boundary needs a NOLOGIN owner, one definer executor, a lock-only reader helper, deferred constraint triggers (`ENABLE ALWAYS`), fence/admission tables, pool/role split and removal of legacy H DML. The same cost applies to Early Reservation, so enforcement failure of Final-only does **not** approve Early Reservation |
+| 3 | §2.4/Q05: "no new API or epoch field" for admission closure | "Admission closed" is untestable if it is only procedure. A DB-visible admission gate is proposed for Q05/Q07 decision; it must still be backed by an offline closure procedure because a restored row may read `OPEN` |
+| 4 | §2.2 row "Legacy Helpdesk create/assign": described only as lacking receipt | Source also shows legacy ACL writes **do not advance G or write audit** (W-01/W-02), and the runtime role holds `UPDATE(acl_revision)` (W-03), so legacy writers violate D-01 generation semantics, not only the receipt rule |
+| 5 | §2.3: "ACL→complete-receipt invariant" stated as a row-constraint question | A receipt CHECK and UNIQUE index cannot force a receipt to exist; INV-1 requires capability closure (Layer 1) **plus** commit-time linkage (Layer 2) and still leaves owner/superuser out of scope (enforcement design §3.3, §6) |
+| 6 | Lookup semantics ("empty lookup is not non-commit") | Refined: an empty lookup after the guard wait proves only "no committed receipt and no in-flight holder as of now"; it still cannot exclude a delayed original. `CLOSED_NOT_COMMITTED` needs a durable retirement that is not designed (Q05/Q08) |
+| 7 | ADR-015 relationship | M5 is compatible with Model T1 and does not claim T2; it needs ADR-015 owner review. ADR-015 and R29 #145 are **not** edited here |
