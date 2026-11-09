@@ -2,11 +2,11 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 
 # schema_version: 1
-# applicable_sha: 9aaff5854eb386d0602fb4575c4204d359881d73
+# applicable_sha: cc8c0977916020f785060f5e0cfcad857c57540d
 # evidence_kind: living
-# recorded_at_utc: 2026-11-08T22:25:59Z
+# recorded_at_utc: 2026-11-09T02:10:57Z
 # evidence_status: NOT_VERIFIED
-# evidence_source: git:9aaff5854eb386d0602fb4575c4204d359881d73; REUSE 6.3.0
+# evidence_source: git:cc8c0977916020f785060f5e0cfcad857c57540d; REUSE 6.3.0
 # owner: Yen (evidence coordination; not presumed rightsholder)
 # reviewer: Bao/Anh proposed; actual noncontributor review required
 # blockers: Independent review pending
