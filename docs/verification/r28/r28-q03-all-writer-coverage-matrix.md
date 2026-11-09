@@ -3,7 +3,43 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-**2026-11-09 verification update:** [M5 test-only report](r28-q03-m5-verification-report.md)
+## Acceptance closure update — baseline ee048142, 2026-11-09
+
+Trạng thái hiện hành ở [acceptance report](r28-q03-m5-enforcement-acceptance.md).
+Report run 05 và bảng preflight cũ bên dưới là lịch sử, không đại diện cho lần chạy mới.
+[Source inventory](evidence/REVIEW/20261109-m5-acceptance-closure/source-inventory.json)
+pin SHA-256, Git blob và last commit của 17 file liên quan. Production source/grants
+không đổi so với baseline. PostgreSQL catalogs mới chỉ thuộc disposable prototype;
+không có deployed catalog hoặc external credential/writer inventory.
+
+| Writer | Đối chiếu source → quyền thực tế trong PostgreSQL disposable | Phần chưa đủ phạm vi closure | Status |
+| --- | --- | --- | --- |
+| W-01 | `HelpdeskService.create/grant` vẫn INSERT registry/ACL; role `helpdesk_rt` trong fixture bị từ chối policy DML (T08), legacy ACL omission bị deferred trigger từ chối (X-25) | Chưa cutover source/deployment; Create ngoài scope assignment; X-17 thiếu | BLOCKED |
+| W-02 | Source assignment vẫn UPDATE/INSERT ACL; fixture H không DML, A chỉ EXECUTE assignment | Consumer CAS/reservation, X-16/X-26, cutover chưa có | BLOCKED |
+| W-03 | `runtime-grants.sql:12` vẫn UPDATE(acl_revision); fixture actual roles không có quyền cột này, direct +1000 bị từ chối | Không phải bằng chứng revoke grant tại deployment | BLOCKED |
+| W-04 | `helpdesk_policy_lock` là legacy invoker lock helper; reader-first/revoke-first dùng target helper khác | Chưa thay dependency trigger/FK và chưa kiểm chứng legacy cutover | BLOCKED |
+| W-05 | Legacy immutability không liên kết receipt; fixture capture/deferred/immutable catalog và negative probes được thực thi | Không có deployment của Layer 2, chưa bao phủ policy writer khác assignment | BLOCKED |
+| W-06 | Setup script chạy privileged; probe chứng minh owner disable trigger và bypass được | Closed-admission procedure mới là fixture thăm dò; operations chưa duyệt | BLOCKED |
+| W-07 | Actor seed INSERT membership; target runtime không membership DML | Chưa có approved offline exclusion hoặc membership executor | BLOCKED |
+| W-08 | `PostgresWorkflowPersistence` chỉ viết Workflow; fixture W SELECT policy/helper, không policy DML | Revoke-first mới kiểm chứng synthetic ACL executor, chưa Workflow integration | BLOCKED |
+| W-09 | Java wrapper bảo toàn COMMIT_OUTCOME_UNKNOWN; DB SIGTERM/timeout/deadlock thực thi trên prototype | Không Java transport mapping, ACK-drop thật hoặc postmaster crash | BLOCKED |
+| W-10 | Migration/bootstrap source có DDL capability; fixture migrator không SET owner hoặc publish function | Chưa có deployed migration/admission-closed catalog diff | BLOCKED |
+| W-11 | Source tooling chỉ inspection; fixture catalog/grants/defaults/memberships được chụp | Không chạy tooling trên deployed environment; read-only path không chứng minh writer closure | BLOCKED |
+| W-12 | `schema.sql.assign_replace`: actual A EXECUTE; omission/forgery/conflict/savepoint/concurrency probes | Không ingress/Java bridge; approved rejection/retention contract và independent review thiếu | BLOCKED |
+| W-13 | Fixture chặn membership/binding/registry/authority/admission DML, không enable online entrypoint | Mỗi loại writer cần protocol/exclusion riêng; revoke fixture privileged không thay online writer proof | BLOCKED |
+| W-14 | Actual lookup role/status-first được chạy; không cấp repair DML | Manual reconciliation/CAS convergence chưa có consumer contract | BLOCKED |
+| W-15 | Runtime DELETE bị deny, immutable trigger và retained original replay được kiểm tra | Duration, compaction, durable key retirement và authority chưa chốt | BLOCKED |
+| W-16 | Fixture admission-closed/reconcile và closed-backup restore được chuẩn bị/chạy theo report | Không approved stale/OPEN-backup/PITR/reopen procedure hoặc operations inventory | BLOCKED |
+| W-17 | Chỉ metadata inventory các container; không kết nối staging/production | Deployed roles, memberships, pooler, external jobs/credentials chưa truy cập | BLOCKED / UNINVENTORIED |
+
+Không row nào CLOSED. Legacy Helpdesk cutover chỉ là kế hoạch đã được Ánh chuẩn bị:
+inventory → approved Core interface/consumer reservation → admission-closed disable
+legacy writers → verify grants/FK/trigger dependencies → independent approval → reopen.
+Không triển khai hoặc thay grant production trong gói này.
+
+## Lịch sử preflight 02 — không phải trạng thái hiện hành
+
+**2026-11-09 verification update (historical):** [M5 test-only report](r28-q03-m5-verification-report.md)
 ghi nhận authorized preparation tại baseline `cecee84453cf5eaec16548959415c243675d56c4`,
 nhưng preflight fail closed do credential safety chưa xác lập; Docker local cũng không
 hoạt động. **0 DB tests; không writer nào CLOSED.** Production source/grants không đổi.

@@ -1,0 +1,72 @@
+{
+  "test_id": "X-24",
+  "status": "BLOCKED",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 12,
+  "cases": [
+    {
+      "name": "exploratory-terminal-stale-1",
+      "status": "PASS",
+      "reason": "candidate-only immutable rejection result/replay"
+    },
+    {
+      "name": "exploratory-terminal-stale-2",
+      "status": "PASS",
+      "reason": "candidate-only immutable rejection result/replay"
+    },
+    {
+      "name": "exploratory-terminal-fence-1",
+      "status": "PASS",
+      "reason": "candidate-only immutable rejection result/replay"
+    },
+    {
+      "name": "exploratory-terminal-fence-2",
+      "status": "PASS",
+      "reason": "candidate-only immutable rejection result/replay"
+    },
+    {
+      "name": "exploratory-rejection-payload-conflict",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "exploratory-rejection-no-update-grant",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "exploratory-rejection-owner-immutable",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "deterministic-stale-generation-1",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "deterministic-nonadvancing-fence-1",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "deterministic-stale-generation-2",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "deterministic-nonadvancing-fence-2",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "applied-key-immutable-payload",
+      "status": "PASS",
+      "reason": "expectations matched"
+    }
+  ],
+  "remaining": [
+    "Current contract only rolls back deterministic G/fence conflicts; no terminal rejection receipt exists. Rejection keyed immutability/replay requires Q02 owner confirmation. APPLIED replay is not terminal rejection replay.",
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}

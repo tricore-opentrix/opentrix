@@ -1,0 +1,13 @@
+{
+  "completion.json": "2a0b6e0edb6993b6edd0e6372134fe06d0db229f97933c30292c17ad29b70273",
+  "preflight.json": "a558a47435b3bb19276f5de57a934ca29521686cd62596242d885ab237c91962",
+  "source/acceptance.py": "d08a856eda78d63bfb1cf28fa0405c86c1496cf2e1a03efce5bd25c60eabf4a1",
+  "source/audit.py": "eafcbd6579fa31651e9b5f554b68672b722aa0216d37d59e3c70711b2e9107c0",
+  "source/consumer_fixture.json": "6f3585dd4c033ff2fc56ec7eefef4c0e87868cc8a9b5fa6b92d478fbc58000b4",
+  "source/contract_probes.sql": "c404245753bbdef67b2290891a8f401b18906e1f2a0c342eb9bdc0902672c5af",
+  "source/launch.py": "25713df5863fa54c25bf0bf82785efda950802d7fe93821412c0573771bf341b",
+  "source/README.md": "ccef46ca67a9507211814e9d9b501481a2b815710d7ae1a9a411a3c2309acf9c",
+  "source/run.py": "b88d38ce6ec7f79409cdbfdfc0098de1a1e195bb253b42928718908216875d58",
+  "source/schema.sql": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "source/test_harness.py": "ae101c61807f31a9221b2bc22548b1492f29dd3c5a7589fd0697d9875790b4c1"
+}

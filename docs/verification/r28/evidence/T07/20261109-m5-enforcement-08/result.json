@@ -1,0 +1,109 @@
+{
+  "test_id": "T07",
+  "status": "BLOCKED",
+  "reason": "offline fixture operation failed: ERROR:  42601: syntax error at or near \"USER\"\nLINE 1: ALTER TABLE m5.admission ENABLE ALWAYS TRIGGER USER;\n                                                       ^\nLOCATION:  scanner_yyerror, scan.l:1244\n",
+  "database_cases_executed": 19,
+  "cases": [
+    {
+      "name": "reader-first",
+      "status": "PASS",
+      "reason": "lock graph barrier and exactly-one committed effect matched"
+    },
+    {
+      "name": "commit-response-discard-model",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "status-after-response-discard",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "replay-after-response-discard",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-before-mutation-authenticated-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-before-mutation-retry",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-before-mutation",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "kill-after-mutation-authenticated-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-after-mutation-retry",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-after-mutation",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "kill-before-commit-authenticated-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-before-commit-retry",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-before-commit",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "kill-commit-in-flight-authenticated-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-commit-in-flight-retry",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-commit-in-flight",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "lock_timeout",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "statement_timeout",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "actual-deadlock",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    }
+  ],
+  "remaining": [
+    "Full approved contracts, W-17 deployed/external inventory, privileged maintenance/restore proof",
+    "X-13 revocation/security transport/latency mapping; X-23 retention/restore; X-24 terminal rejection",
+    "T07 backend-kill stages, actual network ACK loss, timeouts/deadlock; X-12 all arrival schedules",
+    "X-25 autonomous unique-conflict injection, owner bypass reconciliation; X-16/X-26 Helpdesk integration"
+  ]
+}

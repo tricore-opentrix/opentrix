@@ -1,0 +1,3047 @@
+{
+  "name": "helpdesk_rt-receipt-insert",
+  "actor": "helpdesk_rt",
+  "command": [
+    "docker",
+    "--config",
+    "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+    "--host",
+    "npipe:////./pipe/dockerDesktopLinuxEngine",
+    "exec",
+    "-i",
+    "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+    "psql",
+    "-X",
+    "-q",
+    "-A",
+    "-t",
+    "-U",
+    "helpdesk_rt",
+    "-h",
+    "/var/run/postgresql",
+    "-d",
+    "m5_disposable",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-v",
+    "VERBOSITY=verbose",
+    "--echo-all"
+  ],
+  "sql": "BEGIN; INSERT INTO m5.receipt DEFAULT VALUES; COMMIT;",
+  "expected": {
+    "sqlstate": "42501",
+    "recovered_at_savepoint": false,
+    "effect": "unchanged",
+    "output_contains": null
+  },
+  "observed": {
+    "exit_code": 3,
+    "sqlstates": [
+      "42501"
+    ]
+  },
+  "status": "PASS",
+  "reason": "expectations matched",
+  "before": {
+    "receipt": [
+      {
+        "outcome": "APPLIED",
+        "request": {
+          "fence": 6,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "new",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 10
+        },
+        "audit_id": "78e22ce4-c7d9-4396-b609-e6e494cf058c",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "expected_g": 10,
+        "receipt_id": "62bc9e95-ce3f-4960-bafb-7c7ff8f208ee",
+        "service_id": "synthetic-core",
+        "command_key": "normal",
+        "fingerprint": "\\x8d8d9f1a17ceacf07ca4807eeacb1ed3dd884427c544dcffab1b9eacba33f774",
+        "resource_id": "R1",
+        "resulting_g": 11,
+        "recorded_xid": "741",
+        "change_digest": "\\xa7f184bfbecfc0540777101a9a1c7307a765ba25229c09be1ee780405947102a",
+        "accepted_fence": 6,
+        "fingerprint_version": 1
+      },
+      {
+        "outcome": "APPLIED",
+        "request": {
+          "fence": 7,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "old",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 11
+        },
+        "audit_id": "bfe7cc51-8835-4230-ba1f-ece3418ff88b",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "expected_g": 11,
+        "receipt_id": "c925f7c3-b57b-4d5c-9c86-78bb0a2672db",
+        "service_id": "synthetic-core",
+        "command_key": "reader-first",
+        "fingerprint": "\\xff99eb781fce79bf2a55a1d57ff853d60118a8a39aba3f17fc754dc2baf0c14e",
+        "resource_id": "R1",
+        "resulting_g": 12,
+        "recorded_xid": "786",
+        "change_digest": "\\x694d72878ca6d2482ab5e06d1c7cd9d3bc82221dbd29152e464a7efd2a6f571f",
+        "accepted_fence": 7,
+        "fingerprint_version": 1
+      },
+      {
+        "outcome": "APPLIED",
+        "request": {
+          "fence": 8,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "new",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 12
+        },
+        "audit_id": "cdf07a1e-4990-4362-8b21-e6d0593b49c0",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "expected_g": 12,
+        "receipt_id": "9edbb63b-33bd-4ef7-a2e9-347af17cffba",
+        "service_id": "synthetic-core",
+        "command_key": "lost-ack-model",
+        "fingerprint": "\\xd473bfa01f707efbe40af862c09cd22f8feb35835b0fb4abd51cc6a1c4bb57a4",
+        "resource_id": "R1",
+        "resulting_g": 13,
+        "recorded_xid": "787",
+        "change_digest": "\\x41d223dd5bdf224aa8a08af692d324e31f5496dac331c22688d54332196d9673",
+        "accepted_fence": 8,
+        "fingerprint_version": 1
+      }
+    ],
+    "admission": [
+      {
+        "is_open": true,
+        "tenant_id": "GLOBAL"
+      },
+      {
+        "is_open": true,
+        "tenant_id": "T1"
+      },
+      {
+        "is_open": true,
+        "tenant_id": "T2"
+      }
+    ],
+    "authority": [
+      {
+        "principal": "admin",
+        "tenant_id": "T1",
+        "can_lookup": true,
+        "service_id": "synthetic-core",
+        "can_execute": true,
+        "resource_id": "R1"
+      },
+      {
+        "principal": "admin",
+        "tenant_id": "T2",
+        "can_lookup": true,
+        "service_id": "synthetic-other-service",
+        "can_execute": true,
+        "resource_id": "R2"
+      }
+    ],
+    "mutation_log": [
+      {
+        "action": "INSERT",
+        "new_row": {
+          "changes": [
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 6
+              },
+              "old": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 5
+              },
+              "table": "resource_fence",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "acl_revision": 11
+              },
+              "old": {
+                "tenant_id": "T1",
+                "acl_revision": 10
+              },
+              "table": "tenant_guards",
+              "action": "UPDATE"
+            }
+          ],
+          "request": {
+            "fence": 6,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "new",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 10
+          },
+          "audit_id": "78e22ce4-c7d9-4396-b609-e6e494cf058c",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "previous_g": 10,
+          "service_id": "synthetic-core",
+          "command_key": "normal",
+          "resource_id": "R1",
+          "resulting_g": 11,
+          "recorded_xid": "741",
+          "change_digest": "\\xa7f184bfbecfc0540777101a9a1c7307a765ba25229c09be1ee780405947102a",
+          "accepted_fence": 6
+        },
+        "old_row": null,
+        "event_id": 7,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "policy_audit"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "changes": [
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 8
+              },
+              "old": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 7
+              },
+              "table": "resource_fence",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "acl_revision": 13
+              },
+              "old": {
+                "tenant_id": "T1",
+                "acl_revision": 12
+              },
+              "table": "tenant_guards",
+              "action": "UPDATE"
+            }
+          ],
+          "request": {
+            "fence": 8,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "new",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 12
+          },
+          "audit_id": "cdf07a1e-4990-4362-8b21-e6d0593b49c0",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "previous_g": 12,
+          "service_id": "synthetic-core",
+          "command_key": "lost-ack-model",
+          "resource_id": "R1",
+          "resulting_g": 13,
+          "recorded_xid": "787",
+          "change_digest": "\\x41d223dd5bdf224aa8a08af692d324e31f5496dac331c22688d54332196d9673",
+          "accepted_fence": 8
+        },
+        "old_row": null,
+        "event_id": 124,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "policy_audit"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "changes": [
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 7
+              },
+              "old": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 6
+              },
+              "table": "resource_fence",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "acl_revision": 12
+              },
+              "old": {
+                "tenant_id": "T1",
+                "acl_revision": 11
+              },
+              "table": "tenant_guards",
+              "action": "UPDATE"
+            }
+          ],
+          "request": {
+            "fence": 7,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "old",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 11
+          },
+          "audit_id": "bfe7cc51-8835-4230-ba1f-ece3418ff88b",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "previous_g": 11,
+          "service_id": "synthetic-core",
+          "command_key": "reader-first",
+          "resource_id": "R1",
+          "resulting_g": 12,
+          "recorded_xid": "786",
+          "change_digest": "\\x694d72878ca6d2482ab5e06d1c7cd9d3bc82221dbd29152e464a7efd2a6f571f",
+          "accepted_fence": 7
+        },
+        "old_row": null,
+        "event_id": 116,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "policy_audit"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "outcome": "APPLIED",
+          "request": {
+            "fence": 6,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "new",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 10
+          },
+          "audit_id": "78e22ce4-c7d9-4396-b609-e6e494cf058c",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "expected_g": 10,
+          "receipt_id": "62bc9e95-ce3f-4960-bafb-7c7ff8f208ee",
+          "service_id": "synthetic-core",
+          "command_key": "normal",
+          "fingerprint": "\\x8d8d9f1a17ceacf07ca4807eeacb1ed3dd884427c544dcffab1b9eacba33f774",
+          "resource_id": "R1",
+          "resulting_g": 11,
+          "recorded_xid": "741",
+          "change_digest": "\\xa7f184bfbecfc0540777101a9a1c7307a765ba25229c09be1ee780405947102a",
+          "accepted_fence": 6,
+          "fingerprint_version": 1
+        },
+        "old_row": null,
+        "event_id": 8,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "receipt"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "outcome": "APPLIED",
+          "request": {
+            "fence": 7,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "old",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 11
+          },
+          "audit_id": "bfe7cc51-8835-4230-ba1f-ece3418ff88b",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "expected_g": 11,
+          "receipt_id": "c925f7c3-b57b-4d5c-9c86-78bb0a2672db",
+          "service_id": "synthetic-core",
+          "command_key": "reader-first",
+          "fingerprint": "\\xff99eb781fce79bf2a55a1d57ff853d60118a8a39aba3f17fc754dc2baf0c14e",
+          "resource_id": "R1",
+          "resulting_g": 12,
+          "recorded_xid": "786",
+          "change_digest": "\\x694d72878ca6d2482ab5e06d1c7cd9d3bc82221dbd29152e464a7efd2a6f571f",
+          "accepted_fence": 7,
+          "fingerprint_version": 1
+        },
+        "old_row": null,
+        "event_id": 117,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "receipt"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "outcome": "APPLIED",
+          "request": {
+            "fence": 8,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "new",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 12
+          },
+          "audit_id": "cdf07a1e-4990-4362-8b21-e6d0593b49c0",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "expected_g": 12,
+          "receipt_id": "9edbb63b-33bd-4ef7-a2e9-347af17cffba",
+          "service_id": "synthetic-core",
+          "command_key": "lost-ack-model",
+          "fingerprint": "\\xd473bfa01f707efbe40af862c09cd22f8feb35835b0fb4abd51cc6a1c4bb57a4",
+          "resource_id": "R1",
+          "resulting_g": 13,
+          "recorded_xid": "787",
+          "change_digest": "\\x41d223dd5bdf224aa8a08af692d324e31f5496dac331c22688d54332196d9673",
+          "accepted_fence": 8,
+          "fingerprint_version": 1
+        },
+        "old_row": null,
+        "event_id": 125,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "receipt"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 110,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 111,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 120,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 3,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 121,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 4,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 118,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 1,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 119,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 2,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 112,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 113,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "acl_revision": 11
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "acl_revision": 10
+        },
+        "event_id": 5,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "tenant_guards"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "acl_revision": 12
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "acl_revision": 11
+        },
+        "event_id": 114,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "tenant_guards"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "acl_revision": 13
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "acl_revision": 12
+        },
+        "event_id": 122,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "tenant_guards"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 6
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 5
+        },
+        "event_id": 6,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_fence"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 7
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 6
+        },
+        "event_id": 115,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_fence"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 8
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 7
+        },
+        "event_id": 123,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_fence"
+      }
+    ],
+    "policy_audit": [
+      {
+        "changes": [
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 6
+            },
+            "old": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 5
+            },
+            "table": "resource_fence",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "acl_revision": 11
+            },
+            "old": {
+              "tenant_id": "T1",
+              "acl_revision": 10
+            },
+            "table": "tenant_guards",
+            "action": "UPDATE"
+          }
+        ],
+        "request": {
+          "fence": 6,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "new",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 10
+        },
+        "audit_id": "78e22ce4-c7d9-4396-b609-e6e494cf058c",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "previous_g": 10,
+        "service_id": "synthetic-core",
+        "command_key": "normal",
+        "resource_id": "R1",
+        "resulting_g": 11,
+        "recorded_xid": "741",
+        "change_digest": "\\xa7f184bfbecfc0540777101a9a1c7307a765ba25229c09be1ee780405947102a",
+        "accepted_fence": 6
+      },
+      {
+        "changes": [
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 8
+            },
+            "old": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 7
+            },
+            "table": "resource_fence",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "acl_revision": 13
+            },
+            "old": {
+              "tenant_id": "T1",
+              "acl_revision": 12
+            },
+            "table": "tenant_guards",
+            "action": "UPDATE"
+          }
+        ],
+        "request": {
+          "fence": 8,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "new",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 12
+        },
+        "audit_id": "cdf07a1e-4990-4362-8b21-e6d0593b49c0",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "previous_g": 12,
+        "service_id": "synthetic-core",
+        "command_key": "lost-ack-model",
+        "resource_id": "R1",
+        "resulting_g": 13,
+        "recorded_xid": "787",
+        "change_digest": "\\x41d223dd5bdf224aa8a08af692d324e31f5496dac331c22688d54332196d9673",
+        "accepted_fence": 8
+      },
+      {
+        "changes": [
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 7
+            },
+            "old": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 6
+            },
+            "table": "resource_fence",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "acl_revision": 12
+            },
+            "old": {
+              "tenant_id": "T1",
+              "acl_revision": 11
+            },
+            "table": "tenant_guards",
+            "action": "UPDATE"
+          }
+        ],
+        "request": {
+          "fence": 7,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "old",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 11
+        },
+        "audit_id": "bfe7cc51-8835-4230-ba1f-ece3418ff88b",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "previous_g": 11,
+        "service_id": "synthetic-core",
+        "command_key": "reader-first",
+        "resource_id": "R1",
+        "resulting_g": 12,
+        "recorded_xid": "786",
+        "change_digest": "\\x694d72878ca6d2482ab5e06d1c7cd9d3bc82221dbd29152e464a7efd2a6f571f",
+        "accepted_fence": 7
+      }
+    ],
+    "resource_acl": [
+      {
+        "granted": false,
+        "actor_id": "new",
+        "operation": "workflow:read",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      },
+      {
+        "granted": false,
+        "actor_id": "new",
+        "operation": "workflow:transition",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      },
+      {
+        "granted": false,
+        "actor_id": "old",
+        "operation": "workflow:read",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "granted": false,
+        "actor_id": "old",
+        "operation": "workflow:transition",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "granted": true,
+        "actor_id": "new",
+        "operation": "workflow:read",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "granted": true,
+        "actor_id": "new",
+        "operation": "workflow:transition",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "granted": true,
+        "actor_id": "old",
+        "operation": "workflow:read",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      },
+      {
+        "granted": true,
+        "actor_id": "old",
+        "operation": "workflow:transition",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      }
+    ],
+    "tenant_guards": [
+      {
+        "tenant_id": "T1",
+        "acl_revision": 13
+      },
+      {
+        "tenant_id": "T2",
+        "acl_revision": 10
+      }
+    ],
+    "resource_fence": [
+      {
+        "tenant_id": "T1",
+        "resource_id": "R1",
+        "accepted_fence": 8
+      },
+      {
+        "tenant_id": "T2",
+        "resource_id": "R2",
+        "accepted_fence": 5
+      }
+    ],
+    "resource_registry": [
+      {
+        "lifecycle": "ACTIVE",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "lifecycle": "ACTIVE",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      }
+    ],
+    "tenant_memberships": [
+      {
+        "active": true,
+        "actor_id": "admin",
+        "tenant_id": "T1"
+      },
+      {
+        "active": true,
+        "actor_id": "admin",
+        "tenant_id": "T2"
+      },
+      {
+        "active": true,
+        "actor_id": "new",
+        "tenant_id": "T1"
+      },
+      {
+        "active": true,
+        "actor_id": "new",
+        "tenant_id": "T2"
+      },
+      {
+        "active": true,
+        "actor_id": "old",
+        "tenant_id": "T1"
+      },
+      {
+        "active": true,
+        "actor_id": "old",
+        "tenant_id": "T2"
+      }
+    ],
+    "workflow_definition_bindings": [
+      {
+        "active": true,
+        "tenant_id": "T1",
+        "definition_id": "D1"
+      },
+      {
+        "active": true,
+        "tenant_id": "T2",
+        "definition_id": "D2"
+      }
+    ]
+  },
+  "after": {
+    "receipt": [
+      {
+        "outcome": "APPLIED",
+        "request": {
+          "fence": 6,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "new",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 10
+        },
+        "audit_id": "78e22ce4-c7d9-4396-b609-e6e494cf058c",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "expected_g": 10,
+        "receipt_id": "62bc9e95-ce3f-4960-bafb-7c7ff8f208ee",
+        "service_id": "synthetic-core",
+        "command_key": "normal",
+        "fingerprint": "\\x8d8d9f1a17ceacf07ca4807eeacb1ed3dd884427c544dcffab1b9eacba33f774",
+        "resource_id": "R1",
+        "resulting_g": 11,
+        "recorded_xid": "741",
+        "change_digest": "\\xa7f184bfbecfc0540777101a9a1c7307a765ba25229c09be1ee780405947102a",
+        "accepted_fence": 6,
+        "fingerprint_version": 1
+      },
+      {
+        "outcome": "APPLIED",
+        "request": {
+          "fence": 7,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "old",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 11
+        },
+        "audit_id": "bfe7cc51-8835-4230-ba1f-ece3418ff88b",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "expected_g": 11,
+        "receipt_id": "c925f7c3-b57b-4d5c-9c86-78bb0a2672db",
+        "service_id": "synthetic-core",
+        "command_key": "reader-first",
+        "fingerprint": "\\xff99eb781fce79bf2a55a1d57ff853d60118a8a39aba3f17fc754dc2baf0c14e",
+        "resource_id": "R1",
+        "resulting_g": 12,
+        "recorded_xid": "786",
+        "change_digest": "\\x694d72878ca6d2482ab5e06d1c7cd9d3bc82221dbd29152e464a7efd2a6f571f",
+        "accepted_fence": 7,
+        "fingerprint_version": 1
+      },
+      {
+        "outcome": "APPLIED",
+        "request": {
+          "fence": 8,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "new",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 12
+        },
+        "audit_id": "cdf07a1e-4990-4362-8b21-e6d0593b49c0",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "expected_g": 12,
+        "receipt_id": "9edbb63b-33bd-4ef7-a2e9-347af17cffba",
+        "service_id": "synthetic-core",
+        "command_key": "lost-ack-model",
+        "fingerprint": "\\xd473bfa01f707efbe40af862c09cd22f8feb35835b0fb4abd51cc6a1c4bb57a4",
+        "resource_id": "R1",
+        "resulting_g": 13,
+        "recorded_xid": "787",
+        "change_digest": "\\x41d223dd5bdf224aa8a08af692d324e31f5496dac331c22688d54332196d9673",
+        "accepted_fence": 8,
+        "fingerprint_version": 1
+      }
+    ],
+    "admission": [
+      {
+        "is_open": true,
+        "tenant_id": "GLOBAL"
+      },
+      {
+        "is_open": true,
+        "tenant_id": "T1"
+      },
+      {
+        "is_open": true,
+        "tenant_id": "T2"
+      }
+    ],
+    "authority": [
+      {
+        "principal": "admin",
+        "tenant_id": "T1",
+        "can_lookup": true,
+        "service_id": "synthetic-core",
+        "can_execute": true,
+        "resource_id": "R1"
+      },
+      {
+        "principal": "admin",
+        "tenant_id": "T2",
+        "can_lookup": true,
+        "service_id": "synthetic-other-service",
+        "can_execute": true,
+        "resource_id": "R2"
+      }
+    ],
+    "mutation_log": [
+      {
+        "action": "INSERT",
+        "new_row": {
+          "changes": [
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 6
+              },
+              "old": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 5
+              },
+              "table": "resource_fence",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "acl_revision": 11
+              },
+              "old": {
+                "tenant_id": "T1",
+                "acl_revision": 10
+              },
+              "table": "tenant_guards",
+              "action": "UPDATE"
+            }
+          ],
+          "request": {
+            "fence": 6,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "new",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 10
+          },
+          "audit_id": "78e22ce4-c7d9-4396-b609-e6e494cf058c",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "previous_g": 10,
+          "service_id": "synthetic-core",
+          "command_key": "normal",
+          "resource_id": "R1",
+          "resulting_g": 11,
+          "recorded_xid": "741",
+          "change_digest": "\\xa7f184bfbecfc0540777101a9a1c7307a765ba25229c09be1ee780405947102a",
+          "accepted_fence": 6
+        },
+        "old_row": null,
+        "event_id": 7,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "policy_audit"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "changes": [
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 8
+              },
+              "old": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 7
+              },
+              "table": "resource_fence",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "acl_revision": 13
+              },
+              "old": {
+                "tenant_id": "T1",
+                "acl_revision": 12
+              },
+              "table": "tenant_guards",
+              "action": "UPDATE"
+            }
+          ],
+          "request": {
+            "fence": 8,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "new",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 12
+          },
+          "audit_id": "cdf07a1e-4990-4362-8b21-e6d0593b49c0",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "previous_g": 12,
+          "service_id": "synthetic-core",
+          "command_key": "lost-ack-model",
+          "resource_id": "R1",
+          "resulting_g": 13,
+          "recorded_xid": "787",
+          "change_digest": "\\x41d223dd5bdf224aa8a08af692d324e31f5496dac331c22688d54332196d9673",
+          "accepted_fence": 8
+        },
+        "old_row": null,
+        "event_id": 124,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "policy_audit"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "changes": [
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": true,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": false,
+                "actor_id": "old",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:read",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "granted": false,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "old": {
+                "granted": true,
+                "actor_id": "new",
+                "operation": "workflow:transition",
+                "tenant_id": "T1",
+                "resource_id": "R1"
+              },
+              "table": "resource_acl",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 7
+              },
+              "old": {
+                "tenant_id": "T1",
+                "resource_id": "R1",
+                "accepted_fence": 6
+              },
+              "table": "resource_fence",
+              "action": "UPDATE"
+            },
+            {
+              "new": {
+                "tenant_id": "T1",
+                "acl_revision": 12
+              },
+              "old": {
+                "tenant_id": "T1",
+                "acl_revision": 11
+              },
+              "table": "tenant_guards",
+              "action": "UPDATE"
+            }
+          ],
+          "request": {
+            "fence": 7,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "old",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 11
+          },
+          "audit_id": "bfe7cc51-8835-4230-ba1f-ece3418ff88b",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "previous_g": 11,
+          "service_id": "synthetic-core",
+          "command_key": "reader-first",
+          "resource_id": "R1",
+          "resulting_g": 12,
+          "recorded_xid": "786",
+          "change_digest": "\\x694d72878ca6d2482ab5e06d1c7cd9d3bc82221dbd29152e464a7efd2a6f571f",
+          "accepted_fence": 7
+        },
+        "old_row": null,
+        "event_id": 116,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "policy_audit"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "outcome": "APPLIED",
+          "request": {
+            "fence": 6,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "new",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 10
+          },
+          "audit_id": "78e22ce4-c7d9-4396-b609-e6e494cf058c",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "expected_g": 10,
+          "receipt_id": "62bc9e95-ce3f-4960-bafb-7c7ff8f208ee",
+          "service_id": "synthetic-core",
+          "command_key": "normal",
+          "fingerprint": "\\x8d8d9f1a17ceacf07ca4807eeacb1ed3dd884427c544dcffab1b9eacba33f774",
+          "resource_id": "R1",
+          "resulting_g": 11,
+          "recorded_xid": "741",
+          "change_digest": "\\xa7f184bfbecfc0540777101a9a1c7307a765ba25229c09be1ee780405947102a",
+          "accepted_fence": 6,
+          "fingerprint_version": 1
+        },
+        "old_row": null,
+        "event_id": 8,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "receipt"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "outcome": "APPLIED",
+          "request": {
+            "fence": 7,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "old",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 11
+          },
+          "audit_id": "bfe7cc51-8835-4230-ba1f-ece3418ff88b",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "expected_g": 11,
+          "receipt_id": "c925f7c3-b57b-4d5c-9c86-78bb0a2672db",
+          "service_id": "synthetic-core",
+          "command_key": "reader-first",
+          "fingerprint": "\\xff99eb781fce79bf2a55a1d57ff853d60118a8a39aba3f17fc754dc2baf0c14e",
+          "resource_id": "R1",
+          "resulting_g": 12,
+          "recorded_xid": "786",
+          "change_digest": "\\x694d72878ca6d2482ab5e06d1c7cd9d3bc82221dbd29152e464a7efd2a6f571f",
+          "accepted_fence": 7,
+          "fingerprint_version": 1
+        },
+        "old_row": null,
+        "event_id": 117,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "receipt"
+      },
+      {
+        "action": "INSERT",
+        "new_row": {
+          "outcome": "APPLIED",
+          "request": {
+            "fence": 8,
+            "tenant": "T1",
+            "service": "synthetic-core",
+            "version": 1,
+            "assignee": "new",
+            "resource": "R1",
+            "operation": "ACL_ASSIGN_REPLACE",
+            "principal": "admin",
+            "expected_g": 12
+          },
+          "audit_id": "cdf07a1e-4990-4362-8b21-e6d0593b49c0",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "tenant_id": "T1",
+          "expected_g": 12,
+          "receipt_id": "9edbb63b-33bd-4ef7-a2e9-347af17cffba",
+          "service_id": "synthetic-core",
+          "command_key": "lost-ack-model",
+          "fingerprint": "\\xd473bfa01f707efbe40af862c09cd22f8feb35835b0fb4abd51cc6a1c4bb57a4",
+          "resource_id": "R1",
+          "resulting_g": 13,
+          "recorded_xid": "787",
+          "change_digest": "\\x41d223dd5bdf224aa8a08af692d324e31f5496dac331c22688d54332196d9673",
+          "accepted_fence": 8,
+          "fingerprint_version": 1
+        },
+        "old_row": null,
+        "event_id": 125,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "receipt"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 110,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 111,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 120,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 3,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 121,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 4,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 118,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 1,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 119,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "new",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 2,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:read",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 112,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "granted": true,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "old_row": {
+          "granted": false,
+          "actor_id": "old",
+          "operation": "workflow:transition",
+          "tenant_id": "T1",
+          "resource_id": "R1"
+        },
+        "event_id": 113,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_acl"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "acl_revision": 11
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "acl_revision": 10
+        },
+        "event_id": 5,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "tenant_guards"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "acl_revision": 12
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "acl_revision": 11
+        },
+        "event_id": 114,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "tenant_guards"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "acl_revision": 13
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "acl_revision": 12
+        },
+        "event_id": 122,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "tenant_guards"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 6
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 5
+        },
+        "event_id": 6,
+        "tenant_id": "T1",
+        "recorded_xid": "741",
+        "relation_name": "resource_fence"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 7
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 6
+        },
+        "event_id": 115,
+        "tenant_id": "T1",
+        "recorded_xid": "786",
+        "relation_name": "resource_fence"
+      },
+      {
+        "action": "UPDATE",
+        "new_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 8
+        },
+        "old_row": {
+          "tenant_id": "T1",
+          "resource_id": "R1",
+          "accepted_fence": 7
+        },
+        "event_id": 123,
+        "tenant_id": "T1",
+        "recorded_xid": "787",
+        "relation_name": "resource_fence"
+      }
+    ],
+    "policy_audit": [
+      {
+        "changes": [
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 6
+            },
+            "old": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 5
+            },
+            "table": "resource_fence",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "acl_revision": 11
+            },
+            "old": {
+              "tenant_id": "T1",
+              "acl_revision": 10
+            },
+            "table": "tenant_guards",
+            "action": "UPDATE"
+          }
+        ],
+        "request": {
+          "fence": 6,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "new",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 10
+        },
+        "audit_id": "78e22ce4-c7d9-4396-b609-e6e494cf058c",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "previous_g": 10,
+        "service_id": "synthetic-core",
+        "command_key": "normal",
+        "resource_id": "R1",
+        "resulting_g": 11,
+        "recorded_xid": "741",
+        "change_digest": "\\xa7f184bfbecfc0540777101a9a1c7307a765ba25229c09be1ee780405947102a",
+        "accepted_fence": 6
+      },
+      {
+        "changes": [
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 8
+            },
+            "old": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 7
+            },
+            "table": "resource_fence",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "acl_revision": 13
+            },
+            "old": {
+              "tenant_id": "T1",
+              "acl_revision": 12
+            },
+            "table": "tenant_guards",
+            "action": "UPDATE"
+          }
+        ],
+        "request": {
+          "fence": 8,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "new",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 12
+        },
+        "audit_id": "cdf07a1e-4990-4362-8b21-e6d0593b49c0",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "previous_g": 12,
+        "service_id": "synthetic-core",
+        "command_key": "lost-ack-model",
+        "resource_id": "R1",
+        "resulting_g": 13,
+        "recorded_xid": "787",
+        "change_digest": "\\x41d223dd5bdf224aa8a08af692d324e31f5496dac331c22688d54332196d9673",
+        "accepted_fence": 8
+      },
+      {
+        "changes": [
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": true,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": false,
+              "actor_id": "old",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:read",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "granted": false,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "old": {
+              "granted": true,
+              "actor_id": "new",
+              "operation": "workflow:transition",
+              "tenant_id": "T1",
+              "resource_id": "R1"
+            },
+            "table": "resource_acl",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 7
+            },
+            "old": {
+              "tenant_id": "T1",
+              "resource_id": "R1",
+              "accepted_fence": 6
+            },
+            "table": "resource_fence",
+            "action": "UPDATE"
+          },
+          {
+            "new": {
+              "tenant_id": "T1",
+              "acl_revision": 12
+            },
+            "old": {
+              "tenant_id": "T1",
+              "acl_revision": 11
+            },
+            "table": "tenant_guards",
+            "action": "UPDATE"
+          }
+        ],
+        "request": {
+          "fence": 7,
+          "tenant": "T1",
+          "service": "synthetic-core",
+          "version": 1,
+          "assignee": "old",
+          "resource": "R1",
+          "operation": "ACL_ASSIGN_REPLACE",
+          "principal": "admin",
+          "expected_g": 11
+        },
+        "audit_id": "bfe7cc51-8835-4230-ba1f-ece3418ff88b",
+        "operation": "ACL_ASSIGN_REPLACE",
+        "principal": "admin",
+        "tenant_id": "T1",
+        "previous_g": 11,
+        "service_id": "synthetic-core",
+        "command_key": "reader-first",
+        "resource_id": "R1",
+        "resulting_g": 12,
+        "recorded_xid": "786",
+        "change_digest": "\\x694d72878ca6d2482ab5e06d1c7cd9d3bc82221dbd29152e464a7efd2a6f571f",
+        "accepted_fence": 7
+      }
+    ],
+    "resource_acl": [
+      {
+        "granted": false,
+        "actor_id": "new",
+        "operation": "workflow:read",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      },
+      {
+        "granted": false,
+        "actor_id": "new",
+        "operation": "workflow:transition",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      },
+      {
+        "granted": false,
+        "actor_id": "old",
+        "operation": "workflow:read",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "granted": false,
+        "actor_id": "old",
+        "operation": "workflow:transition",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "granted": true,
+        "actor_id": "new",
+        "operation": "workflow:read",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "granted": true,
+        "actor_id": "new",
+        "operation": "workflow:transition",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "granted": true,
+        "actor_id": "old",
+        "operation": "workflow:read",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      },
+      {
+        "granted": true,
+        "actor_id": "old",
+        "operation": "workflow:transition",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      }
+    ],
+    "tenant_guards": [
+      {
+        "tenant_id": "T1",
+        "acl_revision": 13
+      },
+      {
+        "tenant_id": "T2",
+        "acl_revision": 10
+      }
+    ],
+    "resource_fence": [
+      {
+        "tenant_id": "T1",
+        "resource_id": "R1",
+        "accepted_fence": 8
+      },
+      {
+        "tenant_id": "T2",
+        "resource_id": "R2",
+        "accepted_fence": 5
+      }
+    ],
+    "resource_registry": [
+      {
+        "lifecycle": "ACTIVE",
+        "tenant_id": "T1",
+        "resource_id": "R1"
+      },
+      {
+        "lifecycle": "ACTIVE",
+        "tenant_id": "T2",
+        "resource_id": "R2"
+      }
+    ],
+    "tenant_memberships": [
+      {
+        "active": true,
+        "actor_id": "admin",
+        "tenant_id": "T1"
+      },
+      {
+        "active": true,
+        "actor_id": "admin",
+        "tenant_id": "T2"
+      },
+      {
+        "active": true,
+        "actor_id": "new",
+        "tenant_id": "T1"
+      },
+      {
+        "active": true,
+        "actor_id": "new",
+        "tenant_id": "T2"
+      },
+      {
+        "active": true,
+        "actor_id": "old",
+        "tenant_id": "T1"
+      },
+      {
+        "active": true,
+        "actor_id": "old",
+        "tenant_id": "T2"
+      }
+    ],
+    "workflow_definition_bindings": [
+      {
+        "active": true,
+        "tenant_id": "T1",
+        "definition_id": "D1"
+      },
+      {
+        "active": true,
+        "tenant_id": "T2",
+        "definition_id": "D2"
+      }
+    ]
+  },
+  "stdout": "SELECT 'ACTOR='||session_user||'/'||current_user; SHOW transaction_isolation;\nACTOR=helpdesk_rt/helpdesk_rt\nread committed\nBEGIN; INSERT INTO m5.receipt DEFAULT VALUES; COMMIT;\n",
+  "stderr": "ERROR:  42501: permission denied for table receipt\nLOCATION:  aclcheck_error, aclchk.c:2843\n",
+  "test_id": "T08-X-09",
+  "provenance": {
+    "source_commit": "ee048142c805b0a14324a3ed0557326d9880e653",
+    "schema_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "grant_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "environment": "environment.json",
+    "claim_scope": "disposable prototype only; no deployed writer closure"
+  }
+}

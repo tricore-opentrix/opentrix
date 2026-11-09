@@ -1,0 +1,14 @@
+{
+  "autonomous-unique.json": "0ba58310eb1940c8cabe468397f3615064057185b365714d428cb74eab141395",
+  "direct-forged-existing-audit.json": "f2533776a859e9e69462798c13ec28b236b64ebe31ceef801557c5861e246c40",
+  "direct-multirow-multitable-omission.json": "52b65698dd41a9a554c38c81be8b29d5bea3e9a157f70d2d1f8b0d0dace6c329",
+  "direct-savepoint-partial-rollback.json": "d69e6b54b945602b1e246612e30479eb3f803a597745faaeeae962c910b32c1e",
+  "environment.json": "691285f3123d7d4b4e6c9fbac5da388e5345c18c2f2854800349c82e1fa5de15",
+  "forged-key.json": "15150ebc19507f4fbab5ff10801e3a9cd7bd8748b19ee3fd8ef499ae0d505dee",
+  "forged-principal.json": "fb232f27b451af36c41e7e6569e85b230fab3d22baa2b1dddedf13f684eb7539",
+  "forged-resource.json": "d31a0d0fdde559567ded4e25ff82fd7f63ae7bd50548d3ecdf9dcc7a5d07f018",
+  "normal-multirow-assignment.json": "112c5ceb3c3cad4aa01b6895d4a4ef19926166a11489cfb84c63f8369eefcc4a",
+  "owner-bypass-closed-admission.json": "6fbabad1e9cf6c8cc2c3e2edaba93758e8a08d41c925615faffd63b99a6673db",
+  "receipt-conflict-do-nothing-not-success.json": "a94b8ee9e98692f9021066525fe5556fb6cd6fbfa22ae07edc12b239e841b6c0",
+  "result.json": "ea2959ce0e3dbaf57f6036ec1628d1ec59c7688599f23c84b442c406c51cce66"
+}

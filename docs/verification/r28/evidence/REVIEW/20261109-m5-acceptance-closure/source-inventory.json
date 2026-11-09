@@ -1,0 +1,126 @@
+{
+  "baseline": "ee048142c805b0a14324a3ed0557326d9880e653",
+  "source_files": [
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/HelpdeskService.java",
+      "git_blob": "e95395a2374e5abdf16a2c87273f6cc2640f25ac",
+      "sha256": "819406aa300da55ec7bc0379834e72abe0a6dbff518f7b762f1fd4a1be1aa964",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/PostgresWorkflowPersistence.java",
+      "git_blob": "c91bb96158b2a510276b3623a6f6f442c83cb33a",
+      "sha256": "1bc8f1bc0f005803e796843a17f44f49fd8e73ecb17f2f6347e8c91435c1c1f0",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/WorkflowApprovedMigration.java",
+      "git_blob": "fd812ea83cbad668f65105798b176a138d5b3ec9",
+      "sha256": "47115bab9b1a4518e97e4a2eb1ea59c6a808fb53be27aaf632944d53b2a9818a",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/WorkflowSchemaBootstrap.java",
+      "git_blob": "802c2139040bb36e8d02d3d3c554b497c53139f1",
+      "sha256": "ced7acd69a802c093c764a5a993c4dfa3a85523934e6262138d472594687f547",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/WorkflowMigrations.java",
+      "git_blob": "b40989293a6ef1cdcc62d4873daaea2a6db480a2",
+      "sha256": "9aa9bb4cce26f2cb096b3307fe7fd27cdd4e6a35a7334d3c7903adbcc74c778f",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/WorkflowSchema.java",
+      "git_blob": "b5888269747acbf900a1f7f53afffdbb206363be",
+      "sha256": "e4c76f3f27e0e53a8c41a922c9b1aa2a9b7ec774a883b6ddfab2c0ce4c10be84",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/WorkflowSecurityDefinerReview.java",
+      "git_blob": "1832bfdacdf2146ea7b94767e5d913b7a234c264",
+      "sha256": "6fb6fda456c08d97f2773d33902a7f6b672f0bbfeb8cbfb4fe2c3aab389d8c8c",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/WorkflowEventTriggerReview.java",
+      "git_blob": "e0a89466fd97688f36ce9d86fce7776f334f110c",
+      "sha256": "008177bc6f423dccc7df660b58c06b5ed3ba2ed9b8c8b39bb9797d12ffa474a6",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/WorkflowEventTriggerGuard.java",
+      "git_blob": "2e3693ac1c7326271a776efbbe8d07194c5504a5",
+      "sha256": "6e84124b17fab57951ad2c5a396f590180da174998efd8aeb8f87836555f00af",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/WorkflowRuntimePrivilegeAudit.java",
+      "git_blob": "de70eec1d990a674a0b07a782cfba491563d8193",
+      "sha256": "a9ce1213f2ed23783e2736d9b3ab1d5658d9eb496f62a6b36011de03a2405efb",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/java/com/tricore/dxos/infrastructure/workflow/WorkflowReadOnlyPreflight.java",
+      "git_blob": "4644c54626ab24af8ba60e7489d1e13732dbb5cf",
+      "sha256": "52ed560efc69b5ea1baa600be6b6f98312c7e6a3181d4118a65d74e0c3c78d80",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/resources/db/helpdesk/runtime-grants.sql",
+      "git_blob": "6a1ca1a5460318f8007f4c33d22eceefec4ef039",
+      "sha256": "390a9b370055d03713697c0b1430e401c67451e3e4efdf97f9324efa46da70d6",
+      "last_commit": "44283466f1747d55ed39e782d0600e8d09a28427",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/resources/db/helpdesk/schema.sql",
+      "git_blob": "d194672649b031a661785806701f35d0537b9f9b",
+      "sha256": "a5b3849184344171164acd973d807952a06e6b6a78b37cb3e3b93052b3dbc60c",
+      "last_commit": "44283466f1747d55ed39e782d0600e8d09a28427",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "backend/src/main/resources/db/helpdesk/policy-schema.sql",
+      "git_blob": "c591506a289d9793dd84c4df76ac780b09122800",
+      "sha256": "55878ec9ac3b0e1773dcd4c2f836e93ea68893ff5dc37fac7e67dc3898adbf77",
+      "last_commit": "44283466f1747d55ed39e782d0600e8d09a28427",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "scripts/helpdesk-local-setup.ps1",
+      "git_blob": "3fcfcb4d151731c197ec0ac56d091f22f2ba34d4",
+      "sha256": "3d2ef468507c7fb56ffdffef99d2fca426177e04a2140df9204dada50d273614",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "scripts/helpdesk-local-actor-seed.ps1",
+      "git_blob": "7af3bde6add9292bc729116d3b1161966605b912",
+      "sha256": "95923bec4bd948f0db630327d4969a1b4c97b63b2639a5f0cc53529938497e7c",
+      "last_commit": "fa16f30d5c67a49186b1c36f2babe58d54a15e38",
+      "changed_from_baseline": false
+    },
+    {
+      "path": "tests/r28_m5/schema.sql",
+      "git_blob": "7fe1e8f8ea406f414f289edbc6fa67c42f5bf735",
+      "sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+      "last_commit": "161dc0d5be0c5c367155eddb33ad6d8fe0eba753",
+      "changed_from_baseline": false
+    }
+  ],
+  "deployed_catalog": "BLOCKED: no staging/production access used",
+  "external_writer_inventory": "BLOCKED / UNINVENTORIED"
+}

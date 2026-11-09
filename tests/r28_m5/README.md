@@ -15,6 +15,9 @@ Chạy từ repository root, Python standard library và Docker Linux engine c�
 ```powershell
 python -B -m unittest discover -s tests/r28_m5 -p test_harness.py -v
 python -I -B tests/r28_m5/launch.py --run-id m5-review-001
+python -I -B tests/r28_m5/launch.py --acceptance --run-id m5-acceptance-001
+python -I -B tests/r28_m5/launch.py --acceptance-only --run-id m5-supplement-001
+python -I -B tests/r28_m5/audit.py --run-id m5-acceptance-001
 ```
 
 Image `postgres:17` phải có sẵn cùng official RepoDigest. Runner không pull image,
@@ -78,11 +81,24 @@ Các probe legacy grant chỉ tồn tại trong disposable DB và được revok
 Concurrency dùng hai psql session và `pg_blocking_pids`, giữ lock tới khi observer
 xác nhận cạnh waiter/blocker; polling không được dùng làm suy đoán lịch chạy.
 
-Các gap còn bắt buộc: kill-backend ở mọi stage, network COMMIT-ACK drop thật,
-unique-conflict autonomous injection, reader/revoke-first fresh authorization,
-lock/statement timeout + deadlock, đủ lịch X-12, X-13 revoke và transport/latency mapping,
-X-23 restore/retention/admission, X-24 terminal rejection, X-16/X-26 với Ánh,
-privileged maintenance closure/reconciliation và W-17 deployed inventory.
+`--acceptance` chạy 388 case cũ cùng `acceptance.py`; `--acceptance-only` seed một
+normal assignment rồi chỉ chạy phần bổ sung trên database mới, không claim chạy lại
+388 case. Source snapshot/hash và schema/grant không thay thế exact committed SHA.
+Supplement có autonomous receipt conflict, swallowed conflict, forged/direct/savepoint
+probes, actual backend SIGTERM trước mutation/sau mutation/trước COMMIT/COMMIT-in-flight,
+lock/statement timeout, deadlock, exact role allow-list, failed publication và revoke-first.
+Lịch retry/delayed dùng actual sessions và lock graph, không sleep để suy đoán thứ tự.
+
+`contract_probes.sql` là Q02 exploratory candidate riêng, không sửa main receipt
+`APPLIED` contract. Closed admission/reconciliation, closed-backup dump/restore và
+tombstone probes cũng không phải approved Q05 procedure. `consumer_fixture.json`
+chuẩn bị X-16/X-26; chưa có consumer execution. Xem disposition và run lỗi được giữ
+nguyên tại [acceptance report](../../docs/verification/r28/r28-q03-m5-enforcement-acceptance.md).
+
+Các gap còn bắt buộc: actual COMMIT-ACK drop (BLOCKED dưới network none/Unix socket,
+chưa có verified proxy; không đổi isolation), SIGKILL/postmaster crash, Java transport/
+latency mapping, approved retention/retirement/restore-reopen/rejection contract,
+X-16/X-26 với Ánh, privileged operational procedure và W-17 deployed inventory.
 Chủ sở hữu/superuser có thể sửa function/trigger/journal và bypass toàn bộ prototype;
 không có claim bảo vệ họ bằng grants. No live maintenance procedure is verified here.
 

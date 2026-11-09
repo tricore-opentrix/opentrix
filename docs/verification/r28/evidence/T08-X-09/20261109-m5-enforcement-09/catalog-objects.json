@@ -1,0 +1,32 @@
+{
+  "actor": "postgres (catalog observer only)",
+  "sql": "SELECT jsonb_agg(to_jsonb(c)) FROM (SELECT relname,relkind,pg_get_userbyid(relowner) owner,relacl FROM pg_class WHERE relnamespace='m5'::regnamespace ORDER BY relname) c;",
+  "command": [
+    "docker",
+    "--config",
+    "C:\\WINDOWS\\TEMP\\r28-m5-docker-05nf_18g",
+    "--host",
+    "npipe:////./pipe/dockerDesktopLinuxEngine",
+    "exec",
+    "-i",
+    "6bf00317aaf2a27ae04c7aaebe103bb0e80fe8434f7f43239a44834355610b39",
+    "psql",
+    "-X",
+    "-q",
+    "-A",
+    "-t",
+    "-U",
+    "postgres",
+    "-h",
+    "/var/run/postgresql",
+    "-d",
+    "m5_disposable",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-v",
+    "VERBOSITY=verbose",
+    "--echo-all"
+  ],
+  "stdout": "SELECT jsonb_agg(to_jsonb(c)) FROM (SELECT relname,relkind,pg_get_userbyid(relowner) owner,relacl FROM pg_class WHERE relnamespace='m5'::regnamespace ORDER BY relname) c;\n[{\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"admission\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"admission_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"authority\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"authority_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"mutation_log\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=rwU/core_acl_owner\"], \"relkind\": \"S\", \"relname\": \"mutation_log_event_id_seq\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"mutation_log_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"policy_audit\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"policy_audit_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"policy_audit_tenant_id_resulting_g_key\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"receipt\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"receipt_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"receipt_tenant_id_service_id_operation_command_key_key\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_authz_reader_rt=r/core_acl_owner\", \"core_workflow_rt=r/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"resource_acl\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"resource_acl_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"resource_fence\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"resource_fence_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_authz_reader_rt=r/core_acl_owner\", \"core_workflow_rt=r/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"resource_registry\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"resource_registry_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_authz_reader_rt=r/core_acl_owner\", \"core_workflow_rt=r/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"tenant_guards\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"tenant_guards_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_authz_reader_rt=r/core_acl_owner\", \"core_workflow_rt=r/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"tenant_memberships\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"tenant_memberships_pkey\"}, {\"owner\": \"core_acl_owner\", \"relacl\": [\"core_acl_owner=arwdDxtm/core_acl_owner\", \"core_authz_reader_rt=r/core_acl_owner\", \"core_workflow_rt=r/core_acl_owner\", \"core_observer=r/core_acl_owner\"], \"relkind\": \"r\", \"relname\": \"workflow_definition_bindings\"}, {\"owner\": \"core_acl_owner\", \"relacl\": null, \"relkind\": \"i\", \"relname\": \"workflow_definition_bindings_pkey\"}]\n",
+  "stderr": ""
+}

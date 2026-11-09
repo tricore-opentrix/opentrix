@@ -1,0 +1,151 @@
+{
+  "test_id": "X-25",
+  "status": "PARTIAL_NOT_ACCEPTED",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 28,
+  "cases": [
+    {
+      "name": "normal-multirow-assignment",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-omit",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-insert_failure",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-malformed",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-wrong_digest",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-wrong_xid",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-remove",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-change",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-extra_membership",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-wrong_actual_acl",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-wrong_audit",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "savepoint-receipt-failure",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "savepoint-success-rollback",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "constraints-immediate-fail-closed",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "repeatable-read-rejected",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-principal-rejected",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "wrong-tenant-resource-rejected",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "legacy-helpdesk-acl-layer2",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "legacy-helpdesk-generation-layer2",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "autonomous-unique",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "receipt-conflict-do-nothing-not-success",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-principal",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-resource",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-key",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "direct-multirow-multitable-omission",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "direct-savepoint-partial-rollback",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "direct-forged-existing-audit",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "owner-bypass-closed-admission",
+      "status": "PASS",
+      "reason": "owner bypass observed; no superuser protection claimed"
+    }
+  ],
+  "remaining": [
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}

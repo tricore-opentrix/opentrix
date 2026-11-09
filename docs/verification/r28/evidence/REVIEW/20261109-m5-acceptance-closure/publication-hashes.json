@@ -1,0 +1,164 @@
+[
+  {
+    "operation_index": 0,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "e14faa110c7c5a0815c87b04882bab2db4927b7795842d53206c27967faa1fff",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/0"
+  },
+  {
+    "operation_index": 1,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "bb6532601f6f0e2efd232ddfdc001f94e34388569eaa3f21b37ba772c67687f1",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/1"
+  },
+  {
+    "operation_index": 2,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "e74461f1e247ef6207d7df3db7baa8af5bb51e362a52358b465bb660b7dbe7bc",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/2"
+  },
+  {
+    "operation_index": 3,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "14ad787f30f775cd562fc33021d5986bc8027f05e7bb9dfc7710fc188e204f57",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/3"
+  },
+  {
+    "operation_index": 4,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "d5f512eed017d8a5ea1d86c8ae97b7b39b03f82246a4e6450e998e348c38b233",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/4"
+  },
+  {
+    "operation_index": 5,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "db1adbecb184f0384933c10e2e353d7d02c9199a9a0c6b42ab6d72ee8ef74fee",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/5"
+  },
+  {
+    "operation_index": 6,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "bb430e530214d33a0be6b27e3a4f26a2e3d53092d9f3f4f1150d689fba1faf97",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/6"
+  },
+  {
+    "operation_index": 7,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "fa0d8a05469491c25bbb7805a9391fb89b2d05e2bc68affdf0905771463e4a3a",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/7"
+  },
+  {
+    "operation_index": 8,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "e0fcd9d36181bdc5356eef35192da8b7b2afa065d44310298487d3d962b099c2",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/8"
+  },
+  {
+    "operation_index": 9,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "f6ce98babb13ba6005c2434993f61ca95eb886b82ed79ed94798141440be2299",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/9"
+  },
+  {
+    "operation_index": 10,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "ad994d8c04a8a13a97a9e0984c58949b2fa1c8000237fba2198c0d27daf95e86",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/10"
+  },
+  {
+    "operation_index": 11,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "b0aa14f613bfa94474d8e890e1b634b02e4cbf9fecc14c9c1e085f11d5af7c2b",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/11"
+  },
+  {
+    "operation_index": 12,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "fc2706503d37bae4385ca4728eede1c81009e28b47396174376eece00eba88e8",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/12"
+  },
+  {
+    "operation_index": 13,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "3a77af0337750a9f75ea6c642a2b73b86118ca55de86f87ef16d297a958d7aee",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/13"
+  },
+  {
+    "operation_index": 14,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "de838c973ee56f5dbbdabcd29328c6128f37562cc127d6c8fad79bf9b75faaf1",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/14"
+  },
+  {
+    "operation_index": 15,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "de838c973ee56f5dbbdabcd29328c6128f37562cc127d6c8fad79bf9b75faaf1",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/15"
+  },
+  {
+    "operation_index": 16,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "78e151c9e64ca9818361ba783763a94989c512e9302ee365fb078917e959245a",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/16"
+  },
+  {
+    "operation_index": 17,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "3992a858fdbbc40322f12e3feefb44e4c27137096a2b989d5037b4f537edcb1f",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/17"
+  },
+  {
+    "operation_index": 18,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "4cde31914c01a1db72828f6bddc62cc13e4d1d3b47fdee234952f6a68ed11ebf",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/18"
+  },
+  {
+    "operation_index": 19,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "d1bc86602bb588770c416a82cdb55c3fd9452d06e4678cc3e7a92cba8dea7da6",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/19"
+  },
+  {
+    "operation_index": 20,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "48a7601b182e36fc56671d3233572e8ba49e9a39b03e308ad84b3fd90616b98e",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/20"
+  },
+  {
+    "operation_index": 21,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "8773f586d0126f8ef0daa8af0d5a9fd167aac9a2fcebaa10a9b8c7a923bfc309",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/21"
+  },
+  {
+    "operation_index": 22,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "522c31c8ba2e4338b33eb047b6d30aaaaeb031d3f7c4c17b306026dfdd865acc",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/22"
+  },
+  {
+    "operation_index": 23,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "dc66aa8ff04e7afaa2e9c7897dd69357137b1dc674d57cce4a5aae5bef31ca31",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/23"
+  },
+  {
+    "operation_index": 24,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "9949b688b257964cfe28ba054e51376576e46b3501cfa6636774912e6f4249b3",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/24"
+  },
+  {
+    "operation_index": 25,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "c404245753bbdef67b2290891a8f401b18906e1f2a0c342eb9bdc0902672c5af",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/25"
+  },
+  {
+    "operation_index": 26,
+    "actor": "postgres (offline fixture publisher)",
+    "sql_sha256": "6d3f3cb0cdb5579567252f76b9a015a8a313ade61c2380b8316bf73e98c7e923",
+    "source": "HARNESS/20261109-m5-enforcement-11/completion.json#offline_operations/26"
+  }
+]

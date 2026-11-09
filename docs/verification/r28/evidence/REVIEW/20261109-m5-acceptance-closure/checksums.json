@@ -1,0 +1,19 @@
+{
+  "history-audit.json": "6e8bb863fc9e45226cc925f736bf8f1a17ab0dba208d5b24bc74c18d55bafd3f",
+  "offline-checks.json": "ec0912d7493e70b07cca44d13cda57103374da702165acf663e001b66bc97b6f",
+  "offline-final.json": "e3887f0b040fe89dfe982ce6183bd71c8bdbc2c174e0f843068c4467ed9e352d",
+  "package-checks.json": "c311f68bbd9267c307e091793e0e89b71f45a3875950e60123960bc90769afdd",
+  "publication-hashes.json": "b37a065637f1a3caf183c53ae391b81d9948e62db15ffec6a6bd58efcdec46be",
+  "run08-audit.json": "eb3a8bdc149023204c40a21696c7ab4d75fa5c4ce3a69c223c54467226cc6d21",
+  "run08-source/acceptance.py": "8d36cfbf5ff29ac4b851c7ba83feff9bfc91d757e1c7bfc0d40b67d3d24cd785",
+  "run08-source/launch.py": "25713df5863fa54c25bf0bf82785efda950802d7fe93821412c0573771bf341b",
+  "run08-source/README.md": "97ef4943a19ca19cfe8d6878a9ba319c5402cc6d79fba21ff413d62c290ed1a2",
+  "run08-source/run.py": "0ce9a876a8d8d9bc49f0181901cd7eedc87ada8697fd022c5caa25b9beb863a8",
+  "run08-source/schema.sql": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "run08-source/test_harness.py": "724be95dcfb8e595a1138e7d2cca27d637d9ecc2bf5f6316fd877c1a3a0d3b11",
+  "run09-audit.json": "35c146b5ffd2617f047ef36a560aaed2afb5c7209f433ac43842def8fc77edd5",
+  "run10-audit.json": "ee7674cbff24ee0d5e53512d3b0bf5c4563eaec9dfc9788cea3b12b1b8d82e0e",
+  "run11-audit.json": "bf7da77a2d6f0e1b6168072603d8f30f4a81f487e1af2d1581acde6135e9238d",
+  "secret-audit.json": "5890aac2c92a9c9f8c66656e6b07a9cbbf87d04db4b28ef8de2960ab50096214",
+  "source-inventory.json": "4116eba6f04951c80e27853ba2778c071d2b137d8a4286be7014d4a391b576aa"
+}

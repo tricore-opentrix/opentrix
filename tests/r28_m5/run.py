@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import queue
 import re
+import runpy
 import secrets
 import subprocess
 import sys
@@ -133,6 +134,7 @@ class Runner:
     def __init__(self, run_id):
         self.run_id = run_id
         self.container = None
+        self.bootstrap_secret = None
         self.results = []
         self.group = 'X-25'
         self.temp = tempfile.TemporaryDirectory(prefix='r28-m5-docker-')
@@ -156,6 +158,7 @@ class Runner:
                          'sql_runtime_approved': False}
         self.metadata['preflight_status'] = 'NOT_RUN'
         self.metadata['process_environment_keys'] = sorted(os.environ)
+        self.metadata['acceptance_gaps'] = []
 
     def folder(self, group=None):
         return ROOT / 'docs/verification/r28/evidence' / (group or self.group) / self.run_id
@@ -184,6 +187,7 @@ class Runner:
                     for d in image.get('RepoDigests', [])), 'official postgres image digest unavailable')
         self.metadata['docker_server'] = server
         self.metadata['image'] = {k: image.get(k) for k in ('Id', 'RepoDigests', 'Architecture', 'Os')}
+        self.metadata['existing_containers_before'] = self.inventory()
         require(image['Os'] == 'linux' and 'PG_MAJOR=17' in image['Config']['Env'],
                 'image is not PostgreSQL 17/Linux')
         name = 'r28-m5-' + uuid.uuid4().hex
@@ -214,6 +218,7 @@ class Runner:
                 and config_env.get('POSTGRES_HOST_AUTH_METHOD') == 'reject'
                 and config_env.get('POSTGRES_INITDB_ARGS') == '--auth-local=trust --auth-host=reject',
                 'test-only credentials/database/auth configuration mismatch')
+        self.bootstrap_secret = password
         del password, config_env, info['Config']['Env']
         require(info['HostConfig']['NetworkMode'] == 'none' and not info['HostConfig'].get('Binds')
                 and not info['HostConfig'].get('PortBindings') and not info['HostConfig'].get('Privileged')
@@ -284,6 +289,13 @@ class Runner:
             args.append('--echo-all')
         return args
 
+    def inventory(self):
+        result = self.command([*self.docker, 'ps', '--all', '--no-trunc', '--format',
+                               '{{json .}}'])
+        require(result.returncode == 0, 'container inventory unavailable')
+        return sorted(({k: item[k] for k in ('ID', 'Names', 'Image', 'State')}
+                       for item in (json.loads(line) for line in result.stdout.splitlines())), key=lambda x: x['ID'])
+
     def sql(self, role, text):
         return self.command(self.psql_command(role), text)
 
@@ -328,6 +340,11 @@ class Runner:
 
     def record(self, result):
         result['test_id'] = self.group
+        result['provenance'] = {'source_commit': self.metadata['source_commit'],
+                                'schema_sha256': self.metadata['schema_sha256'],
+                                'grant_sha256': self.metadata['grant_sha256'],
+                                'environment': 'environment.json',
+                                'claim_scope': 'disposable prototype only; no deployed writer closure'}
         self.results.append(result)
         self.metadata['database_tests_executed'] += 1
         write_json(self.folder() / (result['name'] + '.json'), result)
@@ -460,7 +477,7 @@ END $$;
             r = self.sql('core_observer', f'SELECT {blocker}=ANY(pg_blocking_pids({waiter}));')
             require(r.returncode == 0, 'lock graph observation failed')
             if 't' in r.stdout.splitlines():
-                return {'waiter_pid': waiter, 'blocker_pid': blocker, 'sql': f'SELECT pg_blocking_pids({waiter});',
+                return {'waiter_pid': waiter, 'blocker_pid': blocker, 'sql': f'SELECT {blocker}=ANY(pg_blocking_pids({waiter}));',
                         'command': self.psql_command('core_observer'), 'stdout': r.stdout}
             require(time.monotonic()<deadline, 'expected lock edge absent')
             time.sleep(0.02)  # graph condition, never a fixed-delay success
@@ -539,6 +556,13 @@ END $$;
                                   'X-13 revocation/security transport/latency mapping; X-23 retention/restore; X-24 terminal rejection',
                                   'T07 backend-kill stages, actual network ACK loss, timeouts/deadlock; X-12 all arrival schedules',
                                   'X-25 autonomous unique-conflict injection, owner bypass reconciliation; X-16/X-26 Helpdesk integration']}
+            if self.metadata['acceptance_gaps']:
+                gaps = [x for x in self.metadata['acceptance_gaps'] if x['test_id'] == group]
+                summary['remaining'] = [x['reason'] for x in gaps]
+                summary['remaining'].append('Independent review, owner decisions and deployed all-writer closure remain required.')
+                if gaps and summary['status'] != 'FAIL':
+                    summary['status'] = 'BLOCKED'
+                summary['reason'] = blocked or 'Executed subcases only; exploratory probes do not approve contracts.'
             write_json(self.folder(group)/'result.json',summary)
             write_json(self.folder(group)/'environment.json',self.metadata)
             folder=self.folder(group)
@@ -552,17 +576,28 @@ END $$;
                     'refusing cleanup: identity mismatch')
             r=self.command([*self.docker,'rm','--force',self.container])
             require(r.returncode==0,'disposable container cleanup failed')
-        self.temp.cleanup()
         self.metadata['cleanup'] = 'PASS; only the verified new container removed' if self.container else 'NOT_NEEDED'
+        if 'existing_containers_before' in self.metadata:
+            after = self.inventory()
+            self.metadata['existing_containers_after'] = after
+            self.metadata['existing_containers_unchanged'] = after == self.metadata['existing_containers_before']
+        self.temp.cleanup()
+        files = [p for group in (*EVIDENCE_IDS, 'HARNESS') for p in self.folder(group).rglob('*') if p.is_file()]
+        self.metadata['bootstrap_secret_scan'] = {
+            'files_scanned': len(files), 'value_available': self.bootstrap_secret is not None,
+            'matches': sum(self.bootstrap_secret.encode() in p.read_bytes() for p in files) if self.bootstrap_secret else 0}
+        self.bootstrap_secret = None
         write_json(self.folder('HARNESS')/'completion.json',self.metadata)
         folder=self.folder('HARNESS')
-        write_json(folder/'checksums.json',{p.name:digest(p) for p in sorted(folder.iterdir())
-                                          if p.is_file() and p.name!='checksums.json'})
+        write_json(folder/'checksums.json',{p.relative_to(folder).as_posix():digest(p) for p in sorted(folder.rglob('*'))
+                                          if p.is_file() and p != folder/'checksums.json'})
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-id',default=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
+    parser.add_argument('--acceptance', action='store_true', help='Run supplemental enforcement cases and exploratory contract probes')
+    parser.add_argument('--acceptance-only', action='store_true', help='Fresh fixture and supplemental cases only; does not rerun the historical 388-case suite')
     args=parser.parse_args()
     require(re.fullmatch('[A-Za-z0-9_-]{1,80}',args.run_id),'invalid run ID')
     require(not any((ROOT/'docs/verification/r28/evidence'/g/args.run_id).exists() for g in (*EVIDENCE_IDS,'HARNESS')),
@@ -570,14 +605,25 @@ def main():
     runner=Runner(args.run_id)
     blocked=None
     try:
+        for name, expected in runner.metadata['source_files_sha256'].items():
+            data = (HERE / name).read_bytes()
+            require(hashlib.sha256(data).hexdigest() == expected, 'source changed before capture: ' + name)
+            target = runner.folder('HARNESS') / 'source' / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
         runner.prepare()
-        runner.x25()
-        runner.concurrent('reader-first',reader_first=True)
-        runner.status_tests('T07')
-        runner.privileges()
-        runner.concurrent('original-first')
-        runner.concurrent('winner-rollback',winner_commit=False)
-        runner.status_tests('X-13')
+        if args.acceptance_only:
+            runner.case('normal-multirow-assignment', ROLES[0], 'BEGIN; ' + runner.assignment('normal',10,6) + ' COMMIT;', effect='applied', contains='APPLIED')
+        else:
+            runner.x25()
+            runner.concurrent('reader-first',reader_first=True)
+            runner.status_tests('T07')
+            runner.privileges()
+            runner.concurrent('original-first')
+            runner.concurrent('winner-rollback',winner_commit=False)
+            runner.status_tests('X-13')
+        if args.acceptance or args.acceptance_only:
+            runpy.run_path(str(HERE / 'acceptance.py'))['run'](runner, Session, executor_sql)
     except (RuntimeError, OSError, subprocess.SubprocessError, ValueError, queue.Empty) as exc:
         blocked=str(exc)
         print('BLOCKED:',blocked,flush=True)

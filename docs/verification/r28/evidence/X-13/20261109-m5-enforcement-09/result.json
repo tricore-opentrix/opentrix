@@ -1,0 +1,31 @@
+{
+  "test_id": "X-13",
+  "status": "PARTIAL_NOT_ACCEPTED",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 4,
+  "cases": [
+    {
+      "name": "committed-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "hidden-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "unknown-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "cross-resource-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    }
+  ],
+  "remaining": [
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}

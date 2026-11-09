@@ -1,0 +1,61 @@
+{
+  "test_id": "X-25",
+  "status": "PARTIAL_NOT_ACCEPTED",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 10,
+  "cases": [
+    {
+      "name": "normal-multirow-assignment",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "autonomous-unique",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "receipt-conflict-do-nothing-not-success",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-principal",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-resource",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-key",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "direct-multirow-multitable-omission",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "direct-savepoint-partial-rollback",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "direct-forged-existing-audit",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "owner-bypass-closed-admission",
+      "status": "PASS",
+      "reason": "owner bypass observed; no superuser protection claimed"
+    }
+  ],
+  "remaining": [
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}

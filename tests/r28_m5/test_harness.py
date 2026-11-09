@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Offline harness checks only; these are never PostgreSQL/X-25 PASS evidence."""
 import importlib.util
+import copy
 import json
 from pathlib import Path
 import subprocess
@@ -15,9 +16,46 @@ SPEC.loader.exec_module(m5)
 LAUNCH_SPEC = importlib.util.spec_from_file_location('m5_launch', Path(__file__).with_name('launch.py'))
 launcher = importlib.util.module_from_spec(LAUNCH_SPEC)
 LAUNCH_SPEC.loader.exec_module(launcher)
+ACCEPTANCE_SPEC = importlib.util.spec_from_file_location('m5_acceptance', Path(__file__).with_name('acceptance.py'))
+acceptance = importlib.util.module_from_spec(ACCEPTANCE_SPEC)
+ACCEPTANCE_SPEC.loader.exec_module(acceptance)
 
 
 class HarnessChecks(unittest.TestCase):
+    def test_new_effect_oracle_rejects_tampering(self):
+        path = m5.ROOT/'docs/verification/r28/evidence/X-25/20261109-m5-isolated-05/normal-multirow-assignment.json'
+        saved = json.loads(path.read_text(encoding='utf-8'))
+        before, after = saved['before'], saved['after']
+        self.assertTrue(acceptance.one_effect(before, after, 'normal'))
+        for field in ('audit_id', 'principal', 'command_key', 'recorded_xid', 'resulting_g'):
+            changed = copy.deepcopy(after)
+            changed['receipt'][0][field] = 'forged'
+            self.assertFalse(acceptance.one_effect(before, changed, 'normal'), field)
+        changed = copy.deepcopy(after)
+        changed['receipt'] = []
+        self.assertFalse(acceptance.one_effect(before, changed, 'normal'))
+
+    def test_session_counterexample_remains_fail(self):
+        class FakeRunner:
+            def __init__(self): self.records=[]
+            def snapshot(self): return {'receipt': [], 'acl': ['receipt-less committed effect']}
+            def record(self, result): self.records.append(result)
+        runner=FakeRunner()
+        acceptance.session_case(runner,None,'counterexample',lambda *args: None,lambda *args: False)
+        self.assertEqual(runner.records[0]['status'],'FAIL')
+        self.assertIn('receipt-less committed effect',runner.records[0]['after']['acl'])
+
+    def test_harness_manifest_includes_nested_source(self):
+        with tempfile.TemporaryDirectory() as temp, patch.object(m5,'ROOT',Path(temp)), \
+             patch.object(m5,'git',return_value='synthetic-base'):
+            runner=m5.Runner('nested-source')
+            source=runner.folder('HARNESS')/'source'/'synthetic.py'
+            source.parent.mkdir(parents=True)
+            source.write_bytes(b'# synthetic source\n')
+            runner.finish('offline only')
+            manifest=json.loads((runner.folder('HARNESS')/'checksums.json').read_text(encoding='utf-8'))
+            self.assertEqual(manifest['source/synthetic.py'],m5.digest(source))
+
     def test_launcher_starts_new_process_without_inherited_credentials(self):
         with patch.dict(launcher.os.environ, {'PATH':'os-path','CART_DB_PASSWORD':'service-secret',
                          'ORDER_DB_PASSWORD':'other-secret','PGSERVICE':'external',
@@ -64,6 +102,7 @@ class HarnessChecks(unittest.TestCase):
                 try:
                     with patch.object(runner,'command',side_effect=capture), \
                          patch.object(runner,'docker_json',side_effect=docker_json), \
+                         patch.object(runner,'inventory',return_value=[]), \
                          patch.object(runner,'sql') as sql:
                         with self.assertRaisesRegex(RuntimeError,'isolation proof failed' if mismatch=='network' else 'credentials/database/auth'):
                             runner.prepare()

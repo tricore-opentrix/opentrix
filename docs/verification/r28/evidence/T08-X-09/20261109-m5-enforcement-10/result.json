@@ -1,0 +1,66 @@
+{
+  "test_id": "T08-X-09",
+  "status": "PARTIAL_NOT_ACCEPTED",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 11,
+  "cases": [
+    {
+      "name": "core_acl_exec_rt-exact-allow-list",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-exact-allow-list",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-exact-allow-list",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-exact-allow-list",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-exact-allow-list",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_migrator-exact-allow-list",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "atomic-publication-failure",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "failed-publication-absent",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "migrator-publication-denied",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "revoke-first-fresh-authorization",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "status-after-revoke-hidden",
+      "status": "PASS",
+      "reason": "expectations matched"
+    }
+  ],
+  "remaining": [
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}

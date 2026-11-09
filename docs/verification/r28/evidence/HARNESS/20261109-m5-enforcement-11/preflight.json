@@ -1,0 +1,496 @@
+{
+  "run_id": "20261109-m5-enforcement-11",
+  "source_commit": "ee048142c805b0a14324a3ed0557326d9880e653",
+  "source_branch": "review/r28-q03-m5-isolated-verification-20261109",
+  "source_status": "M tests/r28_m5/README.md\n M tests/r28_m5/run.py\n M tests/r28_m5/test_harness.py\n?? tests/r28_m5/acceptance.py\n?? tests/r28_m5/audit.py\n?? tests/r28_m5/consumer_fixture.json\n?? tests/r28_m5/contract_probes.sql",
+  "schema_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "grant_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "source_files_sha256": {
+    "acceptance.py": "d08a856eda78d63bfb1cf28fa0405c86c1496cf2e1a03efce5bd25c60eabf4a1",
+    "audit.py": "eafcbd6579fa31651e9b5f554b68672b722aa0216d37d59e3c70711b2e9107c0",
+    "consumer_fixture.json": "6f3585dd4c033ff2fc56ec7eefef4c0e87868cc8a9b5fa6b92d478fbc58000b4",
+    "contract_probes.sql": "c404245753bbdef67b2290891a8f401b18906e1f2a0c342eb9bdc0902672c5af",
+    "launch.py": "25713df5863fa54c25bf0bf82785efda950802d7fe93821412c0573771bf341b",
+    "README.md": "ccef46ca67a9507211814e9d9b501481a2b815710d7ae1a9a411a3c2309acf9c",
+    "run.py": "b88d38ce6ec7f79409cdbfdfc0098de1a1e195bb253b42928718908216875d58",
+    "schema.sql": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "test_harness.py": "ae101c61807f31a9221b2bc22548b1492f29dd3c5a7589fd0697d9875790b4c1"
+  },
+  "execution_command": "\"C:\\Program Files\\Python314\\python.exe\" D:\\olp\\opentrix-r28-g0-design\\tests\\r28_m5\\run.py --acceptance-only --run-id 20261109-m5-enforcement-11",
+  "database_tests_executed": 0,
+  "postgresql": "SELECT current_setting('server_version_num'); SELECT version(); SELECT current_database();\n170011\nPostgreSQL 17.11 (Debian 17.11-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit\nm5_disposable\n",
+  "image": {
+    "Id": "sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3",
+    "RepoDigests": [
+      "postgres@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3"
+    ],
+    "Architecture": "amd64",
+    "Os": "linux"
+  },
+  "container": {
+    "id": "3a081f5218a9ce61696e235673fd30d2b1a067927284dcdcdc35a2fd5f41a75f",
+    "name": "r28-m5-cea537f5ca724073b1cd4de5d47572a1",
+    "image": "sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3",
+    "network": "none",
+    "mounts": [],
+    "tmpfs": {
+      "/var/lib/postgresql/data": "rw"
+    },
+    "ports": {}
+  },
+  "credential_safety": "isolated local socket; empty Docker config; no host credential mounts or external DSN",
+  "connection": "local container Unix socket; dbname=m5_disposable; no published port",
+  "fixture": "synthetic T1/T2, R1/R2, admin/old/new; initial G10/fence5",
+  "sql_runtime_approved": false,
+  "preflight_status": "PASS",
+  "process_environment_keys": [
+    "COMSPEC",
+    "HOME",
+    "PATH",
+    "PATHEXT",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "acceptance_gaps": [],
+  "docker_server": {
+    "Platform": {
+      "Name": "Docker Desktop 4.87.0 (236836)"
+    },
+    "Version": "29.7.2",
+    "ApiVersion": "1.55",
+    "MinAPIVersion": "1.40",
+    "Os": "linux",
+    "Arch": "amd64",
+    "Components": [
+      {
+        "Name": "Engine",
+        "Version": "29.7.2",
+        "Details": {
+          "ApiVersion": "1.55",
+          "Arch": "amd64",
+          "BuildTime": "Wed Aug  5 18:28:36 2026",
+          "Experimental": "false",
+          "GitCommit": "6a43e3d",
+          "GoVersion": "go1.26.5",
+          "KernelVersion": "6.18.33.2-microsoft-standard-WSL2",
+          "MinAPIVersion": "1.40",
+          "Module": "github.com/moby/moby/v2",
+          "ModuleVersion": "v2.0.0+unknown",
+          "Os": "linux"
+        }
+      },
+      {
+        "Name": "containerd",
+        "Version": "v2.2.5",
+        "Details": {
+          "GitCommit": "e53c7c1516c3b2bff98eb76f1f4117477e6f4e66"
+        }
+      },
+      {
+        "Name": "runc",
+        "Version": "1.3.6",
+        "Details": {
+          "GitCommit": "v1.3.6-0-g491b69ba"
+        }
+      },
+      {
+        "Name": "docker-init",
+        "Version": "0.19.0",
+        "Details": {
+          "GitCommit": "de40ad0"
+        }
+      }
+    ],
+    "GitCommit": "6a43e3d",
+    "GoVersion": "go1.26.5",
+    "KernelVersion": "6.18.33.2-microsoft-standard-WSL2",
+    "BuildTime": "2026-08-05T18:28:36.000000000+00:00"
+  },
+  "existing_containers_before": [
+    {
+      "ID": "057bcf7d4246c922a632a13ed6870a1ad6fca8532ee4a97d03d34ae296267644",
+      "Names": "dxos-helpdesk-negative-hd01_p456_20261102",
+      "Image": "postgres:17.11-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "05d5e2a1285f96287f659020de2bb2ddb955088552fb47b55b4ee864feaa09da",
+      "Names": "dxos-helpdesk-negative-r23jdbc1105",
+      "Image": "postgres:17.11-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "06af9ed79bb831ccee2ac91aa74920056684098654ffbc2638026b24271e7a11",
+      "Names": "smart-ecommerce-redis-1",
+      "Image": "redis:7.4-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "087902666a9db3c8cbd39e6aa26800b6708c111dae72656ba27e6d492b49122b",
+      "Names": "smart-ecommerce-eureka-1",
+      "Image": "smart-ecommerce/eureka:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "0fd641fad008edeb72a3645729ad008f484707518aa254f7147d7bd9e9e2ff1c",
+      "Names": "dxos-stage6-pg17-test",
+      "Image": "postgres:17",
+      "State": "exited"
+    },
+    {
+      "ID": "10ff97d8481fb924d986fecadb68bc68e17b8fe91a3522b188b473ed2fea32f5",
+      "Names": "dxos-stage6-pg17-retained-10ff97d8",
+      "Image": "postgres:17.11",
+      "State": "exited"
+    },
+    {
+      "ID": "16c5fce44aaf1b637e22a27d3e9e7b6618933913b890fcc15e1a0fb4b3938d6a",
+      "Names": "zen_edison",
+      "Image": "postgres:16",
+      "State": "exited"
+    },
+    {
+      "ID": "1c0659665b70a8ff86f38b77d7773280be4d3ca05c90873862985457ac7effef",
+      "Names": "smart-ecommerce-user-1",
+      "Image": "smart-ecommerce/user:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "1e630a35fe87babda56293ca6c60bffa1fc20763813190dd38f3978de8e0973f",
+      "Names": "dxos-olp-staging-postgres-1",
+      "Image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "State": "running"
+    },
+    {
+      "ID": "1ff34e434c8c96bda886b9b9ce2d3d2da25f5e9c81535a6b67e9c390df20c2c7",
+      "Names": "smart-ecommerce-auth-1",
+      "Image": "smart-ecommerce/auth:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "36024dbadf7b658cdfcbee7611b5285ca9020d6035eff2a155b1e8c511612f74",
+      "Names": "smart-ecommerce-product-1",
+      "Image": "smart-ecommerce/product:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "3880da3c040e490d9eac0a0e063ba680a38e653b3cc264d41753cdbda7aab9a2",
+      "Names": "smart-ecommerce-kafka-1",
+      "Image": "apache/kafka:3.8.1",
+      "State": "exited"
+    },
+    {
+      "ID": "42893e7af72be9eeed4a36b074bf6ce085fa4594d61ef2adf263834ed527ed33",
+      "Names": "smart-ecommerce-config-1",
+      "Image": "smart-ecommerce/config:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "4295c587e1c1d5c76a9d42baaa745e5b3d9e9a32d24a1d823d4f97afe7bf604a",
+      "Names": "smart-ecommerce-gateway-1",
+      "Image": "smart-ecommerce/gateway:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "4747e8375903f7ae99a426db937ebff991f61cc126b456a45e157db00f9e673b",
+      "Names": "pr51-linux-original-repro-root",
+      "Image": "smart-ecommerce/auth:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "4ce02cbf94527ea8feef53b82de31763738da74126e56e256eab78b5a74e68c6",
+      "Names": "pr51-linux-original-repro",
+      "Image": "smart-ecommerce/auth:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "4ff0abb3ba626d2fe546b36a2e97b4ac0f4bc0d19d128465efe333b1a6b66b10",
+      "Names": "dxos-helpdesk-demo_20261027",
+      "Image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "State": "exited"
+    },
+    {
+      "ID": "54be4d02bf77add9d182215e9efbeeafb66f81c5eb6aa1a71a4d1cc000bcf93b",
+      "Names": "tender_napier",
+      "Image": "postgres:16",
+      "State": "exited"
+    },
+    {
+      "ID": "54dfa21c8597b7c05bc86187245ac3e0935a296046f51a48923dc5d33e60a5a0",
+      "Names": "smart-ecommerce-inventory-1",
+      "Image": "smart-ecommerce/inventory:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "5a5a79cacb46175101ec92a8c6e3160169aaf4fa72e0d2e885fff51502d715b3",
+      "Names": "smart-ecommerce-notification-1",
+      "Image": "smart-ecommerce/notification:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "685b4cf1dabc72410fb8ef503f8b2d384583869b9d97ba2595cc491970925314",
+      "Names": "dxos-workflow25-pg17",
+      "Image": "postgres:17-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "6d0d85462ae07e6725c2d687618ecb71c993ab9d796f7f7ff169ce665536b996",
+      "Names": "freellmapi-freellmapi-1",
+      "Image": "ghcr.io/tashfeenahmed/freellmapi:latest",
+      "State": "exited"
+    },
+    {
+      "ID": "77e4d9503ed9d0fe1c9d5911056797d36d3f95c54f489592a8ed15d309a7c914",
+      "Names": "smart-ecommerce-order-1",
+      "Image": "smart-ecommerce/order:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "7dc3b26af22e370baffa2b7be0d34c176343549d971dc33adbafc46effcaa2a6",
+      "Names": "dxos-helpdesk-setup_verify_20261027",
+      "Image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "State": "exited"
+    },
+    {
+      "ID": "837921be26cb1eb4127b13691764c9195b72424207b7208675e372036eaf360e",
+      "Names": "dxos-helpdesk-demo_20261028",
+      "Image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "State": "exited"
+    },
+    {
+      "ID": "8409de695604ab2de0e5a746a4e7587c61108f2f89c859bca4bdafa513f5d8bf",
+      "Names": "docker-postgres-1",
+      "Image": "postgres:16",
+      "State": "exited"
+    },
+    {
+      "ID": "8635c4cb3b730ea4af0cef5818bad89af437139f894b33b24a98f77d56f0206a",
+      "Names": "dxos-stage6-pg17-local",
+      "Image": "postgres:17.11",
+      "State": "running"
+    },
+    {
+      "ID": "8cb794b083a497ded963fec40e16751486e734e8a4327d9c761a911f85a6bedc",
+      "Names": "dazzling_lamport",
+      "Image": "postgres:16",
+      "State": "exited"
+    },
+    {
+      "ID": "92c4e927042cc7599ad880b9e24a3476e97a72856e1989c29be5fd8ed5b49e72",
+      "Names": "dxos-helpdesk-negative-hd01_p4_20261102",
+      "Image": "postgres:17.11-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "93aef00eb2d94682d2919090b86c84c0aef7326738de4f617c91e1e7a5fafe1c",
+      "Names": "dxos-keycloak-identity-local",
+      "Image": "quay.io/keycloak/keycloak:26.8.1",
+      "State": "exited"
+    },
+    {
+      "ID": "9900635920b8572187b101e7984b6d6b135be8909298067cf9c295c8571c845f",
+      "Names": "dxos-helpdesk-negative-hd01_review_20261102",
+      "Image": "postgres:17.11-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "9fbea4856f6757429437dc09bf79a8d3c04e5b63a9016a73b16e3144185dff0b",
+      "Names": "dxos-helpdesk-negative-mvp_20261101",
+      "Image": "postgres:17.11-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "a08e16608624db05a86f6002d58a132403d86ece3154ca4a26615f8282b193ed",
+      "Names": "dxos-helpdesk-negative-r12neg1104",
+      "Image": "postgres:17.11-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "a67da116d3f32e099982e8958ffeb2426e20765a735a3d606b2c20919887c0b3",
+      "Names": "pr51-linux-utc-control",
+      "Image": "smart-ecommerce/auth:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "ac774bbe735863c5c8e59a3f571f4ba62ad9167427b33b94be583cb9d0af3477",
+      "Names": "smart-ecommerce-postgres-1",
+      "Image": "postgres:18.0-alpine3.22",
+      "State": "exited"
+    },
+    {
+      "ID": "ac7e43f33ddecd35dd8bfcb1b5dff0dcb58ba67c08d2d6e5c6475768cc589d60",
+      "Names": "dxos-helpdesk-negative-closeout_20261029_a",
+      "Image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "State": "exited"
+    },
+    {
+      "ID": "b2eb86237aab69b756f23ff4349cf164a1cc8acf5ff22689a84be36846f0811e",
+      "Names": "dxos-helpdesk-browser_20261029",
+      "Image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "State": "exited"
+    },
+    {
+      "ID": "b8a7bb659617290e94fe222fe881f86f5694efd46abdb762c3acb21ae1e5fd7f",
+      "Names": "peaceful_spence",
+      "Image": "postgres:16",
+      "State": "exited"
+    },
+    {
+      "ID": "ba0c51675254bc1ff0738c4fe97fe5a2427d2bb8cae630195f4ee78b04b830ae",
+      "Names": "dxos-wf01-e1-f2063e5-20261031",
+      "Image": "sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe",
+      "State": "exited"
+    },
+    {
+      "ID": "c4a542bd0f3290a5ba9c32ae3edbd2f89283edaf7bfcd65b78888192602c51c6",
+      "Names": "dxos-helpdesk-negative-r12neg1104c",
+      "Image": "postgres:17.11-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "ce7900f0ac94bac86d97ad42833dd6931ec16be5a2289cb917806c9d719fc603",
+      "Names": "dxos-helpdesk-browser-keycloak-20261029",
+      "Image": "quay.io/keycloak/keycloak:26.8.1",
+      "State": "exited"
+    },
+    {
+      "ID": "d6dcd2bd91896f1e0e903d409f594b515725b6c83d5ee55ec654c686362c7690",
+      "Names": "dxos-postman-pg17",
+      "Image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "State": "exited"
+    },
+    {
+      "ID": "e31ac34892c240837103006c08ae46a56b16c18c58e1aef8c97d7588d0417a52",
+      "Names": "smart-ecommerce-cart-1",
+      "Image": "smart-ecommerce/cart:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "e79936ca801e00686905189a49b208e261eaffc51e77c33795b5ae36b7e8fa02",
+      "Names": "sweet_mendeleev",
+      "Image": "postgres:16",
+      "State": "exited"
+    },
+    {
+      "ID": "ec4db48875fd5959131a8ff61370a728f3d0076ef5b5b907d211af97dac98be1",
+      "Names": "dxos-helpdesk-setup_final_20261027",
+      "Image": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "State": "exited"
+    },
+    {
+      "ID": "f2b047b58e168fb7694faa69cbc319252344f97a68155ac6d3b6103de515f88b",
+      "Names": "dxos-helpdesk-negative-hd01_lockonly_20261102",
+      "Image": "postgres:17.11-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "f6089dcc1a9ce81a84f21e89f99dca7c864b193b268cd724bd5865058134bed4",
+      "Names": "stupefied_wright",
+      "Image": "postgres:16",
+      "State": "exited"
+    },
+    {
+      "ID": "fa9dd39ed8b86c3ae97db1e37c855c91f38116183f1c487df3228305ea61d989",
+      "Names": "pr51-java21-linux-check",
+      "Image": "smart-ecommerce/auth:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "fb7cd46cd2fbe0d9663099b2590eeb2d181a7087e61d8ff24dc587f3789c9166",
+      "Names": "dxos-helpdesk-swagger_20261030_192428",
+      "Image": "postgres:17.11-alpine",
+      "State": "exited"
+    },
+    {
+      "ID": "fc7462114a2a7623f9f8cab0cbe8d45712eeab7d433476297c54c1d56015e4ab",
+      "Names": "smart-ecommerce-frontend-1",
+      "Image": "smart-ecommerce/frontend:dev",
+      "State": "exited"
+    },
+    {
+      "ID": "fe82495d59a16e32cad211a057eb84f633e90af7dceb3c555218c67a1a2b6d34",
+      "Names": "dxos-workflow25-workflow-postgres-1",
+      "Image": "postgres:16-alpine",
+      "State": "exited"
+    }
+  ],
+  "postgres_binary_version": "postgres (PostgreSQL) 17.11 (Debian 17.11-1.pgdg13+2)",
+  "credentials": {
+    "source": "secrets.token_urlsafe(32), generated in this run",
+    "bootstrap_password_matches_container": true,
+    "password_in_command_or_evidence": false,
+    "runtime_auth": "container-local Unix socket trust; actual LOGIN roles; TCP reject"
+  },
+  "dsn": {
+    "host": "/var/run/postgresql",
+    "dbname": "m5_disposable",
+    "transport": "docker exec by verified new container ID; Unix socket",
+    "roles": [
+      "postgres",
+      "core_acl_exec_rt",
+      "core_authz_reader_rt",
+      "core_workflow_rt",
+      "helpdesk_rt",
+      "core_observer",
+      "core_migrator"
+    ]
+  },
+  "pre_sql_isolation_status": "PASS",
+  "authentication_rules": [
+    [
+      "local",
+      "all",
+      "all",
+      "trust"
+    ],
+    [
+      "host",
+      "all",
+      "all",
+      "127.0.0.1/32",
+      "reject"
+    ],
+    [
+      "host",
+      "all",
+      "all",
+      "::1/128",
+      "reject"
+    ],
+    [
+      "local",
+      "replication",
+      "all",
+      "trust"
+    ],
+    [
+      "host",
+      "replication",
+      "all",
+      "127.0.0.1/32",
+      "reject"
+    ],
+    [
+      "host",
+      "replication",
+      "all",
+      "::1/128",
+      "reject"
+    ],
+    [
+      "host",
+      "all",
+      "all",
+      "all",
+      "reject"
+    ]
+  ],
+  "pgdata_filesystem": "tmpfs",
+  "socket_positive_control": {
+    "stdout": "SELECT session_user||'/'||current_user||'/'||current_database(); SELECT inet_server_addr() IS NULL;\npostgres/postgres/m5_disposable\nt\n",
+    "stderr": ""
+  }
+}

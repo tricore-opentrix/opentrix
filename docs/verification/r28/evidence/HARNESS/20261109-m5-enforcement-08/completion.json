@@ -1,0 +1,580 @@
+{
+  "run_id": "20261109-m5-enforcement-08",
+  "source_commit": "ee048142c805b0a14324a3ed0557326d9880e653",
+  "source_branch": "review/r28-q03-m5-isolated-verification-20261109",
+  "source_status": "M tests/r28_m5/run.py\n?? tests/r28_m5/acceptance.py",
+  "schema_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "grant_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "source_files_sha256": {
+    "acceptance.py": "8d36cfbf5ff29ac4b851c7ba83feff9bfc91d757e1c7bfc0d40b67d3d24cd785",
+    "launch.py": "25713df5863fa54c25bf0bf82785efda950802d7fe93821412c0573771bf341b",
+    "README.md": "97ef4943a19ca19cfe8d6878a9ba319c5402cc6d79fba21ff413d62c290ed1a2",
+    "run.py": "0ce9a876a8d8d9bc49f0181901cd7eedc87ada8697fd022c5caa25b9beb863a8",
+    "schema.sql": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "test_harness.py": "724be95dcfb8e595a1138e7d2cca27d637d9ecc2bf5f6316fd877c1a3a0d3b11"
+  },
+  "execution_command": "\"C:\\Program Files\\Python314\\python.exe\" D:\\olp\\opentrix-r28-g0-design\\tests\\r28_m5\\run.py --acceptance --run-id 20261109-m5-enforcement-08",
+  "database_tests_executed": 418,
+  "postgresql": "SELECT current_setting('server_version_num'); SELECT version(); SELECT current_database();\n170011\nPostgreSQL 17.11 (Debian 17.11-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit\nm5_disposable\n",
+  "image": {
+    "Id": "sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3",
+    "RepoDigests": [
+      "postgres@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3"
+    ],
+    "Architecture": "amd64",
+    "Os": "linux"
+  },
+  "container": {
+    "id": "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+    "name": "r28-m5-4cf87f7a38fe425687dab526fb57c386",
+    "image": "sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3",
+    "network": "none",
+    "mounts": [],
+    "tmpfs": {
+      "/var/lib/postgresql/data": "rw"
+    },
+    "ports": {}
+  },
+  "credential_safety": "isolated local socket; empty Docker config; no host credential mounts or external DSN",
+  "connection": "local container Unix socket; dbname=m5_disposable; no published port",
+  "fixture": "synthetic T1/T2, R1/R2, admin/old/new; initial G10/fence5",
+  "sql_runtime_approved": false,
+  "preflight_status": "PASS",
+  "process_environment_keys": [
+    "COMSPEC",
+    "HOME",
+    "PATH",
+    "PATHEXT",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "acceptance_gaps": [
+    {
+      "test_id": "T07",
+      "case": "actual-commit-ack-drop",
+      "status": "BLOCKED",
+      "reason": "network none, host TCP reject, docker-exec Unix socket; no verified in-container transport proxy. Isolation not changed; response discard is historical model only. SIGTERM in-flight COMMIT is not ACK-drop. SIGKILL/postmaster crash and Java transport mapping also not exercised."
+    }
+  ],
+  "docker_server": {
+    "Platform": {
+      "Name": "Docker Desktop 4.87.0 (236836)"
+    },
+    "Version": "29.7.2",
+    "ApiVersion": "1.55",
+    "MinAPIVersion": "1.40",
+    "Os": "linux",
+    "Arch": "amd64",
+    "Components": [
+      {
+        "Name": "Engine",
+        "Version": "29.7.2",
+        "Details": {
+          "ApiVersion": "1.55",
+          "Arch": "amd64",
+          "BuildTime": "Wed Aug  5 18:28:36 2026",
+          "Experimental": "false",
+          "GitCommit": "6a43e3d",
+          "GoVersion": "go1.26.5",
+          "KernelVersion": "6.18.33.2-microsoft-standard-WSL2",
+          "MinAPIVersion": "1.40",
+          "Module": "github.com/moby/moby/v2",
+          "ModuleVersion": "v2.0.0+unknown",
+          "Os": "linux"
+        }
+      },
+      {
+        "Name": "containerd",
+        "Version": "v2.2.5",
+        "Details": {
+          "GitCommit": "e53c7c1516c3b2bff98eb76f1f4117477e6f4e66"
+        }
+      },
+      {
+        "Name": "runc",
+        "Version": "1.3.6",
+        "Details": {
+          "GitCommit": "v1.3.6-0-g491b69ba"
+        }
+      },
+      {
+        "Name": "docker-init",
+        "Version": "0.19.0",
+        "Details": {
+          "GitCommit": "de40ad0"
+        }
+      }
+    ],
+    "GitCommit": "6a43e3d",
+    "GoVersion": "go1.26.5",
+    "KernelVersion": "6.18.33.2-microsoft-standard-WSL2",
+    "BuildTime": "2026-08-05T18:28:36.000000000+00:00"
+  },
+  "postgres_binary_version": "postgres (PostgreSQL) 17.11 (Debian 17.11-1.pgdg13+2)",
+  "credentials": {
+    "source": "secrets.token_urlsafe(32), generated in this run",
+    "bootstrap_password_matches_container": true,
+    "password_in_command_or_evidence": false,
+    "runtime_auth": "container-local Unix socket trust; actual LOGIN roles; TCP reject"
+  },
+  "dsn": {
+    "host": "/var/run/postgresql",
+    "dbname": "m5_disposable",
+    "transport": "docker exec by verified new container ID; Unix socket",
+    "roles": [
+      "postgres",
+      "core_acl_exec_rt",
+      "core_authz_reader_rt",
+      "core_workflow_rt",
+      "helpdesk_rt",
+      "core_observer",
+      "core_migrator"
+    ]
+  },
+  "pre_sql_isolation_status": "PASS",
+  "authentication_rules": [
+    [
+      "local",
+      "all",
+      "all",
+      "trust"
+    ],
+    [
+      "host",
+      "all",
+      "all",
+      "127.0.0.1/32",
+      "reject"
+    ],
+    [
+      "host",
+      "all",
+      "all",
+      "::1/128",
+      "reject"
+    ],
+    [
+      "local",
+      "replication",
+      "all",
+      "trust"
+    ],
+    [
+      "host",
+      "replication",
+      "all",
+      "127.0.0.1/32",
+      "reject"
+    ],
+    [
+      "host",
+      "replication",
+      "all",
+      "::1/128",
+      "reject"
+    ],
+    [
+      "host",
+      "all",
+      "all",
+      "all",
+      "reject"
+    ]
+  ],
+  "pgdata_filesystem": "tmpfs",
+  "socket_positive_control": {
+    "stdout": "SELECT session_user||'/'||current_user||'/'||current_database(); SELECT inet_server_addr() IS NULL;\npostgres/postgres/m5_disposable\nt\n",
+    "stderr": ""
+  },
+  "offline_operations": [
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.assign_fault(p_tenant text,p_principal text,p_resource text,p_key text,\n    p_assignee text,p_g bigint,p_fence bigint) RETURNS jsonb\nLANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $assign$\nDECLARE\n    v_service text; v_g bigint; v_fence bigint; v_request jsonb; v_digest bytea;\n    v_receipt m5.receipt; v_audit uuid:=gen_random_uuid(); v_changes jsonb; v_xid xid8;\nBEGIN\n    IF session_user<>'core_acl_exec_rt' OR current_setting('transaction_isolation')<>'read committed'\n        OR pg_current_xact_id_if_assigned() IS NOT NULL THEN\n        RAISE EXCEPTION 'invalid executor context' USING ERRCODE='25001';\n    END IF;\n    IF p_key IS NULL OR p_key !~ '^[a-zA-Z0-9_-]{1,64}$' OR p_g IS NULL OR p_g<0\n        OR p_fence IS NULL OR p_fence<=0 OR p_assignee IS NULL THEN\n        RAISE EXCEPTION 'invalid request' USING ERRCODE='22023';\n    END IF;\n    SELECT service_id INTO v_service FROM m5.authority WHERE tenant_id=p_tenant\n        AND principal=p_principal AND resource_id=p_resource AND can_lookup;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    SELECT acl_revision INTO v_g FROM m5.tenant_guards WHERE tenant_id=p_tenant FOR UPDATE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    -- Tenant-exclusive guard serializes every scoped key, no weaker hash/advisory identity.\n    IF (SELECT count(*) FROM m5.admission WHERE tenant_id IN ('GLOBAL',p_tenant) AND is_open)<>2 THEN\n        RAISE EXCEPTION 'admission closed' USING ERRCODE='55000';\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND service_id=v_service AND can_lookup)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active) THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    v_request:=jsonb_build_object('version',1,'tenant',p_tenant,'service',v_service,\n        'principal',p_principal,'operation','ACL_ASSIGN_REPLACE','resource',p_resource,\n        'assignee',p_assignee,'expected_g',p_g,'fence',p_fence);\n    v_digest:=sha256(convert_to(v_request::text,'UTF8'));\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND can_execute)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_assignee AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.resource_registry WHERE tenant_id=p_tenant AND resource_id=p_resource AND lifecycle='ACTIVE')\n        OR (SELECT count(*) FROM m5.resource_acl WHERE tenant_id=p_tenant AND resource_id=p_resource AND actor_id=p_assignee)<>2 THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    SELECT accepted_fence INTO v_fence FROM m5.resource_fence\n        WHERE tenant_id=p_tenant AND resource_id=p_resource FOR UPDATE;\n    IF v_g<>p_g OR p_fence<=v_fence THEN\n        -- Q02 is not frozen: rollback only; no fabricated terminal rejection receipt.\n        RAISE EXCEPTION 'generation or fence conflict' USING ERRCODE='40001';\n    END IF;\n    UPDATE m5.resource_acl SET granted=(actor_id=p_assignee)\n        WHERE tenant_id=p_tenant AND resource_id=p_resource AND granted IS DISTINCT FROM (actor_id=p_assignee);\n    UPDATE m5.tenant_guards SET acl_revision=acl_revision+1 WHERE tenant_id=p_tenant;\n    UPDATE m5.resource_fence SET accepted_fence=p_fence WHERE tenant_id=p_tenant AND resource_id=p_resource;\n    v_xid:=pg_current_xact_id();\n    v_changes:=m5.actual_changes(v_xid);\n    INSERT INTO m5.policy_audit VALUES(v_audit,p_tenant,p_resource,p_principal,v_service,p_key,\n        'ACL_ASSIGN_REPLACE',p_g,p_g+1,p_fence,v_request,v_changes,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    INSERT INTO m5.receipt VALUES(gen_random_uuid(),p_tenant,v_service,p_principal,p_key,\n        'ACL_ASSIGN_REPLACE',p_resource,'APPLIED',1,v_request,v_digest,p_g,p_g+1,p_fence,v_audit,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    RETURN jsonb_build_object('status','APPLIED','audit',v_audit);\nEND $assign$; GRANT EXECUTE ON FUNCTION m5.assign_fault(text,text,text,text,text,bigint,bigint) TO core_acl_exec_rt; COMMIT;",
+      "stdout": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.assign_fault(p_tenant text,p_principal text,p_resource text,p_key text,\n    p_assignee text,p_g bigint,p_fence bigint) RETURNS jsonb\nLANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $assign$\nDECLARE\n    v_service text; v_g bigint; v_fence bigint; v_request jsonb; v_digest bytea;\n    v_receipt m5.receipt; v_audit uuid:=gen_random_uuid(); v_changes jsonb; v_xid xid8;\nBEGIN\n    IF session_user<>'core_acl_exec_rt' OR current_setting('transaction_isolation')<>'read committed'\n        OR pg_current_xact_id_if_assigned() IS NOT NULL THEN\n        RAISE EXCEPTION 'invalid executor context' USING ERRCODE='25001';\n    END IF;\n    IF p_key IS NULL OR p_key !~ '^[a-zA-Z0-9_-]{1,64}$' OR p_g IS NULL OR p_g<0\n        OR p_fence IS NULL OR p_fence<=0 OR p_assignee IS NULL THEN\n        RAISE EXCEPTION 'invalid request' USING ERRCODE='22023';\n    END IF;\n    SELECT service_id INTO v_service FROM m5.authority WHERE tenant_id=p_tenant\n        AND principal=p_principal AND resource_id=p_resource AND can_lookup;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    SELECT acl_revision INTO v_g FROM m5.tenant_guards WHERE tenant_id=p_tenant FOR UPDATE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    -- Tenant-exclusive guard serializes every scoped key, no weaker hash/advisory identity.\n    IF (SELECT count(*) FROM m5.admission WHERE tenant_id IN ('GLOBAL',p_tenant) AND is_open)<>2 THEN\n        RAISE EXCEPTION 'admission closed' USING ERRCODE='55000';\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND service_id=v_service AND can_lookup)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active) THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    v_request:=jsonb_build_object('version',1,'tenant',p_tenant,'service',v_service,\n        'principal',p_principal,'operation','ACL_ASSIGN_REPLACE','resource',p_resource,\n        'assignee',p_assignee,'expected_g',p_g,'fence',p_fence);\n    v_digest:=sha256(convert_to(v_request::text,'UTF8'));\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND can_execute)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_assignee AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.resource_registry WHERE tenant_id=p_tenant AND resource_id=p_resource AND lifecycle='ACTIVE')\n        OR (SELECT count(*) FROM m5.resource_acl WHERE tenant_id=p_tenant AND resource_id=p_resource AND actor_id=p_assignee)<>2 THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    SELECT accepted_fence INTO v_fence FROM m5.resource_fence\n        WHERE tenant_id=p_tenant AND resource_id=p_resource FOR UPDATE;\n    IF v_g<>p_g OR p_fence<=v_fence THEN\n        -- Q02 is not frozen: rollback only; no fabricated terminal rejection receipt.\n        RAISE EXCEPTION 'generation or fence conflict' USING ERRCODE='40001';\n    END IF;\n    UPDATE m5.resource_acl SET granted=(actor_id=p_assignee)\n        WHERE tenant_id=p_tenant AND resource_id=p_resource AND granted IS DISTINCT FROM (actor_id=p_assignee);\n    UPDATE m5.tenant_guards SET acl_revision=acl_revision+1 WHERE tenant_id=p_tenant;\n    UPDATE m5.resource_fence SET accepted_fence=p_fence WHERE tenant_id=p_tenant AND resource_id=p_resource;\n    v_xid:=pg_current_xact_id();\n    v_changes:=m5.actual_changes(v_xid);\n    INSERT INTO m5.policy_audit VALUES(v_audit,p_tenant,p_resource,p_principal,v_service,p_key,\n        'ACL_ASSIGN_REPLACE',p_g,p_g+1,p_fence,v_request,v_changes,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    INSERT INTO m5.receipt VALUES(gen_random_uuid(),p_tenant,v_service,p_principal,p_key,\n        'ACL_ASSIGN_REPLACE',p_resource,'APPLIED',1,v_request,v_digest,p_g,p_g+1,p_fence,v_audit,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    RETURN jsonb_build_object('status','APPLIED','audit',v_audit);\nEND $assign$; GRANT EXECUTE ON FUNCTION m5.assign_fault(text,text,text,text,text,bigint,bigint) TO core_acl_exec_rt; COMMIT;\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.assign_fault(p_tenant text,p_principal text,p_resource text,p_key text,\n    p_assignee text,p_g bigint,p_fence bigint) RETURNS jsonb\nLANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $assign$\nDECLARE\n    v_service text; v_g bigint; v_fence bigint; v_request jsonb; v_digest bytea;\n    v_receipt m5.receipt; v_audit uuid:=gen_random_uuid(); v_changes jsonb; v_xid xid8;\nBEGIN\n    IF session_user<>'core_acl_exec_rt' OR current_setting('transaction_isolation')<>'read committed'\n        OR pg_current_xact_id_if_assigned() IS NOT NULL THEN\n        RAISE EXCEPTION 'invalid executor context' USING ERRCODE='25001';\n    END IF;\n    IF p_key IS NULL OR p_key !~ '^[a-zA-Z0-9_-]{1,64}$' OR p_g IS NULL OR p_g<0\n        OR p_fence IS NULL OR p_fence<=0 OR p_assignee IS NULL THEN\n        RAISE EXCEPTION 'invalid request' USING ERRCODE='22023';\n    END IF;\n    SELECT service_id INTO v_service FROM m5.authority WHERE tenant_id=p_tenant\n        AND principal=p_principal AND resource_id=p_resource AND can_lookup;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    SELECT acl_revision INTO v_g FROM m5.tenant_guards WHERE tenant_id=p_tenant FOR UPDATE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    -- Tenant-exclusive guard serializes every scoped key, no weaker hash/advisory identity.\n    IF (SELECT count(*) FROM m5.admission WHERE tenant_id IN ('GLOBAL',p_tenant) AND is_open)<>2 THEN\n        RAISE EXCEPTION 'admission closed' USING ERRCODE='55000';\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND service_id=v_service AND can_lookup)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active) THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    v_request:=jsonb_build_object('version',1,'tenant',p_tenant,'service',v_service,\n        'principal',p_principal,'operation','ACL_ASSIGN_REPLACE','resource',p_resource,\n        'assignee',p_assignee,'expected_g',p_g,'fence',p_fence);\n    v_digest:=sha256(convert_to(v_request::text,'UTF8'));\n    SELECT * INTO v_receipt FROM m5.receipt WHERE tenant_id=p_tenant AND service_id=v_service\n        AND operation='ACL_ASSIGN_REPLACE' AND command_key=p_key;\n    IF FOUND THEN\n        IF v_receipt.fingerprint<>v_digest THEN\n            RAISE EXCEPTION 'payload conflict' USING ERRCODE='23505';\n        END IF;\n        RETURN jsonb_build_object('status','REPLAY','receipt',to_jsonb(v_receipt));\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND can_execute)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_assignee AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.resource_registry WHERE tenant_id=p_tenant AND resource_id=p_resource AND lifecycle='ACTIVE')\n        OR (SELECT count(*) FROM m5.resource_acl WHERE tenant_id=p_tenant AND resource_id=p_resource AND actor_id=p_assignee)<>2 THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    SELECT accepted_fence INTO v_fence FROM m5.resource_fence\n        WHERE tenant_id=p_tenant AND resource_id=p_resource FOR UPDATE;\n    IF v_g<>p_g OR p_fence<=v_fence THEN\n        -- Q02 is not frozen: rollback only; no fabricated terminal rejection receipt.\n        RAISE EXCEPTION 'generation or fence conflict' USING ERRCODE='40001';\n    END IF;\n    UPDATE m5.resource_acl SET granted=(actor_id=p_assignee)\n        WHERE tenant_id=p_tenant AND resource_id=p_resource AND granted IS DISTINCT FROM (actor_id=p_assignee);\n    UPDATE m5.tenant_guards SET acl_revision=acl_revision+1 WHERE tenant_id=p_tenant;\n    UPDATE m5.resource_fence SET accepted_fence=p_fence WHERE tenant_id=p_tenant AND resource_id=p_resource;\n    v_xid:=pg_current_xact_id();\n    v_changes:=m5.actual_changes(v_xid);\n    INSERT INTO m5.policy_audit VALUES(v_audit,p_tenant,p_resource,p_principal,v_service,p_key,\n        'ACL_ASSIGN_REPLACE',p_g,p_g+1,p_fence,v_request,v_changes,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    INSERT INTO m5.receipt VALUES(gen_random_uuid(),p_tenant,v_service,'forged',p_key,\n        'ACL_ASSIGN_REPLACE',p_resource,'APPLIED',1,v_request,v_digest,p_g,p_g+1,p_fence,v_audit,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    RETURN jsonb_build_object('status','APPLIED','audit',v_audit);\nEND $assign$; GRANT EXECUTE ON FUNCTION m5.assign_fault(text,text,text,text,text,bigint,bigint) TO core_acl_exec_rt; COMMIT;",
+      "stdout": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.assign_fault(p_tenant text,p_principal text,p_resource text,p_key text,\n    p_assignee text,p_g bigint,p_fence bigint) RETURNS jsonb\nLANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $assign$\nDECLARE\n    v_service text; v_g bigint; v_fence bigint; v_request jsonb; v_digest bytea;\n    v_receipt m5.receipt; v_audit uuid:=gen_random_uuid(); v_changes jsonb; v_xid xid8;\nBEGIN\n    IF session_user<>'core_acl_exec_rt' OR current_setting('transaction_isolation')<>'read committed'\n        OR pg_current_xact_id_if_assigned() IS NOT NULL THEN\n        RAISE EXCEPTION 'invalid executor context' USING ERRCODE='25001';\n    END IF;\n    IF p_key IS NULL OR p_key !~ '^[a-zA-Z0-9_-]{1,64}$' OR p_g IS NULL OR p_g<0\n        OR p_fence IS NULL OR p_fence<=0 OR p_assignee IS NULL THEN\n        RAISE EXCEPTION 'invalid request' USING ERRCODE='22023';\n    END IF;\n    SELECT service_id INTO v_service FROM m5.authority WHERE tenant_id=p_tenant\n        AND principal=p_principal AND resource_id=p_resource AND can_lookup;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    SELECT acl_revision INTO v_g FROM m5.tenant_guards WHERE tenant_id=p_tenant FOR UPDATE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    -- Tenant-exclusive guard serializes every scoped key, no weaker hash/advisory identity.\n    IF (SELECT count(*) FROM m5.admission WHERE tenant_id IN ('GLOBAL',p_tenant) AND is_open)<>2 THEN\n        RAISE EXCEPTION 'admission closed' USING ERRCODE='55000';\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND service_id=v_service AND can_lookup)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active) THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    v_request:=jsonb_build_object('version',1,'tenant',p_tenant,'service',v_service,\n        'principal',p_principal,'operation','ACL_ASSIGN_REPLACE','resource',p_resource,\n        'assignee',p_assignee,'expected_g',p_g,'fence',p_fence);\n    v_digest:=sha256(convert_to(v_request::text,'UTF8'));\n    SELECT * INTO v_receipt FROM m5.receipt WHERE tenant_id=p_tenant AND service_id=v_service\n        AND operation='ACL_ASSIGN_REPLACE' AND command_key=p_key;\n    IF FOUND THEN\n        IF v_receipt.fingerprint<>v_digest THEN\n            RAISE EXCEPTION 'payload conflict' USING ERRCODE='23505';\n        END IF;\n        RETURN jsonb_build_object('status','REPLAY','receipt',to_jsonb(v_receipt));\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND can_execute)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_assignee AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.resource_registry WHERE tenant_id=p_tenant AND resource_id=p_resource AND lifecycle='ACTIVE')\n        OR (SELECT count(*) FROM m5.resource_acl WHERE tenant_id=p_tenant AND resource_id=p_resource AND actor_id=p_assignee)<>2 THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    SELECT accepted_fence INTO v_fence FROM m5.resource_fence\n        WHERE tenant_id=p_tenant AND resource_id=p_resource FOR UPDATE;\n    IF v_g<>p_g OR p_fence<=v_fence THEN\n        -- Q02 is not frozen: rollback only; no fabricated terminal rejection receipt.\n        RAISE EXCEPTION 'generation or fence conflict' USING ERRCODE='40001';\n    END IF;\n    UPDATE m5.resource_acl SET granted=(actor_id=p_assignee)\n        WHERE tenant_id=p_tenant AND resource_id=p_resource AND granted IS DISTINCT FROM (actor_id=p_assignee);\n    UPDATE m5.tenant_guards SET acl_revision=acl_revision+1 WHERE tenant_id=p_tenant;\n    UPDATE m5.resource_fence SET accepted_fence=p_fence WHERE tenant_id=p_tenant AND resource_id=p_resource;\n    v_xid:=pg_current_xact_id();\n    v_changes:=m5.actual_changes(v_xid);\n    INSERT INTO m5.policy_audit VALUES(v_audit,p_tenant,p_resource,p_principal,v_service,p_key,\n        'ACL_ASSIGN_REPLACE',p_g,p_g+1,p_fence,v_request,v_changes,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    INSERT INTO m5.receipt VALUES(gen_random_uuid(),p_tenant,v_service,'forged',p_key,\n        'ACL_ASSIGN_REPLACE',p_resource,'APPLIED',1,v_request,v_digest,p_g,p_g+1,p_fence,v_audit,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    RETURN jsonb_build_object('status','APPLIED','audit',v_audit);\nEND $assign$; GRANT EXECUTE ON FUNCTION m5.assign_fault(text,text,text,text,text,bigint,bigint) TO core_acl_exec_rt; COMMIT;\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.assign_fault(p_tenant text,p_principal text,p_resource text,p_key text,\n    p_assignee text,p_g bigint,p_fence bigint) RETURNS jsonb\nLANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $assign$\nDECLARE\n    v_service text; v_g bigint; v_fence bigint; v_request jsonb; v_digest bytea;\n    v_receipt m5.receipt; v_audit uuid:=gen_random_uuid(); v_changes jsonb; v_xid xid8;\nBEGIN\n    IF session_user<>'core_acl_exec_rt' OR current_setting('transaction_isolation')<>'read committed'\n        OR pg_current_xact_id_if_assigned() IS NOT NULL THEN\n        RAISE EXCEPTION 'invalid executor context' USING ERRCODE='25001';\n    END IF;\n    IF p_key IS NULL OR p_key !~ '^[a-zA-Z0-9_-]{1,64}$' OR p_g IS NULL OR p_g<0\n        OR p_fence IS NULL OR p_fence<=0 OR p_assignee IS NULL THEN\n        RAISE EXCEPTION 'invalid request' USING ERRCODE='22023';\n    END IF;\n    SELECT service_id INTO v_service FROM m5.authority WHERE tenant_id=p_tenant\n        AND principal=p_principal AND resource_id=p_resource AND can_lookup;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    SELECT acl_revision INTO v_g FROM m5.tenant_guards WHERE tenant_id=p_tenant FOR UPDATE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    -- Tenant-exclusive guard serializes every scoped key, no weaker hash/advisory identity.\n    IF (SELECT count(*) FROM m5.admission WHERE tenant_id IN ('GLOBAL',p_tenant) AND is_open)<>2 THEN\n        RAISE EXCEPTION 'admission closed' USING ERRCODE='55000';\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND service_id=v_service AND can_lookup)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active) THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    v_request:=jsonb_build_object('version',1,'tenant',p_tenant,'service',v_service,\n        'principal',p_principal,'operation','ACL_ASSIGN_REPLACE','resource',p_resource,\n        'assignee',p_assignee,'expected_g',p_g,'fence',p_fence);\n    v_digest:=sha256(convert_to(v_request::text,'UTF8'));\n    SELECT * INTO v_receipt FROM m5.receipt WHERE tenant_id=p_tenant AND service_id=v_service\n        AND operation='ACL_ASSIGN_REPLACE' AND command_key=p_key;\n    IF FOUND THEN\n        IF v_receipt.fingerprint<>v_digest THEN\n            RAISE EXCEPTION 'payload conflict' USING ERRCODE='23505';\n        END IF;\n        RETURN jsonb_build_object('status','REPLAY','receipt',to_jsonb(v_receipt));\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND can_execute)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_assignee AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.resource_registry WHERE tenant_id=p_tenant AND resource_id=p_resource AND lifecycle='ACTIVE')\n        OR (SELECT count(*) FROM m5.resource_acl WHERE tenant_id=p_tenant AND resource_id=p_resource AND actor_id=p_assignee)<>2 THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    SELECT accepted_fence INTO v_fence FROM m5.resource_fence\n        WHERE tenant_id=p_tenant AND resource_id=p_resource FOR UPDATE;\n    IF v_g<>p_g OR p_fence<=v_fence THEN\n        -- Q02 is not frozen: rollback only; no fabricated terminal rejection receipt.\n        RAISE EXCEPTION 'generation or fence conflict' USING ERRCODE='40001';\n    END IF;\n    UPDATE m5.resource_acl SET granted=(actor_id=p_assignee)\n        WHERE tenant_id=p_tenant AND resource_id=p_resource AND granted IS DISTINCT FROM (actor_id=p_assignee);\n    UPDATE m5.tenant_guards SET acl_revision=acl_revision+1 WHERE tenant_id=p_tenant;\n    UPDATE m5.resource_fence SET accepted_fence=p_fence WHERE tenant_id=p_tenant AND resource_id=p_resource;\n    v_xid:=pg_current_xact_id();\n    v_changes:=m5.actual_changes(v_xid);\n    INSERT INTO m5.policy_audit VALUES(v_audit,p_tenant,p_resource,p_principal,v_service,p_key,\n        'ACL_ASSIGN_REPLACE',p_g,p_g+1,p_fence,v_request,v_changes,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    INSERT INTO m5.receipt VALUES(gen_random_uuid(),p_tenant,v_service,p_principal,p_key,\n        'ACL_ASSIGN_REPLACE','R2','APPLIED',1,v_request,v_digest,p_g,p_g+1,p_fence,v_audit,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    RETURN jsonb_build_object('status','APPLIED','audit',v_audit);\nEND $assign$; GRANT EXECUTE ON FUNCTION m5.assign_fault(text,text,text,text,text,bigint,bigint) TO core_acl_exec_rt; COMMIT;",
+      "stdout": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.assign_fault(p_tenant text,p_principal text,p_resource text,p_key text,\n    p_assignee text,p_g bigint,p_fence bigint) RETURNS jsonb\nLANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $assign$\nDECLARE\n    v_service text; v_g bigint; v_fence bigint; v_request jsonb; v_digest bytea;\n    v_receipt m5.receipt; v_audit uuid:=gen_random_uuid(); v_changes jsonb; v_xid xid8;\nBEGIN\n    IF session_user<>'core_acl_exec_rt' OR current_setting('transaction_isolation')<>'read committed'\n        OR pg_current_xact_id_if_assigned() IS NOT NULL THEN\n        RAISE EXCEPTION 'invalid executor context' USING ERRCODE='25001';\n    END IF;\n    IF p_key IS NULL OR p_key !~ '^[a-zA-Z0-9_-]{1,64}$' OR p_g IS NULL OR p_g<0\n        OR p_fence IS NULL OR p_fence<=0 OR p_assignee IS NULL THEN\n        RAISE EXCEPTION 'invalid request' USING ERRCODE='22023';\n    END IF;\n    SELECT service_id INTO v_service FROM m5.authority WHERE tenant_id=p_tenant\n        AND principal=p_principal AND resource_id=p_resource AND can_lookup;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    SELECT acl_revision INTO v_g FROM m5.tenant_guards WHERE tenant_id=p_tenant FOR UPDATE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    -- Tenant-exclusive guard serializes every scoped key, no weaker hash/advisory identity.\n    IF (SELECT count(*) FROM m5.admission WHERE tenant_id IN ('GLOBAL',p_tenant) AND is_open)<>2 THEN\n        RAISE EXCEPTION 'admission closed' USING ERRCODE='55000';\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND service_id=v_service AND can_lookup)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active) THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    v_request:=jsonb_build_object('version',1,'tenant',p_tenant,'service',v_service,\n        'principal',p_principal,'operation','ACL_ASSIGN_REPLACE','resource',p_resource,\n        'assignee',p_assignee,'expected_g',p_g,'fence',p_fence);\n    v_digest:=sha256(convert_to(v_request::text,'UTF8'));\n    SELECT * INTO v_receipt FROM m5.receipt WHERE tenant_id=p_tenant AND service_id=v_service\n        AND operation='ACL_ASSIGN_REPLACE' AND command_key=p_key;\n    IF FOUND THEN\n        IF v_receipt.fingerprint<>v_digest THEN\n            RAISE EXCEPTION 'payload conflict' USING ERRCODE='23505';\n        END IF;\n        RETURN jsonb_build_object('status','REPLAY','receipt',to_jsonb(v_receipt));\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND can_execute)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_assignee AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.resource_registry WHERE tenant_id=p_tenant AND resource_id=p_resource AND lifecycle='ACTIVE')\n        OR (SELECT count(*) FROM m5.resource_acl WHERE tenant_id=p_tenant AND resource_id=p_resource AND actor_id=p_assignee)<>2 THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    SELECT accepted_fence INTO v_fence FROM m5.resource_fence\n        WHERE tenant_id=p_tenant AND resource_id=p_resource FOR UPDATE;\n    IF v_g<>p_g OR p_fence<=v_fence THEN\n        -- Q02 is not frozen: rollback only; no fabricated terminal rejection receipt.\n        RAISE EXCEPTION 'generation or fence conflict' USING ERRCODE='40001';\n    END IF;\n    UPDATE m5.resource_acl SET granted=(actor_id=p_assignee)\n        WHERE tenant_id=p_tenant AND resource_id=p_resource AND granted IS DISTINCT FROM (actor_id=p_assignee);\n    UPDATE m5.tenant_guards SET acl_revision=acl_revision+1 WHERE tenant_id=p_tenant;\n    UPDATE m5.resource_fence SET accepted_fence=p_fence WHERE tenant_id=p_tenant AND resource_id=p_resource;\n    v_xid:=pg_current_xact_id();\n    v_changes:=m5.actual_changes(v_xid);\n    INSERT INTO m5.policy_audit VALUES(v_audit,p_tenant,p_resource,p_principal,v_service,p_key,\n        'ACL_ASSIGN_REPLACE',p_g,p_g+1,p_fence,v_request,v_changes,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    INSERT INTO m5.receipt VALUES(gen_random_uuid(),p_tenant,v_service,p_principal,p_key,\n        'ACL_ASSIGN_REPLACE','R2','APPLIED',1,v_request,v_digest,p_g,p_g+1,p_fence,v_audit,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    RETURN jsonb_build_object('status','APPLIED','audit',v_audit);\nEND $assign$; GRANT EXECUTE ON FUNCTION m5.assign_fault(text,text,text,text,text,bigint,bigint) TO core_acl_exec_rt; COMMIT;\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.assign_fault(p_tenant text,p_principal text,p_resource text,p_key text,\n    p_assignee text,p_g bigint,p_fence bigint) RETURNS jsonb\nLANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $assign$\nDECLARE\n    v_service text; v_g bigint; v_fence bigint; v_request jsonb; v_digest bytea;\n    v_receipt m5.receipt; v_audit uuid:=gen_random_uuid(); v_changes jsonb; v_xid xid8;\nBEGIN\n    IF session_user<>'core_acl_exec_rt' OR current_setting('transaction_isolation')<>'read committed'\n        OR pg_current_xact_id_if_assigned() IS NOT NULL THEN\n        RAISE EXCEPTION 'invalid executor context' USING ERRCODE='25001';\n    END IF;\n    IF p_key IS NULL OR p_key !~ '^[a-zA-Z0-9_-]{1,64}$' OR p_g IS NULL OR p_g<0\n        OR p_fence IS NULL OR p_fence<=0 OR p_assignee IS NULL THEN\n        RAISE EXCEPTION 'invalid request' USING ERRCODE='22023';\n    END IF;\n    SELECT service_id INTO v_service FROM m5.authority WHERE tenant_id=p_tenant\n        AND principal=p_principal AND resource_id=p_resource AND can_lookup;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    SELECT acl_revision INTO v_g FROM m5.tenant_guards WHERE tenant_id=p_tenant FOR UPDATE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    -- Tenant-exclusive guard serializes every scoped key, no weaker hash/advisory identity.\n    IF (SELECT count(*) FROM m5.admission WHERE tenant_id IN ('GLOBAL',p_tenant) AND is_open)<>2 THEN\n        RAISE EXCEPTION 'admission closed' USING ERRCODE='55000';\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND service_id=v_service AND can_lookup)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active) THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    v_request:=jsonb_build_object('version',1,'tenant',p_tenant,'service',v_service,\n        'principal',p_principal,'operation','ACL_ASSIGN_REPLACE','resource',p_resource,\n        'assignee',p_assignee,'expected_g',p_g,'fence',p_fence);\n    v_digest:=sha256(convert_to(v_request::text,'UTF8'));\n    SELECT * INTO v_receipt FROM m5.receipt WHERE tenant_id=p_tenant AND service_id=v_service\n        AND operation='ACL_ASSIGN_REPLACE' AND command_key=p_key;\n    IF FOUND THEN\n        IF v_receipt.fingerprint<>v_digest THEN\n            RAISE EXCEPTION 'payload conflict' USING ERRCODE='23505';\n        END IF;\n        RETURN jsonb_build_object('status','REPLAY','receipt',to_jsonb(v_receipt));\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND can_execute)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_assignee AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.resource_registry WHERE tenant_id=p_tenant AND resource_id=p_resource AND lifecycle='ACTIVE')\n        OR (SELECT count(*) FROM m5.resource_acl WHERE tenant_id=p_tenant AND resource_id=p_resource AND actor_id=p_assignee)<>2 THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    SELECT accepted_fence INTO v_fence FROM m5.resource_fence\n        WHERE tenant_id=p_tenant AND resource_id=p_resource FOR UPDATE;\n    IF v_g<>p_g OR p_fence<=v_fence THEN\n        -- Q02 is not frozen: rollback only; no fabricated terminal rejection receipt.\n        RAISE EXCEPTION 'generation or fence conflict' USING ERRCODE='40001';\n    END IF;\n    UPDATE m5.resource_acl SET granted=(actor_id=p_assignee)\n        WHERE tenant_id=p_tenant AND resource_id=p_resource AND granted IS DISTINCT FROM (actor_id=p_assignee);\n    UPDATE m5.tenant_guards SET acl_revision=acl_revision+1 WHERE tenant_id=p_tenant;\n    UPDATE m5.resource_fence SET accepted_fence=p_fence WHERE tenant_id=p_tenant AND resource_id=p_resource;\n    v_xid:=pg_current_xact_id();\n    v_changes:=m5.actual_changes(v_xid);\n    INSERT INTO m5.policy_audit VALUES(v_audit,p_tenant,p_resource,p_principal,v_service,p_key,\n        'ACL_ASSIGN_REPLACE',p_g,p_g+1,p_fence,v_request,v_changes,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    INSERT INTO m5.receipt VALUES(gen_random_uuid(),p_tenant,v_service,p_principal,'forged-key',\n        'ACL_ASSIGN_REPLACE',p_resource,'APPLIED',1,v_request,v_digest,p_g,p_g+1,p_fence,v_audit,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    RETURN jsonb_build_object('status','APPLIED','audit',v_audit);\nEND $assign$; GRANT EXECUTE ON FUNCTION m5.assign_fault(text,text,text,text,text,bigint,bigint) TO core_acl_exec_rt; COMMIT;",
+      "stdout": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.assign_fault(p_tenant text,p_principal text,p_resource text,p_key text,\n    p_assignee text,p_g bigint,p_fence bigint) RETURNS jsonb\nLANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $assign$\nDECLARE\n    v_service text; v_g bigint; v_fence bigint; v_request jsonb; v_digest bytea;\n    v_receipt m5.receipt; v_audit uuid:=gen_random_uuid(); v_changes jsonb; v_xid xid8;\nBEGIN\n    IF session_user<>'core_acl_exec_rt' OR current_setting('transaction_isolation')<>'read committed'\n        OR pg_current_xact_id_if_assigned() IS NOT NULL THEN\n        RAISE EXCEPTION 'invalid executor context' USING ERRCODE='25001';\n    END IF;\n    IF p_key IS NULL OR p_key !~ '^[a-zA-Z0-9_-]{1,64}$' OR p_g IS NULL OR p_g<0\n        OR p_fence IS NULL OR p_fence<=0 OR p_assignee IS NULL THEN\n        RAISE EXCEPTION 'invalid request' USING ERRCODE='22023';\n    END IF;\n    SELECT service_id INTO v_service FROM m5.authority WHERE tenant_id=p_tenant\n        AND principal=p_principal AND resource_id=p_resource AND can_lookup;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    SELECT acl_revision INTO v_g FROM m5.tenant_guards WHERE tenant_id=p_tenant FOR UPDATE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'not available' USING ERRCODE='42501'; END IF;\n    -- Tenant-exclusive guard serializes every scoped key, no weaker hash/advisory identity.\n    IF (SELECT count(*) FROM m5.admission WHERE tenant_id IN ('GLOBAL',p_tenant) AND is_open)<>2 THEN\n        RAISE EXCEPTION 'admission closed' USING ERRCODE='55000';\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND service_id=v_service AND can_lookup)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active) THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    v_request:=jsonb_build_object('version',1,'tenant',p_tenant,'service',v_service,\n        'principal',p_principal,'operation','ACL_ASSIGN_REPLACE','resource',p_resource,\n        'assignee',p_assignee,'expected_g',p_g,'fence',p_fence);\n    v_digest:=sha256(convert_to(v_request::text,'UTF8'));\n    SELECT * INTO v_receipt FROM m5.receipt WHERE tenant_id=p_tenant AND service_id=v_service\n        AND operation='ACL_ASSIGN_REPLACE' AND command_key=p_key;\n    IF FOUND THEN\n        IF v_receipt.fingerprint<>v_digest THEN\n            RAISE EXCEPTION 'payload conflict' USING ERRCODE='23505';\n        END IF;\n        RETURN jsonb_build_object('status','REPLAY','receipt',to_jsonb(v_receipt));\n    END IF;\n    IF NOT EXISTS(SELECT 1 FROM m5.authority WHERE tenant_id=p_tenant AND principal=p_principal\n        AND resource_id=p_resource AND can_execute)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_principal AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.tenant_memberships WHERE tenant_id=p_tenant AND actor_id=p_assignee AND active)\n        OR NOT EXISTS(SELECT 1 FROM m5.resource_registry WHERE tenant_id=p_tenant AND resource_id=p_resource AND lifecycle='ACTIVE')\n        OR (SELECT count(*) FROM m5.resource_acl WHERE tenant_id=p_tenant AND resource_id=p_resource AND actor_id=p_assignee)<>2 THEN\n        RAISE EXCEPTION 'not available' USING ERRCODE='42501';\n    END IF;\n    SELECT accepted_fence INTO v_fence FROM m5.resource_fence\n        WHERE tenant_id=p_tenant AND resource_id=p_resource FOR UPDATE;\n    IF v_g<>p_g OR p_fence<=v_fence THEN\n        -- Q02 is not frozen: rollback only; no fabricated terminal rejection receipt.\n        RAISE EXCEPTION 'generation or fence conflict' USING ERRCODE='40001';\n    END IF;\n    UPDATE m5.resource_acl SET granted=(actor_id=p_assignee)\n        WHERE tenant_id=p_tenant AND resource_id=p_resource AND granted IS DISTINCT FROM (actor_id=p_assignee);\n    UPDATE m5.tenant_guards SET acl_revision=acl_revision+1 WHERE tenant_id=p_tenant;\n    UPDATE m5.resource_fence SET accepted_fence=p_fence WHERE tenant_id=p_tenant AND resource_id=p_resource;\n    v_xid:=pg_current_xact_id();\n    v_changes:=m5.actual_changes(v_xid);\n    INSERT INTO m5.policy_audit VALUES(v_audit,p_tenant,p_resource,p_principal,v_service,p_key,\n        'ACL_ASSIGN_REPLACE',p_g,p_g+1,p_fence,v_request,v_changes,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    INSERT INTO m5.receipt VALUES(gen_random_uuid(),p_tenant,v_service,p_principal,'forged-key',\n        'ACL_ASSIGN_REPLACE',p_resource,'APPLIED',1,v_request,v_digest,p_g,p_g+1,p_fence,v_audit,\n        sha256(convert_to(v_changes::text,'UTF8')),v_xid);\n    RETURN jsonb_build_object('status','APPLIED','audit',v_audit);\nEND $assign$; GRANT EXECUTE ON FUNCTION m5.assign_fault(text,text,text,text,text,bigint,bigint) TO core_acl_exec_rt; COMMIT;\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "GRANT SELECT,UPDATE ON m5.resource_acl,m5.tenant_guards,m5.resource_fence TO helpdesk_rt;GRANT SELECT,INSERT ON m5.receipt TO helpdesk_rt;",
+      "stdout": "GRANT SELECT,UPDATE ON m5.resource_acl,m5.tenant_guards,m5.resource_fence TO helpdesk_rt;GRANT SELECT,INSERT ON m5.receipt TO helpdesk_rt;\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "REVOKE ALL ON m5.resource_acl,m5.tenant_guards,m5.resource_fence,m5.receipt FROM helpdesk_rt;",
+      "stdout": "REVOKE ALL ON m5.resource_acl,m5.tenant_guards,m5.resource_fence,m5.receipt FROM helpdesk_rt;\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "SELECT pg_terminate_backend(9084,5000);",
+      "stdout": "SELECT pg_terminate_backend(9084,5000);\nt\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "SELECT pg_terminate_backend(9189,5000);",
+      "stdout": "SELECT pg_terminate_backend(9189,5000);\nt\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "SELECT pg_terminate_backend(9287,5000);",
+      "stdout": "SELECT pg_terminate_backend(9287,5000);\nt\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.commit_barrier() RETURNS trigger LANGUAGE plpgsql SET search_path=pg_catalog,pg_temp AS $$ BEGIN PERFORM pg_advisory_xact_lock(280707); RETURN NULL; END $$;CREATE CONSTRAINT TRIGGER zz_commit_barrier AFTER INSERT ON m5.receipt DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION m5.commit_barrier(); COMMIT;",
+      "stdout": "BEGIN; SET LOCAL ROLE core_acl_owner; CREATE FUNCTION m5.commit_barrier() RETURNS trigger LANGUAGE plpgsql SET search_path=pg_catalog,pg_temp AS $$ BEGIN PERFORM pg_advisory_xact_lock(280707); RETURN NULL; END $$;CREATE CONSTRAINT TRIGGER zz_commit_barrier AFTER INSERT ON m5.receipt DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION m5.commit_barrier(); COMMIT;\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "SELECT pg_terminate_backend(9392,5000);",
+      "stdout": "SELECT pg_terminate_backend(9392,5000);\nt\n",
+      "stderr": ""
+    },
+    {
+      "actor": "postgres (offline fixture publisher)",
+      "command": [
+        "docker",
+        "--config",
+        "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+        "--host",
+        "npipe:////./pipe/dockerDesktopLinuxEngine",
+        "exec",
+        "-i",
+        "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-U",
+        "postgres",
+        "-h",
+        "/var/run/postgresql",
+        "-d",
+        "m5_disposable",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-v",
+        "VERBOSITY=verbose",
+        "--echo-all"
+      ],
+      "sql": "DROP TRIGGER zz_commit_barrier ON m5.receipt; DROP FUNCTION m5.commit_barrier();",
+      "stdout": "DROP TRIGGER zz_commit_barrier ON m5.receipt; DROP FUNCTION m5.commit_barrier();\n",
+      "stderr": ""
+    }
+  ],
+  "blocker": "offline fixture operation failed: ERROR:  42601: syntax error at or near \"USER\"\nLINE 1: ALTER TABLE m5.admission ENABLE ALWAYS TRIGGER USER;\n                                                       ^\nLOCATION:  scanner_yyerror, scan.l:1244\n",
+  "cleanup": "PASS; only the verified new container removed"
+}

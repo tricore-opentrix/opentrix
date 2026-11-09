@@ -1,0 +1,87 @@
+{
+  "test_id": "T07",
+  "status": "BLOCKED",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 15,
+  "cases": [
+    {
+      "name": "kill-before-mutation-authenticated-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-before-mutation-retry",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-before-mutation",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "kill-after-mutation-authenticated-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-after-mutation-retry",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-after-mutation",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "kill-before-commit-authenticated-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-before-commit-retry",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-before-commit",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "kill-commit-in-flight-authenticated-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-commit-in-flight-retry",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "kill-commit-in-flight",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "lock_timeout",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "statement_timeout",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "actual-deadlock",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    }
+  ],
+  "remaining": [
+    "network none, host TCP reject, docker-exec Unix socket; no verified in-container transport proxy. Isolation not changed; response discard is historical model only. SIGTERM in-flight COMMIT is not ACK-drop. SIGKILL/postmaster crash and Java transport mapping also not exercised.",
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}

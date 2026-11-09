@@ -1,0 +1,38 @@
+{
+  "run_id": "20261109-m5-enforcement-preflight-07",
+  "source_commit": "ee048142c805b0a14324a3ed0557326d9880e653",
+  "source_branch": "review/r28-q03-m5-isolated-verification-20261109",
+  "source_status": "",
+  "schema_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "grant_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "source_files_sha256": {
+    "launch.py": "25713df5863fa54c25bf0bf82785efda950802d7fe93821412c0573771bf341b",
+    "README.md": "97ef4943a19ca19cfe8d6878a9ba319c5402cc6d79fba21ff413d62c290ed1a2",
+    "run.py": "876f45c5d1574c68463bc77fff454346e781e2b22d09fb0fb7e9446506a0a81c",
+    "schema.sql": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "test_harness.py": "724be95dcfb8e595a1138e7d2cca27d637d9ecc2bf5f6316fd877c1a3a0d3b11"
+  },
+  "execution_command": "\"C:\\Program Files\\Python314\\python.exe\" D:\\olp\\opentrix-r28-g0-design\\tests\\r28_m5\\run.py --run-id 20261109-m5-enforcement-preflight-07",
+  "database_tests_executed": 0,
+  "postgresql": null,
+  "image": null,
+  "container": null,
+  "credential_safety": "NOT_ESTABLISHED until isolated-container preflight completes",
+  "connection": "local container Unix socket; dbname=m5_disposable; no published port",
+  "fixture": "synthetic T1/T2, R1/R2, admin/old/new; initial G10/fence5",
+  "sql_runtime_approved": false,
+  "preflight_status": "BLOCKED",
+  "process_environment_keys": [
+    "COMSPEC",
+    "HOME",
+    "PATH",
+    "PATHEXT",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "blocker": "failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.",
+  "cleanup": "NOT_NEEDED"
+}

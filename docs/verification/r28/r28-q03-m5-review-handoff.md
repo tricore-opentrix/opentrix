@@ -5,6 +5,31 @@ SPDX-License-Identifier: Apache-2.0
 
 # R28 Q03 M5 — bàn giao review cho Yến, 2026-11-09
 
+## Handoff acceptance closure — hiện hành
+
+Đọc [acceptance report](r28-q03-m5-enforcement-acceptance.md) và manifest của run mới
+trước phần run 05 bên dưới. Báo cáo cũ `r28-q03-m5-verification-report.md` được giữ
+nguyên byte vì đã có checksum trong evidence lịch sử; các summary NOT RUN/388 PASS
+trong đó chỉ mô tả run tương ứng. Bảng disposition mới không tự nghiệm thu Step 2.
+
+Yến: đề nghị independent review trên **exact resulting HEAD SHA được báo sau commit**,
+đối chiếu source snapshot/hash, SQLSTATE, before/after và privilege graph; đặc biệt
+phân biệt actual SIGTERM/COMMIT-in-flight với ACK-drop thật vẫn BLOCKED, cùng các
+probe Q02/Q05 thăm dò. Run lỗi 08 phải giữ FAIL, không chuyển thành PASS hồi tố.
+
+Ánh: xác nhận R29 impact/cutover, receipt/status wire fields, fixture
+[`consumer_fixture.json`](../../../tests/r28_m5/consumer_fixture.json) cho durable
+reservation, superseded CAS và authorized manual reconciliation. Fixture chưa là
+consumer contract hoặc bằng chứng integration. Giữ Q06 B conditional S, Q08 B và
+ADR-015 Model T1; không áp dụng R29 delta hoặc legacy cutover tại đây.
+
+Q02/Q04/Q05/Q07 còn `OWNER_CONFIRMATION_REQUIRED`; Q03 Option A/M5 đã chọn có điều
+kiện, không lựa chọn lại. Giữ `Q06=NOT_FROZEN`, `RESEND=DISABLED`,
+`G0_CONTRACT=BLOCKED`, `R27A_IMPLEMENTATION=NOT_AUTHORIZED`. Không merge.
+Handoff được chuẩn bị trong repository; không giả định Yến/Ánh đã phản hồi hoặc ký duyệt.
+
+## Handoff run 05 — lịch sử, đã được thay thế về trạng thái hiện hành
+
 **PARTIAL_NOT_ACCEPTED. STEP_2_COMPLETION = NOT_PASSED; RESEND = DISABLED;
 G0_CONTRACT = BLOCKED.** Gói này dành cho review độc lập, chưa phải nghiệm thu M5
 hoặc bằng chứng production all-writer coverage.

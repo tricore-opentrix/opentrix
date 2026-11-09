@@ -1,0 +1,34 @@
+{
+  "test_id": "X-13",
+  "status": "BLOCKED",
+  "reason": "offline fixture operation failed: ERROR:  42601: syntax error at or near \"USER\"\nLINE 1: ALTER TABLE m5.admission ENABLE ALWAYS TRIGGER USER;\n                                                       ^\nLOCATION:  scanner_yyerror, scan.l:1244\n",
+  "database_cases_executed": 4,
+  "cases": [
+    {
+      "name": "committed-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "hidden-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "unknown-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "cross-resource-status",
+      "status": "PASS",
+      "reason": "expectations matched"
+    }
+  ],
+  "remaining": [
+    "Full approved contracts, W-17 deployed/external inventory, privileged maintenance/restore proof",
+    "X-13 revocation/security transport/latency mapping; X-23 retention/restore; X-24 terminal rejection",
+    "T07 backend-kill stages, actual network ACK loss, timeouts/deadlock; X-12 all arrival schedules",
+    "X-25 autonomous unique-conflict injection, owner bypass reconciliation; X-16/X-26 Helpdesk integration"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "test_id": "X-16-X-26",
+  "status": "BLOCKED",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 0,
+  "cases": [],
+  "remaining": [
+    "Consumer fixture prepared separately; no approved durable-reservation/CAS/manual-reconciliation integration contract or consumer environment.",
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "test_id": "X-23",
+  "status": "BLOCKED",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 9,
+  "cases": [
+    {
+      "name": "closed-admission-executor-denied",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "closed-admission-status-hidden",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "unreconciled-admission-stays-closed",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "actual-closed-dump-restore",
+      "status": "PASS",
+      "reason": "exploratory closed backup restored; actual runtime denied; no reopen authorization"
+    },
+    {
+      "name": "tombstone-new-command-denied",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "tombstone-retained-original-replay",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "retention-delete-denied",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "retention-privileged-delete-trigger",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "late-original-retained-replay",
+      "status": "PASS",
+      "reason": "expectations matched"
+    }
+  ],
+  "remaining": [
+    "Closed-admission/drift/reconcile probes are exploratory; no approved retention duration, durable retirement/tombstone/restore-reopen contract or operational owner evidence. Closed-backup dump/restore is an exploratory fixture only; OPEN/stale backup/PITR not proven.",
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}

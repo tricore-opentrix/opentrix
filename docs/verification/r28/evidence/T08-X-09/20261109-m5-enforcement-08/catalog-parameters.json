@@ -1,0 +1,32 @@
+{
+  "actor": "postgres (catalog observer only)",
+  "sql": "SELECT jsonb_agg(to_jsonb(p)) FROM pg_parameter_acl p;",
+  "command": [
+    "docker",
+    "--config",
+    "C:\\WINDOWS\\TEMP\\r28-m5-docker-lmllyyfi",
+    "--host",
+    "npipe:////./pipe/dockerDesktopLinuxEngine",
+    "exec",
+    "-i",
+    "561ec3e09fe84650d5e00049f6ffef360ec0d56f4286f557bd3f6e66953a38a1",
+    "psql",
+    "-X",
+    "-q",
+    "-A",
+    "-t",
+    "-U",
+    "postgres",
+    "-h",
+    "/var/run/postgresql",
+    "-d",
+    "m5_disposable",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-v",
+    "VERBOSITY=verbose",
+    "--echo-all"
+  ],
+  "stdout": "SELECT jsonb_agg(to_jsonb(p)) FROM pg_parameter_acl p;\n\n",
+  "stderr": ""
+}

@@ -1,0 +1,32 @@
+{
+  "actor": "postgres (catalog observer only)",
+  "sql": "SELECT jsonb_agg(to_jsonb(r)) FROM (SELECT rolname,rolsuper,rolinherit,rolcreaterole,rolcreatedb,rolcanlogin,rolreplication,rolbypassrls FROM pg_roles ORDER BY rolname) r;",
+  "command": [
+    "docker",
+    "--config",
+    "C:\\WINDOWS\\TEMP\\r28-m5-docker-05nf_18g",
+    "--host",
+    "npipe:////./pipe/dockerDesktopLinuxEngine",
+    "exec",
+    "-i",
+    "6bf00317aaf2a27ae04c7aaebe103bb0e80fe8434f7f43239a44834355610b39",
+    "psql",
+    "-X",
+    "-q",
+    "-A",
+    "-t",
+    "-U",
+    "postgres",
+    "-h",
+    "/var/run/postgresql",
+    "-d",
+    "m5_disposable",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-v",
+    "VERBOSITY=verbose",
+    "--echo-all"
+  ],
+  "stdout": "SELECT jsonb_agg(to_jsonb(r)) FROM (SELECT rolname,rolsuper,rolinherit,rolcreaterole,rolcreatedb,rolcanlogin,rolreplication,rolbypassrls FROM pg_roles ORDER BY rolname) r;\n[{\"rolname\": \"core_acl_exec_rt\", \"rolsuper\": false, \"rolinherit\": false, \"rolcanlogin\": true, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"core_acl_owner\", \"rolsuper\": false, \"rolinherit\": false, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"core_authz_reader_rt\", \"rolsuper\": false, \"rolinherit\": false, \"rolcanlogin\": true, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"core_migrator\", \"rolsuper\": false, \"rolinherit\": false, \"rolcanlogin\": true, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"core_observer\", \"rolsuper\": false, \"rolinherit\": false, \"rolcanlogin\": true, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"core_workflow_rt\", \"rolsuper\": false, \"rolinherit\": false, \"rolcanlogin\": true, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"helpdesk_rt\", \"rolsuper\": false, \"rolinherit\": false, \"rolcanlogin\": true, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_checkpoint\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_create_subscription\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_database_owner\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_execute_server_program\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_maintain\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_monitor\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_read_all_data\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_read_all_settings\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_read_all_stats\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_read_server_files\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_signal_backend\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_stat_scan_tables\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_use_reserved_connections\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_write_all_data\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"pg_write_server_files\", \"rolsuper\": false, \"rolinherit\": true, \"rolcanlogin\": false, \"rolcreatedb\": false, \"rolbypassrls\": false, \"rolcreaterole\": false, \"rolreplication\": false}, {\"rolname\": \"postgres\", \"rolsuper\": true, \"rolinherit\": true, \"rolcanlogin\": true, \"rolcreatedb\": true, \"rolbypassrls\": true, \"rolcreaterole\": true, \"rolreplication\": true}]\n",
+  "stderr": ""
+}

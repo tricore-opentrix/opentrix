@@ -1,0 +1,18 @@
+{
+  "command": [
+    "C:\\Program Files\\Python314\\python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/r28_m5",
+    "-p",
+    "test_harness.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_blocked_records_zero_executions (test_harness.HarnessChecks.test_blocked_records_zero_executions) ... ok\ntest_container_command_has_no_remote_connection (test_harness.HarnessChecks.test_container_command_has_no_remote_connection) ... ok\ntest_credentials_fail_before_docker (test_harness.HarnessChecks.test_credentials_fail_before_docker) ... ok\ntest_fault_publication_preserves_case_evidence (test_harness.HarnessChecks.test_fault_publication_preserves_case_evidence) ... ok\ntest_faults_modify_only_offline_copy (test_harness.HarnessChecks.test_faults_modify_only_offline_copy) ... ok\ntest_fresh_credentials_and_network_rejection_before_sql (test_harness.HarnessChecks.test_fresh_credentials_and_network_rejection_before_sql) ... ok\ntest_function_defaults_are_globally_private (test_harness.HarnessChecks.test_function_defaults_are_globally_private) ... ok\ntest_launcher_starts_new_process_without_inherited_credentials (test_harness.HarnessChecks.test_launcher_starts_new_process_without_inherited_credentials) ... ok\ntest_new_effect_oracle_rejects_tampering (test_harness.HarnessChecks.test_new_effect_oracle_rejects_tampering) ... ok\ntest_session_counterexample_remains_fail (test_harness.HarnessChecks.test_session_counterexample_remains_fail) ... ok\ntest_source_boundary_manifest (test_harness.HarnessChecks.test_source_boundary_manifest) ... ok\ntest_unknown_environment_fails_before_docker (test_harness.HarnessChecks.test_unknown_environment_fails_before_docker) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 0.224s\n\nOK\n",
+  "scope": "12 offline harness checks only; not database evidence"
+}

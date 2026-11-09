@@ -1,0 +1,14 @@
+{
+  "status": "BLOCKED",
+  "scope": "X-16/X-26 integration fixture proposal; not an accepted consumer contract",
+  "owner_confirmation_required": ["Bao: producer receipt/status fields", "Anh: durable reservation, CAS and manual reconciliation", "Yen: permissions and recovery review"],
+  "producer": {"model": "ADR-015 T1", "operation_class": "Core ACL-admin assignment only", "receipt_status": ["COMMITTED", "UNRESOLVED"]},
+  "original_intent": {"tenant": "T1", "resource": "R1", "service": "synthetic-core", "key": "consumer-original", "principal": "admin", "assignee": "new", "expected_g": 10, "fence": 6, "fingerprint_version": 1, "helpdesk_expected_assignment_version": 7},
+  "cases": [
+    {"id": "X16-timeout-restart", "schedule": ["persist durable prerequisite reservation", "close local SQL transaction", "call Core", "timeout or restart", "authenticate status lookup before any retry"], "expected": ["reservation remains durable", "no SQL lock held across Core call", "missing status remains UNRESOLVED", "no resend or automatic release"]},
+    {"id": "X26-committed-superseded-cas", "schedule": ["reserve original attempt", "Core commits receipt", "new Helpdesk intent supersedes assignment version", "original CAS returns conflict"], "expected": ["persist immutable Core receipt/history reference per attempt", "retain durable conflict/reconciliation", "no manufactured newer CAS version", "no compensation or Core mutation reversal"]},
+    {"id": "X26-authorized-manual", "schedule": ["restart", "load original attempt and reservation", "authorized operator reads authenticated status", "compare superseding intent and receipt", "record owner-approved manual disposition"], "expected": ["audit operator and original intent", "release only under approved convergence/cancellation authority", "unknown outcome keeps reservation"]}
+  ],
+  "missing": ["approved consumer API and status schema", "durable reservation persistence implementation/fixture", "CAS conflict and cancellation authority", "isolated consumer environment"],
+  "gates": {"Q06": "NOT_FROZEN", "RESEND": "DISABLED", "G0_CONTRACT": "BLOCKED", "R27A_IMPLEMENTATION": "NOT_AUTHORIZED"}
+}

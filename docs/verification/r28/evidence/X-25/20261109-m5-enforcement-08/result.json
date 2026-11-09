@@ -1,0 +1,144 @@
+{
+  "test_id": "X-25",
+  "status": "BLOCKED",
+  "reason": "offline fixture operation failed: ERROR:  42601: syntax error at or near \"USER\"\nLINE 1: ALTER TABLE m5.admission ENABLE ALWAYS TRIGGER USER;\n                                                       ^\nLOCATION:  scanner_yyerror, scan.l:1244\n",
+  "database_cases_executed": 26,
+  "cases": [
+    {
+      "name": "normal-multirow-assignment",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-omit",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-insert_failure",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-malformed",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-wrong_digest",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-wrong_xid",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-remove",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-change",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-extra_membership",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-wrong_actual_acl",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "fault-wrong_audit",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "savepoint-receipt-failure",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "savepoint-success-rollback",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "constraints-immediate-fail-closed",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "repeatable-read-rejected",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-principal-rejected",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "wrong-tenant-resource-rejected",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "legacy-helpdesk-acl-layer2",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "legacy-helpdesk-generation-layer2",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "autonomous-unique",
+      "status": "PASS",
+      "reason": "controlled barriers, traces and before/after matched oracle"
+    },
+    {
+      "name": "forged-principal",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-resource",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "forged-key",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "direct-multirow-multitable-omission",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "direct-savepoint-partial-rollback",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "direct-forged-existing-audit",
+      "status": "PASS",
+      "reason": "expectations matched"
+    }
+  ],
+  "remaining": [
+    "Full approved contracts, W-17 deployed/external inventory, privileged maintenance/restore proof",
+    "X-13 revocation/security transport/latency mapping; X-23 retention/restore; X-24 terminal rejection",
+    "T07 backend-kill stages, actual network ACK loss, timeouts/deadlock; X-12 all arrival schedules",
+    "X-25 autonomous unique-conflict injection, owner bypass reconciliation; X-16/X-26 Helpdesk integration"
+  ]
+}

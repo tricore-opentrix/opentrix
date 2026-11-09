@@ -1,0 +1,10 @@
+{
+  "test_id": "X-13",
+  "status": "NOT_RUN",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 0,
+  "cases": [],
+  "remaining": [
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}

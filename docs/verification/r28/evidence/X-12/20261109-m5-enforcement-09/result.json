@@ -1,0 +1,36 @@
+{
+  "test_id": "X-12",
+  "status": "PARTIAL_NOT_ACCEPTED",
+  "reason": "Executed subcases only; exploratory probes do not approve contracts.",
+  "database_cases_executed": 5,
+  "cases": [
+    {
+      "name": "original-first",
+      "status": "PASS",
+      "reason": "lock graph barrier and exactly-one committed effect matched"
+    },
+    {
+      "name": "winner-rollback",
+      "status": "PASS",
+      "reason": "lock graph barrier and exactly-one committed effect matched"
+    },
+    {
+      "name": "retry-first",
+      "status": "PASS",
+      "reason": "lock graph barrier and exactly-one committed effect matched"
+    },
+    {
+      "name": "delayed-original",
+      "status": "PASS",
+      "reason": "lock graph barrier and exactly-one committed effect matched"
+    },
+    {
+      "name": "rollback-replay",
+      "status": "PASS",
+      "reason": "lock graph barrier and exactly-one committed effect matched"
+    }
+  ],
+  "remaining": [
+    "Independent review, owner decisions and deployed all-writer closure remain required."
+  ]
+}
