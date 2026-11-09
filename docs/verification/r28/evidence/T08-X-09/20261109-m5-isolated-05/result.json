@@ -1,0 +1,1809 @@
+{
+  "test_id": "T08-X-09",
+  "status": "PARTIAL_NOT_ACCEPTED",
+  "reason": "See coverage gaps; subcase PASS is not full test or gate acceptance.",
+  "database_cases_executed": 359,
+  "cases": [
+    {
+      "name": "core_acl_exec_rt-tenant_guards-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-tenant_guards-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-tenant_guards-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-tenant_guards-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-tenant_guards-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-tenant_memberships-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-tenant_memberships-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-tenant_memberships-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-tenant_memberships-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-tenant_memberships-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_registry-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_registry-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_registry-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_registry-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_registry-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-workflow_definition_bindings-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-workflow_definition_bindings-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-workflow_definition_bindings-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-workflow_definition_bindings-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-workflow_definition_bindings-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-authority-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-authority-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-authority-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-authority-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-authority-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-admission-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-admission-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-admission-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-admission-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-admission-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_acl-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_acl-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_acl-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_acl-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_acl-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_fence-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_fence-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_fence-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_fence-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-resource_fence-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-policy_audit-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-policy_audit-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-policy_audit-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-policy_audit-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-policy_audit-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-receipt-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-receipt-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-receipt-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-receipt-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-receipt-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-mutation_log-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-mutation_log-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-mutation_log-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-mutation_log-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-mutation_log-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-set-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-set-migrator",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-session-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-disable-trigger",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-replication",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-create",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-temp",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-create-function",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-grant-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-owner-change",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-generation-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-raw-row-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-copy-program",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-receipt-select",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_acl_exec_rt-effective-catalog",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_guards-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_guards-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_guards-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_guards-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_guards-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_memberships-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_memberships-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_memberships-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_memberships-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-tenant_memberships-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_registry-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_registry-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_registry-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_registry-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_registry-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-workflow_definition_bindings-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-workflow_definition_bindings-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-workflow_definition_bindings-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-workflow_definition_bindings-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-workflow_definition_bindings-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-authority-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-authority-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-authority-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-authority-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-authority-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-admission-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-admission-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-admission-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-admission-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-admission-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_acl-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_acl-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_acl-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_acl-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_acl-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_fence-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_fence-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_fence-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_fence-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-resource_fence-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-policy_audit-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-policy_audit-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-policy_audit-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-policy_audit-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-policy_audit-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-receipt-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-receipt-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-receipt-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-receipt-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-receipt-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-mutation_log-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-mutation_log-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-mutation_log-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-mutation_log-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-mutation_log-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-set-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-set-migrator",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-session-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-disable-trigger",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-replication",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-create",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-temp",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-create-function",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-grant-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-owner-change",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-generation-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-raw-row-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-copy-program",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-assign-execute",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-receipt-select",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_authz_reader_rt-effective-catalog",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_guards-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_guards-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_guards-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_guards-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_guards-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_memberships-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_memberships-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_memberships-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_memberships-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-tenant_memberships-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_registry-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_registry-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_registry-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_registry-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_registry-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-workflow_definition_bindings-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-workflow_definition_bindings-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-workflow_definition_bindings-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-workflow_definition_bindings-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-workflow_definition_bindings-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-authority-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-authority-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-authority-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-authority-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-authority-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-admission-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-admission-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-admission-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-admission-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-admission-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_acl-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_acl-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_acl-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_acl-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_acl-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_fence-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_fence-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_fence-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_fence-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-resource_fence-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-policy_audit-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-policy_audit-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-policy_audit-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-policy_audit-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-policy_audit-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-receipt-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-receipt-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-receipt-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-receipt-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-receipt-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-mutation_log-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-mutation_log-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-mutation_log-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-mutation_log-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-mutation_log-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-set-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-set-migrator",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-session-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-disable-trigger",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-replication",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-create",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-temp",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-create-function",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-grant-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-owner-change",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-generation-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-raw-row-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-copy-program",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-lookup-execute",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-assign-execute",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-receipt-select",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_workflow_rt-effective-catalog",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_guards-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_guards-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_guards-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_guards-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_guards-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_memberships-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_memberships-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_memberships-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_memberships-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-tenant_memberships-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_registry-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_registry-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_registry-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_registry-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_registry-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-workflow_definition_bindings-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-workflow_definition_bindings-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-workflow_definition_bindings-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-workflow_definition_bindings-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-workflow_definition_bindings-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-authority-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-authority-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-authority-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-authority-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-authority-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-admission-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-admission-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-admission-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-admission-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-admission-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_acl-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_acl-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_acl-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_acl-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_acl-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_fence-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_fence-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_fence-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_fence-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-resource_fence-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-policy_audit-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-policy_audit-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-policy_audit-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-policy_audit-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-policy_audit-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-receipt-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-receipt-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-receipt-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-receipt-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-receipt-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-mutation_log-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-mutation_log-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-mutation_log-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-mutation_log-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-mutation_log-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-set-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-set-migrator",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-session-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-disable-trigger",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-replication",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-create",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-temp",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-create-function",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-grant-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-owner-change",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-generation-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-raw-row-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-copy-program",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-lookup-execute",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-assign-execute",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-receipt-select",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "helpdesk_rt-effective-catalog",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_guards-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_guards-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_guards-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_guards-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_guards-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_memberships-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_memberships-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_memberships-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_memberships-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-tenant_memberships-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_registry-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_registry-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_registry-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_registry-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_registry-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-workflow_definition_bindings-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-workflow_definition_bindings-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-workflow_definition_bindings-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-workflow_definition_bindings-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-workflow_definition_bindings-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-authority-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-authority-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-authority-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-authority-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-authority-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-admission-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-admission-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-admission-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-admission-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-admission-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_acl-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_acl-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_acl-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_acl-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_acl-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_fence-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_fence-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_fence-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_fence-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-resource_fence-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-policy_audit-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-policy_audit-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-policy_audit-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-policy_audit-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-policy_audit-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-receipt-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-receipt-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-receipt-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-receipt-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-receipt-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-mutation_log-insert",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-mutation_log-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-mutation_log-delete",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-mutation_log-truncate",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-mutation_log-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-set-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-set-migrator",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-session-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-disable-trigger",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-replication",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-create",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-temp",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-create-function",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-grant-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-owner-change",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-generation-update",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-raw-row-lock",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-copy-program",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-lookup-execute",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-assign-execute",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "core_observer-effective-catalog",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "reader-helper-no-write",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "workflow-helper-no-write",
+      "status": "PASS",
+      "reason": "expectations matched"
+    },
+    {
+      "name": "migrator-no-online-owner",
+      "status": "PASS",
+      "reason": "expectations matched"
+    }
+  ],
+  "remaining": [
+    "Full approved contracts, W-17 deployed/external inventory, privileged maintenance/restore proof",
+    "X-13 revocation/security transport/latency mapping; X-23 retention/restore; X-24 terminal rejection",
+    "T07 backend-kill stages, actual network ACK loss, timeouts/deadlock; X-12 all arrival schedules",
+    "X-25 autonomous unique-conflict injection, owner bypass reconciliation; X-16/X-26 Helpdesk integration"
+  ]
+}

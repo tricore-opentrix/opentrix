@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import queue
 import re
+import secrets
 import subprocess
 import sys
 import tempfile
@@ -141,6 +142,7 @@ class Runner:
         self.env = {k: v for k, v in os.environ.items() if k.upper() in
                     ('PATH', 'SYSTEMROOT', 'WINDIR', 'TEMP', 'TMP', 'PATHEXT', 'COMSPEC', 'HOME', 'USERPROFILE')}
         self.metadata = {'run_id': run_id, 'source_commit': git('rev-parse', 'HEAD'),
+                         'source_branch': git('branch', '--show-current'),
                          'source_status': git('status', '--short', '--', 'tests/r28_m5'),
                          'schema_sha256': digest(HERE / 'schema.sql'),
                          'grant_sha256': digest(HERE / 'schema.sql'),
@@ -152,6 +154,8 @@ class Runner:
                          'connection': 'local container Unix socket; dbname=m5_disposable; no published port',
                          'fixture': 'synthetic T1/T2, R1/R2, admin/old/new; initial G10/fence5',
                          'sql_runtime_approved': False}
+        self.metadata['preflight_status'] = 'NOT_RUN'
+        self.metadata['process_environment_keys'] = sorted(os.environ)
 
     def folder(self, group=None):
         return ROOT / 'docs/verification/r28/evidence' / (group or self.group) / self.run_id
@@ -170,6 +174,9 @@ class Runner:
             r'(^PG(HOST|HOSTADDR|PORT|DATABASE|USER|PASSWORD|PASSFILE|SERVICE|SERVICEFILE|SSLKEY|SSLCERT)$|'
             r'(DATABASE|JDBC|DATASOURCE|DB)_(URL|DSN|PASSWORD|PASS|TOKEN|USER|HOST)$|^DOCKER_(HOST|CONTEXT|TLS_VERIFY|CERT_PATH)$)', k, re.I))
         require(not unsafe, 'credential/target variables present (names only): ' + ', '.join(unsafe))
+        require(all(k.upper() in ('PATH', 'SYSTEMROOT', 'WINDIR', 'TEMP', 'TMP', 'PATHEXT',
+                                  'COMSPEC', 'HOME', 'USERPROFILE') for k in os.environ),
+                'uncontrolled environment; use tests/r28_m5/launch.py')
         server = self.docker_json('version', '--format', '{{json .Server}}')
         require(server is not None, 'Docker daemon unavailable')
         image = self.docker_json('image', 'inspect', 'postgres:17')[0]
@@ -177,39 +184,92 @@ class Runner:
                     for d in image.get('RepoDigests', [])), 'official postgres image digest unavailable')
         self.metadata['docker_server'] = server
         self.metadata['image'] = {k: image.get(k) for k in ('Id', 'RepoDigests', 'Architecture', 'Os')}
+        require(image['Os'] == 'linux' and 'PG_MAJOR=17' in image['Config']['Env'],
+                'image is not PostgreSQL 17/Linux')
         name = 'r28-m5-' + uuid.uuid4().hex
-        r = self.command([*self.docker, 'run', '--detach', '--pull=never', '--name', name,
+        password = secrets.token_urlsafe(32)
+        self.env['POSTGRES_PASSWORD'] = password
+        try:
+            r = self.command([*self.docker, 'run', '--detach', '--pull=never', '--name', name,
                           '--label', 'opentrix.r28.m5.disposable=true', '--network', 'none',
+                          '--label', 'opentrix.r28.m5.run=' + self.run_id,
                           '--tmpfs', '/var/lib/postgresql/data:rw', '--env', 'POSTGRES_DB=m5_disposable',
                           '--env', 'POSTGRES_HOST_AUTH_METHOD=reject',
                           '--env', 'POSTGRES_INITDB_ARGS=--auth-local=trust --auth-host=reject',
-                          '--env', 'POSTGRES_PASSWORD=synthetic-unused-network-rejected', image['Id']])
+                          '--env', 'POSTGRES_PASSWORD', image['Id']])
+        finally:
+            self.env.pop('POSTGRES_PASSWORD')
         require(r.returncode == 0, r.stderr)
         self.container = r.stdout.strip()
         require(re.fullmatch('[a-f0-9]{64}', self.container), 'unexpected container id')
         info = self.docker_json('inspect', self.container)[0]
-        require(info['Image'] == image['Id'] and info['Config']['Labels'].get('opentrix.r28.m5.disposable') == 'true',
+        require(info['Id'] == self.container and info['Name'] == '/' + name
+                and info['Image'] == image['Id']
+                and info['Config']['Labels'].get('opentrix.r28.m5.disposable') == 'true'
+                and info['Config']['Labels'].get('opentrix.r28.m5.run') == self.run_id,
                 'container identity mismatch')
+        config_env = dict(item.split('=', 1) for item in info['Config']['Env'])
+        require(config_env.get('POSTGRES_PASSWORD') == password
+                and config_env.get('POSTGRES_DB') == 'm5_disposable'
+                and config_env.get('POSTGRES_HOST_AUTH_METHOD') == 'reject'
+                and config_env.get('POSTGRES_INITDB_ARGS') == '--auth-local=trust --auth-host=reject',
+                'test-only credentials/database/auth configuration mismatch')
+        del password, config_env, info['Config']['Env']
         require(info['HostConfig']['NetworkMode'] == 'none' and not info['HostConfig'].get('Binds')
                 and not info['HostConfig'].get('PortBindings') and not info['HostConfig'].get('Privileged')
                 and all(m['Type']=='tmpfs' and m['Destination']=='/var/lib/postgresql/data'
                         for m in info.get('Mounts', []))
                 and '/var/lib/postgresql/data' in info['HostConfig'].get('Tmpfs', {}),
                 'isolation proof failed: mounts/ports/network/privilege')
-        self.metadata['container'] = {'id': self.container, 'image': info['Image'], 'network': 'none',
+        self.metadata['container'] = {'id': self.container, 'name': name, 'image': info['Image'], 'network': 'none',
                                       'mounts': info['Mounts'], 'tmpfs': info['HostConfig']['Tmpfs'], 'ports': {}}
+        binary_version = self.command([*self.docker, 'exec', self.container, 'postgres', '--version'])
+        require(binary_version.returncode == 0 and re.search(r'\b17\.', binary_version.stdout),
+                'PostgreSQL binary version mismatch')
+        self.metadata['postgres_binary_version'] = binary_version.stdout.strip()
+        self.metadata['credentials'] = {'source': 'secrets.token_urlsafe(32), generated in this run',
+                                       'bootstrap_password_matches_container': True,
+                                       'password_in_command_or_evidence': False,
+                                       'runtime_auth': 'container-local Unix socket trust; actual LOGIN roles; TCP reject'}
+        self.metadata['dsn'] = {'host': '/var/run/postgresql', 'dbname': 'm5_disposable',
+                                'transport': 'docker exec by verified new container ID; Unix socket',
+                                'roles': ['postgres', *ROLES, 'core_migrator']}
+        self.metadata['pre_sql_isolation_status'] = 'PASS'
         deadline = time.monotonic() + 30
         while True:
-            ready = self.command([*self.docker, 'exec', self.container, 'pg_isready', '-U', 'postgres', '-d', 'm5_disposable'])
-            if ready.returncode == 0:
+            ready = self.command([*self.docker, 'exec', self.container, 'pg_isready',
+                                  '-h', '/var/run/postgresql', '-U', 'postgres', '-d', 'm5_disposable'])
+            pid1 = self.command([*self.docker, 'exec', self.container, 'cat', '/proc/1/comm'])
+            # The image's temporary init server can accept connections before bootstrap finishes.
+            if ready.returncode == 0 and pid1.returncode == 0 and pid1.stdout.strip() == 'postgres':
                 break
             require(time.monotonic() < deadline, 'disposable database startup failed')
             time.sleep(0.1)  # readiness probe, never a concurrency assumption
+        hba = self.command([*self.docker, 'exec', self.container, 'cat', '/var/lib/postgresql/data/pg_hba.conf'])
+        rules = [line.split() for line in hba.stdout.splitlines() if line.strip() and not line.lstrip().startswith('#')]
+        require(hba.returncode == 0 and rules
+                and any(rule[:3] == ['local', 'all', 'all'] for rule in rules)
+                and any(rule[:4] == ['host', 'all', 'all', 'all'] for rule in rules)
+                and all((rule[0] == 'local' and rule[-1] == 'trust')
+                        or (rule[0] == 'host' and rule[-1] == 'reject') for rule in rules),
+                'effective socket/host authentication rules mismatch')
+        self.metadata['authentication_rules'] = rules
+        filesystem = self.command([*self.docker, 'exec', self.container, 'stat', '-f', '-c', '%T', '/var/lib/postgresql/data'])
+        require(filesystem.returncode == 0 and filesystem.stdout.strip() == 'tmpfs',
+                'PGDATA is not on a live tmpfs filesystem')
+        self.metadata['pgdata_filesystem'] = filesystem.stdout.strip()
         version = self.sql('postgres', "SELECT current_setting('server_version_num'); SELECT version(); SELECT current_database();")
         require(version.returncode == 0 and re.search(r'^17\d{4}$', version.stdout, re.M)
                 and 'm5_disposable' in version.stdout, 'PostgreSQL 17/database identity check failed')
         self.metadata['postgresql'] = version.stdout
+        connection = self.sql('postgres', "SELECT session_user||'/'||current_user||'/'||current_database(); SELECT inet_server_addr() IS NULL;")
+        require(connection.returncode == 0 and 'postgres/postgres/m5_disposable' in connection.stdout
+                and 't' in connection.stdout.splitlines(), 'Unix-socket positive control failed')
+        self.metadata['socket_positive_control'] = {'stdout': connection.stdout, 'stderr': connection.stderr}
         self.metadata['credential_safety'] = 'isolated local socket; empty Docker config; no host credential mounts or external DSN'
+        self.metadata['preflight_status'] = 'PASS'
+        write_json(self.folder('HARNESS') / 'preflight.json', self.metadata)
+        print('PASS PREFLIGHT: new PostgreSQL 17, network none, tmpfs, Unix socket, per-run bootstrap credential', flush=True)
         r = self.sql('postgres', (HERE / 'schema.sql').read_text(encoding='utf-8'))
         require(r.returncode == 0, 'schema bootstrap failed:\n' + r.stdout + r.stderr)
         for role in ROLES:
@@ -303,7 +363,7 @@ class Runner:
                 f' GRANT EXECUTE ON FUNCTION m5.assign_fault{ASSIGN_SIG} TO core_acl_exec_rt; COMMIT;')
         r = self.sql('postgres', text)
         require(r.returncode == 0, 'fault publication failed: ' + r.stderr)
-        write_json(self.folder() / ('fault-' + kind + '.json'),
+        write_json(self.folder() / ('publication-' + kind + '.json'),
                    {'actor': 'postgres/offline publisher; never runtime proof', 'sql': text, 'stdout': r.stdout, 'stderr': r.stderr})
 
     def remove_fault(self):
@@ -449,26 +509,30 @@ END $$;
                      'sessions':[{'command':s.command,'pid':s.pid,'sql':s.sent,'trace':''.join(s.lines)} for s in (a,b) if s],
                      'sqlstates':re.findall(r'ERROR:\s+([0-9A-Z]{5}):',''.join(''.join(s.lines) for s in (a,b) if s))})
 
-    def status_tests(self):
+    def status_tests(self, group):
+        self.group = group
+        if group == 'T07':
+            # This response-discard model does not exercise an actual network ACK drop.
+            before=self.snapshot()
+            g=next(x['acl_revision'] for x in before['tenant_guards'] if x['tenant_id']=='T1')
+            f=next(x['accepted_fence'] for x in before['resource_fence'] if x['tenant_id']=='T1')
+            self.case('commit-response-discard-model',ROLES[0], 'BEGIN; '+self.assignment('lost-ack-model',g,f+1)+' COMMIT;',effect='applied')
+            self.case('status-after-response-discard',ROLES[1], "SELECT m5.lookup_receipt('T1','admin','R1','lost-ack-model');",contains='COMMITTED')
+            self.case('replay-after-response-discard',ROLES[0], 'BEGIN; '+self.assignment('lost-ack-model',g,f+1)+' COMMIT;',contains='REPLAY')
+            return
         self.group='X-13'
         self.case('committed-status',ROLES[1], "SELECT m5.lookup_receipt('T1','admin','R1','normal');",contains='COMMITTED')
         self.case('hidden-status',ROLES[1], "SELECT m5.lookup_receipt('T1','unknown','R1','normal');",contains='UNRESOLVED')
         self.case('unknown-status',ROLES[1], "SELECT m5.lookup_receipt('T1','admin','R1','missing');",contains='UNRESOLVED')
         self.case('cross-resource-status',ROLES[1], "SELECT m5.lookup_receipt('T2','admin','R1','normal');",contains='UNRESOLVED')
-        self.group='T07'
-        # Synthetic lost-ACK model discards the successful COMMIT reply at the caller boundary.
-        # A network/proxy ACK-drop test remains NOT RUN; this only proves status convergence.
-        before=self.snapshot()
-        g=next(x['acl_revision'] for x in before['tenant_guards'] if x['tenant_id']=='T1')
-        f=next(x['accepted_fence'] for x in before['resource_fence'] if x['tenant_id']=='T1')
-        self.case('commit-response-discard-model',ROLES[0], 'BEGIN; '+self.assignment('lost-ack-model',g,f+1)+' COMMIT;',effect='applied')
-        self.case('status-after-response-discard',ROLES[1], "SELECT m5.lookup_receipt('T1','admin','R1','lost-ack-model');",contains='COMMITTED')
-        self.case('replay-after-response-discard',ROLES[0], 'BEGIN; '+self.assignment('lost-ack-model',g,f+1)+' COMMIT;',contains='REPLAY')
 
     def finish(self, blocked=None):
+        self.metadata['blocker'] = blocked
+        if blocked and self.metadata['preflight_status'] != 'PASS':
+            self.metadata['preflight_status'] = 'BLOCKED'
         for group in EVIDENCE_IDS:
             cases=[{'name':r['name'],'status':r['status'],'reason':r['reason']} for r in self.results if r['test_id']==group]
-            summary={'test_id':group,'status': 'BLOCKED' if blocked else 'FAIL' if any(x['status']=='FAIL' for x in cases) else 'PARTIAL_NOT_ACCEPTED' if cases else 'NOT_RUN',
+            summary={'test_id':group,'status': 'FAIL' if any(x['status']=='FAIL' for x in cases) else 'BLOCKED' if blocked else 'PARTIAL_NOT_ACCEPTED' if cases else 'NOT_RUN',
                      'reason':blocked or 'See coverage gaps; subcase PASS is not full test or gate acceptance.',
                      'database_cases_executed':len(cases),'cases':cases,
                      'remaining':['Full approved contracts, W-17 deployed/external inventory, privileged maintenance/restore proof',
@@ -483,11 +547,17 @@ END $$;
         if self.container:
             # Only remove the exact new container after validating its ID and task label again.
             info=self.docker_json('inspect',self.container)[0]
-            require(info['Id']==self.container and info['Config']['Labels'].get('opentrix.r28.m5.disposable')=='true',
+            require(info['Id']==self.container and info['Config']['Labels'].get('opentrix.r28.m5.disposable')=='true'
+                    and info['Config']['Labels'].get('opentrix.r28.m5.run')==self.run_id,
                     'refusing cleanup: identity mismatch')
             r=self.command([*self.docker,'rm','--force',self.container])
             require(r.returncode==0,'disposable container cleanup failed')
         self.temp.cleanup()
+        self.metadata['cleanup'] = 'PASS; only the verified new container removed' if self.container else 'NOT_NEEDED'
+        write_json(self.folder('HARNESS')/'completion.json',self.metadata)
+        folder=self.folder('HARNESS')
+        write_json(folder/'checksums.json',{p.name:digest(p) for p in sorted(folder.iterdir())
+                                          if p.is_file() and p.name!='checksums.json'})
 
 
 def main():
@@ -495,18 +565,19 @@ def main():
     parser.add_argument('--run-id',default=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
     args=parser.parse_args()
     require(re.fullmatch('[A-Za-z0-9_-]{1,80}',args.run_id),'invalid run ID')
-    require(not any((ROOT/'docs/verification/r28/evidence'/g/args.run_id).exists() for g in EVIDENCE_IDS),
+    require(not any((ROOT/'docs/verification/r28/evidence'/g/args.run_id).exists() for g in (*EVIDENCE_IDS,'HARNESS')),
             'run ID already exists; evidence must never be overwritten')
     runner=Runner(args.run_id)
     blocked=None
     try:
         runner.prepare()
         runner.x25()
+        runner.concurrent('reader-first',reader_first=True)
+        runner.status_tests('T07')
         runner.privileges()
         runner.concurrent('original-first')
         runner.concurrent('winner-rollback',winner_commit=False)
-        runner.concurrent('reader-first',reader_first=True)
-        runner.status_tests()
+        runner.status_tests('X-13')
     except (RuntimeError, OSError, subprocess.SubprocessError, ValueError, queue.Empty) as exc:
         blocked=str(exc)
         print('BLOCKED:',blocked,flush=True)

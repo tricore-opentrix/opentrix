@@ -1,0 +1,20 @@
+{
+  "command": [
+    "C:\\Program Files\\Python314\\python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/r28_m5",
+    "-p",
+    "test_harness.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_blocked_records_zero_executions (test_harness.HarnessChecks.test_blocked_records_zero_executions) ... ok\ntest_container_command_has_no_remote_connection (test_harness.HarnessChecks.test_container_command_has_no_remote_connection) ... ok\ntest_credentials_fail_before_docker (test_harness.HarnessChecks.test_credentials_fail_before_docker) ... ok\ntest_faults_modify_only_offline_copy (test_harness.HarnessChecks.test_faults_modify_only_offline_copy) ... ok\ntest_function_defaults_are_globally_private (test_harness.HarnessChecks.test_function_defaults_are_globally_private) ... ok\ntest_source_boundary_manifest (test_harness.HarnessChecks.test_source_boundary_manifest) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.427s\n\nOK\n",
+  "status": "PASS",
+  "tests_run": 6,
+  "database_evidence": false
+}

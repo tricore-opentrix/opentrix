@@ -1,0 +1,32 @@
+{
+  "actor": "postgres (catalog observer only)",
+  "sql": "SELECT jsonb_agg(to_jsonb(d)) FROM pg_default_acl d;",
+  "command": [
+    "docker",
+    "--config",
+    "C:\\WINDOWS\\TEMP\\r28-m5-docker-7wvxq_ds",
+    "--host",
+    "npipe:////./pipe/dockerDesktopLinuxEngine",
+    "exec",
+    "-i",
+    "d1f7f8c7a1392caf42589d4adfdf76ffeaf8537789142e8491f992c3aa29f69e",
+    "psql",
+    "-X",
+    "-q",
+    "-A",
+    "-t",
+    "-U",
+    "postgres",
+    "-h",
+    "/var/run/postgresql",
+    "-d",
+    "m5_disposable",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-v",
+    "VERBOSITY=verbose",
+    "--echo-all"
+  ],
+  "stdout": "SELECT jsonb_agg(to_jsonb(d)) FROM pg_default_acl d;\n[{\"oid\": \"16393\", \"defaclacl\": [\"core_acl_owner=X/core_acl_owner\"], \"defaclrole\": \"16385\", \"defaclobjtype\": \"f\", \"defaclnamespace\": \"0\"}]\n",
+  "stderr": ""
+}

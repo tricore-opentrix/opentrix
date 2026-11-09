@@ -1,0 +1,12 @@
+{
+  "test_id": "T07",
+  "status": "BLOCKED",
+  "execution_status": "NOT_RUN",
+  "reason": "Credential/target environment variable provenance is not established as test-only (names only): CART_DB_PASSWORD, ORDER_DB_PASSWORD",
+  "database_cases_executed": 0,
+  "cases": [],
+  "sqlstates": null,
+  "role_grant_snapshots": null,
+  "transaction_traces": null,
+  "evidence_note": "No PostgreSQL session was opened; missing SQL evidence is not PASS or FAIL."
+}

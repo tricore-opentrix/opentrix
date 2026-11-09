@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "source_commit": "f26f0ed10e80c108015944e46d61bad481ca07fd",
+  "review_branch": "review/r28-q03-m5-isolated-verification-20261109",
+  "uncommitted_test_only_changes": true,
+  "case_artifacts_verified": 388,
+  "results": {
+    "T07": {
+      "executed": 4,
+      "status": "PARTIAL_NOT_ACCEPTED"
+    },
+    "T08-X-09": {
+      "executed": 359,
+      "status": "PARTIAL_NOT_ACCEPTED"
+    },
+    "X-12": {
+      "executed": 2,
+      "status": "PARTIAL_NOT_ACCEPTED"
+    },
+    "X-13": {
+      "executed": 4,
+      "status": "PARTIAL_NOT_ACCEPTED"
+    },
+    "X-16-X-26": {
+      "executed": 0,
+      "status": "NOT_RUN"
+    },
+    "X-23": {
+      "executed": 0,
+      "status": "NOT_RUN"
+    },
+    "X-24": {
+      "executed": 0,
+      "status": "NOT_RUN"
+    },
+    "X-25": {
+      "executed": 19,
+      "status": "PARTIAL_NOT_ACCEPTED"
+    }
+  },
+  "observed_error_sqlstate_counts": {
+    "42501": 354,
+    "23514": 13,
+    "23502": 1,
+    "25001": 1
+  },
+  "payload_checksums_verified_before_this_manifest": 876,
+  "source_snapshots_match_executed_source": 5,
+  "unchanged_oracle_functions": [
+    "case",
+    "x25",
+    "privileges",
+    "concurrent",
+    "snapshot",
+    "assignment",
+    "executor_sql",
+    "fault_sql"
+  ],
+  "sql_schema_unchanged": true,
+  "report_evidence_links_checked": 30,
+  "report_sha256": "872ad25df95ab9faede615244c05d1c85ae87957fd0bdc95a7fa591890735c73",
+  "container_inventory": {
+    "20261109-m5-isolated-04": {
+      "all_existing_identity_image_state_unchanged": true,
+      "new_test_container_removed": true,
+      "protected": {
+        "dxos-stage6-pg17-local": [
+          "8635c4cb3b730ea4af0cef5818bad89af437139f894b33b24a98f77d56f0206a",
+          "postgres:17.11",
+          "running"
+        ],
+        "dxos-olp-staging-postgres-1": [
+          "1e630a35fe87babda56293ca6c60bffa1fc20763813190dd38f3978de8e0973f",
+          "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+          "running"
+        ]
+      }
+    },
+    "20261109-m5-isolated-05": {
+      "all_existing_identity_image_state_unchanged": true,
+      "new_test_container_removed": true,
+      "protected": {
+        "dxos-stage6-pg17-local": [
+          "8635c4cb3b730ea4af0cef5818bad89af437139f894b33b24a98f77d56f0206a",
+          "postgres:17.11",
+          "running"
+        ],
+        "dxos-olp-staging-postgres-1": [
+          "1e630a35fe87babda56293ca6c60bffa1fc20763813190dd38f3978de8e0973f",
+          "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+          "running"
+        ]
+      }
+    }
+  },
+  "final_service_secret_scan": {
+    "files": 879,
+    "service_values_checked": 2,
+    "matches": 0,
+    "values_recorded": false
+  },
+  "bootstrap_secret_scan": "See secret-audit.json; current-run value checked before being discarded, no value recorded",
+  "known_prior_run_artifact_issue": "Run 04 fault-insert_failure trace overwritten by fault publication; preserved as historical evidence. Run 05 has all 388 trace files.",
+  "step_2_pass": false,
+  "production_signoff": false
+}

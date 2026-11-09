@@ -1,0 +1,32 @@
+{
+  "actor": "postgres (catalog observer only)",
+  "sql": "SELECT datacl::text FROM pg_database WHERE datname=current_database(); SELECT nspname,nspacl::text FROM pg_namespace WHERE nspname IN ('m5','public');",
+  "command": [
+    "docker",
+    "--config",
+    "C:\\WINDOWS\\TEMP\\r28-m5-docker-7wvxq_ds",
+    "--host",
+    "npipe:////./pipe/dockerDesktopLinuxEngine",
+    "exec",
+    "-i",
+    "d1f7f8c7a1392caf42589d4adfdf76ffeaf8537789142e8491f992c3aa29f69e",
+    "psql",
+    "-X",
+    "-q",
+    "-A",
+    "-t",
+    "-U",
+    "postgres",
+    "-h",
+    "/var/run/postgresql",
+    "-d",
+    "m5_disposable",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-v",
+    "VERBOSITY=verbose",
+    "--echo-all"
+  ],
+  "stdout": "SELECT datacl::text FROM pg_database WHERE datname=current_database(); SELECT nspname,nspacl::text FROM pg_namespace WHERE nspname IN ('m5','public');\n{postgres=CTc/postgres,core_acl_exec_rt=c/postgres,core_authz_reader_rt=c/postgres,core_workflow_rt=c/postgres,helpdesk_rt=c/postgres,core_observer=c/postgres,core_migrator=c/postgres}\npublic|{pg_database_owner=UC/pg_database_owner}\nm5|{core_acl_owner=UC/core_acl_owner,core_acl_exec_rt=U/core_acl_owner,core_authz_reader_rt=U/core_acl_owner,core_workflow_rt=U/core_acl_owner,helpdesk_rt=U/core_acl_owner,core_observer=U/core_acl_owner}\n",
+  "stderr": ""
+}

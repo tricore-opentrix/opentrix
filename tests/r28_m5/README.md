@@ -14,7 +14,7 @@ Chạy từ repository root, Python standard library và Docker Linux engine c�
 
 ```powershell
 python -B -m unittest discover -s tests/r28_m5 -p test_harness.py -v
-python -B tests/r28_m5/run.py --run-id m5-review-001
+python -I -B tests/r28_m5/launch.py --run-id m5-review-001
 ```
 
 Image `postgres:17` phải có sẵn cùng official RepoDigest. Runner không pull image,
@@ -25,6 +25,19 @@ image ID bất biến sau inspect, container mới mang UUID + task label,
 psql dùng Unix socket bên trong container với actual LOGIN role và local trust chỉ
 trong container bị cô lập. PostgreSQL bootstrap superuser chỉ dùng để tạo fixture,
 publish fault và chụp catalog; không thay cho actor runtime.
+
+`launch.py` tạo process Python mới (`-I -B`), chỉ truyền allow-list biến OS;
+HOME/USERPROFILE trỏ vào thư mục tạm mới. Service credentials của process cha không
+được truyền vào process test; không sửa môi trường cha và không bỏ qua gate của runner.
+Runner vẫn từ chối biến credential/DSN và mọi biến ngoài allow-list trước Docker.
+Bootstrap password được sinh bằng `secrets.token_urlsafe(32)` mỗi run, truyền bằng
+environment riêng cho `docker run --env POSTGRES_PASSWORD`, không nằm trong argv,
+logs hoặc evidence. Password được đối chiếu trong bộ nhớ với container inspect;
+không lưu raw inspect. Actual runtime roles dùng local trust, không có claim test SCRAM.
+Network `none` tương thích với Unix socket; không cần TCP, publish port hay network mới.
+Preflight kiểm tra ID/name/labels/image, network/mount/tmpfs, database/auth config,
+binary PG17 trước SQL; SQL identity và Unix-socket positive control trước fixture.
+Không chứng minh được bất kỳ điều kiện nào thì dừng và chỉ cleanup đúng container mới.
 
 Runner từ chối các biến credential/DSN PostgreSQL/database hoặc Docker remote target
 được nhận diện trước khi chạm Docker. Nó chỉ truyền allow-list môi trường OS cho process con;
@@ -39,6 +52,9 @@ Mỗi run ID chỉ dùng một lần. JSON evidence + checksum nằm ở
 `database_cases_executed=0`. `source_commit` là HEAD lúc bắt đầu chạy; hash file đi kèm
 xác định chính xác SQL/grant/harness nếu working tree có thay đổi.
 Container được xóa theo ID + task label được kiểm tra lại; không dọn container/volume khác.
+`HARNESS/<RUN_ID>/preflight.json` ghi preflight PASS trước fixture;
+`completion.json` ghi blocker/cleanup cuối run. Thứ tự ưu tiên: X-25, T07, T08/X-09,
+rồi X-12 và X-13. FAIL đã quan sát được giữ nguyên kể cả khi có blocker về sau.
 
 `schema.sql` sở hữu mọi protected object bằng `core_acl_owner NOLOGIN`.
 Migrator không có membership owner khi admission OPEN. Executor chỉ được EXECUTE;

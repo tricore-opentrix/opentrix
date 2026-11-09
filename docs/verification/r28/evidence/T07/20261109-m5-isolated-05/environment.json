@@ -1,0 +1,184 @@
+{
+  "run_id": "20261109-m5-isolated-05",
+  "source_commit": "f26f0ed10e80c108015944e46d61bad481ca07fd",
+  "source_branch": "review/r28-q03-m5-isolated-verification-20261109",
+  "source_status": "M tests/r28_m5/README.md\n M tests/r28_m5/run.py\n M tests/r28_m5/test_harness.py\n?? tests/r28_m5/launch.py",
+  "schema_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "grant_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "source_files_sha256": {
+    "launch.py": "25713df5863fa54c25bf0bf82785efda950802d7fe93821412c0573771bf341b",
+    "README.md": "97ef4943a19ca19cfe8d6878a9ba319c5402cc6d79fba21ff413d62c290ed1a2",
+    "run.py": "876f45c5d1574c68463bc77fff454346e781e2b22d09fb0fb7e9446506a0a81c",
+    "schema.sql": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "test_harness.py": "724be95dcfb8e595a1138e7d2cca27d637d9ecc2bf5f6316fd877c1a3a0d3b11"
+  },
+  "execution_command": "\"C:\\Program Files\\Python314\\python.exe\" D:\\olp\\opentrix-r28-g0-design\\tests\\r28_m5\\run.py --run-id 20261109-m5-isolated-05",
+  "database_tests_executed": 388,
+  "postgresql": "SELECT current_setting('server_version_num'); SELECT version(); SELECT current_database();\n170011\nPostgreSQL 17.11 (Debian 17.11-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit\nm5_disposable\n",
+  "image": {
+    "Id": "sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3",
+    "RepoDigests": [
+      "postgres@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3"
+    ],
+    "Architecture": "amd64",
+    "Os": "linux"
+  },
+  "container": {
+    "id": "d1f7f8c7a1392caf42589d4adfdf76ffeaf8537789142e8491f992c3aa29f69e",
+    "name": "r28-m5-afd1fab79adf456dab542f92df00ce38",
+    "image": "sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3",
+    "network": "none",
+    "mounts": [],
+    "tmpfs": {
+      "/var/lib/postgresql/data": "rw"
+    },
+    "ports": {}
+  },
+  "credential_safety": "isolated local socket; empty Docker config; no host credential mounts or external DSN",
+  "connection": "local container Unix socket; dbname=m5_disposable; no published port",
+  "fixture": "synthetic T1/T2, R1/R2, admin/old/new; initial G10/fence5",
+  "sql_runtime_approved": false,
+  "preflight_status": "PASS",
+  "process_environment_keys": [
+    "COMSPEC",
+    "HOME",
+    "PATH",
+    "PATHEXT",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "docker_server": {
+    "Platform": {
+      "Name": "Docker Desktop 4.87.0 (236836)"
+    },
+    "Version": "29.7.2",
+    "ApiVersion": "1.55",
+    "MinAPIVersion": "1.40",
+    "Os": "linux",
+    "Arch": "amd64",
+    "Components": [
+      {
+        "Name": "Engine",
+        "Version": "29.7.2",
+        "Details": {
+          "ApiVersion": "1.55",
+          "Arch": "amd64",
+          "BuildTime": "Wed Aug  5 18:28:36 2026",
+          "Experimental": "false",
+          "GitCommit": "6a43e3d",
+          "GoVersion": "go1.26.5",
+          "KernelVersion": "6.18.33.2-microsoft-standard-WSL2",
+          "MinAPIVersion": "1.40",
+          "Module": "github.com/moby/moby/v2",
+          "ModuleVersion": "v2.0.0+unknown",
+          "Os": "linux"
+        }
+      },
+      {
+        "Name": "containerd",
+        "Version": "v2.2.5",
+        "Details": {
+          "GitCommit": "e53c7c1516c3b2bff98eb76f1f4117477e6f4e66"
+        }
+      },
+      {
+        "Name": "runc",
+        "Version": "1.3.6",
+        "Details": {
+          "GitCommit": "v1.3.6-0-g491b69ba"
+        }
+      },
+      {
+        "Name": "docker-init",
+        "Version": "0.19.0",
+        "Details": {
+          "GitCommit": "de40ad0"
+        }
+      }
+    ],
+    "GitCommit": "6a43e3d",
+    "GoVersion": "go1.26.5",
+    "KernelVersion": "6.18.33.2-microsoft-standard-WSL2",
+    "BuildTime": "2026-08-05T18:28:36.000000000+00:00"
+  },
+  "postgres_binary_version": "postgres (PostgreSQL) 17.11 (Debian 17.11-1.pgdg13+2)",
+  "credentials": {
+    "source": "secrets.token_urlsafe(32), generated in this run",
+    "bootstrap_password_matches_container": true,
+    "password_in_command_or_evidence": false,
+    "runtime_auth": "container-local Unix socket trust; actual LOGIN roles; TCP reject"
+  },
+  "dsn": {
+    "host": "/var/run/postgresql",
+    "dbname": "m5_disposable",
+    "transport": "docker exec by verified new container ID; Unix socket",
+    "roles": [
+      "postgres",
+      "core_acl_exec_rt",
+      "core_authz_reader_rt",
+      "core_workflow_rt",
+      "helpdesk_rt",
+      "core_observer",
+      "core_migrator"
+    ]
+  },
+  "pre_sql_isolation_status": "PASS",
+  "authentication_rules": [
+    [
+      "local",
+      "all",
+      "all",
+      "trust"
+    ],
+    [
+      "host",
+      "all",
+      "all",
+      "127.0.0.1/32",
+      "reject"
+    ],
+    [
+      "host",
+      "all",
+      "all",
+      "::1/128",
+      "reject"
+    ],
+    [
+      "local",
+      "replication",
+      "all",
+      "trust"
+    ],
+    [
+      "host",
+      "replication",
+      "all",
+      "127.0.0.1/32",
+      "reject"
+    ],
+    [
+      "host",
+      "replication",
+      "all",
+      "::1/128",
+      "reject"
+    ],
+    [
+      "host",
+      "all",
+      "all",
+      "all",
+      "reject"
+    ]
+  ],
+  "pgdata_filesystem": "tmpfs",
+  "socket_positive_control": {
+    "stdout": "SELECT session_user||'/'||current_user||'/'||current_database(); SELECT inet_server_addr() IS NULL;\npostgres/postgres/m5_disposable\nt\n",
+    "stderr": ""
+  },
+  "blocker": null
+}

@@ -1,0 +1,32 @@
+{
+  "actor": "postgres (catalog observer only)",
+  "sql": "SELECT jsonb_agg(to_jsonb(m)) FROM pg_auth_members m;",
+  "command": [
+    "docker",
+    "--config",
+    "C:\\WINDOWS\\TEMP\\r28-m5-docker-7wvxq_ds",
+    "--host",
+    "npipe:////./pipe/dockerDesktopLinuxEngine",
+    "exec",
+    "-i",
+    "d1f7f8c7a1392caf42589d4adfdf76ffeaf8537789142e8491f992c3aa29f69e",
+    "psql",
+    "-X",
+    "-q",
+    "-A",
+    "-t",
+    "-U",
+    "postgres",
+    "-h",
+    "/var/run/postgresql",
+    "-d",
+    "m5_disposable",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-v",
+    "VERBOSITY=verbose",
+    "--echo-all"
+  ],
+  "stdout": "SELECT jsonb_agg(to_jsonb(m)) FROM pg_auth_members m;\n[{\"oid\": \"10226\", \"member\": \"3373\", \"roleid\": \"3374\", \"grantor\": \"10\", \"set_option\": true, \"admin_option\": false, \"inherit_option\": true}, {\"oid\": \"10227\", \"member\": \"3373\", \"roleid\": \"3375\", \"grantor\": \"10\", \"set_option\": true, \"admin_option\": false, \"inherit_option\": true}, {\"oid\": \"10228\", \"member\": \"3373\", \"roleid\": \"3377\", \"grantor\": \"10\", \"set_option\": true, \"admin_option\": false, \"inherit_option\": true}]\n",
+  "stderr": ""
+}

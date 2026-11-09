@@ -1,0 +1,32 @@
+{
+  "actor": "postgres (catalog observer only)",
+  "sql": "SELECT jsonb_agg(to_jsonb(e)) FROM pg_extension e;",
+  "command": [
+    "docker",
+    "--config",
+    "C:\\WINDOWS\\TEMP\\r28-m5-docker-za7dwrzu",
+    "--host",
+    "npipe:////./pipe/dockerDesktopLinuxEngine",
+    "exec",
+    "-i",
+    "3035379a2c62c788934cccb466be6146d2f201495905da15a93b1c6e1841a61c",
+    "psql",
+    "-X",
+    "-q",
+    "-A",
+    "-t",
+    "-U",
+    "postgres",
+    "-h",
+    "/var/run/postgresql",
+    "-d",
+    "m5_disposable",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-v",
+    "VERBOSITY=verbose",
+    "--echo-all"
+  ],
+  "stdout": "SELECT jsonb_agg(to_jsonb(e)) FROM pg_extension e;\n[{\"oid\": \"13633\", \"extname\": \"plpgsql\", \"extowner\": \"10\", \"extconfig\": null, \"extversion\": \"1.0\", \"extcondition\": null, \"extnamespace\": \"11\", \"extrelocatable\": false}]\n",
+  "stderr": ""
+}

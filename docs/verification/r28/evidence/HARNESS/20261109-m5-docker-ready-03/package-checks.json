@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "source_commit": "f26f0ed10e80c108015944e46d61bad481ca07fd",
+  "source_files_match_commit": 4,
+  "payload_checksums_verified": 19,
+  "result_groups_blocked_not_run": 8,
+  "report_evidence_links_checked": 17,
+  "container_inventory_identity_image_state_unchanged": true,
+  "protected_container_metadata": {
+    "dxos-stage6-pg17-local": [
+      "8635c4cb3b730ea4af0cef5818bad89af437139f894b33b24a98f77d56f0206a",
+      "postgres:17.11",
+      "running"
+    ],
+    "dxos-olp-staging-postgres-1": [
+      "1e630a35fe87babda56293ca6c60bffa1fc20763813190dd38f3978de8e0973f",
+      "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "running"
+    ]
+  },
+  "report_sha256": "62b0029f2dfda1da0a915aeeba40474f938821413dc161339a2c395619676a37",
+  "database_tests_executed": 0,
+  "production_signoff": false
+}

@@ -5,9 +5,161 @@ SPDX-License-Identifier: Apache-2.0
 
 # Q03 M5 — isolated prototype và hồ sơ P0 chưa đủ điều kiện đóng
 
-**Kết quả: BLOCKED; 0 test PostgreSQL đã chạy; 0 DB PASS / 0 DB FAIL.**
-Ngày kiểm tra: 2026-11-09. Có prototype/harness test-only và 6 kiểm tra offline PASS;
-chưa có bằng chứng thực nghiệm cho semantic trigger, atomic receipt hay privilege graph.
+**Kết quả hiện tại: PARTIAL_NOT_ACCEPTED — preflight PASS, 388 ca DB prototype PASS,
+0 FAIL trong run cuối `20261109-m5-isolated-05`. Chưa đủ điều kiện đóng M5/Step 2.**
+Ngày kiểm tra: 2026-11-09. Local HEAD vẫn là
+`f26f0ed10e80c108015944e46d61bad481ca07fd`; thay đổi test-only chưa commit trên nhánh
+`review/r28-q03-m5-isolated-verification-20261109`. Đây là kiểm chứng prototype synthetic,
+không phải production sign-off hoặc independent security review.
+
+## Run cuối 05 — hồ sơ review hiện hành
+
+Đã đọc toàn bộ runner/preflight, offline tests và SQL fixture trước khi sửa.
+Phạm vi thay đổi: thêm `tests/r28_m5/launch.py`; sửa preflight, thứ tự chạy và cách ghi
+evidence trong runner; bổ sung offline regression checks; cập nhật README/báo cáo.
+Không sửa `schema.sql`, oracle X-25/T07/T08, production schema/migration/grants/runtime.
+Thư mục `portal-bff/bin/` có sẵn được giữ nguyên; không commit/push/merge hoặc bật resend.
+
+Launcher tạo tiến trình Python mới với `-I -B`, chỉ truyền 7 loại biến OS cùng
+HOME/USERPROFILE là thư mục tạm riêng. Parent environment không bị sửa; hai service
+password không được kế thừa. Runner vẫn từ chối credential/DSN/remote target và mọi
+biến ngoài allow-list trước Docker. Đây là tiến trình test mới được yêu cầu rõ ràng,
+không phải unset biến trong phiên cũ để bỏ qua gate. Bootstrap password sinh mới bằng
+`secrets.token_urlsafe(32)`, chỉ truyền qua environment riêng của `docker run`, đối
+chiếu trong bộ nhớ và không đưa giá trị vào argv/log/source/evidence.
+
+| Preflight | Bằng chứng thực tế run 05 |
+| --- | --- |
+| Container mới | `d1f7f8c7a1392caf42589d4adfdf76ffeaf8537789142e8491f992c3aa29f69e`, tên `r28-m5-afd1fab79adf456dab542f92df00ce38`; full ID/name/image và task/run labels khớp |
+| Image/version | Image ID và RepoDigest `sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3`; binary và server PostgreSQL **17.11**, Debian 17.11-1.pgdg13+2 |
+| Cách ly | `network none`; không published port, bind mount hoặc privileged mode; PGDATA `/var/lib/postgresql/data` có tmpfs config và `stat -f` trả `tmpfs` |
+| DSN test | `host=/var/run/postgresql dbname=m5_disposable user=<actual LOGIN role>`; psql qua `docker exec` theo đúng full container ID, không external DSN/TCP |
+| Auth thực tế | `pg_hba.conf` local trust, mọi host rule reject; actual-role positive controls; không claim SCRAM/password authentication cho runtime roles |
+| Socket positive control | `postgres/postgres/m5_disposable`, `inet_server_addr() IS NULL = true`; network none tương thích Unix socket, không nới cách ly |
+| Thứ tự gate | Kiểm tra image/ID/credentials/network/tmpfs/auth trước identity SQL; identity/socket control trước load fixture; preflight PASS trước các ca DB |
+| Source pin | HEAD nêu trên + SHA-256 riêng cho 5 file test; working tree có thay đổi được ghi rõ; bản sao byte-exact source nằm trong `HARNESS/…/source/` |
+| SQL/grants | `schema.sql` không đổi: `0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c` |
+| Cleanup | PASS — chỉ xóa container mới sau khi kiểm tra lại full ID + task/run label; metadata ID/image/state của toàn bộ container có sẵn không đổi |
+
+Lệnh đã chạy thành công:
+
+```powershell
+python -B -m unittest discover -s tests/r28_m5 -p test_harness.py -v
+python -I -B tests/r28_m5/launch.py --run-id 20261109-m5-isolated-05
+```
+
+Offline **10/10 PASS**, exit 0. DB runner exit **0**, 194.458 giây; thứ tự X-25 →
+T07 → T08/X-09 → X-12 → X-13. Mỗi ca dùng actual LOGIN role, có SQL/command,
+SQLSTATE hoặc session trace, và snapshots before/after theo dạng ca.
+
+| Nhóm | Ca chạy / PASS / FAIL | Trạng thái toàn nhóm | Phạm vi được chứng minh |
+| --- | --- | --- | --- |
+| X-25 | 19 / 19 / 0 | PARTIAL_NOT_ACCEPTED | Multi-row assignment, 10 fault variants, savepoints, immediate constraints, isolation/principal/scope rejection, legacy ACL/G denial |
+| T07 | 4 / 4 / 0 | PARTIAL_NOT_ACCEPTED | Reader-first lock graph barrier; COMMIT-response discard model, status và replay; không phải network ACK-drop thật |
+| T08/X-09 | 359 / 359 / 0 | PARTIAL_NOT_ACCEPTED | 5 actual roles × 11 tables × 5 DML/lock probes, escalation/DDL/parameter denial, effective catalogs, reader helpers và migrator denial |
+| X-12 | 2 / 2 / 0 | PARTIAL_NOT_ACCEPTED | Original-first/replay và winner rollback; `pg_blocking_pids` xác nhận cạnh waiter/blocker |
+| X-13 | 4 / 4 / 0 | PARTIAL_NOT_ACCEPTED | COMMITTED, hidden/unknown/cross-resource UNRESOLVED |
+| X-23, X-24, X-16/X-26 | 0 / 0 / 0 | NOT RUN; contract/integration prerequisites còn BLOCKED | Chưa có fixture/owner decisions tương ứng; không suy luận từ các ca PASS khác |
+
+SQLSTATE thực nghiệm: `23514` cho receipt/delta/immutability hoặc COMMIT rejection;
+`23502` cho malformed NULL receipt; `42501` cho unauthorized SQL/actor/scope;
+`25001` cho REPEATABLE READ. Các ca thành công exit 0; không xuất hiện SQLSTATE lỗi.
+Lock/session traces và snapshots chứng minh không nhìn thấy staged effects và chỉ
+một committed effect trong các lịch đã chạy. Không suy rộng thành deadlock-freedom.
+
+Run `20261109-m5-isolated-04` cũng thực thi 388 ca, exit 0, nhưng phát hiện lỗi evidence
+có sẵn: `publish_fault('insert_failure')` ghi đè file trace `fault-insert_failure.json`.
+Giữ nguyên run 04 để đối chiếu, không dùng nó làm bộ X-25 evidence đầy đủ. Sửa tên
+publication thành `publication-*.json`, thêm regression test, rồi chạy lại toàn bộ
+trên source cuối thành run 05. Run 05 có đủ 388 case artifacts; không sửa oracle để PASS.
+
+Evidence hiện hành:
+
+- [Preflight](evidence/HARNESS/20261109-m5-isolated-05/preflight.json), [completion/cleanup](evidence/HARNESS/20261109-m5-isolated-05/completion.json), [exact invocation và output](evidence/HARNESS/20261109-m5-isolated-05/invocation.json)
+- [Offline checks](evidence/HARNESS/20261109-m5-isolated-05/offline-checks.json), [secret audit](evidence/HARNESS/20261109-m5-isolated-05/secret-audit.json), [container inventory trước/sau](evidence/HARNESS/20261109-m5-isolated-05/container-inventory.json)
+- [X-25](evidence/X-25/20261109-m5-isolated-05/result.json), [T07](evidence/T07/20261109-m5-isolated-05/result.json), [T08/X-09](evidence/T08-X-09/20261109-m5-isolated-05/result.json), [roles](evidence/T08-X-09/20261109-m5-isolated-05/catalog-roles.json), [grants](evidence/T08-X-09/20261109-m5-isolated-05/catalog-grants.json)
+- [Source snapshot runner](evidence/HARNESS/20261109-m5-isolated-05/source/run.py), [HARNESS SHA-256 manifest](evidence/HARNESS/20261109-m5-isolated-05/checksums.json); mỗi nhóm có checksum manifest riêng
+
+Secret audit kiểm tra 879 file source/report/evidence hiện có ở thời điểm run hoàn tất:
+không chứa giá trị hai service credentials hoặc bootstrap password run 05; chỉ lưu
+boolean/counts. Password run 04 đã bị hủy cùng container nên chỉ review đường xử lý
+source, không claim value-scan cho password run 04.
+
+**Còn thiếu / bước tiếp theo cho Yến:** review độc lập source snapshots và evidence
+run 05; tái suy ra oracle từ snapshots/catalogs. Các gap vẫn giữ nguyên: X-25 autonomous
+unique-conflict và owner-bypass reconciliation; T07 backend kill ở từng stage, ACK-drop
+thật, lock/statement timeout và deadlock; T08 exact grant allow-list/publication-failure
+và revoke-first fresh authorization; đủ lịch X-12; X-13 revoke/transport/latency;
+X-23 restore/retention/admission; X-24 terminal rejection; X-16/X-26 với Ánh; W-17
+deployed/external writer inventory và privileged maintenance. Q02/Q04/Q05/Q07 cùng
+các owner decisions còn mở. Environment blocker đã gỡ cho tiến trình test mới;
+M5 enforcement acceptance và Step 2 vẫn chưa PASS. RESEND DISABLED.
+
+## Lịch sử run 03 — preflight dừng trước DB
+
+Run `20261109-m5-docker-ready-03` tại cùng baseline HEAD đã BLOCKED trước tạo container
+do service credentials kế thừa chưa rõ provenance. Sáu offline checks PASS, 0 ca DB.
+Phần dưới giữ nguyên hồ sơ của run 03; kết quả mới ở trên thay thế kết luận hiện hành.
+
+## Kiểm tra tiếp tục tại f26f0ed — hồ sơ cho Yến review
+
+| Hạng mục | Quan sát và trạng thái |
+| --- | --- |
+| Repository | PASS — `https://github.com/tricore-opentrix/opentrix.git` |
+| Worktree / branch | PASS — `D:/olp/opentrix-r28-g0-design`, `docs/r28-q03-core-enforcement-closure-20261109` |
+| HEAD / harness | PASS — đúng SHA yêu cầu; `tests/r28_m5/` không có diff so với HEAD; hash bốn source file được lưu |
+| Thay đổi có sẵn | `?? portal-bff/bin/`; giữ nguyên |
+| Docker | PASS — `version`, `info`, danh sách container và inspect image chỉ đọc đều thành công ngoài sandbox; Linux engine 29.7.2, Docker Desktop 4.87.0 |
+| Image có sẵn | `postgres:17`, Linux amd64; image ID và RepoDigest cùng `sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3` |
+| Credentials / environment | BLOCKED — có tên biến `CART_DB_PASSWORD`, `ORDER_DB_PASSWORD`; chưa chứng minh nguồn hoặc test-only status; không ghi giá trị vào evidence |
+| Container / network / volume mới | NOT RUN — dừng trước thao tác tạo tài nguyên vì preflight chưa đạt |
+| Container ID / DSN / credentials mới | NOT ESTABLISHED — chưa có container hoặc kết nối; không dùng credentials hiện có |
+| PostgreSQL server version | NOT ESTABLISHED — chỉ inspect image; chưa chạy server hay SQL để chứng minh major 17 |
+| Offline checks | PASS — `python -B -m unittest discover -s tests/r28_m5 -p test_harness.py -v`, exit 0, 6/6 |
+| Database runner | NOT RUN — không gọi `tests/r28_m5/run.py`; không tạo schema hoặc thực hiện SQL |
+
+Docker trong sandbox ban đầu bị từ chối quyền API; kiểm tra ngoài sandbox xác nhận
+daemon hoạt động. Preflight chỉ đọc tiếp theo dùng Docker config rỗng tạm thời và
+endpoint cố định `npipe:////./pipe/dockerDesktopLinuxEngine`, không dùng registry
+credentials hay `.env`. Hai biến nêu trên được phát hiện bằng quy tắc từ runner;
+không unset/sanitize môi trường để vượt qua gate. Script ghi evidence hoàn tất exit 0;
+đây **không phải** exit code của database runner, vì runner chưa được gọi.
+
+| Nhóm ưu tiên | Kết quả kiểm chứng | Thực thi | DB PASS / FAIL | SQLSTATE, role/grant snapshot, transaction trace |
+| --- | --- | --- | --- | --- |
+| X-25 | BLOCKED | NOT RUN, 0 ca | 0 / 0 | Không có session DB; không tạo evidence giả |
+| T07 | BLOCKED | NOT RUN, 0 ca | 0 / 0 | Không có session DB; không tạo evidence giả |
+| T08/X-09 | BLOCKED | NOT RUN, 0 ca | 0 / 0 | Không có session DB; không tạo evidence giả |
+
+X-12, X-13, X-23, X-24 và X-16/X-26 cũng BLOCKED / NOT RUN, 0 ca DB.
+Không có kết luận PASS hay FAIL cho semantic trigger, atomic receipt, privilege graph.
+Hai container được bảo vệ `dxos-stage6-pg17-local` và
+`dxos-olp-staging-postgres-1` chỉ xuất hiện trong danh sách Docker đọc metadata;
+không có exec, SQL, inspect riêng hay thao tác thay đổi chúng. Không sửa production
+migration/grants/runtime, không sửa harness/oracle, không bật resend, không merge PR.
+
+Evidence mới, không ghi đè hai lần kiểm tra lịch sử:
+
+- [Preflight và provenance](evidence/HARNESS/20261109-m5-docker-ready-03/preflight.json)
+- [Offline command, exit code và output](evidence/HARNESS/20261109-m5-docker-ready-03/offline-checks.json)
+- [Danh sách container trước/sau](evidence/HARNESS/20261109-m5-docker-ready-03/container-inventory.json)
+- [X-25 result](evidence/X-25/20261109-m5-docker-ready-03/result.json), [T07 result](evidence/T07/20261109-m5-docker-ready-03/result.json), [T08/X-09 result](evidence/T08-X-09/20261109-m5-docker-ready-03/result.json)
+- [Environment và source hashes](evidence/X-25/20261109-m5-docker-ready-03/environment.json), [HARNESS checksums](evidence/HARNESS/20261109-m5-docker-ready-03/checksums.json); mỗi nhóm có manifest SHA-256 riêng, tổng 19 payload đã kiểm tra khi ghi
+
+**Bước tiếp theo đề xuất cho Yến:** review blocker credentials cùng exact source/hash
+tại SHA trên. Khởi tạo một phiên kiểm thử độc lập có provenance môi trường sạch và
+credentials sinh riêng cho run, thay vì chỉ xóa biến của phiên hiện tại. Trước DB run,
+cần đối chiếu yêu cầu tài nguyên riêng với baseline runner: runner hiện dùng network
+`none`, tmpfs mới và bootstrap password synthetic cố định; chưa cung cấp named network,
+named volume và password duy nhất mỗi run. Chỉ điều chỉnh cơ chế khởi tạo test-only
+nếu cần sau review, giữ nguyên SQL fixture và oracle; chứng minh ID/image/version,
+DSN, credentials và cách ly trước SQL, rồi chạy X-25 → T08/X-09 → T07 với run ID mới.
+Các khoảng trống coverage và owner decisions bên dưới vẫn chưa được đóng.
+
+## Hồ sơ lịch sử — preflight-01 và preflight-02
+
+Các mục từ đây mô tả lần kiểm tra trước khi Docker hoạt động; không thay thế kết quả
+`20261109-m5-docker-ready-03` ở trên.
 
 ## Baseline và quyền thực thi
 

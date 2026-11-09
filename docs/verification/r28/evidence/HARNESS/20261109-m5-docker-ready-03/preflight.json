@@ -1,0 +1,92 @@
+{
+  "status": "BLOCKED",
+  "reason": "Credential/target environment variable provenance is not established as test-only (names only): CART_DB_PASSWORD, ORDER_DB_PASSWORD",
+  "database_runner_status": "NOT_RUN",
+  "database_cases_executed": 0,
+  "docker_container_creation_status": "NOT_RUN",
+  "environment": {
+    "run_id": "20261109-m5-docker-ready-03",
+    "observed_at_utc": "2026-11-09T10:11:23.352195+00:00",
+    "repository": "https://github.com/tricore-opentrix/opentrix.git",
+    "worktree": "D:\\olp\\opentrix-r28-g0-design",
+    "branch": "docs/r28-q03-core-enforcement-closure-20261109",
+    "source_commit": "f26f0ed10e80c108015944e46d61bad481ca07fd",
+    "source_status": "",
+    "worktree_status_before_evidence": "?? portal-bff/bin/",
+    "source_files_sha256": {
+      "README.md": "213a63dd59463fb6231407fbd4a791211aafdca5912da39d274ea07a75eb3944",
+      "run.py": "1662c223a343626582033e554e4c2bc275f2a594aa79d95630d7837ef096c4f4",
+      "schema.sql": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+      "test_harness.py": "2f0dd5cdd1854f6325aedef305ede4f5e8f92c11122d34b57f65e2c66e972823"
+    },
+    "schema_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "grant_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "credential_variable_names_only": [
+      "CART_DB_PASSWORD",
+      "ORDER_DB_PASSWORD"
+    ],
+    "credential_safety": "NOT_ESTABLISHED; values not read into evidence; no sanitization or bypass",
+    "docker_readonly": {
+      "version": {
+        "command": [
+          "docker",
+          "--config",
+          "C:\\WINDOWS\\TEMP\\r28-m5-readonly-docker-8h94enc4",
+          "--host",
+          "npipe:////./pipe/dockerDesktopLinuxEngine",
+          "version",
+          "--format",
+          "{{json .Server}}"
+        ],
+        "exit_code": 0,
+        "stdout": "{\"Platform\":{\"Name\":\"Docker Desktop 4.87.0 (236836)\"},\"Version\":\"29.7.2\",\"ApiVersion\":\"1.55\",\"MinAPIVersion\":\"1.40\",\"Os\":\"linux\",\"Arch\":\"amd64\",\"Components\":[{\"Name\":\"Engine\",\"Version\":\"29.7.2\",\"Details\":{\"ApiVersion\":\"1.55\",\"Arch\":\"amd64\",\"BuildTime\":\"Wed Aug  5 18:28:36 2026\",\"Experimental\":\"false\",\"GitCommit\":\"6a43e3d\",\"GoVersion\":\"go1.26.5\",\"KernelVersion\":\"6.18.33.2-microsoft-standard-WSL2\",\"MinAPIVersion\":\"1.40\",\"Module\":\"github.com/moby/moby/v2\",\"ModuleVersion\":\"v2.0.0+unknown\",\"Os\":\"linux\"}},{\"Name\":\"containerd\",\"Version\":\"v2.2.5\",\"Details\":{\"GitCommit\":\"e53c7c1516c3b2bff98eb76f1f4117477e6f4e66\"}},{\"Name\":\"runc\",\"Version\":\"1.3.6\",\"Details\":{\"GitCommit\":\"v1.3.6-0-g491b69ba\"}},{\"Name\":\"docker-init\",\"Version\":\"0.19.0\",\"Details\":{\"GitCommit\":\"de40ad0\"}}],\"GitCommit\":\"6a43e3d\",\"GoVersion\":\"go1.26.5\",\"KernelVersion\":\"6.18.33.2-microsoft-standard-WSL2\",\"BuildTime\":\"2026-08-05T18:28:36.000000000+00:00\"}\n",
+        "stderr": ""
+      },
+      "info": {
+        "command": [
+          "docker",
+          "--config",
+          "C:\\WINDOWS\\TEMP\\r28-m5-readonly-docker-8h94enc4",
+          "--host",
+          "npipe:////./pipe/dockerDesktopLinuxEngine",
+          "info",
+          "--format",
+          "{{.ID}} {{.ServerVersion}} {{.OSType}}"
+        ],
+        "exit_code": 0,
+        "stdout": "dc4c7e3e-3f9b-4282-991f-62b8e469d49a 29.7.2 linux\n",
+        "stderr": ""
+      },
+      "image": {
+        "command": [
+          "docker",
+          "--config",
+          "C:\\WINDOWS\\TEMP\\r28-m5-readonly-docker-8h94enc4",
+          "--host",
+          "npipe:////./pipe/dockerDesktopLinuxEngine",
+          "image",
+          "inspect",
+          "postgres:17",
+          "--format",
+          "{{.Id}} {{json .RepoDigests}} {{.Os}} {{.Architecture}}"
+        ],
+        "exit_code": 0,
+        "stdout": "sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3 [\"postgres@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3\"] linux amd64\n",
+        "stderr": ""
+      }
+    },
+    "container": null,
+    "network_created": null,
+    "volume_created": null,
+    "test_credentials_created": false,
+    "dsn": null,
+    "postgresql": null,
+    "database_tests_executed": 0,
+    "sql_statements_executed": 0,
+    "harness_database_runner_invoked": false,
+    "sql_runtime_approved": false,
+    "stop_boundary": "Stopped before docker run/network create/volume create, pg_isready, psql, fixture or database harness execution",
+    "planned_harness_connection": "NOT CREATED: container-local Unix socket /var/run/postgresql; dbname=m5_disposable; no external DSN",
+    "harness_isolation_limit": "Baseline runner uses network none and fresh tmpfs; no separately named network/volume and a fixed synthetic unused bootstrap password. Fresh per-run credentials/named-resource requirements must be reconciled before any future DB run."
+  }
+}

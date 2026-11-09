@@ -1,0 +1,127 @@
+{
+  "reviewed_at_utc": "2026-11-09T10:37:32.601512+00:00",
+  "baseline_head": "f26f0ed10e80c108015944e46d61bad481ca07fd",
+  "branch": "review/r28-q03-m5-isolated-verification-20261109",
+  "mode": "saved-evidence audit plus offline tests; no Docker or database execution",
+  "run_checksum_checks": [
+    {
+      "run_id": "20261109-m5-docker-ready-03",
+      "payloads_verified": 20,
+      "checksum_mismatches": 0,
+      "missing_payloads": 0,
+      "unlisted_payloads": 0
+    },
+    {
+      "run_id": "20261109-m5-isolated-04",
+      "payloads_verified": 420,
+      "checksum_mismatches": 0,
+      "missing_payloads": 0,
+      "unlisted_payloads": 0
+    },
+    {
+      "run_id": "20261109-m5-isolated-05",
+      "payloads_verified": 437,
+      "checksum_mismatches": 0,
+      "missing_payloads": 0,
+      "unlisted_payloads": 0
+    }
+  ],
+  "payload_checksums_verified": 877,
+  "run05_case_artifacts_verified": 388,
+  "run05_static_case_declarations_match_current_harness": 385,
+  "run05_concurrent_artifacts_with_lock_edge_and_session_checks": 3,
+  "run05_case_count_by_group": {
+    "X-25": 19,
+    "T07": 4,
+    "T08-X-09": 359,
+    "X-12": 2,
+    "X-13": 4,
+    "X-23": 0,
+    "X-24": 0,
+    "X-16-X-26": 0
+  },
+  "saved_sqlstate_counts": {
+    "42501": 354,
+    "23514": 13,
+    "23502": 1,
+    "25001": 1
+  },
+  "source_files_sha256": {
+    "launch.py": "25713df5863fa54c25bf0bf82785efda950802d7fe93821412c0573771bf341b",
+    "README.md": "97ef4943a19ca19cfe8d6878a9ba319c5402cc6d79fba21ff413d62c290ed1a2",
+    "run.py": "876f45c5d1574c68463bc77fff454346e781e2b22d09fb0fb7e9446506a0a81c",
+    "schema.sql": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "test_harness.py": "724be95dcfb8e595a1138e7d2cca27d637d9ecc2bf5f6316fd877c1a3a0d3b11"
+  },
+  "source_snapshots_byte_equal": true,
+  "schema_unchanged_from_baseline": true,
+  "unchanged_oracle_functions": [
+    "case",
+    "x25",
+    "privileges",
+    "concurrent",
+    "snapshot",
+    "assignment",
+    "executor_sql",
+    "fault_sql"
+  ],
+  "oracle_comparison": "Python AST equality against baseline; status_tests scheduling and publication artifact path intentionally changed",
+  "report_sha256_preserved": "872ad25df95ab9faede615244c05d1c85ae87957fd0bdc95a7fa591890735c73",
+  "container_inventory_existing_id_name_image_state_unchanged": {
+    "20261109-m5-docker-ready-03": 51,
+    "20261109-m5-isolated-04": 51,
+    "20261109-m5-isolated-05": 51
+  },
+  "secret_scan": {
+    "uncommitted_files_scanned_before_review_documents": 921,
+    "environment_sensitive_values_checked": 5,
+    "known_service_values_available": 2,
+    "value_matches": 0,
+    "patterns": [
+      "private key header",
+      "GitHub token",
+      "AWS access key",
+      "JWT",
+      "credential URL",
+      "known password assignment"
+    ],
+    "pattern_findings_in_selected_source_report_evidence": 0,
+    "excluded_build_output_pattern_matches": 1,
+    "excluded_path": "portal-bff/bin/test/com/tricore/dxos/portal/PortalBackendClientTest.class",
+    "values_recorded": false,
+    "limitation": "Destroyed run04/run05 bootstrap passwords are unavailable to this session; original run05 value-scan claim is historical, not independently repeated."
+  },
+  "excluded_build_outputs": {
+    "root": "portal-bff/bin/",
+    "class_files": 11,
+    "yaml_files": 1,
+    "preserved_on_disk": true
+  },
+  "known_provenance_gap": {
+    "run_id": "20261109-m5-isolated-04",
+    "file": "X-25/20261109-m5-isolated-04/fault-insert_failure.json",
+    "issue": "Publication overwrote case trace; checksum matches surviving publication bytes, not the missing original case. Historical only; cannot close X-25 from this run.",
+    "run05_all_cases_available": true
+  },
+  "pr_preparation": {
+    "target_pr": 168,
+    "state": "OPEN/Draft",
+    "target_base_branch": "docs/r28-r27a-p0-dependency-contract-20261109",
+    "observed_target_head_sha": "cecee84453cf5eaec16548959415c243675d56c4",
+    "target_head_is_local_ancestor": true,
+    "push_executed": false,
+    "draft_pr_created": false,
+    "handoff_sent": false
+  },
+  "disposition": "PARTIAL_NOT_ACCEPTED",
+  "STEP_2_COMPLETION": "NOT_PASSED",
+  "RESEND": "DISABLED",
+  "G0_CONTRACT": "BLOCKED",
+  "limitations": [
+    "No independent security approval",
+    "No new DB run, production service tests or production all-writer proof",
+    "No repository-wide CI or REUSE lint; REUSE executable not on PATH",
+    "Commit/index blob verification performed separately after staging and commit"
+  ],
+  "local_document_links_resolve": 40
+}

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/r28_m5",
+    "-p",
+    "test_harness.py",
+    "-v"
+  ],
+  "interpreter": "C:/Program Files/Python314/python.exe",
+  "exit_code": 0,
+  "tests_run": 10,
+  "passed": 10,
+  "failed": 0,
+  "output_excerpt": "Ran 10 tests in 0.274s\n\nOK",
+  "capture": "Excerpt of the actual exec_command tool output in this review session; not a new DB run."
+}
