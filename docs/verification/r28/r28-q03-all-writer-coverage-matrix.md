@@ -3,6 +3,39 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
+**2026-11-09 verification update:** [M5 test-only report](r28-q03-m5-verification-report.md)
+ghi nhận authorized preparation tại baseline `cecee84453cf5eaec16548959415c243675d56c4`,
+nhưng preflight fail closed do credential safety chưa xác lập; Docker local cũng không
+hoạt động. **0 DB tests; không writer nào CLOSED.** Production source/grants không đổi.
+Prototype nguồn `161dc0d5be0c5c367155eddb33ad6d8fe0eba753` chỉ là bounded assignment harness.
+
+Mỗi W giữ source location, required privileges, existing bypass và proposed enforcement
+ở §1–2 bên dưới. Closure ledger mới bổ sung executed test/missing evidence và status:
+
+| Writer | Executed test / missing evidence | Closure status |
+| --- | --- | --- |
+| W-01 | Không chạy. Legacy create/registry/ACL vẫn ở source; target H denial + X-17 + separate Create proof thiếu | BLOCKED; R27A cutover scope only |
+| W-02 | Không chạy. Assignment replacement prototype có; legacy Helpdesk DML chưa bỏ, X-16/X-26/CAS và cutover thiếu | BLOCKED |
+| W-03 | Không chạy. Prototype không UPDATE(acl_revision) grant; runtime-grants.sql hiện hành vẫn có; actual-role T08 thiếu | BLOCKED |
+| W-04 | Không chạy. Legacy lock-only trigger không tạo receipt; prototype guard order/lock graph chưa execute | BLOCKED |
+| W-05 | Không chạy. Legacy immutability không chứng minh receipt; actual delta/deferred trigger catalog + negative probes thiếu | BLOCKED |
+| W-06 | Không chạy. Offline setup/superuser không là runtime proof; admission-closed maintenance và reconciliation thiếu | BLOCKED |
+| W-07 | Không chạy. Seed membership là privileged; target membership writer không enable, offline seeding trước admission | BLOCKED; exclusion chưa được duyệt |
+| W-08 | Không chạy. Workflow không policy DML trong target; helper chỉ synthetic; reader/revoke-first regression thiếu | BLOCKED; không suy rộng ACL-admin proof |
+| W-09 | Không chạy. Java wrapper COMMIT_UNKNOWN được giữ; prototype không Java bridge; kill/ACK-loss thật thiếu | BLOCKED |
+| W-10 | Không chạy. Migration/bootstrap có DDL capability; online owner membership không cấp trong prototype; maintenance proof thiếu | BLOCKED |
+| W-11 | Không chạy. Tooling đọc catalog hiện hữu không là deployed snapshot; catalog harness chưa execute | BLOCKED |
+| W-12 | Không chạy. tests/r28_m5/schema.sql assign_replace + omission/fault/concurrency probes đã chuẩn bị | BLOCKED; X-25/T07/X-12/X-13 NOT RUN |
+| W-13 | Không chạy. Membership/binding/registry/authority/admission capture+deferred fail closed ngoài assignment; không có online mutation entrypoint | BLOCKED; per-writer scope/exclusion cần owner/security |
+| W-14 | Không chạy. Chỉ status lookup prototype; repair qua new approved intent/manual disposition chưa có | BLOCKED; Q08 + X-16/X-26 |
+| W-15 | Không chạy. Receipt immutable, không cleanup/TTL trong prototype; retention/tombstone contract và X-23 thiếu | BLOCKED |
+| W-16 | Không chạy. Không restore/import/reopen fixture hay privileged reconciliation proof; admission row không tự đủ | BLOCKED; Q05/Q07/Q09 |
+| W-17 | Không deployed catalog/credential manifest/external job/pooler evidence; repository search không đóng được | **BLOCKED / UNINVENTORIED** |
+
+Evidence [X-25 preflight](evidence/X-25/20261109-m5-preflight-02/result.json),
+[T08/X-09 preflight](evidence/T08-X-09/20261109-m5-preflight-02/result.json):
+BLOCKED, zero actual-role sessions. Các row không có approved exception thay cho closure.
+
 # R28 → R27A — Q03 all-writer coverage matrix
 
 **Status: PROPOSED INVENTORY FOR INDEPENDENT REVIEW. No path is marked "closed" without executed evidence; every closure below is a *required change + proof*, status NOT RUN/BLOCKED.**

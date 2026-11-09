@@ -3,6 +3,17 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
+**2026-11-09 current closure addendum:** Q03 **A/M5 selected conditionally** bởi Bảo
+([decision](https://github.com/tricore-opentrix/opentrix/pull/168#issuecomment-6736636086));
+Yến đã [review direction](https://github.com/tricore-opentrix/opentrix/pull/168#pullrequestreview-5823960897)
+tại `cecee84453cf5eaec16548959415c243675d56c4`. Addendum này supersede các cell Q03
+"owner choice pending" của snapshot lịch sử bên dưới, không đồng nghĩa joint contract freeze.
+[Bảng Q02–Q05/Q07 mới](r28-q03-m5-verification-report.md) ghi proposed choice, security,
+Helpdesk/R29 impact và required owner confirmations. Không silently freeze Q02/Q04/Q05/Q07.
+Q06 B conditional S và Q08 B reservation/manual được giữ; Q06 NOT FROZEN, RESEND DISABLED.
+Prototype verification BLOCKED; zero DB tests; Step 2 NOT PASSED; G0-CONTRACT BLOCKED;
+R27A production implementation NOT AUTHORIZED.
+
 # R28 → R27A — Decision Closure Matrix
 
 **Status: PROPOSED closure package; joint Core/security closure Q01..Q09 vẫn PENDING.** Consumer owner choices Q06 B/Q08 B đã được Ánh ghi riêng; không tự nâng thành joint freeze. Owner/reviewer ở bảng là người cần quyết định, không chữ ký được điền thay.

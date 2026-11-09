@@ -3,6 +3,14 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
+**2026-11-09 execution update:** Có [test-only harness](../../../tests/r28_m5/README.md)
+và [coverage/results report](r28-q03-m5-verification-report.md), source commit
+`161dc0d5be0c5c367155eddb33ad6d8fe0eba753`. Preflight `20261109-m5-preflight-02`
+fail closed trước Docker/DB do chưa xác lập credential safety. **0 executed DB tests;
+0 DB PASS / 0 DB FAIL**; X-25/T07/T08/X-09 cùng dependencies giữ NOT RUN/BLOCKED.
+Authorization isolated-test đã có từ Bảo; các status cũ nói chưa authorize chỉ là lịch sử.
+Các case chưa có executable fixture được liệt kê rõ trong report; không đổi oracle để PASS.
+
 # R28 → R27A — Q03 verification test specifications (Workstream D)
 
 **Status: EXECUTION-READY SPECIFICATIONS. NOTHING IN THIS FILE HAS BEEN EXECUTED. Every test is `NOT RUN` or `BLOCKED`; there is no PASS and no FAIL.**

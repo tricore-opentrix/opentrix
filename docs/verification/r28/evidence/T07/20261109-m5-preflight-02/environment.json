@@ -1,0 +1,22 @@
+{
+  "run_id": "20261109-m5-preflight-02",
+  "source_commit": "161dc0d5be0c5c367155eddb33ad6d8fe0eba753",
+  "source_status": "",
+  "schema_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "grant_sha256": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+  "source_files_sha256": {
+    "README.md": "213a63dd59463fb6231407fbd4a791211aafdca5912da39d274ea07a75eb3944",
+    "run.py": "1662c223a343626582033e554e4c2bc275f2a594aa79d95630d7837ef096c4f4",
+    "schema.sql": "0cd560b10bfe0eb067e0f8e147e90bb52d33e9dbb90c2778ff2f11a9392bc99c",
+    "test_harness.py": "2f0dd5cdd1854f6325aedef305ede4f5e8f92c11122d34b57f65e2c66e972823"
+  },
+  "execution_command": "\"C:\\Program Files\\Python314\\python.exe\" tests/r28_m5/run.py --run-id 20261109-m5-preflight-02",
+  "database_tests_executed": 0,
+  "postgresql": null,
+  "image": null,
+  "container": null,
+  "credential_safety": "NOT_ESTABLISHED until isolated-container preflight completes",
+  "connection": "local container Unix socket; dbname=m5_disposable; no published port",
+  "fixture": "synthetic T1/T2, R1/R2, admin/old/new; initial G10/fence5",
+  "sql_runtime_approved": false
+}

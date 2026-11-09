@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "scope": "seven task documents; both preflight runs; hashes compared to exact Git source revisions",
+  "local_links_checked": 44,
+  "artifact_checksums_checked": 32,
+  "database_tests_executed": 0,
+  "source_commit": "161dc0d5be0c5c367155eddb33ad6d8fe0eba753"
+}

@@ -3,6 +3,13 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
+**2026-11-09 execution addendum:** [M5 prototype/report](r28-q03-m5-verification-report.md)
+và [harness](../../../tests/r28_m5/README.md) đã chuẩn bị trong test-only scope theo
+Bảo authorization; source `161dc0d5be0c5c367155eddb33ad6d8fe0eba753`.
+Run `20261109-m5-preflight-02` BLOCKED trước DB vì credential safety chưa xác lập;
+Docker local unavailable. **0 DB cases executed**. Mandatory oracles/prerequisites bên dưới
+giữ nguyên; report liệt kê các case chưa có executable fixture. Không P0/G0 gate PASS.
+
 # R28 → R27A — Mandatory Verification Plan
 
 **Status: TEST PLAN ONLY.** Không migration, grants, DB connection, PostgreSQL test hoặc runtime E2E được chạy bởi gói này. Runtime cases NOT RUN/BLOCKED; không actual executable harness command được phát minh.

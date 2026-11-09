@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+
+version = 1
+
+# Generated verification JSON: retain original evidence bytes and checksums.
+[[annotations]]
+path = "**/*.json"
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 TRICORE contributors"
+SPDX-License-Identifier = "Apache-2.0"

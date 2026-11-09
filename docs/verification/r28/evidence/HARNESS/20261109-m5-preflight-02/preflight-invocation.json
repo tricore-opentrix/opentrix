@@ -1,0 +1,14 @@
+{
+  "command": [
+    "C:\\Program Files\\Python314\\python.exe",
+    "-B",
+    "tests/r28_m5/run.py",
+    "--run-id",
+    "20261109-m5-preflight-02"
+  ],
+  "exit_code": 2,
+  "stdout": "BLOCKED: credential/target variables present (names only): CART_DB_PASSWORD, ORDER_DB_PASSWORD\nDatabase cases executed: 0\n",
+  "stderr": "",
+  "database_tests_executed": 0,
+  "status": "BLOCKED"
+}

@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "scope": "local links, required dispositions, zero-execution BLOCKED evidence, source hashes, artifact checksums",
+  "local_links_checked": 40,
+  "artifact_checksums_checked": 16,
+  "database_tests_executed": 0
+}

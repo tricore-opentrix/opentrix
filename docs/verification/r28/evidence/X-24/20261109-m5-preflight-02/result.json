@@ -1,0 +1,13 @@
+{
+  "test_id": "X-24",
+  "status": "BLOCKED",
+  "reason": "credential/target variables present (names only): CART_DB_PASSWORD, ORDER_DB_PASSWORD",
+  "database_cases_executed": 0,
+  "cases": [],
+  "remaining": [
+    "Full approved contracts, W-17 deployed/external inventory, privileged maintenance/restore proof",
+    "X-13 revocation/security transport/latency mapping; X-23 retention/restore; X-24 terminal rejection",
+    "T07 backend-kill stages, actual network ACK loss, timeouts/deadlock; X-12 all arrival schedules",
+    "X-25 autonomous unique-conflict injection, owner bypass reconciliation; X-16/X-26 Helpdesk integration"
+  ]
+}

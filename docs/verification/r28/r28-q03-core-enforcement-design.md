@@ -3,6 +3,20 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
+**2026-11-09 — current verification update:** Bảo đã chọn A/M5 có điều kiện tại
+[owner decision](https://github.com/tricore-opentrix/opentrix/pull/168#issuecomment-6736636086);
+[Yến review](https://github.com/tricore-opentrix/opentrix/pull/168#pullrequestreview-5823960897)
+chấp nhận direction tại baseline `cecee84453cf5eaec16548959415c243675d56c4`.
+[Prototype/report hiện tại](r28-q03-m5-verification-report.md) supersede các nhận định
+owner-selection/authorization pending cũ bên dưới; không supersede P0 oracles/gates.
+**0 test PostgreSQL đã chạy; enforcement BLOCKED/CHANGES_REQUIRED.**
+
+Prototype test-only thêm immutable actual-delta capture và đối chiếu audit/receipt cuối
+transaction để xử lý semantic gap ở §3.3. Delta reader dùng VOLATILE; mutation-side
+deferred triggers không dựa vào queued NEW. Membership/registry/binding/authority/admission
+ngoài assignment bị chặn trong prototype. SQL chưa load/execute; đây là hardening proposal,
+không phải verified PostgreSQL finding. Owner/superuser maintenance vẫn ngoài grant boundary.
+
 # R28 → R27A — Q03 Core enforcement design closure (Workstreams A–C)
 
 **Status: PROPOSED DESIGN FOR INDEPENDENT REVIEW — AI-assisted preparation for Bảo; not Bảo's personal sign-off, not Yến's approval, not G0 acceptance.**

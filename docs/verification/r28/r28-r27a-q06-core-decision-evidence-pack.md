@@ -3,6 +3,14 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
+**2026-11-09 current evidence addendum:** [Bảo M5 selection/test authorization](https://github.com/tricore-opentrix/opentrix/pull/168#issuecomment-6736636086)
+và [Yến direction-only review](https://github.com/tricore-opentrix/opentrix/pull/168#pullrequestreview-5823960897)
+đã có tại baseline `cecee84453cf5eaec16548959415c243675d56c4`; nhận định Q03 owner selection/
+post-baseline direction review pending bên dưới là lịch sử. [Ánh response](https://github.com/tricore-opentrix/opentrix/pull/168#issuecomment-6736714175)
+giữ Q06 B/Q08 B, R29 #145 chưa đổi. [Prototype/report](r28-q03-m5-verification-report.md)
+ghi 6 offline checks PASS, **0 PostgreSQL tests**, environment BLOCKED và remaining gaps.
+Không có runtime proof, contract freeze, resend enablement hoặc R27A activation.
+
 # R28 → R27A — Q06 Core producer decision/evidence package
 
 **Status: PROPOSED CORE CONTRACT DIRECTION — HUMAN OWNER / INDEPENDENT REVIEW REQUIRED.**
