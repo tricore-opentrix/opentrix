@@ -225,4 +225,9 @@ not supply runtime evidence.
 4. **Create idempotency acceptance:** same tenant + authenticated caller + idempotency key + same payload cannot create two business tickets/two Core workflow instances, including concurrent calls, rollback and uncertain outcomes. A mismatched payload under an existing key must not silently return the prior result. Reconcile uncertain commits; no blind retry.
 5. **R29 Done:** two-service CI is green, contract tests pass, all six use-case integration tests pass in real PostgreSQL/Core environment, definition version is configurable, authoritative state is Core-derived, no Helpdesk business mutations reside in `infrastructure`, and independent approval is recorded.
 
-**Current verdict:** `TYPED_COMMAND_CONTRACT_CANDIDATE / UNIT_TESTS_NOT_YET_CI_VERIFIED / PRODUCTION_INTEGRATION_BLOCKED`.
+**Current verdict:** `TYPED_COMMAND_CONTRACT_CANDIDATE / BACKEND_GRADLE_BUILD_AND_TEST_PASSED_IN_CI / PRODUCTION_INTEGRATION_BLOCKED`.
+
+The backend Gradle build ran the `:test` task and succeeded at reviewed SHA
+`b3d80254459269deb5071e52e59e1bda6954b5c7` ([CI run 42565148187](https://github.com/tricore-opentrix/opentrix/actions/runs/42565148187)).
+PostgreSQL and service-runtime verification remain **NOT RUN**. R27 integration
+and G0-CONTRACT remain **BLOCKED**.
