@@ -16,7 +16,8 @@ GRANT CONNECT ON DATABASE m5_disposable TO core_acl_exec_rt, core_authz_reader_r
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 CREATE SCHEMA m5 AUTHORIZATION core_acl_owner;
 SET LOCAL ROLE core_acl_owner;
-ALTER DEFAULT PRIVILEGES IN SCHEMA m5 REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
+-- Schema-local REVOKE cannot remove PostgreSQL's global PUBLIC EXECUTE default.
+ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
 CREATE TABLE m5.tenant_guards (tenant_id text PRIMARY KEY, acl_revision bigint NOT NULL CHECK (acl_revision >= 0));
 CREATE TABLE m5.tenant_memberships (tenant_id text REFERENCES m5.tenant_guards, actor_id text,
     active boolean NOT NULL, PRIMARY KEY(tenant_id,actor_id));

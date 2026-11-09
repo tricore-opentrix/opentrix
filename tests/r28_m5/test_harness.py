@@ -51,6 +51,11 @@ class HarnessChecks(unittest.TestCase):
             finally:
                 runner.temp.cleanup()
 
+    def test_function_defaults_are_globally_private(self):
+        sql=(m5.HERE/'schema.sql').read_text(encoding='utf-8')
+        self.assertIn('ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;',sql)
+        self.assertNotIn('ALTER DEFAULT PRIVILEGES IN SCHEMA m5 REVOKE EXECUTE',sql)
+
     def test_container_command_has_no_remote_connection(self):
         runner=m5.Runner('offline-selfcheck')
         try:
