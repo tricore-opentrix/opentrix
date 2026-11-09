@@ -37,7 +37,7 @@ Preflight local: origin https://github.com/tricore-opentrix/opentrix.git; worktr
 | PROPOSED | Candidate có nguồn nhưng cần owner lựa chọn; không normative production contract. |
 | OPEN / BLOCKED | Thiếu quyết định/proof hoặc producer-consumer mâu thuẫn; không implement theo giả định. |
 
-[Decision Closure Matrix](r28-r27a-decision-closure-matrix.md) giữ Q01..Q09 PENDING. [Mandatory Verification Plan](r28-r27a-mandatory-verification-plan.md) định nghĩa oracle; không có PostgreSQL/runtime PASS trong gói này.
+[Decision Closure Matrix](r28-r27a-decision-closure-matrix.md) giữ joint Q01..Q09 closure PENDING. Current input #168 b327239e671df15a57122397302a315dd9344443 và [Ánh consumer decision](https://github.com/tricore-opentrix/opentrix/pull/168#issuecomment-6735579551) ghi Q06 B conditional S, Q08 B durable reservation/manual reconciliation, durable CAS conflict; automated worker DEFERRED, không joint approval. [Q06/Q03 evidence pack](r28-r27a-q06-core-decision-evidence-pack.md) cập nhật Final-only recommendation; [Mandatory Verification Plan](r28-r27a-mandatory-verification-plan.md) và pack định nghĩa oracle, không PG/runtime PASS.
 
 ## 3. P0-01 — Core HTTP/OpenAPI
 
@@ -120,7 +120,7 @@ Logical envelope kế thừa S2/S3, chưa wire schema: tenantId/exact resource, 
 | Canonical fingerprint | Server-derived, versioned strict semantic representation; correlation/trace excluded; client digest không trusted | Presence/null/default/unknown/duplicate-key/set/Unicode/integer rules, algorithm/encoding và golden V-01..V-09 chưa chọn. |
 | Duplicate/conflict | Same scope/key + same semantics → immutable historical outcome, no second mutation; khác semantics → conflict, không overwrite receipt | Current lookup auth trước disclosure; exact conflict/error/response headers chưa frozen. |
 | Terminal rejection | Ưu tiên committed no-op cho authorized deterministic domain rejection | Q02 chưa chọn errors bind key/rejection audit. Infrastructure/crash/full SQL rollback/malformed/invalid-auth không fabricated terminal receipt; no ACL/G/fence/success-audit mutation cho no-op rejection. |
-| Receipt completeness | Early reservation + mutation + complete terminal receipt cùng transaction; deferred validator là candidate | Q03 exact schema/validator/writer coverage/grants; application assert không database enforcement. Final-only cần prove key serialization trước mọi mutation. X-25. |
+| Receipt completeness | FINAL_ONLY_RECEIPT_PREFERRED_CONDITIONALLY cho Core ACL-admin assignment; complete terminal INSERT last write before COMMIT, sau tenant/key serialization | Current enforcement CHANGES_REQUIRED: phải non-bypassable all-writer boundary; Java assert/broad DML không đủ. Q03 schema/roles pending; early reservation chỉ comparison, không approved fallback. X-25. |
 | Retention/restore | Full receipt qua approved window, sau đó retained identity/tombstone hoặc authenticated admission floor | Q05 duration/expiry response/cleanup order/restore principal/resource/fence/admission mapping; TTL-only reuse không an toàn. X-23 dispatch lại Create và Assign. |
 | Status | Authenticated authoritative lookup theo original scope; reauthorize current visibility; historical outcome khác current ACL/local finalize | Method/path/body, absent vs expired/in-flight, recovery delegation còn OPEN. No committed row ≠ never executing; không mặc định persistent IN_PROGRESS/OUTCOME_UNKNOWN. |
 
@@ -128,7 +128,7 @@ Logical envelope kế thừa S2/S3, chưa wire schema: tenantId/exact resource, 
 
 **Contract conflict:** S4 hiện chỉ cho resend khi có authoritative non-commit evidence. Q06 chỉ freeze sau Ánh/Bảo thống nhất, Yến review và R29 sửa/review đúng owner process tại new exact SHA. Nếu giữ Protocol N, cần closure/admission proof bảo đảm delayed original không thể commit sau non-commit response; SELECT rỗng hoặc lock rồi release không đủ. Không sửa S4/ADR trong gói này.
 
-**R27A dependency:** exact status/retry/retention/rejection contract và consumer amendment trước reconciliation worker/transport behavior chính thức. X-12/X-13/X-23/X-24, Q03 X-25; không tuyên bố exactly-once từ typed key hay unit tests.
+**R27A dependency:** exact status/retry/retention/rejection contract và consumer amendment trước official transport/finalization behavior. Automated recovery worker DEFERRED khỏi MVP; manual reconciliation vẫn cần authority/runbook. X-12/X-13/X-23/X-24 và Q03 X-25; không exactly-once claim từ typed key/unit tests.
 
 ## 7. P0-05 — PostgreSQL Ownership & Isolation
 
@@ -170,14 +170,14 @@ Tất cả source links sau tại S2 full SHA 5618091dc205b196b551465d2c52def931
 | --- | --- | --- |
 | PENDING_SYNCHRONIZATION | Durable current intent chờ exact Core outcome; pending observable; synchronized-only actions blocked | Wire/UI/error mapping và dispatch/backoff chưa freeze. |
 | SYNCHRONIZED | Matching committed receipt + successful Helpdesk current-intent CAS | Không bằng current perpetual access; future action reauthorize tại Core. |
-| RECONCILIATION_REQUIRED | Lost ACK/uncertainty, unavailable status hoặc Core commit + local finalize failure | Same-current intent: retry local finalize sau authoritative match. Superseded: old CAS=0, preserve Core commit và durable recovery disposition, không reverse/regrant tùy tiện. |
+| RECONCILIATION_REQUIRED | Lost ACK/uncertainty, unavailable status hoặc Core commit + local finalize failure | CAS conflict: durable per-attempt record trước recovery; không refreshed-version retry. Same-current exact intent/versions chỉ finalize theo approved authorized convergence; superseded old CAS=0, preserve Core/newer H state, không reverse/regrant. |
 | SYNCHRONIZATION_FAILED | Definitive rejection durably recorded cho exact current attempt | Unknown không được timeout-convert thành terminal; nếu ghi local failure chưa thành công vẫn reconciling. |
 
-**Q08 proposal:** durable Helpdesk prerequisite reservation bind exact resource/intent/business-assignment versions trước Resolve/Confirm dispatch, short local transaction, không DB lock qua network. Competing reassignment không silent supersede; lost ACK/restart/timeout không tự release reservation. Confirm cần matching finalized resolution, synchronized prerequisites và authoritative current Core RESOLVED/version cùng authorization; historical receipt một mình không đủ.
+**Q08 consumer direction:** Ánh SELECT Option B durable prerequisite reservation + authorized manual reconciliation tại b327239e671df15a57122397302a315dd9344443 (comment 6735579551), chưa joint freeze. Bind exact resource/intent/business-assignment versions trước Resolve/Confirm dispatch, local tx ngắn, không DB lock qua network. Unknown/restart/timeout/CAS conflict giữ reservation/gating và durable per-attempt disposition; không refreshed-version CAS retry. Confirm cần finalized matching Resolve/synchronized prerequisites và separately authorized current Core RESOLVED/version. Automated recovery worker DEFERRED.
 
 **BLOCKED:** authority/cancellation/release rules, superseded Resolve convergence và forward recovery; alternative explicit supersede/reconciliation chưa được chọn. X-16/X-26 phải có durable terminal/conflict disposition, không chỉ CAS=0. Retry/backoff/alert thresholds/on-call/manual recovery/restore và emergency revoke authority chưa approved; không tự đặt SLA/timeout. Emergency revoke phải Core-enforced invalidation/deny chống pending assignment regrant, chỉ authority được duyệt mới clear; không suy từ Helpdesk pause hoặc OD-06 A.
 
-**R27A dependency:** Q06 + Q08 shared recovery contract trước worker/finalization semantics; Q09 operational/cutover controls trước activation. C-27/C-28 và X-15/X-16/X-26 vẫn BLOCKED theo decision prerequisites.
+**R27A dependency:** Q06 + Q08 shared recovery/finalization contract trước handlers; exact manual closure/cancellation authority vẫn OPEN. Automated worker không thuộc MVP. Q09 operational/cutover controls trước activation; C-27/C-28 và relevant X-15/X-16/X-26 BLOCKED.
 
 ## 9. R27A Implementation Permission Matrix
 
@@ -200,7 +200,7 @@ Tất cả source links sau tại S2 full SHA 5618091dc205b196b551465d2c52def931
 - [ ] Yến review exact package commit/diff và xác nhận scope; owner/reviewers ghi closure evidence từng Q, không approve bằng account/name của người khác.
 - [ ] Dùng ngay cho planning: S1 candidate endpoint inventory, version/ownership separation, S5 confirmed OD-06 direction, explicit blocked dependencies và verification oracles; không dùng làm approved production schema.
 - [ ] Trước runtime implementation: approved exact P0-01/02 OpenAPI/security, A1 choice; Q01..Q07 schema/transaction/privileges/canonicalization/retention; G0-CONTRACT/G0-ARCH/G0-DESIGN theo S2 §16, không suy từ merge tài liệu.
-- [ ] Trước recovery handlers: Q06 chọn S/N và review R29 new SHA; Q08 reserve/release/cancel/convergence authority, statuses và current-intent CAS criteria; six-use-case producer/consumer contract tests.
+- [ ] Trước recovery handlers: align Core/security với consumer Q06 B conditional S và review R29 new SHA; Q08 B manual reservation/release/cancel/convergence authority, durable per-attempt CAS record và exact current-intent criteria; automated worker DEFERRED, six-use-case producer/consumer tests riêng scope.
 - [ ] Trước migration execution: ownership/Flyway/role/credential manifests, complete source/catalog writer-edge inventory, ID/incarnation/fence/receipt/admission reconciliation, approved migration/restore/rollback sequence; separate authorization cho disposable verification và cutover.
 - [ ] Trước activation/cutover: T07/T08, C-20..C-23/C-25/C-26 và mandatory X evidence; Q09 timeout/escalation/emergency-revoke authority; source rights/release gates vẫn riêng. Không claim immediate revoke hoặc distributed ACID.
 - [ ] Trước quay lại R27 Step 03 acceptance: record tested source+spec+schema SHAs, independent approvals, current remaining blockers và gate decisions đúng owner; không sửa lịch sử matrix/ADR để giả PASS.
