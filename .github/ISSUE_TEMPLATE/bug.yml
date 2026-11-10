@@ -2,8 +2,27 @@
 # SPDX-License-Identifier: Apache-2.0
 name: Bug report
 description: Report behavior that differs from what is expected.
+title: "[Bug] "
 labels: []
 body:
+  - type: markdown
+    attributes:
+      value: |
+        **Security vulnerabilities must not be reported here.** Follow [SECURITY.md](https://github.com/tricore-opentrix/opentrix/blob/main/SECURITY.md) and use private vulnerability reporting.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Core backend
+        - IT Helpdesk
+        - Portal BFF
+        - Frontend
+        - Infrastructure / deployment
+        - Documentation
+        - Other
+    validations:
+      required: true
   - type: textarea
     id: steps
     attributes:
@@ -30,4 +49,11 @@ body:
     id: version
     attributes:
       label: Version or commit
-      description: For example, v0.1.0 or a SHA on main.
+      description: A SHA on main, or a tag.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: For example, OS, browser, Docker version.
