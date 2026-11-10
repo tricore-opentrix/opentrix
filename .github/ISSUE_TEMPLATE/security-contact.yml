@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+name: Security contact request
+description: Ask maintainers for a private channel when private vulnerability reporting is unavailable. Do not include vulnerability details.
+title: "Security contact request"
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Tiếng Việt:** Chỉ dùng biểu mẫu này khi kênh [báo cáo lỗ hổng riêng tư](https://github.com/tricore-opentrix/opentrix/security/advisories/new) không dùng được. Issue này **công khai** — **không** ghi mô tả, thành phần bị ảnh hưởng, bước tái hiện, mã khai thác, log, thông tin đăng nhập hay dữ liệu cá nhân. Maintainer sẽ trả lời và hướng dẫn bạn gửi báo cáo qua kênh riêng. Xem [SECURITY.md](https://github.com/tricore-opentrix/opentrix/blob/main/SECURITY.md).
+
+        **English:** Use this form only when [private vulnerability reporting](https://github.com/tricore-opentrix/opentrix/security/advisories/new) is unavailable. This Issue is **public** — do **not** include a description, affected component, reproduction steps, exploit code, logs, credentials, or personal data. A maintainer will reply and arrange a private channel for your report. See [SECURITY.md](https://github.com/tricore-opentrix/opentrix/blob/main/SECURITY.md).
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Xác nhận / Confirmation
+      options:
+        - label: Tôi đã thử kênh báo cáo riêng tư nhưng không dùng được. / I tried private vulnerability reporting and it was unavailable.
+          required: true
+        - label: Issue này không chứa chi tiết lỗ hổng hay dữ liệu nhạy cảm. / This Issue contains no vulnerability details or sensitive data.
+          required: true

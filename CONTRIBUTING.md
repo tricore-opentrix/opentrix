@@ -3,101 +3,158 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Contributing to DX-OS Open Core
+# OPENTRIX
 
-Only work merged into `main` is considered complete.
+> **Ngôn ngữ / Language:** [Tiếng Việt](#vi) · [English](#en)
 
-## Ownership and review
+---
 
-| Responsibility | Person | GitHub |
-| --- | --- | --- |
-| Core integration, release coordination, and merge coordination | Yến | @phanyen06ym-ien |
-| Primary Core testing and review; repository administration | Bảo | @lexuanbao258-collab |
-| IT Helpdesk application and related Core review | Ánh | @ngang02012007-crypto |
+<a id="vi"></a>
 
-Development ownership identifies who implements a component. CODEOWNERS requests review for matching files; it does not restrict who may contribute. Independent review requires approval from a person other than the PR author. Manual co-review requires approvals from all named reviewers and is not fully enforced by GitHub CODEOWNERS or branch protection: GitHub may accept one approval from a rule listing multiple owners.
+## OPENTRIX — Đóng góp
 
-| Changes | Review policy |
-| --- | --- |
-| Backend Core, infrastructure, and repository governance | Bảo, with Yến as an independent fallback |
-| Portal BFF | Bảo and Ánh as code owners; apply Helpdesk co-review when its API is affected |
-| Frontend | Yến and Ánh as code owners |
-| Helpdesk-related Core paths and BFF API | Both Bảo and Ánh must review and approve |
-| Tests authored by Bảo | Yến provides independent review |
+OPENTRIX nhận đóng góp cho nền tảng DX-OS Open-Core trong repository này. Đóng góp của bạn được gửi và phân phối theo [Apache License 2.0](LICENSE); quyền sử dụng, sửa đổi và phân phối phần đóng góp đó đến từ giấy phép này, không đến từ bất kỳ dịch vụ hay thỏa thuận nào. Mã nguồn, thư viện và tài sản của bên thứ ba giữ nguyên giấy phép và nghĩa vụ riêng. Việc rà soát nguồn gốc, quyền và ghi công cho nội dung hiện có trong repository vẫn đang được theo dõi tại [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
 
-Authors cannot approve their own PRs. If Bảo or Ánh authors a Helpdesk-related Core PR, document the conflict in the PR and obtain an independent-review exception or alternative reviewer decision before merge; self-approval never counts. Yến coordinates merges after all applicable approvals and checks, subject to repository permissions and the agreed process. Review and merge responsibilities are distinct.
+### Trước khi gửi
 
-Regular review windows are 12:00–12:30 and 21:00–21:30. Merge trains run at 21:00 on Tuesdays and Fridays.
+- Đọc [README](README.md), tài liệu kiến trúc và API trong [`docs/`](docs/), và các Issue đang mở.
+- Mở Issue trước khi viết thay đổi lớn nếu thay đổi hợp đồng API công khai, ranh giới giữa core và ứng dụng, phân quyền hay cách lưu trữ dữ liệu.
+- Chỉ dùng mã nguồn, dữ liệu và tài sản mà bạn có quyền đóng góp. Không đưa mật khẩu, token, file `.env` thật, dữ liệu người dùng thật, câu trả lời khảo sát gốc hay hình ảnh chưa được phép vào Issue, pull request, test hay ảnh chụp màn hình. Hãy dùng dữ liệu mẫu tự dựng và giá trị giả trong `.env.example`.
+- Khi gửi đóng góp để đưa vào, bạn đồng ý với điều khoản đóng góp tại mục 5 của [Apache License 2.0](LICENSE). Đảm bảo chủ lao động hoặc chủ thể quyền khác cho phép. Repository này không yêu cầu thỏa thuận cấp phép đóng góp riêng.
 
-## Workflow
+### License header và pin image
+
+- File nguồn mới do bạn tự viết — Java, TypeScript/TSX, SQL, YAML, shell, Markdown — phải mang header SPDX Apache-2.0:
+
+  ```java
+  // SPDX-FileCopyrightText: 2026 TRICORE contributors
+  // SPDX-License-Identifier: Apache-2.0
+  ```
+
+  Dùng `--` cho SQL, `#` cho YAML và shell, `<!-- -->` cho Markdown. Tự kiểm tra trước khi gửi:
+
+  ```
+  reuse lint
+  ```
+
+  CI chạy cùng kiểm tra này (`fsfe/reuse-action`) trong job `repo-hygiene`; lỗi REUSE làm job đó thất bại. Job `repo-hygiene` có được cấu hình là required check của nhánh `main` hay không được xác minh riêng trong Issue #173. Không gắn header chung cho mã bên ngoài hoặc chưa xác minh quyền.
+- Container image trong `docker-compose*.yml` và CI phải pin tag cụ thể, không dùng `latest`. Khi giữ một phiên bản cũ vì lý do giấy phép, chỉ nâng cấp sau khi thảo luận và cập nhật [NOTICE](NOTICE).
+
+### Chính sách Dependency và Bản quyền bên thứ ba
+
+- **Cổng kiểm tra đang chạy:** job CI `r23-compliance` (`scripts/r23-compliance.py`) đối chiếu giấy phép dependency trong các SBOM CycloneDX với danh sách cho phép. Giấy phép không có trong danh sách hoặc không được khai báo làm job thất bại.
+- **Danh sách cho phép hiện tại của cổng:** 0BSD, Apache-2.0, BlueOak-1.0.0, BSD-2-Clause, BSD-3-Clause, CC0-1.0, CDDL-1.0, CDDL-1.1, EDL-1.0, EPL-1.0, EPL-2.0, ISC, MIT, MIT-0, MPL-2.0, OFL-1.1, Unicode-3.0, Unicode-DFS-2016, Unlicense, Zlib; cùng ngoại lệ đã rà soát GPL-2.0 kèm Classpath-exception-2.0.
+- **Quy định của nhóm (chưa có kiểm tra tự động):** dependency theo MPL, EPL, CDDL hoặc ngoại lệ Classpath chỉ được dùng nguyên bản, không sửa mã gốc, và phải được ghi nhận trong [NOTICE](NOTICE).
+- **Thay đổi danh sách:** thêm hoặc bớt giấy phép phải qua PR sửa `scripts/r23-compliance.py`, cập nhật tài liệu này trong cùng PR, và được rà soát nguồn gốc/quyền theo [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
+- **Ngoài phạm vi cổng R23:** container image và service chạy tách biệt (ví dụ Keycloak, PostgreSQL) không được R23 kiểm tra; giấy phép của chúng phải được rà soát thủ công và ghi trong NOTICE.
+- **Không sao chép từ dự án khác:** OPENTRIX chỉ kế thừa các mẫu thiết kế (design pattern) độc lập, không sao chép code, template, icon hay asset.
+
+### Quy trình làm việc
 
 ```text
-Ready issue → branch from main → PR to main → CI → independent approval → squash merge → release
+Issue → nhánh từ main → Draft PR vào main → CI → review độc lập → squash merge → đóng Issue → xóa nhánh
 ```
 
-1. Give work taking over two hours one issue, one assignee, one milestone, and an `area:*` label.
-2. Branch from current `main` with a `<type>/<area>-<description>` name. Keep branches open no longer than three days where practical.
-3. Target `main`. Link the issue with `Closes #N`. Keep PRs near the 400-line guideline.
-4. Require passing applicable CI and at least one independent approval. Apply additional manual co-review rules above.
-5. Squash merge. The PR title becomes the commit title on `main`.
+- **Issue:** việc trên khoảng hai giờ cần một Issue có mục tiêu, tiêu chí nghiệm thu, người phụ trách, milestone và label `area:*`. Tiêu đề dạng `[Area] Mô tả ngắn`; số Issue do GitHub cấp là mã định danh duy nhất.
+- **Nhánh:** tạo từ `main` mới nhất, đặt tên `<type>/<area>-<mô-tả>` (ví dụ `feat/workflow-outbox-event`), sống không quá ba ngày. Không push thẳng vào `main` hoặc `gh-pages`; không tạo nhánh `review/*`, `candidate/*`, `diagnostic/*`.
+- **Commit và tiêu đề PR:** theo [Conventional Commits](https://www.conventionalcommits.org/) — `<type>(<area>): <mô tả ngắn>`, với type là `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci` hoặc `build`.
 
-Do not push directly to `main` or `gh-pages`. Do not create `review/*`, `candidate/*`, or `diagnostic/*` branches.
+### Phân công và review
 
-## Daily commands
+| Phạm vi | Người phụ trách | Review |
+| --- | --- | --- |
+| Tích hợp Core, điều phối phát hành và merge | Yến (@phanyen06ym-ien) | Bảo |
+| Kiểm thử Core, quản trị repository, hạ tầng | Bảo (@lexuanbao258-collab) | Yến |
+| Ứng dụng IT Helpdesk và Portal BFF | Ánh (@ngang02012007-crypto) | Bảo |
+| Frontend | Ánh (@ngang02012007-crypto) | Yến |
+| Đường dẫn Core liên quan Helpdesk và API của BFF | — | Cả Bảo và Ánh |
 
-```bash
-# Start a task.
-git switch main
-git pull --ff-only
-git switch -c feat/workflow-outbox-event
+[CODEOWNERS](.github/CODEOWNERS) tự động yêu cầu review theo đường dẫn nhưng không bảo đảm mọi người được liệt kê đều đã duyệt. Tác giả không được tự duyệt PR của mình; nếu tác giả là một trong hai reviewer bắt buộc, ghi rõ trên PR và thống nhất reviewer thay thế trước khi merge.
 
-# Commit focused changes.
-git add -p
-git commit -m "feat(workflow): write outbox event in transition transaction"
+### Pull request
 
-# Integrate changes from main.
-git fetch origin
-git merge origin/main
+1. Giữ thay đổi gọn theo phạm vi (khoảng 400 dòng), giải thích hành vi người dùng thấy được và ảnh hưởng tương thích. Dùng PR template; `Refs #N` khi PR làm một phần Issue, `Closes #N` khi đáp ứng đủ tiêu chí nghiệm thu.
+2. Giữ ranh giới giữa core headless và ứng dụng. Ứng dụng chỉ gọi core qua API đã công bố; không tin tenant hay danh tính do client chưa xác thực gửi lên.
+3. Với thay đổi hợp đồng API hoặc sự kiện, cập nhật hợp đồng và cả hai phía tiêu thụ cùng lúc; mô tả năng lực mới hoặc bị gỡ mà không trình bày công việc đề xuất như đã phát hành.
+4. Chạy các kiểm tra phù hợp với module đã sửa và ghi lệnh cùng kết quả vào PR. Với thay đổi về phân quyền hay bảo mật, kèm test thể hiện cả đường bị từ chối và đường được phép.
+5. Cập nhật README, tài liệu API hoặc `CHANGELOG.md` khi hành vi bên ngoài thay đổi, và nêu rõ kiểm tra nào bạn chưa chạy được.
+6. Cần ít nhất một phê duyệt độc lập và CI liên quan đạt trước khi squash merge. CI đạt chưa có nghĩa là xong: Issue chỉ được đóng khi tiêu chí nghiệm thu đã được xác minh trên `main`.
+7. PR mới luôn nhắm vào `main`. Các PR xếp chồng cũ được xử lý theo thứ tự phụ thuộc trong [Issue #171](https://github.com/tricore-opentrix/opentrix/issues/171); không âm thầm đổi base của chúng.
 
-# Push and open the PR.
-git push -u origin HEAD
-gh pr create --base main --fill --assignee @me
+Báo cáo vấn đề bảo mật qua kênh riêng, không đăng Issue công khai; xem [SECURITY.md](SECURITY.md). Câu hỏi về nguồn gốc mã và giấy phép còn mở được theo dõi tại [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
 
-# After merge, remove the local topic branch.
-git switch main
-git pull --ff-only
-git branch -d feat/workflow-outbox-event
+---
+
+<a id="en"></a>
+
+## OPENTRIX — Contributing
+
+OPENTRIX accepts contributions to the DX-OS Open-Core platform in this repository. Your contributions are submitted and distributed under the [Apache License 2.0](LICENSE); the rights to use, modify, and distribute them come from that license, not from any service or agreement. Third-party code, libraries, and assets keep their own licenses and obligations. Review of provenance, permissions, and attribution for existing repository content is still tracked in [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
+
+### Before submitting
+
+- Read the [README](README.md), the architecture and API documents in [`docs/`](docs/), and open Issues.
+- Open an Issue before writing a large patch that changes public API contracts, the core/application boundary, authorization, or data storage.
+- Use code, data, and assets you have permission to contribute. Never include passwords, tokens, real `.env` files, real user data, raw survey responses, or unapproved images in Issues, pull requests, tests, or screenshots. Use invented fixtures and placeholder values in `.env.example`.
+- By submitting a contribution for inclusion, you agree to the contribution terms in section 5 of the [Apache License 2.0](LICENSE). Ensure your employer or other rights holders authorize it. No separate contributor license agreement is required by this repository.
+
+### License headers and image pins
+
+- New source files you author — Java, TypeScript/TSX, SQL, YAML, shell, Markdown — must carry the SPDX Apache-2.0 header:
+
+  ```java
+  // SPDX-FileCopyrightText: 2026 TRICORE contributors
+  // SPDX-License-Identifier: Apache-2.0
+  ```
+
+  Use `--` for SQL, `#` for YAML and shell, and `<!-- -->` for Markdown. Check locally before submitting:
+
+  ```
+  reuse lint
+  ```
+
+  CI runs the same check (`fsfe/reuse-action`) in the `repo-hygiene` job; a REUSE failure fails that job. Whether `repo-hygiene` is configured as a required check on `main` is verified separately under Issue #173. Do not apply the generic header to external or rights-unverified material.
+- Container images in `docker-compose*.yml` and CI must pin specific tags, never `latest`. When an older version is kept for licensing reasons, upgrade only after discussion and update [NOTICE](NOTICE).
+
+### Dependency policy & third-party licensing
+
+- **Implemented gate:** the `r23-compliance` CI job (`scripts/r23-compliance.py`) checks dependency licenses in the CycloneDX SBOMs against an allow-list. Any license not on the list, or undeclared, fails the job.
+- **Current gate allow-list:** 0BSD, Apache-2.0, BlueOak-1.0.0, BSD-2-Clause, BSD-3-Clause, CC0-1.0, CDDL-1.0, CDDL-1.1, EDL-1.0, EPL-1.0, EPL-2.0, ISC, MIT, MIT-0, MPL-2.0, OFL-1.1, Unicode-3.0, Unicode-DFS-2016, Unlicense, Zlib; plus the reviewed exception GPL-2.0 with Classpath-exception-2.0.
+- **Team policy (not automatically checked):** dependencies under MPL, EPL, CDDL, or the Classpath exception are used unmodified only and must be recorded in [NOTICE](NOTICE).
+- **Changing the list:** adding or removing a license requires a PR that changes `scripts/r23-compliance.py`, updates this document in the same PR, and receives source-rights review under [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
+- **Outside the R23 gate:** container images and separately running services (for example Keycloak, PostgreSQL) are not checked by R23; their licenses must be reviewed manually and recorded in NOTICE.
+- **No copying from other projects:** OPENTRIX reuses independent design patterns only, never code, templates, icons, or assets.
+
+### Workflow
+
+```text
+Issue → branch from main → Draft PR to main → CI → independent review → squash merge → close Issue → delete branch
 ```
 
-If a commit is accidentally made on local `main`, preserve it on a topic branch and inspect the working tree before restoring `main`. Never discard uncommitted work.
+- **Issues:** work taking over about two hours needs one Issue with a goal, acceptance criteria, owner, milestone, and an `area:*` label. Use titles like `[Area] Short description`; the GitHub Issue number is the only identifier.
+- **Branches:** create from an up-to-date `main`, name them `<type>/<area>-<description>` (for example `feat/workflow-outbox-event`), and keep them open no longer than three days. Do not push directly to `main` or `gh-pages`; do not create `review/*`, `candidate/*`, or `diagnostic/*` branches.
+- **Commits and PR titles:** follow [Conventional Commits](https://www.conventionalcommits.org/) — `<type>(<area>): <short description>`, where type is `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`, or `build`.
 
-## Naming and PRs
+### Ownership and review
 
-Use [Conventional Commits](https://www.conventionalcommits.org/) for commits and PR titles: `<type>(<area>): <short lowercase description>`. Allowed types are `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`, and `build`. Common areas are `identity`, `gateway`, `bff`, `workflow`, `data`, `helpdesk`, `facility`, `portal`, `site`, `infra`, `docs`, and `repo`.
+| Scope | Owner | Review |
+| --- | --- | --- |
+| Core integration, release and merge coordination | Yến (@phanyen06ym-ien) | Bảo |
+| Core testing, repository administration, infrastructure | Bảo (@lexuanbao258-collab) | Yến |
+| IT Helpdesk application and Portal BFF | Ánh (@ngang02012007-crypto) | Bảo |
+| Frontend | Ánh (@ngang02012007-crypto) | Yến |
+| Helpdesk-related Core paths and BFF API | — | Both Bảo and Ánh |
 
-Use the PR template and describe verification. Aim for at most 150 words in the description. A draft should normally be ready within 48 hours. Avoid stacked PRs; if a dependency is necessary, write `Depends on #N` and wait for that PR to merge.
+[CODEOWNERS](.github/CODEOWNERS) requests reviews by path but does not guarantee that every listed owner has approved. Authors cannot approve their own PRs; if the author is one of the two required reviewers, record it on the PR and agree on an alternative reviewer before merging.
 
-The 400-line PR guideline currently warns but does not block CI. The REUSE licensing job is also advisory until its separate enforcement work is agreed.
+### Pull requests
 
-## Review
+1. Keep changes scoped (around 400 lines) and explain the user-visible behavior and any compatibility impact. Use the PR template; write `Refs #N` for partial work and `Closes #N` only when the full acceptance criteria are met.
+2. Preserve the boundary between the headless core and applications. Applications call the core only through its published API; never trust a tenant or identity supplied by an unauthenticated client.
+3. Update API or event contracts and both consumers together; document new or removed capabilities without describing proposed work as shipped.
+4. Run the checks appropriate to the touched modules and record the commands and results in the PR. For authorization or security changes, include tests demonstrating both the denied and allowed paths.
+5. Update the README, API documentation, or `CHANGELOG.md` when external behavior changes, and describe any check you could not run.
+6. At least one independent approval and passing relevant CI are required before squash merge. Passing CI is not completion: close the Issue only after its acceptance criteria are verified on `main`.
+7. New PRs always target `main`. Legacy stacked PRs are resolved in dependency order under [Issue #171](https://github.com/tricore-opentrix/opentrix/issues/171); do not silently retarget them.
 
-Conclude reviews with **Approve** or **Request changes**. Attach focused comments to code lines, up to ten per round. Mark blocking comments `[blocking]` and optional suggestions `[minor]`. Keep general summaries short; put longer design analysis in an ADR or issue. Track out-of-scope work in a separate issue.
-
-## Issues, milestones, and completion
-
-Use `area:identity`, `area:gateway`, `area:workflow`, and `area:data` for Core work; `area:portal`, `area:site`, `area:infra`, and `area:comms` for applications and supporting work. `prio:p0` blocks the next release. Release milestones are `v0.1.0` (November 4), `v0.2.0` (November 15), `v0.3.0` (November 22), `v0.4.0` (November 29), and `v1.0.0` (December 5). Project board columns track status; status labels are unnecessary.
-
-A task is done when its PR is merged into `main`, applicable CI passes, issue acceptance criteria are met, new logic has tests, new files have SPDX headers, user-visible changes appear in `CHANGELOG.md`, and README or API documentation reflects changed external behavior.
-
-New source files begin with:
-
-```java
-// SPDX-FileCopyrightText: 2026 TRICORE contributors
-// SPDX-License-Identifier: Apache-2.0
-```
-
-Use `--` for SQL, `#` for YAML and shell, and `<!-- -->` for Markdown.
-
-Each person posts a three-line daily update at 22:00: completed work, next work, and blockers. Yến opens the weekly Sunday report issue with verifiable links.
-
-Never commit secrets, tokens, passwords, or real user data. Use placeholder values in `.env.example`; never commit a real `.env`, raw survey responses, or images without permission.
+Report security problems privately, not in a public Issue; see [SECURITY.md](SECURITY.md). Open source-origin and licensing questions are tracked in [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
