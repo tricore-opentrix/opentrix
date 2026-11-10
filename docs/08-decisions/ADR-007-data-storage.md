@@ -23,4 +23,4 @@ Applications authorize attachment access and own business metadata; they do not 
 
 Implementation acceptance requires a pinned commit, disposable local MinIO, private configuration, real-provider contract/concurrency and failure/restart tests, and reviewed Application integration. This architecture decision is not a runtime or release PASS.
 
-See [storage adapters](../02-core/data/storage-adapters.md), [Data architecture](../02-core/data/data-architecture.md), and the [canonical Data contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/data-core.md).
+See [storage adapters](../02-core/data/storage-adapters.md), [Data architecture](../02-core/data/data-architecture.md), and the [canonical Data contract](../contracts/data-core.md).
