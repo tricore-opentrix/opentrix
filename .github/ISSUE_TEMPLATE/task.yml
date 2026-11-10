@@ -2,8 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 name: Task
 description: A task with an assignee and deadline, normally completed within three days.
+title: "[Area] "
 labels: []
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Title format: `[Area] Short description`. Add an assignee, a milestone and an `area:*` label after creating the Issue.
   - type: textarea
     id: goal
     attributes:
@@ -25,6 +30,16 @@ body:
     attributes:
       label: Out of scope
       description: State what this issue will not cover.
+  - type: input
+    id: reviewer
+    attributes:
+      label: Proposed reviewer
+      description: Someone other than the assignee (see the review table in CONTRIBUTING.md).
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Issues or PRs that must be done first, or "None".
   - type: input
     id: links
     attributes:
