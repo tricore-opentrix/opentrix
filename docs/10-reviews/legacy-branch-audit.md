@@ -313,3 +313,127 @@ The absence of ahead commits is established by Git ancestry, not proof there is 
 - No full patch-equivalence or closed-PR discussion review yet for the 50 non-ancestor branches.
 - No license/rights clearance or independent reviewer sign-off.
 - **Deletion approved: zero branches.**
+
+
+---
+
+## Appendix D — Repository reference screening and closed-PR risk triage
+
+**Review pass:** 2026-11-10. **Scope:** maintenance audit of the frozen pre-audit 116-branch / 47-open-PR inventory, using 79 historical closed PR records and selected repository files at `main` = `187dbd2ea6935966f5c4cceb95ad9c3c53708a2e`.
+
+**Source limitations:** This is an audit of GitHub-visible information. It is *not* a full-text search of every tracked file and every other branch; it cannot inspect contributor machines, worktrees, pending commits, GitHub Pages configuration, secrets, external automation, or references stored outside this repository. Missing literal matches must not be described as deletion approval.
+
+### D1. Repository reference screening for the 16 ancestor-reachable refs
+
+The following exact-version file set was fetched and searched for the **16 complete literal branch names**:
+
+| Files checked | Observation |
+|---|---|
+| `.github/workflows/ci.yml`, `.github/workflows/release.yml` | **0 exact references** to the 16 candidates. Both workflows target `main` on branch-based triggers. |
+| `.github/CODEOWNERS`, `scripts/git-cleanup-report.sh`, `scripts/setup-github.sh`, `scripts/r24-release.py` | **0 exact references**; cleanup script has generic remote-branch scanning and must not be confused with actual deletion evidence. |
+| `infra/README.md`, `infra/compose.workflow-postgres.yml`, `infra/release/backend.Dockerfile`, `infra/release/portal-bff.Dockerfile` | **0 exact references**. |
+| `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/README.md` | **0 exact references**. |
+| `docs/01-architecture/repository-layout-and-ownership.md`, `docs/06-deployment/r24-release.md`, `docs/06-deployment/r26-repository-cutover.md`, `docs/06-deployment/r23-plan.md` | **0 exact references**. |
+
+**Coverage: 18 targeted files; no exact candidate-name match.** GitHub indexed code search also returned no results for the exact 16 names, but indexing limitations mean this is **not proof of an exhaustive repository-wide absence**. The recursive `main` Git tree contained 470 entries and was not fully content-scanned. The protected `gh-pages` branch is not confirmed as unused or replaceable.
+
+### D2. First cohort: maintenance decision matrix (16 branch tips already in main ancestry)
+
+| Branch | HEAD SHA (12) | Historical PR | Closed-PR children using branch as base | Maintenance disposition |
+|---|---|---|---|---|
+| `docs/adr010-core-helpdesk-service-boundary` | `3e049488dda5` | No matching PR | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `docs/issue-reorganization-review-20261031` | `2a94a46579c4` | No matching PR | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `docs/restructure-documentation` | `2bda552126cb` | [#73](https://github.com/tricore-opentrix/opentrix/pull/73) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `docs/53-authz-evidence-mapping` | `00c42a987c35` | [#66](https://github.com/tricore-opentrix/opentrix/pull/66) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `docs/53-history-visibility-review` | `7bde57373f85` | [#62](https://github.com/tricore-opentrix/opentrix/pull/62) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `feat/data-object-storage-contract` | `a66d6352c90c` | [#18](https://github.com/tricore-opentrix/opentrix/pull/18) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `feature/data-core-contracts` | `ce56984973f3` | No matching PR | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `feature/data-postgres-adapter` | `899ef1132d9b` | [#31](https://github.com/tricore-opentrix/opentrix/pull/31) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `feature/gateway-authorization` | `fd5469ef6a66` | [#29](https://github.com/tricore-opentrix/opentrix/pull/29) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `feature/identity-oidc-runtime` | `d0d71dcc34b1` | [#33](https://github.com/tricore-opentrix/opentrix/pull/33) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `feature/issue23-identity-gateway-token-handoff-20261019` | `68c0fe018297` | [#46](https://github.com/tricore-opentrix/opentrix/pull/46) merged | #47 | HOLD: historic stacked base |
+| `feature/workflow-http-api` | `d85cf6858869` | [#28](https://github.com/tricore-opentrix/opentrix/pull/28) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `feature/workflow-persistence-contracts` | `2efba4e8c797` | [#20](https://github.com/tricore-opentrix/opentrix/pull/20) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `feature/workflow-runtime` | `ad684d018a24` | [#21](https://github.com/tricore-opentrix/opentrix/pull/21) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `fix/data-input-stream-sanitization` | `fcc45fb65dc6` | [#30](https://github.com/tricore-opentrix/opentrix/pull/30) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+| `fix/request-jpa-public-schema` | `6400a486658b` | [#32](https://github.com/tricore-opentrix/opentrix/pull/32) merged | None found | PRE-CHECK PASSED / LOCAL CONFIRMATION PENDING |
+
+**Interpretation:** 13 branch names matched merged PRs and 3 had no matched closed PR. The 16 tips are already ancestors of `main`, so no separate *Git-ancestry* commits need to be brought into `main`. The historical base relationship from `feature/issue23-identity-gateway-token-handoff-20261019` to closed PR #47 means it needs an explicit provenance/dependency check; no automated cleanup of that base is authorized.
+
+For the remaining 15, propose **RETIREMENT_REVIEW_CANDIDATE** only after confirming (a) external/CI references, (b) local worktrees and unpushed work, (c) evidence retention, and (d) refreshed HEAD SHA. This is a screening outcome, **not deletion approval**.
+
+### D3. Second cohort: all 41 branches associated with closed-but-unmerged PRs
+
+Each matched PR was confirmed as **closed without merger**, based on historical PR metadata. This does not establish why it was closed or whether equivalent code was merged elsewhere; a PR description is not a complete closure decision or proof of patch equivalence.
+
+| Closed PR | Branch | Historical base | Closed-PR child dependencies | Disposition |
+|---|---|---|---|---|
+| [#84](https://github.com/tricore-opentrix/opentrix/pull/84) | `candidate/docs83-workflow-data-p2-20261031` | `docs/core-architecture-alignment` | None found | CLOSED_UNMERGED / REVIEW |
+| [#42](https://github.com/tricore-opentrix/opentrix/pull/42) | `chore/issue26-hosted-verification-gate-20261017` | `fix/issue26-hosted-worker-safety-20261017` | None found | CLOSED_UNMERGED / REVIEW |
+| [#77](https://github.com/tricore-opentrix/opentrix/pull/77) | `chore/olp-folder-skeleton-20261028` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#91](https://github.com/tricore-opentrix/opentrix/pull/91) | `docs/capability-technology-baseline-20261031` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#86](https://github.com/tricore-opentrix/opentrix/pull/86) | `docs/consolidate-navigation-20261031` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#83](https://github.com/tricore-opentrix/opentrix/pull/83) | `docs/core-architecture-alignment` | `docs/integrate-pr78-workspace` | Historical child PRs: 84 | CLOSED_UNMERGED / REVIEW |
+| [#79](https://github.com/tricore-opentrix/opentrix/pull/79) | `docs/helpdesk-swagger-openapi-20261030` | `feature/issue53-java-helpdesk-mvp-20261028` | None found | CLOSED_UNMERGED / REVIEW |
+| [#78](https://github.com/tricore-opentrix/opentrix/pull/78) | `docs/import-workspace` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#82](https://github.com/tricore-opentrix/opentrix/pull/82) | `docs/integrate-pr78-workspace` | `main` | Historical child PRs: 83 | CLOSED_UNMERGED / REVIEW |
+| [#65](https://github.com/tricore-opentrix/opentrix/pull/65) | `docs/olp-project-documentation-20261025` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#153](https://github.com/tricore-opentrix/opentrix/pull/153) | `docs/r27-yen-git-blob-evidence-20261107` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#85](https://github.com/tricore-opentrix/opentrix/pull/85) | `docs/repository-layout-governance-20261031` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#72](https://github.com/tricore-opentrix/opentrix/pull/72) | `docs/stage6-security-review-549de8c-20261027` | `feature/issue23-p1-02-integrity` | None found | CLOSED_UNMERGED / REVIEW |
+| [#57](https://github.com/tricore-opentrix/opentrix/pull/57) | `feature/issue23-d2-admin-candidate` | `feature/issue23-stage6-guarded-actions-candidate-20261021` | Historical child PRs: 58 | CLOSED_UNMERGED / REVIEW |
+| [#58](https://github.com/tricore-opentrix/opentrix/pull/58) | `feature/issue23-p1-02-integrity` | `feature/issue23-d2-admin-candidate` | Historical child PRs: 72, 63 | CLOSED_UNMERGED / REVIEW |
+| [#36](https://github.com/tricore-opentrix/opentrix/pull/36) | `feature/issue23-secure-instance-id-foundation` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#47](https://github.com/tricore-opentrix/opentrix/pull/47) | `feature/issue23-stage3-authorized-workflow-service` | `feature/issue23-identity-gateway-token-handoff-20261019` | Historical child PRs: 48 | CLOSED_UNMERGED / REVIEW |
+| [#48](https://github.com/tricore-opentrix/opentrix/pull/48) | `feature/issue23-stage4-exact-authority` | `feature/issue23-stage3-authorized-workflow-service` | Historical child PRs: 49 | CLOSED_UNMERGED / REVIEW |
+| [#49](https://github.com/tricore-opentrix/opentrix/pull/49) | `feature/issue23-stage5-tenant-resource-acl` | `feature/issue23-stage4-exact-authority` | Historical child PRs: 50 | CLOSED_UNMERGED / REVIEW |
+| [#55](https://github.com/tricore-opentrix/opentrix/pull/55) | `feature/issue23-stage6-guarded-actions-candidate-20261021` | `fix/issue23-gateway-error-bridge-mvp-20261021` | Historical child PRs: 57, 56 | CLOSED_UNMERGED / REVIEW |
+| [#50](https://github.com/tricore-opentrix/opentrix/pull/50) | `feature/issue23-stage6-s61-postgres-contract` | `feature/issue23-stage5-tenant-resource-acl` | None found | CLOSED_UNMERGED / REVIEW |
+| [#35](https://github.com/tricore-opentrix/opentrix/pull/35) | `feature/issue26-supabase-clean` | `main` | Historical child PRs: 41 | CLOSED_UNMERGED / REVIEW |
+| [#45](https://github.com/tricore-opentrix/opentrix/pull/45) | `feature/issue37-openapi-swagger-local` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#51](https://github.com/tricore-opentrix/opentrix/pull/51) | `feature/issue39-portal-ui` | `main` | Historical child PRs: 52 | CLOSED_UNMERGED / REVIEW |
+| [#52](https://github.com/tricore-opentrix/opentrix/pull/52) | `feature/issue39-university-ui` | `feature/issue39-portal-ui` | Historical child PRs: 71 | CLOSED_UNMERGED / REVIEW |
+| [#63](https://github.com/tricore-opentrix/opentrix/pull/63) | `feature/issue53-helpdesk-backend` | `feature/issue23-p1-02-integrity` | Historical child PRs: 67 | CLOSED_UNMERGED / REVIEW |
+| [#64](https://github.com/tricore-opentrix/opentrix/pull/64) | `feature/issue53-it-mvp-api-review-scaffold-20261025` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#74](https://github.com/tricore-opentrix/opentrix/pull/74) | `feature/issue53-java-helpdesk-mvp-20261028` | `main` | Historical child PRs: 79 | CLOSED_UNMERGED / REVIEW |
+| [#43](https://github.com/tricore-opentrix/opentrix/pull/43) | `feature/local-filesystem-storage-demo` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#70](https://github.com/tricore-opentrix/opentrix/pull/70) | `feature/portal-bff-session` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+| [#54](https://github.com/tricore-opentrix/opentrix/pull/54) | `fix/issue23-gateway-error-bridge-mvp-20261021` | `feature/issue23-stage6-core-impl` | Historical child PRs: 55 | CLOSED_UNMERGED / REVIEW |
+| [#41](https://github.com/tricore-opentrix/opentrix/pull/41) | `fix/issue26-hosted-worker-safety-20261017` | `feature/issue26-supabase-clean` | Historical child PRs: 42 | CLOSED_UNMERGED / REVIEW |
+| [#93](https://github.com/tricore-opentrix/opentrix/pull/93) | `fix/pr80-windows-acl-test-fixture-20261031` | `fix/workflow-evidence-sql-regression` | Historical child PRs: 94 | CLOSED_UNMERGED / REVIEW |
+| [#94](https://github.com/tricore-opentrix/opentrix/pull/94) | `fix/pr93-windows-launchers-20261101` | `fix/pr80-windows-acl-test-fixture-20261031` | None found | CLOSED_UNMERGED / REVIEW |
+| [#125](https://github.com/tricore-opentrix/opentrix/pull/125) | `fix/r16-mobile-overflow` | `gh-pages` | None found | CLOSED_UNMERGED / REVIEW |
+| [#80](https://github.com/tricore-opentrix/opentrix/pull/80) | `fix/workflow-evidence-sql-regression` | `main` | Historical child PRs: 93 | CLOSED_UNMERGED / REVIEW |
+| [#56](https://github.com/tricore-opentrix/opentrix/pull/56) | `review/d2a-identity-evidence` | `feature/issue23-stage6-guarded-actions-candidate-20261021` | None found | CLOSED_UNMERGED / REVIEW |
+| [#97](https://github.com/tricore-opentrix/opentrix/pull/97) | `review/issue87-app-p0-01-proposal-20261101` | `review/issue87-integration-phase3-20261101` | None found | CLOSED_UNMERGED / REVIEW |
+| [#95](https://github.com/tricore-opentrix/opentrix/pull/95) | `review/issue87-integration-phase3-20261101` | `main` | Historical child PRs: 97 | CLOSED_UNMERGED / REVIEW |
+| [#67](https://github.com/tricore-opentrix/opentrix/pull/67) | `test/issue53-neg03-neg04` | `feature/issue53-helpdesk-backend` | None found | CLOSED_UNMERGED / REVIEW |
+| [#129](https://github.com/tricore-opentrix/opentrix/pull/129) | `test/r22-missing-spdx-canary-20261105` | `main` | None found | CLOSED_UNMERGED / REVIEW |
+
+**Action for all 41:** retain until the corresponding closure discussion, replacement PR, patch equivalence, and linked evidence have been evaluated. PR histories include stacked chains. Some PR descriptions contain phrases such as `NOT MERGE`, `BLOCKED`, `SUPERSEDED` or `PENDING`; those are **risk signals, not authoritative deletion decisions**. Prioritize: (1) legal/security/evidence PRs; (2) branches that were historical PR bases; (3) deployment and runtime changes; (4) routine documentation duplicates.
+
+### D4. Third cohort: all 9 non-ancestor branches with no closed PR head match
+
+Commit metadata below is from each branch's current tip, **not an audit of its entire history**.
+
+| Branch | Tip SHA (12) | Latest commit date (UTC) | Tip commit subject (condensed) | Initial risk |
+|---|---|---|---|---|
+| `ci/verify-pr80-sql-fixtures-20261031` | `5b1290f14062` | 2026-10-31 | test(ci): pin LF checkout and verify SQL byte hashes | CI evidence — preserve |
+| `diagnostic/pr80-windows-acl-20261031` | `24503795c8b1` | 2026-10-31 | test(diag): canonical temp directory and ACL tightening | Windows/ACL diagnostic — preserve |
+| `docs/r28-q03-core-enforcement-closure-20261109` | `f26f0ed10e80` | 2026-11-09 | docs(r28): blocked M5 verification and P0 closure evidence | Active R28 evidence risk — KEEP |
+| `feature/issue23-stage6-core-impl` | `11035ed204c7` | 2026-10-21 | test(workflow): Stage 6 policy lifecycle and audit candidate | Historic base of closed PR #54 — preserve |
+| `feature/issue39-university-portal` | `ef521effa86b` | 2026-10-20 | feat(portal): adapt university service context | Frontend work — confirm owner |
+| `feature/09-audit-attachment` | `1e2aa20940d8` | 2026-10-04 | test(attachment): add request attachment tests | Test content — inspect |
+| `integration/helpdesk-browser-e2e-20261029` | `b6e05d080ebb` | 2026-10-29 | docs(issue53): local Postman Helpdesk E2E evidence | Integration evidence — preserve |
+| `mvp/fast-track-local-20261101` | `4ddedeaa88f9` | 2026-11-01 | fix(mvp): unblock checks and verify IT confirmation | MVP test candidate — inspect |
+| `review/issue25-pg17-acceptance-20261101` | `045ef7672fbe` | 2026-11-01 | fix(ci): preserve reviewed CRLF bytes | PostgreSQL validation / byte evidence — preserve |
+
+Special dependencies: `feature/issue23-stage6-core-impl` is the **historical base of closed PR #54**, despite having no matching PR as a *head*. Therefore a "no matching PR head" result **does not** imply that the branch was never part of a PR stack.
+
+### D5. Decision for Issue #171
+
+- **First cohort:** 15 branches remain preliminary retirement-review candidates, 1 historical stacked base requires extra hold; **none approved to delete**.
+- **Second cohort:** 41 remain INVESTIGATE; no closed-but-unmerged PR is automatically safe to remove.
+- **Third cohort:** 9 remain INVESTIGATE, with R28, CI diagnostic, test and provenance evidence prominently marked.
+- **Required human-only fact:** whether contributors still have worktrees, pending local commits or external automation using these refs. GitHub cannot certify this.
+- **Next repo-maintenance action:** obtain targeted owner confirmation for the 16 first-cohort refs; record retention evidence and SHA refresh, then prepare a *separate explicit approval request* with branch names. Do not delete anything as part of this PR.
