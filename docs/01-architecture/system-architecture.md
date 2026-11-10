@@ -19,9 +19,9 @@ reviewers: Backend / Identity-Security / Application — to confirm
 
 **Document role:** system-level architecture and architecture-review record, not a substitute for capability contracts, immutable migrations, PR-specific evidence or individual ADRs. **Destination:** `docs/01-architecture/system-architecture.md`. The existing `docs/contracts/*`, `docs/evidence/*`, `docs/poc/*` remain canonical until reviewed migration.
 
-## 1. Purpose and architecture scope
+## 1. Mục đích và phạm vi kiến trúc
 
-### 1.1 Purpose
+### 1.1 Mục đích
 
 DX-OS is a reusable foundation for internal digital service applications. It is **not a computer operating system**. The architectural claim is: independent applications consume stable capability contracts, while provider technologies live behind adapters. IT Helpdesk demonstrates a complete golden path; a Facility vertical slice demonstrates reuse with distinct business rules.
 
@@ -44,13 +44,13 @@ Architecture objectives, ranked:
 | Portal/BFF/API boundary, secure exposure and errors | Public generic Workflow API without verified authorization and resource guards |
 | PostgreSQL baseline, clean deployment and migration strategy | Claim of seamless DB/IdP switching without migration |
 
-### 1.3 Approval process
+### 1.3 Quy trình chấp thuận
 
 - Design-selected decisions: **SYS-ADR-01=B Modular Monolith; 02=B Ports & Adapters/DIP; 06=B capability/application data ownership; 08=B generic state machine**. Implementation and acceptance gates remain separate.
 - Other decisions in this document are **recommendations only**; reviewers must record rationale, owner, date and revised constraints in `docs/08-decisions/`.
 - Traceability chain: Problem → Use Case → Architecture → ADR → Contract → Source → Test → Evidence → Review sign-off.
 
-## 2. DX-OS system context
+## 2. Bối cảnh hệ thống DX-OS
 
 ### 2.1 Business problem
 
@@ -79,7 +79,7 @@ Internal requests enter through messaging/email/manual channels, creating incons
 
 **Source baseline SHA:** [`e06fa429`](https://github.com/tricore-opentrix/opentrix/commit/e06fa429cfd92b032c166eb3ebf32803d13191c2). The root README contains an older source-baseline paragraph: use its conceptual descriptions but do not treat its historical test counts as tests on this SHA. This document is a source review, **not an independently executed build**.
 
-## 3. Modular Monolith, Hexagonal and DIP decisions
+## 3. Các quyết định Modular Monolith, Hexagonal, DIP
 
 ### 3.1 SYS-ADR-01 — B: Modular Monolith (design direction selected)
 
@@ -137,7 +137,7 @@ Workflow Core models definition versions, transitions, instance lifecycle, versi
 | SYS-ADR-06 | Selected by team | Contract ownership documented | Business SQL coupling review pending |
 | SYS-ADR-08 | Selected by team | Generic workflow core exists | Two-application live reuse proof pending |
 
-## 4. The four Core Capabilities and their responsibilities
+## 4. Bốn Core Capabilities và trách nhiệm
 
 | Capability | Owns (WHY / WHAT) | Public internal contract | Does **not** own | Current caution |
 |---|---|---|---|---|
@@ -148,7 +148,7 @@ Workflow Core models definition versions, transitions, instance lifecycle, versi
 
 **Cross-cutting invariant:** exact operation authority may be necessary, but resource authorization is decided at the Application use-case boundary; neither a valid token nor Gateway authorization alone grants access to arbitrary ticket/resource.
 
-## 5. Application Layer: Helpdesk and Facility
+## 5. Application Layer: Helpdesk và Facility
 
 ### 5.1 Responsibility split
 
@@ -190,7 +190,7 @@ flowchart TD
   PgWF[PostgreSQL Workflow Adapter] -. implements .-> WPort
   PgWF --> Postgres[(PostgreSQL)]
   BizRepo --> Postgres
-  ObjStore[S3-compatible Adapter - target, SeaweedFS planned] -. implements .-> Storage
+  MinIO[Local Docker MinIO Adapter - target] -. implements .-> Storage
 ```
 
 *`candidate` and generic adapter boxes are architecture positions, not declarations that each is integrated on `main`. Logical dependency arrows and request-flow arrows are different abstractions; adapter `implements` edges deliberately point toward owned ports.*
@@ -220,7 +220,7 @@ A *modular monolith* describes the backend's code/runtime architecture. Browser,
 |---|---|---|---|
 | `CurrentPrincipal` | Application identity boundary | Spring Security JWT context adapter | Verified issuer/subject, fail-closed, canonical subject |
 | `WorkflowPersistencePort` | Workflow Core | `PostgresWorkflowPersistence` | Durable commit, authoritative definition, history atomicity, conflicts, unknown commit |
-| `ObjectStoragePort` | Data Core | S3-compatible adapter in Infrastructure (SeaweedFS planned) | Key identity, stream lifecycle, exact length, `CREATE_ONLY` concurrency, sanitized failures |
+| `ObjectStoragePort` | Data Core | Local Docker MinIO candidate in Infrastructure | Key identity, stream lifecycle, exact length, `CREATE_ONLY` concurrency, sanitized failures |
 | Business repository API | Owning Application | SQL/JPA business adapter | Business fact ownership; resource/tenant policy and transaction coupling |
 | Gateway HTTP contract | Gateway / HTTP boundary | MVC controller, BFF client, Caddy ingress | No forged caller; controlled route exposure; 401/403/404 contracts |
 
@@ -234,7 +234,7 @@ A *modular monolith* describes the backend's code/runtime architecture. Browser,
 
 Workflow: concurrent transitions one winner, compare full snapshot, terminal rejection, no partial instance/history, `COMMIT_OUTCOME_UNKNOWN` reconciliation, exact `Instant` preservation. Data: concurrent `CREATE_ONLY`, read resource close, lazy-read errors, metadata version consistency. Identity: token issuer/audience/sub, exact role mapping, forged-header rejection, identifier continuity. Gateway: route flags, CSRF, header/body limits, allowed operations and HTTP errors.
 
-## 8. Request Flow and Trust Boundaries
+## 8. Request Flow và Trust Boundaries
 
 ### 8.1 End-to-end resolve flow (target; candidate components noted)
 
@@ -277,7 +277,7 @@ sequenceDiagram
 - 401 for missing/invalid authentication; 403 for authenticated but forbidden operation; 404 where hiding a resource is intentional. Specify precedence and leak-resistance in Gateway/Application contracts.
 - Logging must avoid JWT, session cookies, DB credentials, PII and raw provider errors.
 
-## 9. Transaction, Concurrency and Consistency
+## 9. Transaction, Concurrency và Consistency
 
 ### 9.1 Write invariants
 
@@ -305,7 +305,7 @@ An ACL check outside the decisive transaction is not sufficient by itself. Defin
 
 ### 9.4 Cross-store caveat
 
-PostgreSQL and the object store do **not** share an ACID transaction. Attachment operations require ordering, reconciliation, idempotent cleanup and orphan/missing-object handling. Treat compensations as explicit Application policies.
+PostgreSQL and MinIO do **not** share an ACID transaction. Attachment operations require ordering, reconciliation, idempotent cleanup and orphan/missing-object handling. Treat compensations as explicit Application policies.
 
 ## 10. Provider Independence
 
@@ -313,7 +313,7 @@ PostgreSQL and the object store do **not** share an ACID transaction. Attachment
 |---|---|---|---|
 | Keycloak → another OIDC IdP | `CurrentPrincipal` and Identity contract | `issuer + sub` changes; claim mapping, authority semantics, identity linking/migration | Real token tests, no email auto-match, canonical-ID migration trial |
 | PostgreSQL → alternative database | `WorkflowPersistencePort` | SQL functions, locking, timestamps, transaction semantics, business SQL coupling | Contract suite + concurrent provider integration + migration rehearsals |
-| S3-compatible object-storage adapter | `ObjectStoragePort` | Streaming, concurrent `CREATE_ONLY`, metadata and failure semantics | Real object-store conformance, restart and fault tests on a pinned commit |
+| Local Docker MinIO adapter | `ObjectStoragePort` | Streaming, concurrent `CREATE_ONLY`, metadata and failure semantics | Real MinIO conformance, restart and fault tests on a pinned commit |
 | MVC/BFF/ingress implementation change | OpenAPI/HTTP behavior | Cookie/session/CSRF routing, response precedence, header spoofing | Consumer contracts + full HTTP E2E |
 
 **Policy:** “provider-neutral Core” is a falsifiable statement: the provider SDK must not appear in Core public API and at least one alternative adapter should pass the same conformance suite before calling it demonstrated substitution.
@@ -394,18 +394,18 @@ Use these as **future gates**; no PASS is implied without pinned runnable eviden
 
 **Reviewer acceptance threshold:** ARC-01–08, 11–13 must not be waived for production-style security/integrity claims; P1 gates may be explicitly deferred only with recorded risk, owner and date. Source review and mock tests never substitute for live acceptance.
 
-## 14. Mapping to source and PRs
+## 14. Mapping đến source và PR
 
 ### 14.1 `main` reference map at `e06fa429`
 
 | Design element | Source / canonical docs | Status represented |
 |---|---|---|
-| System boundary | [`docs/architecture/README.md`](https://github.com/tricore-opentrix/opentrix/blob/0f0c3ba0c3eecda0a5c4a798a3cc14b808351bed/docs/architecture/README.md) | Baseline architecture statement |
-| Persistence boundary | [`docs/architecture/data-persistence-boundaries.md`](https://github.com/tricore-opentrix/opentrix/blob/0f0c3ba0c3eecda0a5c4a798a3cc14b808351bed/docs/architecture/data-persistence-boundaries.md) | Baseline ownership and limits |
-| Identity contract | [`docs/contracts/identity-core.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/identity-core.md) | Baseline contract |
-| Workflow contract | [`docs/contracts/workflow-core.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/workflow-core.md) | Baseline contract |
-| Workflow authorization | [`docs/contracts/workflow-authorization.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/workflow-authorization.md) | Baseline semantics, not full E2E |
-| Data storage contract | [`docs/contracts/data-core.md`](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/data-core.md) | Baseline contract |
+| System boundary | [`docs/architecture/README.md`](../architecture/README.md) | Baseline architecture statement |
+| Persistence boundary | [`docs/architecture/data-persistence-boundaries.md`](../architecture/data-persistence-boundaries.md) | Baseline ownership and limits |
+| Identity contract | [`docs/contracts/identity-core.md`](../contracts/identity-core.md) | Baseline contract |
+| Workflow contract | [`docs/contracts/workflow-core.md`](../contracts/workflow-core.md) | Baseline contract |
+| Workflow authorization | [`docs/contracts/workflow-authorization.md`](../contracts/workflow-authorization.md) | Baseline semantics, not full E2E |
+| Data storage contract | [`docs/contracts/data-core.md`](../contracts/data-core.md) | Baseline contract |
 | Workflow runtime | `backend/src/main/java/com/tricore/dxos/core/workflow/WorkflowRuntime.java` | Domain orchestration |
 | Workflow persistence port | `backend/src/main/java/com/tricore/dxos/core/workflow/WorkflowPersistencePort.java` | Durable-commit and error semantics |
 | PostgreSQL adapter | `backend/src/main/java/com/tricore/dxos/infrastructure/workflow/PostgresWorkflowPersistence.java` | Provider-specific implementation; needs integration evidence |

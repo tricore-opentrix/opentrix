@@ -1,28 +1,35 @@
 # OpenTrix — DX-OS Open-Core
 
-**Reusable digital capabilities for internal service applications.**
+**Reusable Digital Capabilities for Internal Service Applications**
 
-OpenTrix is TRICORE's open-source implementation of DX-OS Open-Core, built for OLP PMNM 2026. DX-OS is a digital-transformation platform concept, not a computer operating system. The demonstration scenario is an **IT Helpdesk / Internal Service Portal**: employees submit requests, a coordinator triages and assigns them, a worker resolves them, and the requester confirms.
+OpenTrix is TRICORE's DX-OS Open-Core implementation, a modular monolith for exploring reusable capabilities behind internal service applications. The Internal Service Portal / IT Support scenario is the main demonstration target. DX-OS is a digital transformation platform concept, not a computer operating system or a claim about the competition's required product.
 
-**Navigate:** [What it does](#what-it-does) · [Architecture](#architecture) · [Quick start](#quick-start-mock-portal) · [Build from source](#build-from-source) · [Run with PostgreSQL](#run-the-backend-with-postgresql) · [Configuration](#configuration) · [Known limitations](#known-limitations) · [Contributing](#reporting-issues-and-contributing) · [License](#license)
+**Release documentation baseline:** v0.1.0 candidate based on `main@4428346` (PR #103 squash integration). Release acceptance is separate from source and CI verification.
 
-## What it does
+**Navigate:** [Overview](#overview) · [Architecture](#architecture-overview) · [Status](#implementation-status) · [Run v0.1.0](#run-v010) · [Getting started](#getting-started) · [Documentation](#documentation-and-verification) · [License](#license-and-third-party-notices)
 
-Internal requests often arrive through email, paper, spreadsheets, and chat, so ownership and history get lost. OpenTrix puts submission, assignment, processing, and status in one application, and keeps the reusable mechanisms in a Core that other applications can share.
+## Overview
 
-| Capability | What you get | Application keeps |
+Internal service requests often arrive through email, paper, spreadsheets, phone calls, or messaging apps. Scattered channels make ownership, progress, and decision history difficult to track. The proposed Portal brings request submission, assignment, processing, and status into one application.
+
+DX-OS aims to supply reusable technical mechanisms for that application and others. An IT Support request may move from submission through review, assignment, resolution, requester confirmation, and closure. The application defines those business steps and permissions; Core supplies mechanisms that can be reused. This is TRICORE's demonstration scenario, not an assertion that OLP PMNM 2026 mandates this product.
+
+## Why DX-OS?
+
+The intended reuse boundary separates shared mechanisms from application-specific rules:
+
+| Capability | Core responsibility | Application responsibility |
 | --- | --- | --- |
-| Identity / SSO | OIDC token verification, principal and authority contracts (Keycloak is the selected provider) | Business roles and request-specific permissions |
-| API Gateway | Spring Boot API boundary, verified caller checks, scoped error contracts | User-facing business operations |
-| Workflow | In-house state machine: definitions, instances, transitions, versions, history | Business states and conditions |
-| Data | PostgreSQL 17 persistence behind a port, with transaction guards | Business data, ownership, retention |
-| Helpdesk app | `it-helpdesk@1` workflow `SUBMITTED → TRIAGED → IN_PROGRESS → RESOLVED → CONFIRMED`, nine HTTP routes under `/api/v1/mvp/requests` | — |
-| Portal BFF | Server-side OIDC (PKCE), session and CSRF boundary in front of the backend | — |
-| React Portal | Vietnamese SPA; standalone **MOCK** mode and an `integration-local` mode that talks to the BFF | — |
+| Identity / SSO | Principal, authentication context, and authority contracts | Business roles and request-specific permissions |
+| API Gateway | API entry point, routing, trusted-context boundary, and error handling | User-facing business operations |
+| Workflow | Definitions, instances, transitions, versions, history, and state safeguards | Business states, transitions, and conditions |
+| Data Management | Persistence and storage contracts with provider adapters | Business data, ownership, and retention rules |
 
-## Architecture
+The Portal is a demonstration interface, while the Request package is an application/business prototype. Neither defines the reusable Workflow Core. IT Support and Facility/Access Request could use the same Workflow mechanisms with different business lifecycles; demonstrating that reuse remains an acceptance goal, not a completed end-to-end integration claim.
 
-The backend is a Java 21 / Spring Boot **modular monolith**; the boundaries below are logical, not separately deployed services.
+## Architecture Overview
+
+The backend uses Java 21 and Spring Boot 3.5.16 as a **modular monolith**. Its logical boundaries do not imply separately deployed microservices. The diagram shows intended responsibilities and dependency direction:
 
 ```text
 External client / application
@@ -47,167 +54,201 @@ External client / application
                  PostgreSQL
 ```
 
-Workflow owns `WorkflowPersistencePort`; a data adapter implements it. Gateway owns neither business rules nor persistence, and client-supplied identity headers are never trusted just because they reached the HTTP boundary. In the browser flow, the React Portal talks only to the Portal BFF, and the BFF forwards the server-held access token to the backend.
+This is an architecture view, not evidence that the full Gateway → Identity → Portal → Workflow → database path is integrated. Workflow owns `WorkflowPersistencePort`; a Data adapter can implement it without redefining Workflow semantics. Workflow does not own IT Support-specific rules, and Gateway does not own business workflows or persistence. Client-supplied identity headers are not trusted merely because they reached an HTTP boundary.
 
-```text
-opentrix/
-├── backend/      # Spring Boot backend (Gradle wrapper lives here)
-├── portal-bff/   # Spring Boot OIDC/session boundary for the Portal
-├── frontend/     # React 19 + TypeScript + Vite Portal
-├── infra/        # Local infrastructure (PostgreSQL 17 compose file)
-├── scripts/      # Helper and verification scripts
-└── docs/         # Design notes, decisions, deployment notes
-```
+See the architecture overview above and the repository's `docs/` directory for available design material; the documentation index is being consolidated in R29.
 
-## Quick start (MOCK Portal)
+## Core Capabilities
 
-The fastest way to see the UI. It uses in-memory demo data and needs **no backend, database, credentials, or SSO**.
+- **Identity / SSO:** OIDC trust and authority contracts, with verified security regressions. Portal BFF has PKCE/session/CSRF implementation; live three-principal Keycloak/browser acceptance remains outstanding.
+- **API Gateway:** Spring Boot business API boundary, verified principal checks, exact Workflow authorization and scoped error contracts. APISIX is a selected target, not a verified deployed runtime.
+- **Workflow:** Provider-neutral definitions, instances, transition/version/history contracts, and PostgreSQL-backed Helpdesk integration. Workflow Core is an in-house state machine; no external BPMN engine is used.
+- **Data Management:** PostgreSQL 17 Helpdesk/Workflow persistence and negative transaction checks. MinIO/object-storage provider integration is not a completed v0.1.0 capability.
 
-Requires Node.js **22.12 or newer** and npm.
+## Implementation Status
 
-```bash
-git clone https://github.com/tricore-opentrix/opentrix.git
-cd opentrix/frontend
-npm ci
-npm run dev
-```
+This table summarizes the **v0.1.0 source and tested scope** after PR #103 on `main@4428346`. CI and focused PostgreSQL 17 evidence do not substitute for browser E2E or release sign-off.
 
-Open <http://127.0.0.1:5173>. On Windows PowerShell use `npm.cmd` instead of `npm`.
-
-## Build from source
-
-Prerequisites: Git, **JDK 21** (`JAVA_HOME` set or `java` on `PATH`), Node.js ≥ 22.12 with npm, and internet access on the first run (Gradle wrapper and dependencies). You do not need to install Gradle. Building and unit-testing does **not** need PostgreSQL.
-
-These are the same commands CI runs on `ubuntu-24.04`.
-
-### Linux / macOS
-
-```bash
-git clone https://github.com/tricore-opentrix/opentrix.git
-cd opentrix
-
-# Backend: compile, test, build the executable JAR
-(cd backend && ./gradlew build)
-
-# Portal BFF (reuses the backend's Gradle wrapper)
-./backend/gradlew -p portal-bff build
-
-# Frontend: install, type-check + build, test
-(cd frontend && npm ci && npm run build && npm test)
-```
-
-Artifacts: `backend/build/libs/dxos-backend-<version>.jar` (the version comes from `backend/build.gradle`, currently `0.1.0`; the `-plain.jar` beside it is not executable) and `frontend/dist/`. To run a single backend test class: `cd backend && ./gradlew test --tests 'com.tricore.dxos.core.workflow.*'`.
-
-### Windows (PowerShell)
-
-```powershell
-git clone https://github.com/tricore-opentrix/opentrix.git
-Set-Location opentrix
-Push-Location backend; .\gradlew.bat build; Pop-Location
-.\backend\gradlew.bat -p portal-bff build
-Push-Location frontend; npm.cmd ci; npm.cmd run build; npm.cmd test; Pop-Location
-```
-
-## Run the backend with PostgreSQL
-
-The backend refuses to start unless all variables below are set; there are no defaults. Spring Boot does **not** read `.env` automatically, so export the values in the shell that starts the process, and never commit real credentials.
-
-You need two things running before `bootRun`: a PostgreSQL 17 database with the Workflow schema already provisioned (`DXOS_WORKFLOW_SCHEMA` names it), and a Keycloak realm reachable at `OIDC_ISSUER_URI`. The backend downloads the realm's OIDC discovery document at startup and exits with `Connection refused` if Keycloak is not there. The repository ships a disposable local database: [`infra/compose.workflow-postgres.yml`](infra/compose.workflow-postgres.yml). Step-by-step provisioning for both (PostgreSQL roles, schema, migrations, and a throwaway Keycloak realm) is in the [Linux/macOS runbook](docs/06-deployment/runbook-linux.md). On Windows, the PowerShell provisioning path for PostgreSQL is in [`backend/README.md`, section "Run the backend locally from a fresh clone"](backend/README.md#run-the-backend-locally-from-a-fresh-clone); it does not create the Keycloak realm, so use the realm step of the runbook (it runs Keycloak in Docker) or your own realm. **Verification status:** the Linux/macOS steps were run on Ubuntu 26.04 ([evidence](docs/verification/r37-linux-build-20261108.md)); the Windows steps in this README were **not verified for R37**, so the PowerShell blocks below are unverified and the provisioning they assume must be done first.
-
-```bash
-cd backend
-
-export DB_HOST=127.0.0.1
-export DB_PORT=55425
-export DB_NAME=workflow_test
-export DB_USER=workflow_runtime
-read -rs -p 'DB_PASSWORD: ' DB_PASSWORD; export DB_PASSWORD; echo
-
-export DXOS_WORKFLOW_SCHEMA=dxos_wf25_smoke_01
-export SPRING_DATASOURCE_URL="jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?currentSchema=${DXOS_WORKFLOW_SCHEMA},pg_catalog,pg_temp"
-export SPRING_FLYWAY_ENABLED=false
-
-export OIDC_ISSUER_URI=http://localhost:8180/realms/tricore
-export OIDC_AUDIENCE=tricore-api
-export OIDC_RESOURCE_CLIENT_ID=tricore-api
-
-./gradlew bootRun
-```
-
-The values above match the local database in the backend guide and `.env.example`; replace them for your own environment. Optionally set `DXOS_HELPDESK_ENABLED=true` to register the Helpdesk routes under `/api/v1/mvp/requests`.
-
-In another terminal:
-
-```bash
-curl http://localhost:8080/api/v1/health
-# {"status":"UP"}
-```
-
-`UP` only shows the HTTP application is running. An empty realm is enough to start the backend; calling protected routes needs a client, a user and a token from a realm whose issuer matches `OIDC_ISSUER_URI` exactly.
-
-<details>
-<summary>Windows PowerShell version</summary>
-
-```powershell
-Set-Location backend
-$env:DB_HOST = '127.0.0.1'
-$env:DB_PORT = '55425'
-$env:DB_NAME = 'workflow_test'
-$env:DB_USER = 'workflow_runtime'
-$dbCredential = Get-Credential -UserName $env:DB_USER -Message 'PostgreSQL credentials'
-$env:DB_PASSWORD = $dbCredential.GetNetworkCredential().Password
-$env:DXOS_WORKFLOW_SCHEMA = 'dxos_wf25_smoke_01'
-$env:SPRING_DATASOURCE_URL = "jdbc:postgresql://$($env:DB_HOST):$($env:DB_PORT)/$($env:DB_NAME)?currentSchema=$($env:DXOS_WORKFLOW_SCHEMA),pg_catalog,pg_temp"
-$env:SPRING_FLYWAY_ENABLED = 'false'
-$env:OIDC_ISSUER_URI = 'http://localhost:8180/realms/tricore'
-$env:OIDC_AUDIENCE = 'tricore-api'
-$env:OIDC_RESOURCE_CLIENT_ID = 'tricore-api'
-.\gradlew.bat bootRun
-```
-
-Check health with `Invoke-RestMethod -Uri 'http://localhost:8080/api/v1/health'`.
-
-</details>
-
-### Full stack with login (advanced)
-
-The connected Portal (`npm run build:integration-local`) needs a Keycloak client, the Portal BFF, and an HTTPS ingress (Caddy). Follow the [Portal BFF guide](portal-bff/README.md) and the [local Helpdesk runbook](scripts/README-helpdesk-local.md). These guides are currently written for Windows PowerShell; a one-command Linux setup is planned.
-
-## Configuration
-
-Copy [`.env.example`](.env.example) as a reference for the variable names.
-
-| Variable | Used by | Meaning |
+| Area | Present in v0.1.0 source | Known verification boundary |
 | --- | --- | --- |
-| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | backend | PostgreSQL connection (JDBC URL is built from these) |
-| `DXOS_WORKFLOW_SCHEMA` | backend | Lowercase schema that holds the Workflow tables; must exist before startup |
-| `SPRING_DATASOURCE_URL` | backend | Overrides the JDBC URL; use it to set `currentSchema` as shown above |
-| `SPRING_FLYWAY_ENABLED` | backend | `false` at runtime; migrations are applied separately (see the backend guide) |
-| `OIDC_ISSUER_URI` | backend | Exact issuer URL of the Keycloak realm |
-| `OIDC_AUDIENCE`, `OIDC_RESOURCE_CLIENT_ID` | backend | Expected token audience and the client whose roles are read |
-| `DXOS_HELPDESK_ENABLED` | backend | `true` registers the Helpdesk API routes |
-| `PORTAL_*` | portal-bff | OIDC client and origin settings; see the [Portal BFF guide](portal-bff/README.md) |
+| Helpdesk Backend | Nine HTTP application routes; tenant/resource authorization; workflow history and transaction guards | R10 PG17 focused tests passed; full R12 Golden Path pending |
+| Identity / Gateway | Verified OIDC/security boundary and exact authority checks | Real three-principal Keycloak/browser SSO pending |
+| Portal BFF | OIDC PKCE, server-side session, CSRF and Helpdesk API client | Live browser full-stack acceptance pending |
+| React Portal | Standalone MOCK UI and `integration-local` build mode | MOCK is not proof of connected LIVE runtime |
+| Workflow / Data | Core contracts, PostgreSQL 17-backed Helpdesk/Workflow tests and ArchUnit rules | Deferred provider, privilege and audit checks remain |
+| Reuse / Storage | Core reuse contracts; Facility appears as a request type in the MOCK Portal | Facility E2E and MinIO adapter not accepted |
+
+### Historical test checkpoint
+
+On **October 7, 2026**, at commit **`2b51a41`**, documentation recorded **29 Workflow tests, 109 Request tests, and 139 backend tests**. This is historical evidence, not the v0.1.0 test count; refer to the historical commit for its test record.
+
+## Technology Stack
+
+| Component | Baseline technology or status |
+| --- | --- |
+| Backend | Java 21; Spring Boot 3.5.16 |
+| Build | Gradle Wrapper 8.14.3 |
+| Database | PostgreSQL 17 Helpdesk/Workflow persistence; Flyway and local demo SQL with separate prerequisites |
+| ORM configuration | Hibernate `ddl-auto: none` |
+| Tests | JUnit and Spring Boot Test; dedicated integration tasks have separate prerequisites |
+| Frontend | React 19, TypeScript, Vite; MOCK and integration-local builds |
+| Deployment | Requires commit-specific operational and acceptance evidence |
+
+Keycloak is the selected OIDC provider; APISIX (gateway), MinIO (object storage) and Node-RED (event automation) are planned for v0.2.0–v0.4.0.
+
+## Run v0.1.0
+
+### Option A — MOCK Portal (quick UI demonstration)
+
+Requires Node.js **22.12.0 or newer**, npm, and a browser. From the repository root:
+
+```powershell
+Set-Location frontend
+npm.cmd ci
+npm.cmd run dev
+```
+
+Open [http://127.0.0.1:5173](http://127.0.0.1:5173). This uses in-memory demonstration data and **does not require a backend, PostgreSQL, credentials, or live SSO**. Return to the repository root with `Set-Location ..`. On macOS/Linux use `npm` instead of `npm.cmd`.
+
+### Option B — Local PostgreSQL Helpdesk environment
+
+Follow the [local Helpdesk runbook](scripts/README-helpdesk-local.md) from the repository root and use the [isolated setup script](scripts/helpdesk-local-setup.ps1). It requires Windows PowerShell, Docker Desktop Linux Engine, JDK 21 and free demo ports. Run the script's **read-only preflight** before opting into creation of an isolated PostgreSQL 17 demo database; do not run its `-Execute` step against existing resources. The runbook covers required secrets, real identity subject provisioning and backend startup.
+
+### Option C — `integration-local` Portal (configured local stack)
+
+Requires **Node.js >=22.12**, npm, **JDK 21**, Docker Desktop/PostgreSQL 17, a configured **real Keycloak OIDC client**, Backend, Portal BFF, and **Caddy HTTPS ingress** with a browser-trusted local certificate. Follow the [Portal BFF local setup](portal-bff/README.md) and the [Helpdesk local runbook](scripts/README-helpdesk-local.md); provision the exact issuer, three real subjects, database roles and BFF client secrets before claiming an authenticated run.
+
+From the repository root, build the distinct integration bundle:
+
+```powershell
+Set-Location frontend
+npm.cmd ci
+npm.cmd run build:integration-local
+Set-Location ..
+```
+
+Start Backend, BFF and the configured local HTTPS ingress **following the BFF runbook** (including its Caddy configuration); a build alone does not start any server. Only **after** those prerequisites are running and the certificate is trusted, open [https://localhost:8443/mvp/helpdesk](https://localhost:8443/mvp/helpdesk). The integration build uses the BFF's `/bff/session` boundary and real OIDC redirects instead of the MOCK demo-persona flow. Verify in the browser that the Helpdesk page is served by the HTTPS origin, `/bff/session` is reachable, and login requires actual Keycloak authentication. If the BFF or provider is not configured, a 502 or failed login is **not** a successful LIVE run.
+
+**Mode distinction:** Option A (`npm.cmd run dev`) serves synthetic, in-memory MOCK requests at `http://127.0.0.1:5173`. Option C (`npm.cmd run build:integration-local`) creates an integration bundle for HTTPS/BFF hosting, but **R12 fresh-clone and authenticated browser E2E remain unverified** until recorded separately.
 
 ## Known limitations
 
-- The MOCK Portal is a demonstration, not a live application or a security check.
-- The full browser login (Keycloak + PKCE) and the three-persona Helpdesk flow have not been accepted end to end yet.
-- A one-command Docker Compose demo is planned; today the full stack needs manual Keycloak, PostgreSQL, and Caddy setup. The repository does not yet ship a Keycloak realm export or compose file.
-- APISIX (gateway), an object-storage provider and Node-RED are planned and not part of the current runtime; Facility reuse is shown only in the MOCK Portal.
-- The local setup guides under `scripts/` and `portal-bff/` are written for Windows PowerShell.
+- The MOCK Portal is a demonstration, not a live application or security acceptance.
+- The full Keycloak/PKCE browser login, three-persona Helpdesk E2E flow and clean-install release acceptance require R12 evidence.
+- Facility workflow runtime reuse, APISIX edge runtime, MinIO storage and production deployment are not claimed as completed v0.1.0 features.
+- Focused PostgreSQL 17 R10 passed with two documented skips; deferred database/provider audits and third-party SPDX/license review are tracked separately.
 
-## Documentation
+## Getting Started
 
-- [Backend guide](backend/README.md): configuration, APIs, tests, local database.
-- [Portal BFF guide](portal-bff/README.md) and [frontend guide](frontend/README.md).
-- [Glossary](GLOSSARY.md) and the [docs index](docs/README.md).
-- [CHANGELOG.md](CHANGELOG.md): user-visible changes.
+### Prerequisites
 
-## Reporting issues and contributing
+- Git and JDK 21; set `JAVA_HOME` to the JDK.
+- Internet access for the first Gradle Wrapper and dependency download.
+- PostgreSQL when starting the full backend or running database-dependent integration tests.
 
-- **Report a bug or request a feature:** open an [issue](https://github.com/tricore-opentrix/opentrix/issues) with the commit you tested, your OS, the command you ran, and the output.
-- **Contribute:** read [CONTRIBUTING.md](CONTRIBUTING.md). In short: branch from `main`, open a pull request with a Conventional Commits title, keep it near 400 changed lines, and make sure CI passes. Changes land by squash merge only.
-- New source files need an SPDX header (see CONTRIBUTING.md).
+### Test and build on Windows
+
+From a PowerShell terminal:
+
+```powershell
+git clone https://github.com/tricore-opentrix/opentrix.git
+Set-Location opentrix\backend
+java -version
+.\gradlew.bat --version
+.\gradlew.bat test --tests 'com.tricore.dxos.core.workflow.*'
+.\gradlew.bat test
+.\gradlew.bat build
+```
+
+Interpret the results from the checked-out commit and actual command output. Some integration tasks have additional prerequisites; see the [backend guide](backend/README.md).
+
+### Run with PostgreSQL
+
+The root [`.env.example`](.env.example) documents `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD`. Spring Boot does not automatically load a `.env` file in this baseline. Supply values to the process without committing credentials.
+
+From `backend/` in PowerShell:
+
+```powershell
+$env:DB_HOST = Read-Host 'DB_HOST'
+$env:DB_PORT = Read-Host 'DB_PORT'
+$env:DB_NAME = Read-Host 'DB_NAME'
+$env:DB_USER = Read-Host 'DB_USER'
+$dbCredential = Get-Credential -UserName $env:DB_USER -Message 'PostgreSQL credentials'
+$env:DB_PASSWORD = $dbCredential.GetNetworkCredential().Password
+.\gradlew.bat bootRun
+```
+
+Review Flyway and database privilege procedures before connecting to a shared database. If startup succeeds on the default port, check the health endpoint from another PowerShell terminal:
+
+```powershell
+Invoke-RestMethod -Uri 'http://localhost:8080/api/v1/health'
+```
+
+An `UP` health result does not establish Workflow, security, database transaction, or Portal acceptance. See the [backend guide](backend/README.md) for startup and test limitations.
+
+## Demonstration and Reuse
+
+The target IT Support lifecycle is:
+
+```text
+Create request → Review / classify → Assign → In progress
+               → Resolve → Requester confirms (CONFIRMED)
+```
+
+The `it-helpdesk@1` workflow ends at `CONFIRMED`; it has no `/close` Helpdesk route. The legacy Request prototype and its `/api/v1/requests/*` routes were removed in R25; the historical Flyway V1/V2 scripts remain immutable. Backend integration is merged, but the full live browser flow remains an R12 gate.
+
+| Area | Acceptance evidence to obtain |
+| --- | --- |
+| Startup | Reproducible commands and configuration without exposed secrets |
+| Security | Verified caller identity, authorization, and negative tests |
+| Workflow | Valid and rejected transitions, version binding, and history |
+| Data | Persistence and retrieval in a reviewed PostgreSQL environment |
+| Core reuse | Two business cases using the same mechanism with different rules |
+| Traceability | Issue, PR, commit, tests, evidence, and documented limits |
+
+Mark an item `PASS` only when the evidence is tied to the relevant commit and environment. Mock demonstrations and verified live integration are separate kinds of evidence.
+
+## Repository Structure
+
+```text
+DX-OS/
+├── backend/                  # Java sources, tests, and Gradle Wrapper
+│   └── src/main/java/com/tricore/dxos/
+│       ├── core/             # Identity, Workflow, and Data contracts
+│       ├── application/      # Orchestration and policies
+│       ├── gateway/          # API boundary code
+│       ├── infrastructure/   # Provider and persistence adapters
+│       └── common/
+├── docs/                     # Architecture, contracts, POCs, evidence
+├── infra/
+├── scripts/
+├── .env.example
+└── README.md
+```
+
+This is a high-level map, not a claim that every package is fully implemented.
+
+## Documentation and Verification
+
+- [Backend guide](backend/README.md): setup, configuration, APIs, and test limits.
+- Architecture and workflow source documentation: browse the current `docs/` directory; consolidated navigation is tracked in R29.
+- Historical verification: refer to the relevant PR, workflow run and exact commit when reporting evidence.
+- [Glossary](GLOSSARY.md): project terminology.
+- [Issue #38](https://github.com/tricore-opentrix/opentrix/issues/38): license, attribution, and SPDX review.
+
+A `PASS` claim should identify its commit, environment, command, result, and limitations. Review the relevant Issues and PRs for work newer than the stated baseline.
+
+## Contributing and Development Workflow
+
+The full workflow is in [CONTRIBUTING.md](CONTRIBUTING.md). In short:
+
+1. Every task has an Issue with one assignee, a release milestone and an `area:*` label.
+2. Branch from `main` as `<type>/<area>-<description>`; keep it under three days.
+3. Open a pull request into `main` (at most 400 changed lines) with a Conventional Commits title and `Closes #N`.
+4. CI (`backend`, `portal-bff`, `frontend`, `repo-hygiene`) must pass; release PR #109 additionally requires Bảo and Ánh approvals after R12 acceptance.
+5. Changes land on `main` by squash merge only; nobody pushes to `main` directly.
+
+User-visible changes are recorded in [CHANGELOG.md](CHANGELOG.md).
 
 ## Security / Bảo mật
 
@@ -217,8 +258,20 @@ Copy [`.env.example`](.env.example) as a reference for the variable names.
 
 ## Team
 
-TRICORE is a student team in OLP PMNM 2026: Lê Xuân Bảo, Phan Hải Yến, Nguyễn Ngọc Ánh.
+TRICORE is a student team participating in OLP PMNM 2026. These are collaboration areas; Issues and PRs record specific work.
 
-## License
+| Member | Primary collaboration area |
+| --- | --- |
+| Lê Xuân Bảo | Architecture, Workflow / Gateway, integration, coordination |
+| Phan Hải Yến | Identity / Security, contracts, license and SPDX review |
+| Nguyễn Ngọc Ánh | Data / Storage, Portal, integration review |
 
-Original material is released under the **Apache License 2.0** ([LICENSE](LICENSE), attribution in [NOTICE](NOTICE)). Third-party dependencies keep their own licenses; see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+Responsibilities do not establish copyright ownership of each contributor's work.
+
+## License and Third-Party Notices
+
+DX-OS original materials covered by the repository's [LICENSE](LICENSE) use **Apache License 2.0 (Apache-2.0)**, with attribution in [NOTICE](NOTICE). Third-party and per-file compliance work is tracked in [Issue #38](https://github.com/tricore-opentrix/opentrix/issues/38).
+
+Third-party dependencies, the Gradle Wrapper, adapted materials, and externally sourced assets remain subject to their respective licenses and attribution obligations.
+
+Copyright ownership, source-origin verification, NOTICE requirements, and file-level SPDX review are tracked in [Issue #38](https://github.com/tricore-opentrix/opentrix/issues/38). Release-level licensing compliance is not claimed until the outstanding requirements have been reviewed and resolved.

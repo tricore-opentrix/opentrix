@@ -41,12 +41,12 @@ Deliver a useful, secure **IT Helpdesk golden path** and a smaller **Facility re
 | SHOULD | Attachments via `ObjectStoragePort` | Authorized upload/download + storage tests |
 | SHOULD | List/search/filter and basic manager views | Verified functionality and access restrictions |
 | SHOULD | Automated architecture dependency checks | ArchUnit blocking new forbidden imports |
-| COULD | Object-storage failure and recovery demo | Real local-provider conformance and reconciliation evidence |
+| COULD | MinIO failure and recovery demo | Real local-provider conformance and reconciliation evidence |
 | COULD | SLA dashboard and notifications | Separate proposal with acceptance |
 | OUT | BPMN engine migration and independent microservices | No effort in MVP |
 | OUT | Distributed ACID object-storage transaction | Explicit recovery design instead |
 
-**Review flag:** Whether attachments and the object-storage failure/recovery demonstration are mandatory competition acceptance items must be agreed; SHOULD/COULD classifications here are proposals.
+**Review flag:** Whether attachments and the MinIO failure/recovery demonstration are mandatory competition acceptance items must be agreed; SHOULD/COULD classifications here are proposals.
 
 ## 4. GP-IT-01 — Helpdesk golden path (proposed product flow)
 
@@ -128,8 +128,8 @@ Only record PASS with exact commit, environment, commands and artifacts. PR-leve
 - [Problem Statement](problem-statement.md)
 - [Project Overview](project-overview.md)
 - [System Architecture](../01-architecture/system-architecture.md)
-- [Workflow Core Contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/workflow-core.md)
-- [Identity Core Contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/identity-core.md)
-- [Data Core Contract](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/data-core.md)
+- [Workflow Core Contract](../contracts/workflow-core.md)
+- [Identity Core Contract](../contracts/identity-core.md)
+- [Data Core Contract](../contracts/data-core.md)
 
 **Scope acceptance:** PENDING. This file does not authorize production route activation or merge.
