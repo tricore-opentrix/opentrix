@@ -209,6 +209,12 @@ Copy [`.env.example`](.env.example) as a reference for the variable names.
 - **Contribute:** read [CONTRIBUTING.md](CONTRIBUTING.md). In short: branch from `main`, open a pull request with a Conventional Commits title, keep it near 400 changed lines, and make sure CI passes. Changes land by squash merge only.
 - New source files need an SPDX header (see CONTRIBUTING.md).
 
+## Security / Bảo mật
+
+**English:** Do not report vulnerabilities in public Issues. Use [private vulnerability reporting](https://github.com/tricore-opentrix/opentrix/security/advisories/new) as described in [SECURITY.md](SECURITY.md). If that channel is unavailable, open a [Security contact request](https://github.com/tricore-opentrix/opentrix/issues/new?template=security-contact.yml) without any vulnerability details. Contribution rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+**Tiếng Việt:** Không báo cáo lỗ hổng trong Issue công khai. Hãy dùng [kênh báo cáo lỗ hổng riêng tư](https://github.com/tricore-opentrix/opentrix/security/advisories/new) theo hướng dẫn trong [SECURITY.md](SECURITY.md). Nếu kênh này không dùng được, mở [Security contact request](https://github.com/tricore-opentrix/opentrix/issues/new?template=security-contact.yml) và không ghi bất kỳ chi tiết lỗ hổng nào. Quy trình đóng góp nằm trong [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Team
 
 TRICORE is a student team in OLP PMNM 2026: Lê Xuân Bảo, Phan Hải Yến, Nguyễn Ngọc Ánh.
