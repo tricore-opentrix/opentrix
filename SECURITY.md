@@ -24,16 +24,16 @@ OPENTRIX là dự án do nhóm sinh viên TRICORE phát triển cho cuộc thi O
 | Phiên bản | Trạng thái phát hành | Hỗ trợ bảo mật |
 | --- | --- | --- |
 | `main` | Nhánh phát triển | Có |
-| Tag `v0.1.0` | Chỉ có tag Git và bản nháp GitHub Release; chưa công bố | Không — dùng `main` |
+| `v0.1.0` | [Pre-release công khai](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0) ngày 2026-11-04 (kèm `dxos-open-core-0.1.0.tar.gz` và `SHA256SUMS`) | Không — bản MVP để thử nghiệm; dùng `main` |
 
-Hiện chưa có bản phát hành nào được công bố. Bảng này sẽ được cập nhật khi có bản phát hành chính thức; từ đó bản phát hành mới nhất cũng được hỗ trợ bảo mật.
+Hiện chưa có bản phát hành ổn định (không phải pre-release). Bảng này sẽ được cập nhật khi có bản phát hành ổn định; từ đó bản ổn định mới nhất cũng được hỗ trợ bảo mật. Việc một bản được công bố không có nghĩa là quyền phân phối của toàn bộ nội dung đã được xác minh; phần đó được theo dõi tại [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
 
 ### 3. Báo cáo lỗ hổng
 
 **Không báo cáo lỗ hổng qua Issue, Pull Request, Discussion hay mạng xã hội công khai.**
 
 - **Kênh chính:** GitHub Private Vulnerability Reporting — vào tab **Security** của repository và chọn **Report a vulnerability**.
-- **Nếu kênh trên chưa khả dụng:** nhắn riêng cho một maintainer qua GitHub (@phanyen06ym-ien, @lexuanbao258-collab, @ngang02012007-crypto) để nhận kênh liên hệ riêng. Không gửi chi tiết lỗ hổng trong tin nhắn đầu tiên.
+- **Nếu kênh trên không dùng được:** mở một Issue công khai với tiêu đề `Security contact request`, **không ghi bất kỳ chi tiết nào về lỗ hổng**. Maintainer sẽ trả lời và hướng dẫn bạn gửi báo cáo qua kênh riêng.
 
 ### 4. Thông tin cần cung cấp
 
@@ -124,16 +124,16 @@ OPENTRIX is developed by the TRICORE student team for the OLP Open Source Softwa
 | Version | Release status | Security support |
 | --- | --- | --- |
 | `main` | Development branch | Yes |
-| Tag `v0.1.0` | Git tag and draft GitHub Release only; not published | No — use `main` |
+| `v0.1.0` | [Public pre-release](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0) published 2026-11-04 (with `dxos-open-core-0.1.0.tar.gz` and `SHA256SUMS`) | No — MVP for evaluation; use `main` |
 
-No release has been published yet. This table will be updated when an official release is published; from then on, the latest release will also receive security support.
+There is no stable (non-pre-release) release yet. This table will be updated when a stable release is published; from then on, the latest stable release will also receive security support. Publication of a release does not mean that redistribution rights for all content have been verified; that is tracked in [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
 
 ### 3. Reporting a vulnerability
 
 **Do not report vulnerabilities through public Issues, Pull Requests, Discussions, or social media.**
 
 - **Primary channel:** GitHub Private Vulnerability Reporting — open the repository's **Security** tab and choose **Report a vulnerability**.
-- **If that channel is unavailable:** message a maintainer privately on GitHub (@phanyen06ym-ien, @lexuanbao258-collab, @ngang02012007-crypto) to obtain a private contact channel. Do not include vulnerability details in the first message.
+- **If that channel is unavailable:** open a public Issue titled `Security contact request` **without any vulnerability details**. A maintainer will respond and arrange for the report to be sent through a private channel.
 
 ### 4. Required report information
 
