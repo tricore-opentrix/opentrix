@@ -250,6 +250,12 @@ The full workflow is in [CONTRIBUTING.md](CONTRIBUTING.md). In short:
 
 User-visible changes are recorded in [CHANGELOG.md](CHANGELOG.md).
 
+## Security / Bảo mật
+
+**English:** Do not report vulnerabilities in public Issues. Use [private vulnerability reporting](https://github.com/tricore-opentrix/opentrix/security/advisories/new) as described in [SECURITY.md](SECURITY.md). If that channel is unavailable, open a [Security contact request](https://github.com/tricore-opentrix/opentrix/issues/new?template=security-contact.yml) without any vulnerability details. Contribution rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+**Tiếng Việt:** Không báo cáo lỗ hổng trong Issue công khai. Hãy dùng [kênh báo cáo lỗ hổng riêng tư](https://github.com/tricore-opentrix/opentrix/security/advisories/new) theo hướng dẫn trong [SECURITY.md](SECURITY.md). Nếu kênh này không dùng được, mở [Security contact request](https://github.com/tricore-opentrix/opentrix/issues/new?template=security-contact.yml) và không ghi bất kỳ chi tiết lỗ hổng nào. Quy trình đóng góp nằm trong [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Team
 
 TRICORE is a student team participating in OLP PMNM 2026. These are collaboration areas; Issues and PRs record specific work.
