@@ -15,7 +15,7 @@ real Keycloak negative/browser replay NOT RUN. PR #74 remains Draft; no push, me
 - Branch: `integration/helpdesk-browser-e2e-20261029`.
 - Implementation baseline HEAD: `7f411174baecbe338700a73b0351be214e7892b4`.
 - Initial status: only pre-existing `?? portal-bff/bin/`; preserved. Changes below are local; no remote publication is claimed.
-- Read the [pinned Browser E2E note](https://github.com/lexuanbao258-collab/dxos-open-core/blob/f943d33c7b7c003fc44d0234e4c912f24dcee847/docs/verification/issue53-browser-helpdesk-e2e-20261029.md).
+- Read the [pinned Browser E2E note](https://github.com/tricore-opentrix/opentrix/blob/f943d33c7b7c003fc44d0234e4c912f24dcee847/docs/verification/issue53-browser-helpdesk-e2e-20261029.md).
   GitHub GET also confirmed PR #74 open/Draft at `f943d33c7b7c003fc44d0234e4c912f24dcee847`.
   No remote mutation was performed.
 - The browser happy path is **operator-observed** evidence from that note. No screenshot,

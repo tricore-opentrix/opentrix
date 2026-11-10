@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 SPDX-FileCopyrightText: 2026 TRICORE contributors
 
 SPDX-License-Identifier: Apache-2.0
@@ -6,36 +6,21 @@ SPDX-License-Identifier: Apache-2.0
 
 # DX-OS Open-Core — Documentation
 
-Status: DOCUMENTATION RESTRUCTURE IN PROGRESS
+Start with the [root README](../README.md) to build and run the project. This index lists the documents that exist on `main`.
 
-## Documentation Structure
-
-| Section | Purpose |
+| Section | Documents |
 |---|---|
-| 00-project | Project context, scope and product vision |
-| 01-architecture | System architecture and dependency rules |
-| 02-core | Identity, Workflow, Data and API Gateway capabilities |
-| 03-applications | IT Helpdesk and Facility applications |
-| 04-integration | Cross-module and full-stack integration |
-| 05-testing | Test strategy, specifications and acceptance |
-| 06-deployment | Installation, configuration and operations |
-| 07-open-source | Licensing, attribution and release readiness |
-| 08-decisions | Architecture Decision Records |
-| 09-evidence | Verification evidence |
-| 10-reviews | Independent reviews and findings |
-| 11-poc | Proof-of-concept documents |
+| 00-project | [Project overview](00-project/project-overview.md) · [Problem statement](00-project/problem-statement.md) · [Product vision](00-project/product-vision.md) · [Scope and MVP](00-project/scope-and-mvp.md) |
+| 01-architecture | [System architecture](01-architecture/system-architecture.md) · [Core/application boundary](01-architecture/core-application-boundary.md) · [Dependency rules](01-architecture/dependency-rules.md) · [Deployment topology](01-architecture/deployment-topology.md) · [Repository layout (proposal)](01-architecture/repository-layout-and-ownership.md) |
+| 02-core | [Identity](02-core/identity/identity-architecture.md) · [Workflow](02-core/workflow/workflow-architecture.md) · [Data](02-core/data/data-architecture.md) · [Storage adapters](02-core/data/storage-adapters.md) · [Gateway](02-core/gateway/gateway-architecture.md) |
+| 06-deployment | [Runbook — Linux/macOS](06-deployment/runbook-linux.md) · [Prerequisites](06-deployment/prerequisites.md) · [R23 SBOM/licence plan](06-deployment/r23-plan.md) · [R24 release](06-deployment/r24-release.md) · [R26 repository cutover](06-deployment/r26-repository-cutover.md) |
+| 08-decisions | [ADR-007 object storage](08-decisions/ADR-007-data-storage.md) · [ADR-008 dashboard tool](08-decisions/ADR-008-dashboard-tool.md) |
+| verification | [Issue #53 Helpdesk integration](verification/issue53-java-helpdesk-mvp-integration-20261028.md) · [Issue #53 local closeout](verification/issue53-helpdesk-local-closeout-20261029.md) · [Issue #90 ArchUnit](verification/issue90-8a-archunit-foundation.md) · [R37 Linux build and run](verification/r37-linux-build-20261108.md) · [R37 docs cleanup](verification/r37-docs-cleanup-20261108.md) |
+| evidence | Pinned SQL review queries used by `scripts/` (Issue #25) |
 
-## Existing Canonical Documentation
+Terminology is in the root [GLOSSARY.md](../GLOSSARY.md).
 
-The following existing directories remain authoritative
-during the migration:
-
-- [Architecture](architecture/README.md)
-- [Core Contracts](contracts/README.md)
-- [Evidence](evidence/README.md)
-- [Proof of Concept](poc/README.md)
-
-## Migration Rules
+## Rules
 
 1. Do not delete or rewrite historical evidence.
 2. Do not move SQL fixtures referenced by Gradle or tests.
@@ -43,9 +28,3 @@ during the migration:
 4. Preserve existing Issue and PR traceability.
 5. Architectural proposals are not implemented features.
 6. Acceptance requires tests on a pinned commit.
-
-## Current State
-
-The numbered documentation directories are being prepared.
-Existing canonical documents remain at their original paths
-until a reviewed migration explicitly replaces them.

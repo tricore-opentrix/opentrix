@@ -46,7 +46,7 @@ flowchart TD
     App --> Data[Data Core: ObjectStoragePort]
     Workflow --> WPort[WorkflowPersistencePort]
     WPort --> Pg[PostgreSQL adapter]
-    Data --> Storage[Selected local Docker MinIO adapter - target]
+    Data --> Storage[S3-compatible object-storage adapter - target, SeaweedFS planned]
     Gateway --> Security[Spring Security / OIDC adapter]
     Security --> IdP[Keycloak or compatible IdP]
 ```
@@ -60,7 +60,7 @@ flowchart TD
 | **Data Core** | Provider-neutral Object Storage API (`ObjectStoragePort`) | Does **not** own every PostgreSQL table, business repository or Workflow persistence contract |
 | **API Gateway capability** | HTTP entry/exposure, common authentication boundary, routing/error conventions | Does not execute business transitions or replace Application resource authorization |
 | **Helpdesk / Facility Applications** | Use cases, business rules, tenant/resource permissions, business facts, attachment ownership | Must not hardcode vendor SDK semantics into reusable Core |
-| **Infrastructure** | OIDC, private PostgreSQL 17 and selected local Docker MinIO adapters/configuration | Candidate adapter implementation and integration remain unverified |
+| **Infrastructure** | OIDC, private PostgreSQL 17 and an S3-compatible object-storage adapter (SeaweedFS planned) and configuration | Candidate adapter implementation and integration remain unverified |
 
 **Ownership rule:** `WorkflowPersistencePort` belongs to Workflow, even if a PostgreSQL implementation is developed by a Data/infrastructure contributor. Business tables belong to the corresponding Application.
 
@@ -86,10 +86,10 @@ Facility should implement one real, narrowly scoped request flow with **Facility
 | **Hexagonal / DIP** | Consumers depend on stable capability-owned ports rather than PostgreSQL or storage SDKs | An adapter swap still needs semantic contract/conformance tests |
 | **Verified OIDC identity** | Decouples Core identity concepts from Keycloak credentials | `issuer + sub` continuity across providers needs deliberate linking/migration |
 | **Generic Workflow State Machine** | Reuses controlled transitions/history for different request applications | Business authorization remains Application-owned; BPMN breadth is out of scope |
-| **ObjectStoragePort** | Keeps Data Core independent of the selected MinIO adapter | Portability is a contract goal; real provider substitution and data migration are not verified |
+| **ObjectStoragePort** | Keeps Data Core independent of any one object-storage provider | Portability is a contract goal; real provider substitution and data migration are not verified |
 | **Application-owned data** | Avoids turning Data Core into a central repository for all business modules | Shared physical PostgreSQL does not imply shared schema ownership |
 
-The selected MVP runtime direction is **Java 21, Spring Boot, Gradle, private PostgreSQL 17, local Docker MinIO and Keycloak**. MinIO uses an S3-compatible protocol; this is not an AWS S3 deployment claim. The Data Core port exists at the pinned source baseline, while the MinIO implementation and real integration remain candidate work. See [ADR-007](../08-decisions/ADR-007-data-storage.md), the [deployment topology](../01-architecture/deployment-topology.md), [System Architecture](../01-architecture/system-architecture.md), [Core-Application Boundary](../01-architecture/core-application-boundary.md), and [Dependency Rules](../01-architecture/dependency-rules.md).
+The selected MVP runtime direction is **Java 21, Spring Boot, Gradle, private PostgreSQL 17, an S3-compatible object store and Keycloak**. MinIO was dropped on 2026-11-05 (upstream stopped publishing community images and binaries in October 2025 and archived the repository in 2026); SeaweedFS with its S3 API is the planned replacement (container v0.2.0 / R32b; adapter, integration tests and application use v0.3.0 / R43 - planned milestones, not implemented) and its ADR is pending. This is not an AWS S3 deployment claim. The Data Core port exists at the pinned source baseline, while no object-storage adapter is implemented and real integration remains future work. See [ADR-007](../08-decisions/ADR-007-data-storage.md), the [deployment topology](../01-architecture/deployment-topology.md), [System Architecture](../01-architecture/system-architecture.md), [Core-Application Boundary](../01-architecture/core-application-boundary.md), and [Dependency Rules](../01-architecture/dependency-rules.md).
 
 ## 6. Boundaries of the MVP and non-goals
 
@@ -118,8 +118,8 @@ A source file, open/draft PR, passing fake test or design sign-off **is not** by
 
 This document explains **what DX-OS is intended to be**, not the current completion percentage. Review current state using commit-pinned evidence, not product-level descriptions.
 
-- [Existing Core contracts](../contracts/README.md) — existing contract baseline during docs migration.
-- [Evidence index](../evidence/README.md) — current legacy evidence index; legacy paths remain canonical until approved migration.
+- [Existing Core contracts](https://github.com/tricore-opentrix/opentrix/blob/399108767c22b1d607bab7f5d3d072ea81005794/docs/contracts/README.md) — existing contract baseline during docs migration.
+- [Evidence index](https://github.com/tricore-opentrix/opentrix/blob/2b4989054c99821ca1347d15da4600af4f9ce4cb/docs/evidence/README.md) — current legacy evidence index; legacy paths remain canonical until approved migration.
 
 **Reference snapshot:** `origin/main` `e06fa429cfd92b032c166eb3ebf32803d13191c2`. Check subsequent merges and independent evidence before reporting implementation or release status.
 
@@ -130,7 +130,7 @@ This document explains **what DX-OS is intended to be**, not the current complet
 | [Problem Statement](problem-statement.md) | Which needs and current-process hypotheses motivate DX-OS? |
 | [Product Vision](product-vision.md) | What reusable platform value does DX-OS aspire to create? |
 | [Scope and MVP](scope-and-mvp.md) | What is committed or proposed for the demo? |
-| [Glossary](glossary.md) | What do key business and technical terms mean? |
+| [Glossary](../../GLOSSARY.md) | What do key business and technical terms mean? |
 | [System Architecture](../01-architecture/system-architecture.md) | How is the product structured? |
 | [Identity Architecture](../02-core/identity/identity-architecture.md) | How is trusted identity abstracted? |
 | [Workflow Architecture](../02-core/workflow/workflow-architecture.md) | How are state transitions and concurrency handled? |
