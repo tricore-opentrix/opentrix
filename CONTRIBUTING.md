@@ -13,7 +13,7 @@ SPDX-License-Identifier: Apache-2.0
 
 ## OPENTRIX — Đóng góp
 
-OPENTRIX nhận đóng góp cho nền tảng DX-OS Open-Core theo giấy phép Apache-2.0 trong repository này. Quyền sử dụng, sửa đổi và phân phối mã nguồn của bạn đến từ [Apache License 2.0](LICENSE), không đến từ bất kỳ dịch vụ hay thỏa thuận nào.
+OPENTRIX nhận đóng góp cho nền tảng DX-OS Open-Core trong repository này. Đóng góp của bạn được gửi và phân phối theo [Apache License 2.0](LICENSE); quyền sử dụng, sửa đổi và phân phối phần đóng góp đó đến từ giấy phép này, không đến từ bất kỳ dịch vụ hay thỏa thuận nào. Mã nguồn, thư viện và tài sản của bên thứ ba giữ nguyên giấy phép và nghĩa vụ riêng. Việc rà soát nguồn gốc, quyền và ghi công cho nội dung hiện có trong repository vẫn đang được theo dõi tại [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
 
 ### Trước khi gửi
 
@@ -24,7 +24,7 @@ OPENTRIX nhận đóng góp cho nền tảng DX-OS Open-Core theo giấy phép A
 
 ### License header và pin image
 
-- Mọi file nguồn do con người viết — Java, TypeScript/TSX, SQL, YAML, shell, Markdown — phải mang header SPDX Apache-2.0:
+- File nguồn mới do bạn tự viết — Java, TypeScript/TSX, SQL, YAML, shell, Markdown — phải mang header SPDX Apache-2.0:
 
   ```java
   // SPDX-FileCopyrightText: 2026 TRICORE contributors
@@ -37,14 +37,16 @@ OPENTRIX nhận đóng góp cho nền tảng DX-OS Open-Core theo giấy phép A
   reuse lint
   ```
 
-  Kiểm tra REUSE trong CI hiện mới ở mức cảnh báo cho đến khi việc cưỡng chế được thống nhất. Không gắn header chung cho mã bên ngoài hoặc chưa xác minh quyền.
+  CI chạy cùng kiểm tra này (`fsfe/reuse-action`) trong job `repo-hygiene`; lỗi REUSE làm job đó thất bại. Job `repo-hygiene` có được cấu hình là required check của nhánh `main` hay không được xác minh riêng trong Issue #173. Không gắn header chung cho mã bên ngoài hoặc chưa xác minh quyền.
 - Container image trong `docker-compose*.yml` và CI phải pin tag cụ thể, không dùng `latest`. Khi giữ một phiên bản cũ vì lý do giấy phép, chỉ nâng cấp sau khi thảo luận và cập nhật [NOTICE](NOTICE).
 
 ### Chính sách Dependency và Bản quyền bên thứ ba
 
-- **Giấy phép được phép:** Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, PostgreSQL, Unlicense, CC0-1.0.
-- **Giấy phép được phép kèm ghi chú NOTICE:** MPL-2.0, EPL-2.0 (không sửa mã nguồn gốc, không liên kết tĩnh).
-- **Cấm đưa vào mã nguồn OPENTRIX:** GPL, AGPL, LGPL, SSPL, RSAL, BUSL, "Commons Clause", hoặc không rõ bản quyền. Ngoại lệ duy nhất là service chạy tách biệt qua mạng, dùng nguyên bản và đã công bố trong NOTICE.
+- **Cổng kiểm tra đang chạy:** job CI `r23-compliance` (`scripts/r23-compliance.py`) đối chiếu giấy phép dependency trong các SBOM CycloneDX với danh sách cho phép. Giấy phép không có trong danh sách hoặc không được khai báo làm job thất bại.
+- **Danh sách cho phép hiện tại của cổng:** 0BSD, Apache-2.0, BlueOak-1.0.0, BSD-2-Clause, BSD-3-Clause, CC0-1.0, CDDL-1.0, CDDL-1.1, EDL-1.0, EPL-1.0, EPL-2.0, ISC, MIT, MIT-0, MPL-2.0, OFL-1.1, Unicode-3.0, Unicode-DFS-2016, Unlicense, Zlib; cùng ngoại lệ đã rà soát GPL-2.0 kèm Classpath-exception-2.0.
+- **Quy định của nhóm (chưa có kiểm tra tự động):** dependency theo MPL, EPL, CDDL hoặc ngoại lệ Classpath chỉ được dùng nguyên bản, không sửa mã gốc, và phải được ghi nhận trong [NOTICE](NOTICE).
+- **Thay đổi danh sách:** thêm hoặc bớt giấy phép phải qua PR sửa `scripts/r23-compliance.py`, cập nhật tài liệu này trong cùng PR, và được rà soát nguồn gốc/quyền theo [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
+- **Ngoài phạm vi cổng R23:** container image và service chạy tách biệt (ví dụ Keycloak, PostgreSQL) không được R23 kiểm tra; giấy phép của chúng phải được rà soát thủ công và ghi trong NOTICE.
 - **Không sao chép từ dự án khác:** OPENTRIX chỉ kế thừa các mẫu thiết kế (design pattern) độc lập, không sao chép code, template, icon hay asset.
 
 ### Quy trình làm việc
@@ -87,7 +89,7 @@ Báo cáo vấn đề bảo mật qua kênh riêng, không đăng Issue công kh
 
 ## OPENTRIX — Contributing
 
-OPENTRIX accepts contributions to the Apache-2.0 DX-OS Open-Core platform in this repository. Your rights to use, modify, and distribute the code come from the [Apache License 2.0](LICENSE), not from any service or agreement.
+OPENTRIX accepts contributions to the DX-OS Open-Core platform in this repository. Your contributions are submitted and distributed under the [Apache License 2.0](LICENSE); the rights to use, modify, and distribute them come from that license, not from any service or agreement. Third-party code, libraries, and assets keep their own licenses and obligations. Review of provenance, permissions, and attribution for existing repository content is still tracked in [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
 
 ### Before submitting
 
@@ -98,7 +100,7 @@ OPENTRIX accepts contributions to the Apache-2.0 DX-OS Open-Core platform in thi
 
 ### License headers and image pins
 
-- Every human-authored source file — Java, TypeScript/TSX, SQL, YAML, shell, Markdown — must carry the SPDX Apache-2.0 header:
+- New source files you author — Java, TypeScript/TSX, SQL, YAML, shell, Markdown — must carry the SPDX Apache-2.0 header:
 
   ```java
   // SPDX-FileCopyrightText: 2026 TRICORE contributors
@@ -111,14 +113,16 @@ OPENTRIX accepts contributions to the Apache-2.0 DX-OS Open-Core platform in thi
   reuse lint
   ```
 
-  The REUSE check in CI is currently advisory until enforcement has been agreed. Do not apply the generic header to external or rights-unverified material.
+  CI runs the same check (`fsfe/reuse-action`) in the `repo-hygiene` job; a REUSE failure fails that job. Whether `repo-hygiene` is configured as a required check on `main` is verified separately under Issue #173. Do not apply the generic header to external or rights-unverified material.
 - Container images in `docker-compose*.yml` and CI must pin specific tags, never `latest`. When an older version is kept for licensing reasons, upgrade only after discussion and update [NOTICE](NOTICE).
 
 ### Dependency policy & third-party licensing
 
-- **Allowed licenses:** Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, PostgreSQL, Unlicense, CC0-1.0.
-- **Allowed with NOTICE disclosure:** MPL-2.0, EPL-2.0 (unmodified, not statically linked).
-- **Not allowed in OPENTRIX source:** GPL, AGPL, LGPL, SSPL, RSAL, BUSL, "Commons Clause", or unknown licenses. The only exception is an unmodified, network-separated service disclosed in NOTICE.
+- **Implemented gate:** the `r23-compliance` CI job (`scripts/r23-compliance.py`) checks dependency licenses in the CycloneDX SBOMs against an allow-list. Any license not on the list, or undeclared, fails the job.
+- **Current gate allow-list:** 0BSD, Apache-2.0, BlueOak-1.0.0, BSD-2-Clause, BSD-3-Clause, CC0-1.0, CDDL-1.0, CDDL-1.1, EDL-1.0, EPL-1.0, EPL-2.0, ISC, MIT, MIT-0, MPL-2.0, OFL-1.1, Unicode-3.0, Unicode-DFS-2016, Unlicense, Zlib; plus the reviewed exception GPL-2.0 with Classpath-exception-2.0.
+- **Team policy (not automatically checked):** dependencies under MPL, EPL, CDDL, or the Classpath exception are used unmodified only and must be recorded in [NOTICE](NOTICE).
+- **Changing the list:** adding or removing a license requires a PR that changes `scripts/r23-compliance.py`, updates this document in the same PR, and receives source-rights review under [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
+- **Outside the R23 gate:** container images and separately running services (for example Keycloak, PostgreSQL) are not checked by R23; their licenses must be reviewed manually and recorded in NOTICE.
 - **No copying from other projects:** OPENTRIX reuses independent design patterns only, never code, templates, icons, or assets.
 
 ### Workflow
