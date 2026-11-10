@@ -64,6 +64,7 @@ Issue → nhánh từ main → Draft PR vào main → CI → review độc lập
 | Tích hợp Core, điều phối phát hành và merge | Yến (@phanyen06ym-ien) | Bảo |
 | Kiểm thử Core, quản trị repository, hạ tầng | Bảo (@lexuanbao258-collab) | Yến |
 | Ứng dụng IT Helpdesk và Portal BFF | Ánh (@ngang02012007-crypto) | Bảo |
+| Frontend | Ánh (@ngang02012007-crypto) | Yến |
 | Đường dẫn Core liên quan Helpdesk và API của BFF | — | Cả Bảo và Ánh |
 
 [CODEOWNERS](.github/CODEOWNERS) tự động yêu cầu review theo đường dẫn nhưng không bảo đảm mọi người được liệt kê đều đã duyệt. Tác giả không được tự duyệt PR của mình; nếu tác giả là một trong hai reviewer bắt buộc, ghi rõ trên PR và thống nhất reviewer thay thế trước khi merge.
@@ -137,6 +138,7 @@ Issue → branch from main → Draft PR to main → CI → independent review �
 | Core integration, release and merge coordination | Yến (@phanyen06ym-ien) | Bảo |
 | Core testing, repository administration, infrastructure | Bảo (@lexuanbao258-collab) | Yến |
 | IT Helpdesk application and Portal BFF | Ánh (@ngang02012007-crypto) | Bảo |
+| Frontend | Ánh (@ngang02012007-crypto) | Yến |
 | Helpdesk-related Core paths and BFF API | — | Both Bảo and Ánh |
 
 [CODEOWNERS](.github/CODEOWNERS) requests reviews by path but does not guarantee that every listed owner has approved. Authors cannot approve their own PRs; if the author is one of the two required reviewers, record it on the PR and agree on an alternative reviewer before merging.
