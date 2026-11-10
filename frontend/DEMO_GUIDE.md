@@ -4,47 +4,49 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Demo DX-OS Portal tại OLP 2026
+# DX-OS Portal demo at OLP 2026
 
-**Chỉ trình diễn MOCK / DEVELOPMENT. Không tuyên bố đã tích hợp Core qua HTTP.**
+**MOCK / DEVELOPMENT demonstration only. It does not claim that Core is integrated over HTTP.**
 
-## Chuẩn bị
+The Portal UI is in Vietnamese, so UI labels are quoted verbatim in bold with an English gloss in parentheses.
 
-1. Chạy `npm.cmd ci` và `npm.cmd run dev` trong `frontend/`.
-2. Mở `http://127.0.0.1:5173/session`. Có thể dùng viewport desktop 1440 px; mobile 390 px; tablet 834 px.
-3. Chọn **Nhân viên — Ngọc Ánh**, bấm **Vào phiên demo**. Mọi dữ liệu/tên trong UI là fixtures demo.
-4. Khi cần bắt đầu lại: Trạng thái tích hợp → **Khôi phục dữ liệu demo**. Reload cũng reset dữ liệu yêu cầu.
+## Preparation
 
-## Kịch bản chính: hai dịch vụ, một nền tảng
+1. Run `npm.cmd ci` and `npm.cmd run dev` in `frontend/` (on Linux/macOS use `npm ci` and `npm run dev`).
+2. Open `http://127.0.0.1:5173/session`. You can use a 1440 px desktop viewport, 390 px mobile or 834 px tablet.
+3. Select the Employee demo persona (UI label: **Nhân viên**, demo user *Ngọc Ánh*) and enter the demo session (button: **Vào phiên demo**). All data and names in the UI are demo fixtures.
+4. To start over: Integration status (**Trạng thái tích hợp**) → Restore demo data (**Khôi phục dữ liệu demo**). Reloading also resets the request data.
 
-1. Dashboard: chỉ ra thống kê lấy từ fixtures hiển thị cho vai trò hiện tại, bảng yêu cầu và hoạt động gần đây.
-2. Bấm **Tạo yêu cầu mới**, chọn **Hỗ trợ CNTT**. Gửi form trống để thấy validation và focus trường lỗi đầu tiên.
-3. Nhập tiêu đề tối thiểu 8 ký tự, mô tả tối thiểu 20 ký tự, vị trí và ưu tiên. Attachments ghi **BLOCKED FEATURE**, không nhận tệp.
-4. Gửi: nút có loading/chống gửi trùng, sau đó mở chi tiết và thông báo thành công. Ghi lại mã yêu cầu, thường `DX-1049` ở phiên mới.
-5. Dùng **sidebar** mở Trạng thái phiên → chọn **Người xử lý — Lê Xuân Bảo** → Tiếp tục. Không reload trang trong luồng demo.
-6. Mở Bàn xử lý hoặc Yêu cầu của tôi, chọn mã vừa tạo. Phê duyệt → nhập ghi chú → xác nhận. Tiếp tục Bắt đầu xử lý → Hoàn thành, mỗi bước thêm sự kiện timeline. Yêu cầu kết thúc không có thao tác tiếp.
-7. Mở Lịch sử hoạt động để theo dõi các sự kiện mới nhất.
-8. Đổi về Nhân viên và lặp lại với **Cơ sở vật chất**. Giải thích hai dịch vụ dùng chung form/model/service/timeline; phản hồi hiện tại là mock, Core mới sở hữu runtime thật.
+## Main scenario: two services, one platform
 
-## Các trạng thái cần trình diễn
+1. Dashboard: point out the statistics taken from fixtures and shown for the current role, the request table and the recent activity.
+2. Create a new request (button: **Tạo yêu cầu mới**) and choose IT support (service: **Hỗ trợ CNTT**). Submit the empty form to show validation and focus on the first field with an error.
+3. Enter a title of at least 8 characters, a description of at least 20 characters, a location and a priority. Attachments are marked **BLOCKED FEATURE** and no file is accepted.
+4. Submit: the button shows loading and prevents duplicate submits, then the detail page opens with a success message. Note the request ID, usually `DX-1049` in a new session.
+5. Use the **sidebar** to open Session status (**Trạng thái phiên**) → choose the Handler persona (UI label: **Người xử lý**, demo user *Lê Xuân Bảo*) → Continue. Do not reload the page during the demo flow.
+6. Open the handler desk (**Bàn xử lý**) or My requests (**Yêu cầu của tôi**) and select the request you just created. Approve → enter a note → confirm. Continue with Start work → Complete; each step adds a timeline event. The request ends with no further actions.
+7. Open Activity history (**Lịch sử hoạt động**) to follow the latest events.
+8. Switch back to Employee and repeat with Facilities (service: **Cơ sở vật chất**). Explain that both services share the same form, model, service and timeline; the responses are currently mocks, and Core will own the real runtime.
 
-- **Search/filter/empty:** mở danh sách, tìm `cap quyen`, kết hợp filter Cơ sở vật chất để nhận empty state. Xóa bộ lọc; dùng nút Trước/Sau.
-- **Loading:** mở danh sách/chi tiết; mock có độ trễ 350 ms. Gửi form có trạng thái Đang gửi.
-- **Lỗi mạng:** Trạng thái tích hợp → chọn Mất kết nối mô phỏng → Áp dụng → Mở danh sách yêu cầu. Bấm Tải lại dữ liệu để phục hồi; không tự retry.
-- **401:** áp dụng lỗi Phiên hết hạn rồi mở danh sách. Phiên demo bị kết thúc và trang phiên hiển thị thông báo 401 mô phỏng.
-- **403/404:** áp dụng lỗi tương ứng rồi mở danh sách. Không có dữ liệu được hiển thị trong lỗi. Nhân viên mở `/requests/DX-1047` nhận cùng thông báo với mã không tồn tại. Không gọi đây là test security thật.
-- **Kết quả ghi chưa xác định:** áp dụng lỗi này, dùng sidebar về Tổng quan rồi mở form mới và gửi đầy đủ. Lỗi được giữ cho lần ghi tiếp theo dù có đọc dữ liệu; nút gửi bị vô hiệu hóa sau lỗi, không tự gửi lại. Kiểm tra danh sách/lịch sử theo hướng dẫn.
-- **Từ chối:** chọn một yêu cầu chờ, dùng vai trò Người xử lý, nhập lý do và xác nhận. Timeline có lý do; yêu cầu kết thúc.
-- **Bàn phím:** focus hiển thị rõ, form có labels, dialog giữ focus và Escape đóng; mobile menu hỗ trợ Escape. Reduced motion được tôn trọng.
+## States to demonstrate
 
-## Kết thúc bằng Integration Status
+- **Search/filter/empty:** open the list, search for `cap quyen`, and combine it with the Facilities filter to reach the empty state. Clear the filters and use the Previous/Next buttons.
+- **Loading:** open the list or a detail page; the mock has a 350 ms delay. Submitting the form shows the Sending state (label: "Đang gửi").
+- **Network error:** Integration status → choose the simulated connection loss (option: **Mất kết nối mô phỏng**) → Apply → open the request list. Click Reload data (button: "Tải lại dữ liệu") to recover; there is no automatic retry.
+- **401:** apply the session-expired error (option: **Phiên hết hạn**) and then open the list. The demo session ends and the session page shows the simulated 401 message.
+- **403/404:** apply the matching error and then open the list. No data is shown in the error. An employee who opens `/requests/DX-1047` gets the same message as for a non-existent ID. Do not present this as a real security test.
+- **Unknown write result:** apply this error, use the sidebar to return to Overview, then open a new form and submit it completely. The error is kept for the next write even if data is read in between; the submit button is disabled after the error and nothing is resent automatically. Check the list and history as instructed.
+- **Rejection:** choose a pending request, use the Handler role, enter a reason and confirm. The timeline shows the reason and the request ends.
+- **Keyboard:** focus is clearly visible, the form has labels, dialogs keep focus and close on Escape; the mobile menu supports Escape. Reduced motion is respected.
 
-Mở Trạng thái tích hợp và bấm **Kiểm tra chặn LIVE**. Nêu rõ:
+## Finish with Integration status
 
-- Portal Tầng 2 build/run độc lập; không sửa backend.
-- `RequestService` là interface dùng chung; composition root đang gắn `MockRequestService`.
-- `HttpApiClient` luôn từ chối trước mạng, chưa có nút hoặc `.env` bật LIVE.
-- Identity/Gateway/Workflow chờ security gate #22/#23/#24; API contract chờ #37; attachments chờ API có kiểm quyền #26.
-- Chỉ khi có HTTP end-to-end thật sau security review mới đánh giá DoD của Issue #39. **Giữ Issue OPEN.**
+Open Integration status and click Check the LIVE block (button: **Kiểm tra chặn LIVE**). State clearly that:
 
-Các screenshot trong [evidence](../docs/evidence/issue39-portal/README.md) được tạo bằng browser automation trên localhost, không phải mockup hình ảnh.
+- Portal tier 2 builds and runs on its own; the backend is not modified.
+- `RequestService` is a shared interface; the composition root currently binds `MockRequestService`.
+- `HttpApiClient` always refuses before touching the network; there is no button or `.env` setting that enables LIVE.
+- Identity, Gateway and Workflow wait for the security gates #22/#23/#24; the API contract waits for #37; attachments wait for an API with authorization checks (#26).
+- Only a real end-to-end HTTP flow after a security review can be assessed against the Definition of Done of Issue #39. **Keep the Issue OPEN.**
+
+The screenshots in the [evidence](https://github.com/tricore-opentrix/opentrix/blob/05c5d9967e88d24cfb4b41f4134dcc2522ac9253/docs/evidence/issue39-portal/README.md) (a permalink to commit `05c5d99` on the branch `feature/a05-portal-bff-integration`, which is not on `main`) were produced with browser automation on localhost; they are not visual mockups.

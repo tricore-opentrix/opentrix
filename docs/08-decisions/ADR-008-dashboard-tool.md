@@ -38,5 +38,5 @@ This architecture decision does **not** assert that Superset integration, SSO, e
 - [Metabase embedding documentation](https://www.metabase.com/docs/latest/embedding/introduction)
 - [Metabase SSO and authentication documentation](https://www.metabase.com/docs/latest/people-and-groups/authenticating-with-sso)
 - [Metabase row and column security documentation](https://www.metabase.com/docs/latest/permissions/data-sandboxes)
-- [GitHub Issue #119](https://github.com/tricore-opentrix/dxos-open-core/issues/119)
-- [GitHub PR #123](https://github.com/tricore-opentrix/dxos-open-core/pull/123)
+- [GitHub Issue #119](https://github.com/tricore-opentrix/opentrix/issues/119)
+- [GitHub PR #123](https://github.com/tricore-opentrix/opentrix/pull/123)
