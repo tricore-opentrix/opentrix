@@ -1,51 +1,67 @@
-﻿<!--
+<!--
 SPDX-FileCopyrightText: 2026 TRICORE contributors
 
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# DX-OS Open-Core — Documentation
+# Tài liệu OpenTrix / OpenTrix documentation
 
-Status: DOCUMENTATION RESTRUCTURE IN PROGRESS
+> **Trạng thái / Status:** 🚧 Khung — đang viết / Skeleton — in progress · **Owner:** @phanyen06ym-ien · **Issue:** #194
 
-## Documentation Structure
+## Tiếng Việt
 
-| Section | Purpose |
-|---|---|
-| 00-project | Project context, scope and product vision |
-| 01-architecture | System architecture and dependency rules |
-| 02-core | Identity, Workflow, Data and API Gateway capabilities |
-| 03-applications | IT Helpdesk and Facility applications |
-| 04-integration | Cross-module and full-stack integration |
-| 05-testing | Test strategy, specifications and acceptance |
-| 06-deployment | Installation, configuration and operations |
-| 07-open-source | Licensing, attribution and release readiness |
-| 08-decisions | Architecture Decision Records |
-| 09-evidence | Verification evidence |
-| 10-reviews | Independent reviews and findings |
-| 11-poc | Proof-of-concept documents |
+### Bộ tài liệu chính
 
-## Existing Canonical Documentation
+| File | Nội dung | Người phụ trách |
+|---|---|---|
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Môi trường, cài đặt Windows/Linux, chạy local, quy trình phát triển | Bảo |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Tổng quan, Core/Application, Identity, Workflow, Gateway, Data, ADR | Yến |
+| [API.md](API.md) | Endpoint, xác thực, phân quyền, mã lỗi, OpenAPI | Ánh |
+| [INTEGRATION.md](INTEGRATION.md) | Tích hợp ứng dụng với Core, ví dụ Helpdesk | Ánh |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Docker Compose, cấu hình, migration, health check | Bảo |
+| [TESTING.md](TESTING.md) | Các lớp test, cách chạy, CI, bằng chứng | Ánh |
+| [OPEN_SOURCE.md](OPEN_SOURCE.md) | Giấy phép, SPDX, thư viện bên thứ ba, nguồn gốc mã | Yến |
+| [RELEASE.md](RELEASE.md) | Phiên bản, cổng phát hành, artifact, release notes | Bảo |
 
-The following existing directories remain authoritative
-during the migration:
+### Lộ trình đọc cho người mới
 
-- [Architecture](architecture/README.md)
-- [Core Contracts](contracts/README.md)
-- [Evidence](evidence/README.md)
-- [Proof of Concept](poc/README.md)
+1. README ở thư mục gốc → 2. DEVELOPMENT.md → 3. ARCHITECTURE.md → 4. API.md / INTEGRATION.md → 5. TESTING.md
 
-## Migration Rules
+### Tài liệu tham chiếu
 
-1. Do not delete or rewrite historical evidence.
-2. Do not move SQL fixtures referenced by Gradle or tests.
-3. Do not change public contracts without approval.
-4. Preserve existing Issue and PR traceability.
-5. Architectural proposals are not implemented features.
-6. Acceptance requires tests on a pinned commit.
+- Quyết định kiến trúc (ADR): [08-decisions/](08-decisions/)
+- Bằng chứng kiểm kê Giai đoạn 2: [09-evidence/phase-2/](09-evidence/phase-2/)
+- Báo cáo kiểm chứng: [verification/](verification/)
 
-## Current State
+### Quy ước
 
-The numbered documentation directories are being prepared.
-Existing canonical documents remain at their original paths
-until a reviewed migration explicitly replaces them.
+Song ngữ (tiếng Việt trước, tiếng Anh sau). Mỗi file tách rõ **Hiện trạng** (có bằng chứng) và **Mục tiêu** (ghi `PROPOSED` kèm số Issue).
+
+## English
+
+### Main documentation set
+
+| File | Content | Owner |
+|---|---|---|
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Environment, Windows/Linux setup, local run, workflow | Bảo |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Overview, Core/Application, Identity, Workflow, Gateway, Data, ADRs | Yến |
+| [API.md](API.md) | Endpoints, authentication, authorization, error codes, OpenAPI | Ánh |
+| [INTEGRATION.md](INTEGRATION.md) | Integrating applications with Core, Helpdesk example | Ánh |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Docker Compose, configuration, migrations, health checks | Bảo |
+| [TESTING.md](TESTING.md) | Test layers, running tests, CI, evidence | Ánh |
+| [OPEN_SOURCE.md](OPEN_SOURCE.md) | License, SPDX, third-party libraries, provenance | Yến |
+| [RELEASE.md](RELEASE.md) | Versioning, release gates, artifacts, release notes | Bảo |
+
+### Reading path for newcomers
+
+1. Root README → 2. DEVELOPMENT.md → 3. ARCHITECTURE.md → 4. API.md / INTEGRATION.md → 5. TESTING.md
+
+### Reference material
+
+- Architecture decisions (ADRs): [08-decisions/](08-decisions/)
+- Phase 2 audit evidence: [09-evidence/phase-2/](09-evidence/phase-2/)
+- Verification reports: [verification/](verification/)
+
+### Conventions
+
+Bilingual (Vietnamese first, then English). Each file separates **Current state** (with evidence) from **Target** (marked `PROPOSED` with an issue number).
