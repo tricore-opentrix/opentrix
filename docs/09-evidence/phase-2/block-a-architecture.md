@@ -49,7 +49,7 @@ Mục "Evidence contract" của #182 cho phép một thành phần có nhiều c
 | `CI_BUILD_PASS_AT_BASELINE` | Job CI tại đúng SHA thành công, nhưng không lưu kết quả từng test. / CI job passed at the exact SHA; no per-test report retained. |
 | `EVIDENCE_CAPTURED` | Đã thu dữ liệu thô tại đúng SHA, chưa phân tích xong. / Raw evidence captured at the exact SHA; analysis pending. |
 | `OBSERVED_SOURCE` | Có trong mã nguồn tại SHA; chưa chứng minh đã chạy. / Present in source at the SHA; execution not proven. |
-| `OBSERVED_METADATA` | Quan sát từ metadata GitHub (PR, issue, run). / Observed from GitHub metadata. |
+| `OBSERVED_METADATA` | Quan sát từ metadata GitHub (PR, issue, run, release). / Observed from GitHub metadata (PRs, issues, runs, releases). |
 | `UNKNOWN` | Chưa xác lập được bằng chứng. / Evidence not established. |
 
 `BLOCKED` — bị chặn bởi một phụ thuộc hoặc quyết định; dùng kèm một trong hai chiều. / Blocked by a dependency or decision; used alongside either dimension.
@@ -133,7 +133,7 @@ jdeps --ignore-missing-deps -verbose:package -filter:none portal-bff\build\class
 | Phạm vi / Scope | `backend` main classes (worktree tại `832c75f`); `portal-bff` main classes (bản clone làm việc, HEAD `832c75f`, không có thay đổi trên file được track) / Backend and BFF main classes at `832c75f` |
 | Build `portal-bff` | Bằng wrapper backend (Gradle 8.14.3), đúng như job CI `portal-bff`: `backend\gradlew.bat -p portal-bff clean compileJava`. Kết quả `jdeps` giống lần chạy trước bằng wrapper 9.6.0 lạc (chỉ có cạnh `portal → portal`) |
 | Lọc / Filter | Bỏ cạnh tới `java`, `javax`, `jakarta`, `org.springframework`, `com.fasterxml`, `org.slf4j`, `lombok`; chỉ giữ cạnh `com.tricore.dxos → com.tricore.dxos` |
-| Output | `backend-package-deps.txt`, `backend-class-deps.txt`, `deps-internal.txt`, `bff-package-deps.txt` — đính kèm vào PR hoặc `docs/09-evidence/phase-2/jdeps/` |
+| Output | `backend-package-deps.txt`, `backend-class-deps.txt`, `deps-internal.txt`, `bff-package-deps.txt` — đính kèm tại [#183](https://github.com/tricore-opentrix/opentrix/issues/183#issuecomment-6783378923) / attached on #183 |
 
 #### Ma trận tầng → tầng (số cạnh package, bỏ cạnh trong cùng tầng) / Layer → layer matrix (package edges, intra-layer excluded)
 
@@ -213,7 +213,7 @@ Nguồn: Thể lệ OLP PMNM 2026, bảng "Các tiêu chí chấm điểm", nhó
 | 5 | Thư viện và gói đính kèm (10) | Không dùng thư viện sẵn có −5; phát hành kèm gói của dự án khác −5; mã gói đính kèm bị sửa −5. Yêu cầu có thông tin làm rõ thư viện sử dụng | Có `package-lock.json`, khai báo Gradle; `THIRD-PARTY-NOTICES.md` được track và CI đối chiếu với dependency đã resolve; SBOM CycloneDX cho ba thành phần được sinh trong CI nhưng chỉ lưu dạng artifact 30 ngày | `CI_BUILD_PASS_AT_BASELINE` | Đính kèm SBOM vào release dự thi để bằng chứng không hết hạn trước ngày chấm; xác nhận không vendor/sửa thư viện | P1 |
 | 6 | Tài liệu và giao tiếp (10) | Không có bug tracker −5; không có changelog −5; không có readme và hướng dẫn −5 | Có README, CHANGELOG, Issues làm bug tracker (21 issue mở ngày 11/11); nhiều link hỏng và mô tả lỗi thời (mục 8) | `PARTIAL` | Sửa DOC-001, DOC-002, DOC-004 | P1 |
 
-Mức P0 ở bảng trên dựa trên định nghĩa đề xuất ở mục 2.2 ("làm mất điểm PoF"); thang này chờ Bảo và Ánh đồng ý. / P0 here follows the proposed definition in 2.2, pending reviewer agreement.
+Mức ưu tiên ở bảng trên theo thang ở mục 2.2 ("làm mất điểm PoF" là P0). Bảo đã đồng ý thang này trên [#182](https://github.com/tricore-opentrix/opentrix/issues/182#issuecomment-6783205953); chờ Ánh. / Priorities follow the 2.2 scale; agreed by Bảo on #182, pending Ánh.
 
 **Hạn nộp:** **17:00 Chủ Nhật 06/12/2026** (đề thi in nhầm năm 2025; owner xác nhận ngày 2026-11-11). Release dự thi (PoF mục 3) phải được tạo trước mốc này; từ baseline còn khoảng 25 ngày. / Submission deadline: **17:00 Sunday 06/12/2026** (the brief misprints 2025; confirmed by the owner on 2026-11-11). The competition release must exist before this time.
 
@@ -270,7 +270,7 @@ Kiểm tĩnh **15 file Markdown chính**, **67 lần xuất hiện link tương 
 | DOC-004 | `system-architecture`, `core-application-boundary`, `identity-architecture`, `gateway-architecture` dựa trên SHA/PR cũ | Yến | `OBSERVED_SOURCE` | P1 |
 | DOC-005 | Nhiều thư mục `docs/` chỉ là placeholder | Yến | `OBSERVED_SOURCE` | P2 |
 | DOC-006 | Mô tả ownership, provider, bảo mật workflow chồng chéo giữa nhiều tài liệu | Yến | `PARTIAL` | P2 |
-| DOC-007 | README và tài liệu R24 mô tả v0.1.0 lịch sử, v0.2.0 dự kiến; chưa có sổ theo dõi release hiện tại | Bảo | `PARTIAL` | P0 |
+| DOC-007 | README và tài liệu R24 mô tả v0.1.0 lịch sử, v0.2.0 dự kiến; chưa có sổ theo dõi release hiện tại | Bảo | `PARTIAL` | P1 |
 | DOC-008 | Flowable, APISIX, MinIO/SeaweedFS, Facility E2E, Superset được mô tả là đích, chưa nghiệm thu | Owner từng capability | `DESIGNED_ONLY` | P1 |
 | DOC-009 | Chưa kiểm toàn bộ link, anchor, URL ngoài | Yến | `UNKNOWN` | P2 |
 
@@ -282,7 +282,7 @@ Quan sát ngày 2026-11-11 qua `git status --short` trong bản clone làm việ
 
 | ID | Quan sát / Observation | Rủi ro / Risk | Priority |
 |---|---|---|---|
-| HYG-01 | `main` không có wrapper riêng cho `portal-bff` (`git ls-files portal-bff` chỉ có `build.gradle`, `settings.gradle`). Đây là thiết kế có chủ đích: job CI `portal-bff` và `r23-compliance` đều build BFF bằng wrapper backend (`./backend/gradlew -p portal-bff`). Bản clone làm việc có một wrapper BFF **untracked** dùng Gradle 9.6.0, khác 8.14.3 của backend | Wrapper 9.6.0 cục bộ là file lạc, không nên commit; dọn khỏi bản clone. README phải ghi rõ cách build BFF bằng wrapper backend | P2 |
+| HYG-01 | `main` không có wrapper riêng cho `portal-bff` (`git ls-files portal-bff` chỉ có `build.gradle`, `settings.gradle`). Đây là thiết kế có chủ đích: job CI `portal-bff` và `r23-compliance` đều build BFF bằng wrapper backend (`./backend/gradlew -p portal-bff`). Bản clone làm việc từng có một wrapper BFF **untracked** dùng Gradle 9.6.0 (đã xóa ngày 2026-11-11) | Không commit wrapper riêng cho BFF. README phải ghi rõ cách build BFF bằng wrapper backend | P2 |
 | HYG-02 | Thư mục audit, `R27_Step2_*.zip` và file `*-deps.txt` nằm trong thư mục gốc repo | Dễ bị commit nhầm bằng `git add .`; `.zip` là định dạng bị trừ điểm | P2 |
 
 ### 9.1 Kiểm kê nhánh và PR (P2-GOV-03) / Branch and PR inventory
@@ -306,7 +306,7 @@ Snapshot `2026-11-11T00:41Z` sau `git fetch --prune origin` và `gh pr list --st
 | GOV-01 | Chỉ còn 5 nhánh remote, 2 PR mở; các nhánh R16, R29, R31, R33 và revert PR #158 đã bị xóa | Việc dọn nhánh theo #171 có hiệu lực; repo gọn | `OBSERVED_METADATA` | — | — | — |
 | GOV-02 | `docs/infra-r21-compose-plan` không có PR mở, commit cuối 2026-11-05 | Nhánh mồ côi: hoặc mở PR, hoặc lưu kết quả vào issue rồi xóa nhánh | `OBSERVED_METADATA` | P2 | Yến | Bảo |
 | GOV-03 | Template báo cáo Phase 2 nằm ở PR [#186](https://github.com/tricore-opentrix/opentrix/pull/186) còn **draft**, chưa có trong `main`; #183 yêu cầu báo cáo "dùng template trong cùng thư mục" | Báo cáo các khối chưa đối chiếu được với một template đã nghiệm thu; nên merge #186 trước hoặc cùng lúc với các PR báo cáo | `OBSERVED_METADATA` | P1 | Yến | Bảo |
-| GOV-04 | Chưa có nhánh remote nào cho báo cáo Khối A và Khối B tại thời điểm snapshot | Khối A chưa mở PR theo yêu cầu của #183; Khối B chưa có sản phẩm để hợp nhất | `OBSERVED_METADATA` | P1 | Yến (A), Bảo (B) | Bảo (A), Yến (B) |
+| GOV-04 | Tại thời điểm snapshot chưa có nhánh remote nào cho báo cáo Khối A và Khối B. Sau snapshot, Khối A đã có nhánh `docs/arch-phase2-block-a` và PR chứa chính báo cáo này | Khối A: đã xử lý. Khối B: chưa có sản phẩm để hợp nhất | `OBSERVED_METADATA` | P1 | Bảo (B) | Yến (B) |
 | GOV-05 | Các nhánh nguồn của PR đã đóng #145 (R29), #156 (R33) đã bị xóa; báo cáo Khối C vẫn dẫn permalink tới SHA `5d577dd`, `181e559` | Commit của PR đã đóng vẫn truy cập được qua PR trên GitHub, nên permalink chưa hỏng; nên dẫn kèm số PR để giữ truy vết | `OBSERVED_METADATA` | P3 | Ánh | Yến |
 
 ## 10. Phát hiện tổng hợp và phân luồng rủi ro / Consolidated findings and risk routing
@@ -325,7 +325,8 @@ Snapshot `2026-11-11T00:41Z` sau `git fetch --prune origin` và `gh pr list --st
 | SEC-03, SEC-04: ACL tenant và E2E bảo mật | P1 | Bảo | Yến | Negative test 401/403/scoped-404 và CSRF có log |
 | API-03: chưa có OpenAPI công bố | P1 | Ánh | Yến | Theo #112 |
 | DOC-001/002/004 | P1 | Yến | Bảo | Link đúng, nội dung khớp baseline |
-| GOV-03, GOV-04: template #186 và PR báo cáo Khối A, B | P1 | Yến | Bảo | #186 merge; PR Khối A mở với `Closes #183`; Khối B có PR |
+| GOV-03: template #186 chưa merge | P1 | Yến | Bảo | #186 chuyển ready và merge |
+| GOV-04: Khối B chưa có PR | P1 | Bảo | Yến | Khối B có PR báo cáo theo template |
 | GOV-02: nhánh mồ côi `docs/infra-r21-compose-plan` | P2 | Yến | Bảo | Mở PR hoặc ghi kết quả vào issue rồi xóa nhánh |
 
 ## 11. Việc còn lại và bàn giao review / Pending work and review handoff
@@ -335,6 +336,7 @@ Snapshot `2026-11-11T00:41Z` sau `git fetch --prune origin` và `gh pr list --st
 - [x] Trích mức class cho BND-10; chạy `jdeps` cho `portal-bff` (BND-11).
 - [x] Đính kèm 4 file output `jdeps` vào [#183](https://github.com/tricore-opentrix/opentrix/issues/183#issuecomment-6783378923).
 - [x] Kiểm kê nhánh và PR tại snapshot 2026-11-11 (mục 9.1, P2-GOV-03).
+- [x] Mở PR báo cáo Khối A từ nhánh `docs/arch-phase2-block-a` (`Refs #183`; #183 chỉ đóng sau bước hợp nhất).
 - [ ] Lập văn bản ghi nhận quyết định ở mục 7.1 — hoãn sang giai đoạn ADR (DEC-01).
 - [ ] Chép bộ từ vựng và thang ưu tiên (mục 2) vào #182 sau khi Ánh đồng ý (Bảo đã đồng ý: [#182](https://github.com/tricore-opentrix/opentrix/issues/182#issuecomment-6783205953)).
 - [ ] Mở ADR cho DEC-01 đến DEC-04; không thay đổi ADR-007 hồi tố.
