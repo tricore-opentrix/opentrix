@@ -56,7 +56,7 @@ Mục "Evidence contract" của #182 cho phép một thành phần có nhiều c
 
 Có class hoặc tên test trong repo **không** đồng nghĩa với test đã chạy thành công: `TESTED` ở chiều hiện thực phải đi cùng một mã ở chiều bằng chứng cho biết test đã chạy hay chưa. / A class or test name alone never means a successful run: `TESTED` must be paired with an evidence code.
 
-Ghi chú cho báo cáo này: các bảng ở mục 3–9 được viết trước khi chốt hai chiều, nên chủ yếu ghi chiều bằng chứng; `PARTIAL`, `DESIGNED_ONLY`, `MISSING` trong các bảng đó là chiều hiện thực. / Tables in sections 3–9 predate the two-dimension rule and mostly record the evidence dimension.
+Các bảng phân tích ở mục 3–9 được viết trước khi chốt hai chiều. Sổ finding chuẩn hóa theo đủ 11 cột của Evidence contract #182, có cả hai chiều trạng thái, nằm ở **Phụ lục A**; khi hai nơi khác nhau, Phụ lục A là bản chuẩn. / The analytic tables in sections 3–9 predate the two-dimension rule; **Appendix A** is the normalized 11-column register and prevails on any difference.
 
 ### 2.2 Thang ưu tiên / Priority scale
 
@@ -81,7 +81,7 @@ Ghi chú cho báo cáo này: các bảng ở mục 3–9 được viết trướ
 | Object storage | Có `core.data.ObjectStoragePort` và bản in-memory cho test | **Không có** adapter S3/MinIO/SeaweedFS chạy thật | `MISSING` (adapter) |
 | Facility | Chỉ có fixture MOCK ở frontend; backend trống | Chưa có tái sử dụng ứng dụng thứ hai | `DESIGNED_ONLY` |
 
-**Topology thực tế / Actual topology:** hiện trạng đã có **ba thành phần chạy riêng** — `backend`, `portal-bff`, `frontend` — cộng Keycloak là nhà cung cấp định danh bên ngoài. Nhóm đã chốt backend là Modular Monolith (mục 7); ADR cần ghi rõ `portal-bff` tiếp tục là deployable riêng hay không. / The as-is already has **three deployables** plus external Keycloak. The team chose a Modular Monolith backend (section 7); the ADR must state whether `portal-bff` stays a separate deployable.
+**Topology theo mã nguồn / Source-level topology:** mã nguồn có **ba thành phần build và đóng gói riêng** — `backend`, `portal-bff`, `frontend` — cộng Keycloak là nhà cung cấp định danh bên ngoài. Đây là trạng thái buildable/deployable theo mã và CI; **chưa xác minh runtime** (chưa chạy stack thật trong audit này). Nhóm đã chốt backend là Modular Monolith (mục 7); ADR cần ghi rõ `portal-bff` tiếp tục là thành phần triển khai riêng hay không. / Three separately buildable/deployable components per source and CI; runtime not verified in this audit.
 
 **Luồng dự kiến theo mã / Code-level intended flow (chưa phải bằng chứng E2E):** React Portal → Portal BFF (OIDC session, CSRF, Bearer forwarding) → `HelpdeskController` → `HelpdeskService` → PostgreSQL.
 
@@ -166,7 +166,7 @@ jdeps --ignore-missing-deps -verbose:package -filter:none portal-bff\build\class
 
 Giới hạn: `jdeps` không thấy Spring bean wiring, reflection hay phân quyền runtime; `--ignore-missing-deps` không phải kết luận "sạch". / `jdeps` cannot see bean wiring, reflection or runtime authorization; `--ignore-missing-deps` is not an all-clear.
 
-**CI checkpoint:** [Actions run 42866668592](https://github.com/tricore-opentrix/opentrix/actions/runs/42866668592) — `push` tại đúng SHA, 5/5 job PASS (`backend`, `portal-bff`, `frontend`, `r23-compliance`, `repo-hygiene`). Bước *Upload test reports* của backend bị `skipped`, nên chỉ ghi được `CI_BUILD_PASS_AT_BASELINE`. Việc test PostgreSQL Golden Path có bị skip trong CI hay không thuộc Khối B.
+**CI checkpoint:** [Actions run 42866668592](https://github.com/tricore-opentrix/opentrix/actions/runs/42866668592) — `push` tại đúng SHA, 5/5 job PASS (`backend`, `portal-bff`, `frontend`, `r23-compliance`, `repo-hygiene`). Theo log của run này (do Bảo đối chiếu khi review PR #188): frontend có **385 test Vitest PASS**; ba test suite backend có **35 test PASS**. Bước *Upload test reports* của backend bị `skipped`, nên không có báo cáo JUnit lưu lại; trạng thái vẫn là `CI_BUILD_PASS_AT_BASELINE`, kèm số liệu đọc từ log. Việc test PostgreSQL Golden Path có bị skip trong CI hay không thuộc Khối B.
 
 ## 5. ADR, hợp đồng API, định danh và bảo mật / ADR, API contracts, identity and security
 
@@ -207,7 +207,7 @@ Nguồn: Thể lệ OLP PMNM 2026, bảng "Các tiêu chí chấm điểm", nhó
 | # | Tiêu chí / Criterion | Điểm trừ liên quan / Relevant deductions (Thể lệ) | Hiện trạng / As-is | Trạng thái / Status | Việc cần làm / Action | Priority |
 |---|---|---|---|---|---|---|
 | 1 | Quản lý mã nguồn trên Internet (5) | Không có web viewer −3; không truy cập mở −3; không thực sự sử dụng −5 | Repo GitHub công khai, có web viewer, đang dùng thực tế | `OBSERVED_METADATA` | — | — |
-| 2 | Giấy phép OSI-approved (10) | Không ghi giấy phép trong từng tệp −5; giấy phép không tương thích −5; không có thông báo mục đích giấy phép −5; không có bản sao toàn văn −5 | Tại SHA có `LICENSE`, `LICENSES/Apache-2.0.txt`, `NOTICE`, `REUSE.toml`. Job `repo-hygiene` chạy `fsfe/reuse-action@v5` (REUSE lint toàn repo) và PASS tại baseline (run 42866668592). Job `r23-compliance` chạy canary từ chối giấy phép, sinh SBOM CycloneDX cho backend, BFF, frontend, kiểm giấy phép và đối chiếu `THIRD-PARTY-NOTICES.md` | `CI_BUILD_PASS_AT_BASELINE` | Giữ gate; Khối C đổi `NOASSERTION` để thống nhất người giữ bản quyền | — |
+| 2 | Giấy phép OSI-approved (10) | Không ghi giấy phép trong từng tệp −5; giấy phép không tương thích −5; không có thông báo mục đích giấy phép −5; không có bản sao toàn văn −5 | Tại SHA có `LICENSE`, `LICENSES/Apache-2.0.txt`, `NOTICE`, `REUSE.toml`. Job `repo-hygiene` chạy `fsfe/reuse-action@v5` (REUSE lint toàn repo) và PASS tại baseline (run 42866668592). Job `r23-compliance` chạy canary từ chối giấy phép, sinh SBOM CycloneDX cho backend, BFF, frontend, kiểm giấy phép và đối chiếu `THIRD-PARTY-NOTICES.md` | `CI_BUILD_PASS_AT_BASELINE` | Giữ gate. Báo cáo này **không** đề xuất đổi dòng `SPDX-FileCopyrightText` ở bất kỳ file nào: người giữ bản quyền (kể cả giá trị `NOASSERTION` ở báo cáo Khối C) chỉ được chốt theo kết luận provenance của [#138](https://github.com/tricore-opentrix/opentrix/issues/138) | — |
 | 3 | Có bản release (5) | Không có phát hành −5; không phát hành theo phiên bản −3; dùng định dạng không mở (zip, rar, arj…) −3. Thể lệ ghi bản release đầu tiên phải tạo trước thời điểm nộp bài | Có một tag `v0.1.0` (`98530b9`, 2026-11-04). Release công bố "DX-OS Open-Core v0.1.0 — MVP Pre-release" là **Pre-release**, đính kèm `dxos-open-core-0.1.0.tar.gz` (563 495 byte, sha256 `32d8ae81…a5be710`) và `SHA256SUMS`. Có thêm một bản **Draft** trùng tag. GitHub luôn tự sinh thêm "Source code (zip)" | `OBSERVED_METADATA` | Yêu cầu "ít nhất một release có phiên bản, định dạng mở" đã có. Còn: release dự thi từ mã mới (version mới, nên là bản chính thức), đính kèm `.tar.gz`, `SHA256SUMS` và SBOM; dọn bản Draft trùng; ghi chú phát hành chỉ rõ tệp `.tar.gz`. Tên tệp vẫn là `dxos-open-core`, cần thống nhất với tên OpenTrix | P1 |
 | 4 | Build từ mã nguồn (10) | Không có hướng dẫn −5; cấu hình bằng sửa tay −5; không cấu hình được trước khi dịch −5; dịch bằng công cụ nguồn đóng −5; không chạy được ngoài thư mục mã nguồn −5 | Backend có Gradle wrapper (CI kiểm bằng `wrapper-validation`). `portal-bff` không có wrapper riêng; job CI `portal-bff` ghi rõ "uses the backend Gradle wrapper" và chạy `./backend/gradlew -p portal-bff build` — xem HYG-01. Compose một lệnh chưa xác minh | `PARTIAL` | Xác nhận README hướng dẫn đúng lệnh `backend/gradlew -p portal-bff`; Khối B chạy build sạch theo README trên máy mới | P1 |
 | 5 | Thư viện và gói đính kèm (10) | Không dùng thư viện sẵn có −5; phát hành kèm gói của dự án khác −5; mã gói đính kèm bị sửa −5. Yêu cầu có thông tin làm rõ thư viện sử dụng | Có `package-lock.json`, khai báo Gradle; `THIRD-PARTY-NOTICES.md` được track và CI đối chiếu với dependency đã resolve; SBOM CycloneDX cho ba thành phần được sinh trong CI nhưng chỉ lưu dạng artifact 30 ngày | `CI_BUILD_PASS_AT_BASELINE` | Đính kèm SBOM vào release dự thi để bằng chứng không hết hạn trước ngày chấm; xác nhận không vendor/sửa thư viện | P1 |
@@ -246,7 +246,7 @@ Trạng thái `TEAM_DECIDED — ADR_NOT_MERGED`: nhóm đã thống nhất, Yế
 |---|---|---|---|
 | RISK-01 | Đề yêu cầu lõi Tầng 1 headless tách khỏi ứng dụng Tầng 2. Trong một deployable, ranh giới này chỉ được bảo vệ bằng quy tắc module và ArchUnit | Nếu BND-01/02 chưa sửa và ArchUnit chưa phủ Application/Gateway, giám khảo khó thấy ranh giới lõi/ứng dụng | P0 |
 | RISK-02 | Chuyển từ engine tự viết sang Flowable khi còn khoảng 25 ngày tới hạn nộp | Có thể làm hỏng Golden Path đang có test; ADR phải nói rõ Flowable là điều kiện của bản dự thi hay đích sau dự thi | P0 (quyết định phạm vi) |
-| RISK-03 | `portal-bff` đã là deployable riêng trên thực tế | Mô tả "một deployable" phải nói rõ backend, không phải toàn hệ thống | P2 |
+| RISK-03 | `portal-bff` là thành phần build/đóng gói riêng theo mã và CI (chưa xác minh runtime) | Mô tả "một deployable" phải nói rõ là backend, không phải toàn hệ thống | P2 |
 
 ### 7.3 Quyết định còn treo và người quyết đề xuất / Pending decisions and proposed deciders
 
@@ -254,7 +254,7 @@ Trạng thái `TEAM_DECIDED — ADR_NOT_MERGED`: nhóm đã thống nhất, Yế
 |---|---|---|---|---|
 | DEC-01 | Ghi các quyết định 7.1 thành ADR và merge vào `main` | Yến | Bảo, Ánh | P0 |
 | DEC-02 | Phạm vi Flowable cho bản dự thi (RISK-02): bắt buộc trước hạn nộp hay sau | Yến | Bảo | P0 |
-| DEC-03 | Object storage provider: cập nhật ADR-007 MinIO → SeaweedFS hay giữ | Bảo | Yến | P0 |
+| DEC-03 | Object storage provider: cập nhật ADR-007 MinIO → SeaweedFS hay giữ. Theo dõi tại [#181](https://github.com/tricore-opentrix/opentrix/issues/181). Tách **người quyết ADR** khỏi **người triển khai adapter**; người triển khai không được giao từ báo cáo audit này | Theo #181 | Theo #181 | P0 (quyết định) |
 | DEC-04 | API Gateway: triển khai APISIX hay dùng năng lực gateway hiện có | Yến | Bảo | P0 |
 | DEC-05 | BI: Superset (ADR-008) hay Metabase | Ánh | Yến | P2 |
 
@@ -311,11 +311,13 @@ Snapshot `2026-11-11T00:41Z` sau `git fetch --prune origin` và `gh pr list --st
 
 ## 10. Phát hiện tổng hợp và phân luồng rủi ro / Consolidated findings and risk routing
 
-| Finding | Priority | Owner | Reviewer | Điều kiện đóng / Acceptance |
+Cột "Owner xử lý đề xuất" chỉ là **đề xuất** cho backlog. Báo cáo audit không giao việc; owner chỉ có hiệu lực khi #182 hợp nhất backlog và người được đề xuất xác nhận. Owner của **finding** (người ghi nhận) là Yến, xem Phụ lục A. / Remediation owners below are proposals only; the audit assigns no work.
+
+| Finding | Priority | Owner xử lý đề xuất / Proposed remediation owner | Reviewer | Điều kiện đóng / Acceptance |
 |---|---|---|---|---|
 | DEC-01, DEC-02: ghi ADR cho quyết định đã chốt; chốt phạm vi Flowable | P0 | Yến | Bảo | ADR được Bảo và Ánh review, merge vào `main` |
 | RISK-01: ranh giới headless trong Modular Monolith | P0 | Bảo | Yến | BND-01/02 được sửa; ArchUnit phủ Application/Gateway |
-| ADR-01 / DEC-03, adapter storage `MISSING` và BND-09 | P0 | Bảo | Yến | ADR cập nhật; adapter S3 có contract test với provider thật; có ít nhất một use case dùng `core.data` |
+| ADR-01 / DEC-03 và BND-09: quyết định provider storage (theo [#181](https://github.com/tricore-opentrix/opentrix/issues/181)) | P0 (quyết định) | Người quyết theo #181; triển khai adapter: chưa giao | Theo #181 | ADR cập nhật theo #181. Adapter, contract test và use case dùng `core.data` được lập thành backlog riêng sau khi #182 hợp nhất |
 | DEC-04: năng lực API Gateway | P0 | Yến | Bảo | Quyết định ghi trong ADR; nếu dùng APISIX thì có route chạy thật |
 | PoF 3 và DOC-007: release dự thi (đã có `v0.1.0` pre-release kèm `.tar.gz`) | P1 | Bảo | Yến | Release từ mã mới, có version mới, `.tar.gz`, `SHA256SUMS` và SBOM đính kèm; ghi chú phát hành; dọn Draft trùng của `v0.1.0`; sổ theo dõi release trong README |
 | PoF 4 và HYG-01: build từ mã nguồn | P1 | Bảo | Yến | README ghi đúng lệnh build cả backend và BFF; build sạch trên máy mới |
@@ -347,7 +349,7 @@ Snapshot `2026-11-11T00:41Z` sau `git fetch --prune origin` và `gh pr list --st
 - [ ] Gộp một danh sách rủi ro đã khử trùng vào #182; chỉ đánh dấu #183 hoàn tất sau khi có sign-off của reviewer.
 - [ ] Sửa tham chiếu #159, #160, #165 trong #182 thành "đã đóng, không merge, chỉ là thiết kế lịch sử" (cần đồng ý trước khi sửa).
 
-**Hạn đóng pha audit đề xuất:** hết ngày **2026-11-12**. Sau mốc này #182 chỉ còn danh sách rủi ro đã gộp và nhóm chuyển sang xử lý các mục P0. / Proposed audit close: end of 2026-11-12, then the team moves to P0 work.
+**Mốc mục tiêu nội bộ / Internal target:** cố gắng hoàn tất báo cáo các khối trước hết ngày **2026-11-12**. Đây **không** phải điều kiện chuyển giai đoạn: nhóm chỉ chuyển sang giai đoạn tiếp theo khi #182 được ghi verdict `PHASE_2_ACCEPTED` theo tiêu chí nghiệm thu của #182. / 12/11 is an internal target only; the phase changes only after #182 records `PHASE_2_ACCEPTED`.
 
 **Yêu cầu review / Review request:**
 
@@ -385,3 +387,64 @@ Tiền tố / Base prefix: `https://github.com/tricore-opentrix/opentrix/blob/83
 - `docs/08-decisions/{ADR-007-data-storage,ADR-008-dashboard-tool}.md`
 - [GitHub Actions run tại SHA / exact-SHA CI run](https://github.com/tricore-opentrix/opentrix/actions/runs/42866668592)
 - Đề thi PMNM OLP 2026 (mục 3–5) và Thể lệ OLP PMNM 2026 (bảng tiêu chí PoF)
+
+## Phụ lục A — Sổ finding chuẩn hóa / Appendix A — Normalized finding register
+
+Theo Evidence contract của #182: `ID | path/component | branch + exact SHA | observed behavior | source/PR/CI evidence | status | gap/risk | priority | owner | reviewer | proposed action`. Cột trạng thái ghi **chiều hiện thực / chiều bằng chứng** (mục 2.1). **Owner** là người ghi nhận finding (Yến, owner Khối A); người xử lý chỉ là đề xuất trong cột hành động, không phải giao việc. / Status is written as implementation / evidence. Owner is the finding owner; remediation owners in the action column are proposals only.
+
+| ID | Path/component | Branch + SHA | Quan sát / Observed | Bằng chứng / Evidence | Hiện thực / Bằng chứng | Gap/rủi ro | Priority | Owner | Reviewer | Hành động đề xuất / Proposed action |
+|---|---|---|---|---|---|---|---|---|---|---|
+| BND-01 | `gateway.helpdesk.HelpdeskController` | `main@832c75f` | Gọi thẳng `infrastructure.workflow.HelpdeskService` và record lồng của nó | Mã nguồn; `jdeps` mức class (4.1) | `IMPLEMENTED` / `OBSERVED_SOURCE` | Gateway gắn vào hạ tầng; hợp đồng API nằm trong `infrastructure` | P1 | Yến | Bảo | Đưa use case và view model lên `application.helpdesk` (đề xuất: Bảo) |
+| BND-02 | `infrastructure.workflow.HelpdeskService` | `main@832c75f` | Gộp phân quyền nghiệp vụ, điều phối và JDBC | Mã nguồn | `IMPLEMENTED` / `OBSERVED_SOURCE` | Ranh giới Application chưa tách; rủi ro mất tính nguyên tử khi refactor | P1 | Yến | Bảo | Tách tầng Application, giữ transaction (đề xuất: Bảo) |
+| BND-03 | `core.workflow.WorkflowRuntime`, `WorkflowPersistencePort` | `main@832c75f` | Core phụ thuộc port của chính nó; `PostgresWorkflowPersistence` hiện thực port | Mã nguồn | `IMPLEMENTED` / `OBSERVED_SOURCE` | Không có — điểm thiết kế tốt | — | Yến | Bảo | Giữ nguyên |
+| BND-04 | `gateway.workflow.controller.WorkflowController` | `main@832c75f` | Không có `@RestController`/`@Component`; cố ý không đăng ký | Mã nguồn | `IMPLEMENTED` (không đăng ký) / `OBSERVED_SOURCE` | Không được quảng bá là route đang chạy | — | Yến | Bảo | Ghi rõ trong tài liệu API |
+| BND-05 | `CoreDependencyRulesTest` | `main@832c75f` | ArchUnit chỉ phủ Core và giữa các capability | Mã test; run 42866668592 | `PARTIAL` · `TESTED` / `CI_BUILD_PASS_AT_BASELINE` | Chưa chặn vi phạm ở Application/Gateway | P1 | Yến | Bảo | Thêm quy tắc Application/Gateway (đề xuất: Yến) |
+| BND-06 | `backend/settings.gradle` | `main@832c75f` | Một project `dxos-backend` | Mã nguồn | `IMPLEMENTED` / `OBSERVED_SOURCE` | Khớp Modular Monolith; ranh giới module chưa cưỡng chế đủ | P1 | Yến | Bảo | Xem BND-05 |
+| BND-07 | Toàn bộ `backend` main classes | `main@832c75f` | Chỉ một cạnh từ tầng trên vào `infrastructure`; `core` độc lập | `jdeps` package + class (4.1, #183) | `IMPLEMENTED` / `OBSERVED_SOURCE` | Ngoại lệ: BND-01, BND-08, BND-10 | P1 | Yến | Bảo | Dùng ma trận 4.1 làm baseline cho ArchUnit |
+| BND-08 | `gateway.helpdesk` ↔ `gateway.workflow` | `main@832c75f` | `WorkflowJsonConfiguration` tham chiếu DTO Helpdesk; `HelpdeskExceptionHandler` dùng `WorkflowExceptionHandler` | `jdeps` mức class (4.1) | `IMPLEMENTED` / `OBSERVED_SOURCE` | Vòng ở mức module; phần dùng chung biết ứng dụng cụ thể | P1 | Yến | Bảo | Tách cấu hình/xử lý lỗi dùng chung (đề xuất: Bảo) |
+| BND-09 | `core.data` | `main@832c75f` | Không có cạnh vào từ mã main | `jdeps` package (4.1) | `PARTIAL` / `OBSERVED_SOURCE` | Năng lực storage chưa có bên dùng | P0 (quyết định) | Yến | Bảo | Theo #181 (DEC-03) |
+| BND-10 | `gateway.*` → `core.*` | `main@832c75f` | Chủ yếu dùng type giá trị; `WorkflowController → WorkflowRuntime` gọi thẳng engine | `jdeps` mức class (4.1) | `IMPLEMENTED` / `OBSERVED_SOURCE` | Core chưa tách API công khai; cản thay engine (RISK-02) | P2 | Yến | Bảo | Core công bố danh sách type công khai |
+| BND-11 | `portal-bff` | `main@832c75f` | Chỉ cạnh nội bộ `portal → portal` | `jdeps` package, build bằng wrapper backend (4.1) | `IMPLEMENTED` / `OBSERVED_SOURCE` | Không có — tách sạch ở mức mã | — | Yến | Bảo | Giữ nguyên |
+| ADR-01 | `docs/08-decisions/ADR-007-data-storage.md` | `main@832c75f` | Chọn MinIO; khác hướng SeaweedFS | Tài liệu | `DESIGNED_ONLY` · `BLOCKED` / `OBSERVED_SOURCE` | Quyết định provider chưa thống nhất | P0 (quyết định) | Yến | Bảo | Theo #181; không sửa ADR-007 hồi tố |
+| ADR-02 | `docs/08-decisions/ADR-008-dashboard-tool.md` | `main@832c75f` | Chọn Superset; chưa triển khai | Tài liệu | `DESIGNED_ONLY` / `OBSERVED_SOURCE` | Có thể lệch với lựa chọn BI sau này | P2 | Yến | Bảo | DEC-05 |
+| ADR-03 | Tài liệu thiết kế `docs/01-architecture`, `docs/02-core` | `main@832c75f` | Nhiều tài liệu ghi `PROPOSED / REVIEW REQUIRED` | Tài liệu | `DESIGNED_ONLY` / `OBSERVED_SOURCE` | Dễ bị đọc như đã hiện thực | — | Yến | Bảo | Giữ nhãn trạng thái |
+| ADR-04 | PR #159, #160, #165 | metadata GitHub | Đã đóng, không merge | Trang PR | `DESIGNED_ONLY` / `OBSERVED_METADATA` | #182 vẫn mô tả là "proposed" | — | Yến | Bảo | Sửa tham chiếu ở #182 khi được đồng ý |
+| API-01 | `HelpdeskController` | `main@832c75f` | Chín thao tác tại `/api/v1/mvp/requests`, chỉ khi `dxos.helpdesk.enabled=true` | Mã nguồn | `IMPLEMENTED` / `OBSERVED_SOURCE` | Route sống chưa xác minh runtime | — | Yến | Bảo | Khối C (#118) |
+| API-02 | Health, proxy BFF | `main@832c75f` | Có trong mã; Workflow chung không đăng ký | Mã nguồn | `IMPLEMENTED` / `OBSERVED_SOURCE` | — | — | Yến | Bảo | — |
+| API-03 | Spec OpenAPI | `main@832c75f` | Không có file YAML/JSON trong tree | `git ls-tree` | `MISSING` / `OBSERVED_SOURCE` | Thiếu hợp đồng ngoài công bố | P1 | Yến | Bảo | Theo #112 (đề xuất: Ánh) |
+| SEC-01 | `SecurityConfig` | `main@832c75f` | JWT Resource Server stateless, kiểm issuer/audience/subject/token type | Mã nguồn | `IMPLEMENTED` / `OBSERVED_SOURCE` | Chưa có negative test runtime | — | Yến | Bảo | — |
+| SEC-02 | `SpringSecurityCurrentPrincipal` | `main@832c75f` | Lấy principal từ JWT đã xác thực, chuẩn hóa issuer+subject | Mã nguồn | `IMPLEMENTED` / `OBSERVED_SOURCE` | — | — | Yến | Bảo | — |
+| SEC-03 | `WorkflowGatewayPrincipalGate` | `main@832c75f` | Kiểm ở mức thao tác, chưa có ACL tenant/tài nguyên | Mã nguồn | `PARTIAL` / `OBSERVED_SOURCE` | ACL V3 chưa đạt | P1 | Yến | Bảo | Negative test 401/403/scoped-404 (đề xuất: Bảo) |
+| SEC-04 | `portal-bff` `PortalSecurity` | `main@832c75f` | OIDC Code + PKCE, session, CSRF, Bearer forwarding | Mã nguồn; run 42866668592 | `IMPLEMENTED` · `TESTED` / `CI_BUILD_PASS_AT_BASELINE`; E2E `UNKNOWN` | Chưa có E2E với Keycloak thật | P1 | Yến | Bảo | Theo #118 (Khối C) |
+| REQ-01 | Lõi Tầng 1 headless | `main@832c75f` | Core không UI; Helpdesk cùng deployable | Đề thi mục 3; BND-01/02 | `PARTIAL` / `OBSERVED_SOURCE` | RISK-01 | P0 | Yến | Bảo | Xem RISK-01 |
+| REQ-02 | Identity/SSO | `main@832c75f` | Keycloak + JWT + BFF OIDC | Đề thi mục 3; SEC-01/04 | `IMPLEMENTED` / `OBSERVED_SOURCE` | Chưa chạy thật | P1 | Yến | Bảo | Theo #118 |
+| REQ-03 | API Gateway | `main@832c75f` | Chưa có gateway chuyên dụng | Đề thi mục 3 | `PARTIAL` / `OBSERVED_SOURCE` | Cần quyết định năng lực gateway | P0 (quyết định) | Yến | Bảo | DEC-04 |
+| REQ-04 | Dữ liệu có cấu trúc | `main@832c75f` | PostgreSQL, JDBC, Flyway V1–V4 | Mã nguồn | `IMPLEMENTED` / `OBSERVED_SOURCE` | Runtime thuộc Khối B | — | Yến | Bảo | — |
+| REQ-05 | Dữ liệu phi cấu trúc | `main@832c75f` | Chỉ có port và in-memory | Mã nguồn | `MISSING` / `OBSERVED_SOURCE` | Yêu cầu bắt buộc của đề | P0 (quyết định) | Yến | Bảo | Theo #181 |
+| REQ-06 | Workflow | `main@832c75f` | Engine tự viết; Flowable chưa có | Mã nguồn | `IMPLEMENTED` (engine hiện tại), `DESIGNED_ONLY` (Flowable) / `OBSERVED_SOURCE` | RISK-02 | P1 | Yến | Bảo | DEC-02 |
+| REQ-07 | Ứng dụng Tầng 2 | `main@832c75f` | Helpdesk: Portal + BFF + backend | Mã nguồn; Khối C | `IMPLEMENTED` / `OBSERVED_SOURCE`; E2E `UNKNOWN` | Chưa có E2E thật | P1 | Yến | Bảo | Theo #118 |
+| POF-1 | Repo GitHub | `main@832c75f` | Công khai, có web viewer, đang dùng | Metadata repo | `IMPLEMENTED` / `OBSERVED_METADATA` | — | — | Yến | Bảo | — |
+| POF-2 | `LICENSE`, `LICENSES/`, `NOTICE`, `REUSE.toml`, CI | `main@832c75f` | REUSE lint và R23 compliance PASS | `ci.yml`@SHA; run 42866668592 | `IMPLEMENTED` · `TESTED` / `CI_BUILD_PASS_AT_BASELINE` | Người giữ bản quyền chờ #138 | — | Yến | Bảo | Giữ gate; provenance theo #138 |
+| POF-3 | Release `v0.1.0` | tag `v0.1.0`@`98530b9` | Pre-release kèm `.tar.gz`, `SHA256SUMS`; có Draft trùng | `gh release view` | `IMPLEMENTED` / `OBSERVED_METADATA` | Cần release dự thi từ mã mới | P1 | Yến | Bảo | Release dự thi kèm SBOM (đề xuất: Bảo) |
+| POF-4 | Build từ mã nguồn | `main@832c75f` | BFF build bằng wrapper backend; compose chưa xác minh | `ci.yml`@SHA | `PARTIAL` / `CI_BUILD_PASS_AT_BASELINE` | README có thể thiếu lệnh build BFF | P1 | Yến | Bảo | Kiểm README; build sạch (Khối B) |
+| POF-5 | `THIRD-PARTY-NOTICES.md`, SBOM | `main@832c75f` | CI đối chiếu notices; SBOM là artifact 30 ngày | `ci.yml`@SHA | `IMPLEMENTED` · `TESTED` / `CI_BUILD_PASS_AT_BASELINE` | SBOM hết hạn trước ngày chấm | P1 | Yến | Bảo | Đính SBOM vào release |
+| POF-6 | README, CHANGELOG, Issues | `main@832c75f` | Có đủ; nhiều link hỏng | Tree; mục 8 | `PARTIAL` / `OBSERVED_SOURCE` | Mất điểm tài liệu nếu link hỏng | P1 | Yến | Ánh | DOC-001/002/004 |
+| DOC-001 | `docs/README.md` | `main@832c75f` | Trỏ tới index không tồn tại | Kiểm link tĩnh | `PARTIAL` / `OBSERVED_SOURCE` | Điều hướng hỏng | P1 | Yến | Ánh | Sửa link (đề xuất: Yến) |
+| DOC-002 | `docs/01-architecture/dependency-rules.md` | `main@832c75f` | Ghi chưa có ArchUnit | Tài liệu vs `build.gradle` | `PARTIAL` / `OBSERVED_SOURCE` | Tài liệu lỗi thời | P1 | Yến | Ánh | Cập nhật §9 (đề xuất: Yến) |
+| DOC-003 | `frontend/README.md` | `main@832c75f` | Ghi transport HTTP bị chặn dù đã có mã | Tài liệu vs mã | `PARTIAL` / `OBSERVED_SOURCE` | Mô tả sai trạng thái | P1 | Yến | Ánh | Cập nhật README (đề xuất: Ánh) |
+| DOC-004 | Tài liệu kiến trúc `docs/01-architecture`, `docs/02-core` | `main@832c75f` | Dựa trên SHA/PR cũ | Tài liệu | `PARTIAL` / `OBSERVED_SOURCE` | Lệch hiện trạng | P1 | Yến | Ánh | Thêm crosswalk hiện trạng (đề xuất: Yến) |
+| DOC-005 | Thư mục `docs/03…11` | `main@832c75f` | Chỉ là placeholder | Tree | `DESIGNED_ONLY` / `OBSERVED_SOURCE` | — | P2 | Yến | Ánh | Backlog tài liệu |
+| DOC-006 | Tài liệu kiến trúc, capability | `main@832c75f` | Mô tả chồng chéo | Tài liệu | `PARTIAL` / `OBSERVED_SOURCE` | Khó biết bản chuẩn | P2 | Yến | Ánh | Chốt vai trò từng tài liệu |
+| DOC-007 | README, tài liệu R24 | `main@832c75f` | Chưa có sổ theo dõi release hiện tại | Tài liệu; POF-3 | `PARTIAL` / `OBSERVED_SOURCE` | Mơ hồ trạng thái release | P1 | Yến | Ánh | Sổ release trong README (đề xuất: Bảo) |
+| DOC-008 | Tài liệu Flowable, APISIX, storage, Facility, Superset | `main@832c75f` | Mô tả là đích, chưa nghiệm thu | Tài liệu | `DESIGNED_ONLY` / `OBSERVED_SOURCE` | Dễ bị hiểu là đã có | P1 | Yến | Ánh | Gắn nhãn đích/chưa nghiệm thu |
+| DOC-009 | Toàn bộ Markdown | `main@832c75f` | Chưa kiểm hết link, anchor, URL ngoài | — | — / `UNKNOWN` | Có thể còn link hỏng | P2 | Yến | Ánh | Kiểm link toàn repo |
+| HYG-01 | `portal-bff` Gradle wrapper | `main@832c75f` | Không có wrapper riêng; CI dùng wrapper backend | `git ls-files`; `ci.yml`@SHA | `IMPLEMENTED` / `OBSERVED_SOURCE` | README cần ghi lệnh build BFF | P2 | Yến | Bảo | Xem POF-4 |
+| HYG-02 | Thư mục gốc bản clone làm việc | bản clone, không phải `main` | Có thư mục audit, `.zip`, file `*-deps.txt` untracked | `git status` | — / `OBSERVED_SOURCE` | Dễ commit nhầm | P2 | Yến | Bảo | Dời ra ngoài repo |
+| GOV-01 | Nhánh remote | snapshot 2026-11-11T00:41Z | 5 nhánh, 2 PR mở | `git fetch --prune`; `gh pr list` | — / `OBSERVED_METADATA` | — | — | Yến | Bảo | — |
+| GOV-02 | `docs/infra-r21-compose-plan` | snapshot 2026-11-11T00:41Z | Không có PR, commit cuối 05/11 | `git branch -r` | — / `OBSERVED_METADATA` | Nhánh mồ côi | P2 | Yến | Bảo | Mở PR hoặc lưu kết quả rồi xóa (đề xuất: Yến) |
+| GOV-03 | PR #186 template | snapshot 2026-11-11T00:41Z | Còn draft | `gh pr list` | `PARTIAL` / `OBSERVED_METADATA` | Chưa có template chuẩn để đối chiếu | P1 | Yến | Bảo | Ready và merge #186 (đề xuất: Yến) |
+| GOV-04 | Báo cáo Khối B | snapshot 2026-11-11T00:41Z | Chưa có nhánh/PR | `git branch -r` | `MISSING` / `OBSERVED_METADATA` | Chưa hợp nhất được #182 | P1 | Yến | Bảo | Nhắc Khối B nộp |
+| GOV-05 | Permalink trong báo cáo Khối C | snapshot 2026-11-11T00:41Z | Nhánh R29, R33 đã xóa | `git fetch --prune` | — / `OBSERVED_METADATA` | Permalink vẫn mở qua PR | P3 | Yến | Bảo | Dẫn kèm số PR |
+| RISK-01 | Ranh giới headless | `main@832c75f` | Một deployable; ArchUnit chưa phủ Application/Gateway | BND-01/02/05 | — / `OBSERVED_SOURCE` | Giám khảo khó thấy ranh giới lõi/ứng dụng | P0 | Yến | Bảo | Sửa BND-01/02, thêm ArchUnit (đề xuất: Bảo) |
+| RISK-02 | Chuyển sang Flowable | `main@832c75f` | Engine tự viết đang có test | Mã nguồn; mục 7 | — / `OBSERVED_SOURCE` | Có thể làm hỏng Golden Path | P0 (quyết định) | Yến | Bảo | DEC-02 |
+| RISK-03 | Mô tả topology | `main@832c75f` | Ba thành phần build riêng | Mã nguồn; CI | — / `OBSERVED_SOURCE`; runtime `UNKNOWN` | Mô tả "một deployable" dễ gây hiểu nhầm | P2 | Yến | Bảo | Ghi rõ trong ADR |
