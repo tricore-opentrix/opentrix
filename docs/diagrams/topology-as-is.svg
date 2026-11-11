@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 1060" width="850" height="1060" font-family="Arial, Helvetica, sans-serif">
+<!-- SPDX-FileCopyrightText: 2026 TRICORE contributors -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<title>OpenTrix — Tô-pô hệ thống (hiện trạng)</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#000"/></marker>
+<style>
+.n{fill:#fff;stroke:#000;stroke-width:1.2}
+.c{fill:none;stroke:#000;stroke-width:1.2}
+.t{font-size:14px;text-anchor:middle;fill:#000}
+.ct{font-size:12.5px;text-anchor:start;fill:#000;font-weight:bold}
+.l{font-size:13px;text-anchor:middle;fill:#000}
+.lb{fill:#fff;stroke:none}
+.e{fill:none;stroke:#000;stroke-width:1.2}
+.d{stroke-dasharray:5 4}
+</style></defs>
+<rect width="100%" height="100%" fill="#fff"/>
+<rect x="310" y="10" width="300" height="115" class="c"/>
+<text x="322" y="30" class="ct">GIAO DIỆN</text>
+<rect x="210" y="155" width="500" height="115" class="c"/>
+<text x="222" y="175" class="ct">RANH GIỚI PHIÊN VÀ ĐĂNG NHẬP</text>
+<rect x="108" y="300" width="714" height="545" class="c"/>
+<text x="120" y="320" class="ct">DX-OS BACKEND —</text>
+<text x="120" y="337" class="ct">SPRING BOOT / JAVA 21 / MỘT GRADLE PROJECT</text>
+<rect x="50" y="895" width="785" height="150" class="c"/>
+<text x="300" y="915" class="ct">NHÀ CUNG CẤP VÀ DỮ LIỆU</text>
+<rect x="360" y="45" width="200" height="60" class="n"/>
+<text x="460.0" y="70.5" class="t">React Portal</text>
+<text x="460.0" y="89.5" class="t">Vite / TypeScript</text>
+<rect x="360" y="190" width="200" height="60" class="n"/>
+<text x="460.0" y="215.5" class="t">Portal BFF</text>
+<text x="460.0" y="234.5" class="t">Spring Boot</text>
+<rect x="320" y="365" width="280" height="60" class="n"/>
+<text x="460.0" y="390.5" class="t">Security Adapter (infrastructure)</text>
+<text x="460.0" y="409.5" class="t">JWT / Spring Security</text>
+<rect x="320" y="485" width="280" height="60" class="n"/>
+<text x="460.0" y="510.5" class="t">Gateway</text>
+<text x="460.0" y="529.5" class="t">HelpdeskController / Health API</text>
+<rect x="130" y="605" width="220" height="70" class="n"/>
+<text x="240.0" y="635.5" class="t">Application</text>
+<text x="240.0" y="654.5" class="t">Resource ACL / CurrentPrincipal</text>
+<rect x="480" y="605" width="320" height="70" class="n"/>
+<text x="640.0" y="635.5" class="t">Infrastructure</text>
+<text x="640.0" y="654.5" class="t">HelpdeskService / JDBC / PostgreSQL adapter</text>
+<rect x="300" y="745" width="320" height="70" class="n"/>
+<text x="460.0" y="775.5" class="t">Core Contracts &amp; Runtime</text>
+<text x="460.0" y="794.5" class="t">Identity / WorkflowRuntime / Data ports</text>
+<rect x="75" y="935" width="200" height="60" class="n"/>
+<text x="175.0" y="960.5" class="t">Keycloak</text>
+<text x="175.0" y="979.5" class="t">Identity Provider</text>
+<path d="M660,939 A80.0,9 0 0 1 820,939 L820,1006 A80.0,9 0 0 1 660,1006 Z" class="n"/>
+<path d="M660,939 A80.0,9 0 0 0 820,939" class="n" fill="none"/>
+<text x="740.0" y="974.0" class="t">PostgreSQL 17</text>
+<text x="740.0" y="993.0" class="t">Flyway</text>
+<path d="M460,105 L460,190" class="e" marker-end="url(#a)"/>
+<rect x="400.0" y="130" width="120" height="20" class="lb"/>
+<text x="460" y="145" class="l">HTTP cùng origin</text>
+<path d="M460,250 L460,365" class="e" marker-end="url(#a)"/>
+<rect x="414.0" y="275" width="92" height="20" class="lb"/>
+<text x="460" y="290" class="l">Bearer token</text>
+<path d="M460,425 L460,485" class="e" marker-end="url(#a)"/>
+<rect x="391.0" y="445" width="138" height="20" class="lb"/>
+<text x="460" y="460" class="l">Request đã xác thực</text>
+<path d="M360,220 L30,220 L30,965 L75,965" class="e" marker-end="url(#a)"/>
+<rect x="79.0" y="210" width="92" height="20" class="lb"/>
+<text x="125" y="225" class="l">OIDC + PKCE</text>
+<path d="M320,380 L95,380 L95,935" class="e d" marker-end="url(#a)"/>
+<rect x="167.0" y="370" width="96" height="20" class="lb"/>
+<text x="215" y="385" class="l">JWKS / issuer</text>
+<path d="M320,410 L165,410 L165,605" class="e" marker-end="url(#a)"/>
+<path d="M320,515 L290,515 L290,605" class="e" marker-end="url(#a)"/>
+<path d="M600,515 L690,515 L690,605" class="e d" marker-end="url(#a)"/>
+<rect x="601.0" y="558" width="178" height="20" class="lb"/>
+<text x="690" y="573" class="l">Phụ thuộc trực tiếp — #193</text>
+<path d="M240,675 L240,780 L300,780" class="e" marker-end="url(#a)"/>
+<path d="M660,675 L660,780 L620,780" class="e d" marker-end="url(#a)"/>
+<rect x="610.0" y="710" width="100" height="20" class="lb"/>
+<text x="660" y="725" class="l">Hiện thực port</text>
+<path d="M740,675 L740,930" class="e" marker-end="url(#a)"/>
+<rect x="699.0" y="860" width="82" height="20" class="lb"/>
+<text x="740" y="875" class="l">JDBC / SQL</text>
+</svg>
