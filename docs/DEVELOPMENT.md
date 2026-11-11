@@ -148,11 +148,11 @@ Từ `backend/`:
 ./gradlew test --tests com.tricore.dxos.common.health.HealthControllerTest
 ```
 
-`build` đã gồm test và đóng gói. Phiên bản project là `0.1.0` (`rootProject.name = dxos-backend`), nên JAR nằm ở `backend/build/libs/`; tên `dxos-backend-0.0.1-SNAPSHOT.jar` trong `backend/README.md` đã cũ. Test thường không cần PostgreSQL: `build.gradle` cấp giá trị OIDC mặc định cho test.
+`build` đã gồm test và đóng gói. Phiên bản project là `0.1.0` (`rootProject.name = dxos-backend`), nên JAR nằm ở `backend/build/libs/`; tên JAR cũ `dxos-backend-0.0.1-SNAPSHOT.jar` chỉ thuộc bản ghi lịch sử; [Backend README](../backend/README.md) đã ghi tên suy ra `dxos-backend-0.1.0.jar` (chưa xác minh build). Test thường không cần PostgreSQL: `build.gradle` cấp giá trị OIDC mặc định cho test.
 
 Chạy ứng dụng (`bootRun`) cần database đã provision và biến OIDC. **Chỉ `DB_*` là chưa đủ.** Spring Boot có Flyway; các runbook provision riêng và đặt `SPRING_FLYWAY_ENABLED=false`. Không trỏ lần khởi động chưa review vào database dùng chung. Chọn **một** đường đi đầy đủ:
 
-- Workflow cục bộ: [backend/README.md](../backend/README.md) (mục "Chạy backend local từ clone mới").
+- Workflow cục bộ: [runbook Workflow hiện hành](../backend/docs/local-workflow-runbook.md) (checklist an toàn). [Lệnh vận hành gốc](../backend/legacy-workflow-runbook.md) đã chuyển sang lưu trữ lịch sử, không chạy trực tiếp.
 - Helpdesk cục bộ: [scripts/README-helpdesk-local.md](../scripts/README-helpdesk-local.md).
 
 Sau khi môi trường sẵn sàng, từ `backend/`: `.\gradlew.bat bootRun` (Windows) hoặc `./gradlew bootRun` (Linux). Kiểm tra: `Invoke-RestMethod -Uri 'http://localhost:8080/api/v1/health'` → `{"status":"UP"}`. Endpoint này không truy vấn PostgreSQL; nó không chứng minh persistence hay phân quyền. Actuator chỉ mở `/actuator/health`, không chi tiết.
@@ -405,11 +405,11 @@ From `backend/`:
 ./gradlew test --tests com.tricore.dxos.common.health.HealthControllerTest
 ```
 
-`build` already includes tests and packaging. The project version is `0.1.0` (`rootProject.name = dxos-backend`), so the JAR is under `backend/build/libs/`; the name `dxos-backend-0.0.1-SNAPSHOT.jar` in `backend/README.md` is stale. Ordinary tests need no PostgreSQL: `build.gradle` supplies default OIDC values for tests.
+`build` already includes tests and packaging. The project version is `0.1.0` (`rootProject.name = dxos-backend`), so the JAR is under `backend/build/libs/`; the old JAR name `dxos-backend-0.0.1-SNAPSHOT.jar` belongs to historical material; the [Backend README](../backend/README.md) derives `dxos-backend-0.1.0.jar` (build not rerun). Ordinary tests need no PostgreSQL: `build.gradle` supplies default OIDC values for tests.
 
 Running the application (`bootRun`) needs a provisioned database and OIDC variables. **`DB_*` alone is not enough.** Spring Boot includes Flyway; the runbooks provision separately and set `SPRING_FLYWAY_ENABLED=false`. Never point an unreviewed startup at a shared database. Pick **one** complete path:
 
-- Local Workflow: [backend/README.md](../backend/README.md) (section "Chạy backend local từ clone mới").
+- Local Workflow: [current Workflow checklist](../backend/docs/local-workflow-runbook.md). The [former operational steps](../backend/legacy-workflow-runbook.md) are archived historical material, not executable current instructions.
 - Local Helpdesk: [scripts/README-helpdesk-local.md](../scripts/README-helpdesk-local.md).
 
 When the environment is ready, from `backend/`: `.\gradlew.bat bootRun` (Windows) or `./gradlew bootRun` (Linux). Check: `Invoke-RestMethod -Uri 'http://localhost:8080/api/v1/health'` → `{"status":"UP"}`. This endpoint does not query PostgreSQL; it does not prove persistence or authorization. Actuator exposes only `/actuator/health`, without details.

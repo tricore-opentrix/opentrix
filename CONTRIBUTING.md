@@ -49,6 +49,46 @@ OPENTRIX nhận đóng góp cho nền tảng DX-OS Open-Core trong repository n�
 - **Ngoài phạm vi cổng R23:** container image và service chạy tách biệt (ví dụ Keycloak, PostgreSQL) không được R23 kiểm tra; giấy phép của chúng phải được rà soát thủ công và ghi trong NOTICE.
 - **Không sao chép từ dự án khác:** OPENTRIX chỉ kế thừa các mẫu thiết kế (design pattern) độc lập, không sao chép code, template, icon hay asset.
 
+### Build/test local trên Windows và Linux (AS-IS)
+
+Lệnh dưới đây bám [CI](.github/workflows/ci.yml) và các task đang khai báo; **chưa chạy lại** trên máy của người biên tập tài liệu. Yêu cầu **JDK 21** (Gradle Wrapper `8.14.3` tại `backend/`), **Node.js >=22.12.0** (CI dùng Node 22), npm và Git. Lần đầu cần mạng để tải dependency. `backend/` và `portal-bff/` là hai Gradle project; không cần cài Gradle global.
+
+**Windows PowerShell, từ root repository:**
+
+```powershell
+java -version
+node --version
+.\backend\gradlew.bat -p backend test
+.\backend\gradlew.bat -p portal-bff test
+Push-Location frontend
+npm.cmd ci
+npm.cmd run build
+npm.cmd test
+npm.cmd run check:security
+Pop-Location
+```
+
+**Linux/macOS shell, từ root repository:**
+
+```sh
+java -version
+node --version
+./backend/gradlew -p backend test
+./backend/gradlew -p portal-bff test
+(
+  cd frontend
+  npm ci
+  npm run build
+  npm test
+  npm run check:security
+)
+```
+
+- Test đơn vị/MockMvc/fixture và build xanh **không** chứng minh PostgreSQL, Keycloak hoặc browser LIVE E2E. CI thông thường không tự provision các môi trường này; đếm riêng `PASS / FAIL / SKIPPED`.
+- Script Workflow/Helpdesk dùng PostgreSQL disposable có các opt-in và thao tác tạo/xóa tài nguyên; **không** chạy `workflowIntegrationTest` hoặc launcher migration/cloud trên database dùng chung. Xem [kiểm thử](docs/TESTING.md), [phát triển](docs/DEVELOPMENT.md) và [runbook an toàn](backend/docs/local-workflow-runbook.md).
+- Trước khi gửi PR: ghi SHA, OS/phiên bản công cụ, lệnh, exit code, số test PASS/FAIL/SKIPPED và các check **NOT RUN**. Giữ token/password/CA key ngoài output và commit. Không tự đánh dấu acceptance khi chưa có review độc lập.
+
+
 ### Quy trình làm việc
 
 ```text
@@ -124,6 +164,46 @@ OPENTRIX accepts contributions to the DX-OS Open-Core platform in this repositor
 - **Changing the list:** adding or removing a license requires a PR that changes `scripts/r23-compliance.py`, updates this document in the same PR, and receives source-rights review under [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
 - **Outside the R23 gate:** container images and separately running services (for example Keycloak, PostgreSQL) are not checked by R23; their licenses must be reviewed manually and recorded in NOTICE.
 - **No copying from other projects:** OPENTRIX reuses independent design patterns only, never code, templates, icons, or assets.
+
+### Local build/test on Windows and Linux (AS-IS)
+
+These commands match source-declared tasks and [CI](.github/workflows/ci.yml) but were **not rerun** when this documentation section was written. Use **JDK 21** (Gradle Wrapper `8.14.3` under `backend/`), **Node.js >=22.12.0** (CI uses Node 22), npm and Git. Initial builds need dependency downloads. `backend/` and `portal-bff/` are separate Gradle projects; no global Gradle installation is required.
+
+**Windows PowerShell, from repository root:**
+
+```powershell
+java -version
+node --version
+.\backend\gradlew.bat -p backend test
+.\backend\gradlew.bat -p portal-bff test
+Push-Location frontend
+npm.cmd ci
+npm.cmd run build
+npm.cmd test
+npm.cmd run check:security
+Pop-Location
+```
+
+**Linux/macOS shell, from repository root:**
+
+```sh
+java -version
+node --version
+./backend/gradlew -p backend test
+./backend/gradlew -p portal-bff test
+(
+  cd frontend
+  npm ci
+  npm run build
+  npm test
+  npm run check:security
+)
+```
+
+- Green unit/MockMvc/fixture checks and builds **do not prove** PostgreSQL, Keycloak or real-browser LIVE E2E; ordinary CI does not provision those environments. Report `PASS / FAIL / SKIPPED` separately.
+- Workflow/Helpdesk disposable-PostgreSQL scripts require opt-in and can create/remove resources. **Do not** run `workflowIntegrationTest` or old cloud migration tools on shared data. See [testing](docs/TESTING.md), [development](docs/DEVELOPMENT.md) and [safe Workflow checklist](backend/docs/local-workflow-runbook.md).
+- Before opening a PR record full SHA, OS/tool versions, commands, exit code, PASS/FAIL/SKIPPED and all **NOT RUN** checks. Exclude tokens/passwords/private CA keys from logs and commits. Independent review is required for any acceptance verdict.
+
 
 ### Workflow
 
