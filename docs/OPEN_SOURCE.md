@@ -83,15 +83,15 @@ Bản công khai hiện có là [`v0.1.0`](https://github.com/tricore-opentrix/o
 
 | Hạng mục | Hiện trạng | Bằng chứng / Issue |
 | --- | --- | --- |
-| Toàn văn giấy phép | ✅ `LICENSE`, `LICENSES/Apache-2.0.txt` | B-019, POF-2 |
-| Ghi công dự án | ✅ `NOTICE` | B-019 |
-| SPDX/REUSE từng tệp | ✅ `repo-hygiene` đạt, 338/338 tệp | B-018, POF-2 |
-| Cổng giấy phép phụ thuộc | ✅ `r23-compliance` đạt | B-019, POF-5 |
-| SBOM + third-party notices | ✅ Artifact CI 30 ngày · ⏳ chưa đính vào release | POF-5, #190 |
-| Xác thực Gradle wrapper | ✅ `wrapper-validation@v6` | B-020 |
-| Đối chiếu mã với upstream | ⏳ Chưa thực hiện | B-020, #138 |
-| Thông quyền nguồn gốc | ⏳ Chưa thông quyền | B-021, #138 |
-| Bản dự thi (SemVer, không pre-release) | ⏳ Chưa phát hành | POF-3, #190 |
+| Toàn văn giấy phép |  `LICENSE`, `LICENSES/Apache-2.0.txt` | B-019, POF-2 |
+| Ghi công dự án |  `NOTICE` | B-019 |
+| SPDX/REUSE từng tệp |  `repo-hygiene` đạt, 338/338 tệp | B-018, POF-2 |
+| Cổng giấy phép phụ thuộc |  `r23-compliance` đạt | B-019, POF-5 |
+| SBOM + third-party notices |  Artifact CI 30 ngày · ⏳ chưa đính vào release | POF-5, #190 |
+| Xác thực Gradle wrapper |  `wrapper-validation@v6` | B-020 |
+| Đối chiếu mã với upstream |  Chưa thực hiện | B-020, #138 |
+| Thông quyền nguồn gốc |  Chưa thông quyền | B-021, #138 |
+| Bản dự thi (SemVer, không pre-release) |  Chưa phát hành | POF-3, #190 |
 
 Tài liệu này không khẳng định đã qua rà soát pháp lý hay bảo mật.
 
@@ -168,14 +168,14 @@ The current public release is [`v0.1.0`](https://github.com/tricore-opentrix/ope
 
 | Item | Status | Evidence / Issue |
 | --- | --- | --- |
-| Full license text | ✅ `LICENSE`, `LICENSES/Apache-2.0.txt` | B-019, POF-2 |
-| Project attribution | ✅ `NOTICE` | B-019 |
-| Per-file SPDX/REUSE | ✅ `repo-hygiene` passes, 338/338 files | B-018, POF-2 |
-| Dependency license gate | ✅ `r23-compliance` passes | B-019, POF-5 |
-| SBOM + third-party notices | ✅ 30-day CI artifact · ⏳ not yet attached to a release | POF-5, #190 |
-| Gradle wrapper validation | ✅ `wrapper-validation@v6` | B-020 |
-| Source comparison with upstream | ⏳ Not done | B-020, #138 |
-| Source-rights clearance | ⏳ Not cleared | B-021, #138 |
-| Competition release (SemVer, not pre-release) | ⏳ Not released | POF-3, #190 |
+| Full license text |  `LICENSE`, `LICENSES/Apache-2.0.txt` | B-019, POF-2 |
+| Project attribution |  `NOTICE` | B-019 |
+| Per-file SPDX/REUSE |  `repo-hygiene` passes, 338/338 files | B-018, POF-2 |
+| Dependency license gate |  `r23-compliance` passes | B-019, POF-5 |
+| SBOM + third-party notices |  30-day CI artifact · ⏳ not yet attached to a release | POF-5, #190 |
+| Gradle wrapper validation |  `wrapper-validation@v6` | B-020 |
+| Source comparison with upstream |  Not done | B-020, #138 |
+| Source-rights clearance |  Not cleared | B-021, #138 |
+| Competition release (SemVer, not pre-release) |  Not released | POF-3, #190 |
 
 This document does not assert that any legal or security review has passed.

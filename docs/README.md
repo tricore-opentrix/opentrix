@@ -4,64 +4,148 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Tài liệu OpenTrix / OpenTrix documentation
+# OpenTrix documentation
 
-> **Trạng thái / Status:** 🚧 Khung — đang viết / Skeleton — in progress · **Owner:** @phanyen06ym-ien · **Issue:** #194
+[Project README](../README.md) · [Development](DEVELOPMENT.md) · [Architecture](ARCHITECTURE.md) · [API](API.md)
 
-## Tiếng Việt
+> **Ngôn ngữ / Language:** [Tiếng Việt](#tài-liệu-opentrix--tiếng-việt) · [English](#opentrix-documentation--english)
 
-### Bộ tài liệu chính
+---
 
-| File | Nội dung | Người phụ trách |
-|---|---|---|
-| [DEVELOPMENT.md](DEVELOPMENT.md) | Môi trường, cài đặt Windows/Linux, chạy local, quy trình phát triển | Bảo |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Tổng quan, Core/Application, Identity, Workflow, Gateway, Data, ADR | Yến |
-| [API.md](API.md) | Endpoint, xác thực, phân quyền, mã lỗi, OpenAPI | Ánh |
-| [INTEGRATION.md](INTEGRATION.md) | Tích hợp ứng dụng với Core, ví dụ Helpdesk | Ánh |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Docker Compose, cấu hình, migration, health check | Bảo |
-| [TESTING.md](TESTING.md) | Các lớp test, cách chạy, CI, bằng chứng | Ánh |
-| [OPEN_SOURCE.md](OPEN_SOURCE.md) | Giấy phép, SPDX, thư viện bên thứ ba, nguồn gốc mã | Yến |
-| [RELEASE.md](RELEASE.md) | Phiên bản, cổng phát hành, artifact, release notes | Bảo |
+## Tài liệu OpenTrix — Tiếng Việt
 
-### Lộ trình đọc cho người mới
+[README dự án](../README.md) · [Phát triển](DEVELOPMENT.md) · [Kiến trúc](ARCHITECTURE.md) · [API](API.md)
 
-1. README ở thư mục gốc → 2. DEVELOPMENT.md → 3. ARCHITECTURE.md → 4. API.md / INTEGRATION.md → 5. TESTING.md
+**Trạng thái bộ tài liệu:** Bản nháp, chờ review · **Owner:** @phanyen06ym-ien · **Issue:** #194. Bộ tài liệu đang được viết trong Giai đoạn 3; cột "Trạng thái" bên dưới cho biết file nào đã có nội dung. Tài liệu chỉ mô tả hiện trạng có bằng chứng; phần mục tiêu luôn ghi rõ `PROPOSED` kèm số Issue.
 
-### Tài liệu tham chiếu
+OpenTrix (DX-OS Open-Core) là nền tảng nguồn mở cung cấp năng lực dùng chung (Identity, Workflow, Data) cho ứng dụng dịch vụ nội bộ, với ứng dụng minh họa IT Helpdesk. Trang này là mục lục: cần đọc gì, theo thứ tự nào, tài liệu nào đã sẵn sàng.
 
-- Quyết định kiến trúc (ADR): [08-decisions/](08-decisions/)
-- Bằng chứng kiểm kê Giai đoạn 2: [09-evidence/phase-2/](09-evidence/phase-2/)
-- Báo cáo kiểm chứng: [verification/](verification/)
+### 1. Bộ tài liệu chính
 
-### Quy ước
+| Tài liệu | Đọc khi | Phụ trách | Trạng thái |
+| --- | --- | --- | --- |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Cài môi trường Windows/Linux, chạy local, làm theo quy trình phát triển | Bảo | Khung |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Cần hiểu tô-pô, ranh giới Core/Application, Identity, Workflow, Gateway, Data và kiến trúc mục tiêu | Yến | Bản nháp |
+| [API.md](API.md) | Gọi endpoint, xác thực, phân quyền, xử lý mã lỗi, tra OpenAPI | Ánh | Khung |
+| [INTEGRATION.md](INTEGRATION.md) | Tích hợp ứng dụng mới với Core, theo ví dụ Helpdesk | Ánh | Khung |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Triển khai bằng Docker Compose, cấu hình, migration, health check | Bảo | Khung |
+| [TESTING.md](TESTING.md) | Chạy test, hiểu các lớp test, CI và bằng chứng | Ánh | Khung |
+| [OPEN_SOURCE.md](OPEN_SOURCE.md) | Đánh giá giấy phép, SPDX/REUSE, thư viện bên thứ ba, cổng xuất bản | Yến | Bản nháp |
+| [RELEASE.md](RELEASE.md) | Gắn phiên bản, qua cổng phát hành, đóng gói artifact, viết release notes | Bảo | Khung |
 
-Song ngữ (tiếng Việt trước, tiếng Anh sau). Mỗi file tách rõ **Hiện trạng** (có bằng chứng) và **Mục tiêu** (ghi `PROPOSED` kèm số Issue).
+**Khung:** mới có đề mục. **Bản nháp:** đã có nội dung, chờ review. **Đã review:** đã được review và merge.
 
-## English
+### 2. Lộ trình đọc theo vai trò
 
-### Main documentation set
+- **Người phát triển mới:** [README gốc](../README.md) → [DEVELOPMENT](DEVELOPMENT.md) → [ARCHITECTURE](ARCHITECTURE.md) → [TESTING](TESTING.md)
+- **Người tích hợp ứng dụng:** [ARCHITECTURE](ARCHITECTURE.md) → [API](API.md) → [INTEGRATION](INTEGRATION.md)
+- **Người đánh giá / giám khảo:** [README gốc](../README.md) → [ARCHITECTURE](ARCHITECTURE.md) → [OPEN_SOURCE](OPEN_SOURCE.md) → [RELEASE](RELEASE.md) → [09-evidence/phase-2/](09-evidence/phase-2/)
+- **Người đóng góp:** [CONTRIBUTING.md](../CONTRIBUTING.md) → [DEVELOPMENT](DEVELOPMENT.md) → [OPEN_SOURCE](OPEN_SOURCE.md)
 
-| File | Content | Owner |
-|---|---|---|
-| [DEVELOPMENT.md](DEVELOPMENT.md) | Environment, Windows/Linux setup, local run, workflow | Bảo |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Overview, Core/Application, Identity, Workflow, Gateway, Data, ADRs | Yến |
-| [API.md](API.md) | Endpoints, authentication, authorization, error codes, OpenAPI | Ánh |
-| [INTEGRATION.md](INTEGRATION.md) | Integrating applications with Core, Helpdesk example | Ánh |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Docker Compose, configuration, migrations, health checks | Bảo |
-| [TESTING.md](TESTING.md) | Test layers, running tests, CI, evidence | Ánh |
-| [OPEN_SOURCE.md](OPEN_SOURCE.md) | License, SPDX, third-party libraries, provenance | Yến |
-| [RELEASE.md](RELEASE.md) | Versioning, release gates, artifacts, release notes | Bảo |
+### 3. Tệp ở thư mục gốc
 
-### Reading path for newcomers
+| Tệp | Nội dung |
+| --- | --- |
+| [README.md](../README.md) | Giới thiệu dự án, trạng thái phát hành |
+| [LICENSE](../LICENSE) | Toàn văn Apache License 2.0 |
+| [NOTICE](../NOTICE) | Ghi công bản quyền dự án |
+| [CHANGELOG.md](../CHANGELOG.md) | Lịch sử thay đổi theo phiên bản |
+| [CONTRIBUTING.md](../CONTRIBUTING.md) | Quy trình đóng góp, header SPDX, chính sách giấy phép |
+| [SECURITY.md](../SECURITY.md) | Cách báo cáo lỗ hổng bảo mật |
 
-1. Root README → 2. DEVELOPMENT.md → 3. ARCHITECTURE.md → 4. API.md / INTEGRATION.md → 5. TESTING.md
+### 4. Tài liệu tham chiếu
 
-### Reference material
+- **Quyết định kiến trúc (ADR)** — [08-decisions/](08-decisions/):
+  - [ADR-007 — MVP object storage provider](08-decisions/ADR-007-data-storage.md) (đang được thay thế, #181)
+  - [ADR-008 — MVP analytics dashboard provider](08-decisions/ADR-008-dashboard-tool.md)
+- **Bằng chứng kiểm kê Giai đoạn 2** — [09-evidence/phase-2/](09-evidence/phase-2/): Khối A (kiến trúc), Khối B (backend/hạ tầng), Khối C (ứng dụng).
+- **Báo cáo kiểm chứng** — [verification/](verification/): Issue #53 (Helpdesk), Issue #90 (ArchUnit), R31 (bảng đối chiếu API Helpdesk).
 
-- Architecture decisions (ADRs): [08-decisions/](08-decisions/)
-- Phase 2 audit evidence: [09-evidence/phase-2/](09-evidence/phase-2/)
-- Verification reports: [verification/](verification/)
+### 5. Tài liệu cũ đang chuyển tiếp
 
-### Conventions
+| Thư mục cũ | Sẽ gộp vào |
+| --- | --- |
+| [00-project/](00-project/) | Chưa chốt |
+| [01-architecture/](01-architecture/) | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| [02-core/](02-core/) | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| [06-deployment/](06-deployment/) | [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
+| [evidence/](evidence/) | [09-evidence/](09-evidence/) |
 
-Bilingual (Vietnamese first, then English). Each file separates **Current state** (with evidence) from **Target** (marked `PROPOSED` with an issue number).
+Các thư mục này sẽ bị gỡ sau khi nội dung đã được gộp. **Không** dùng chúng làm nguồn chuẩn.
+
+### 6. Quy ước
+
+- Song ngữ: tiếng Việt trước, tiếng Anh sau, cùng mục và cùng bảng.
+- Mỗi file tách **Hiện trạng** (có bằng chứng) và **Mục tiêu** (ghi `PROPOSED` kèm số Issue).
+- Trạng thái ghi bằng chữ, không dùng biểu tượng.
+- File mới phải có header SPDX (xem [CONTRIBUTING.md](../CONTRIBUTING.md) và [OPEN_SOURCE.md](OPEN_SOURCE.md)).
+
+---
+
+## OpenTrix documentation — English
+
+[Project README](../README.md) · [Development](DEVELOPMENT.md) · [Architecture](ARCHITECTURE.md) · [API](API.md)
+
+**Documentation status:** Draft, pending review · **Owner:** @phanyen06ym-ien · **Issue:** #194. The documentation set is being written in Phase 3; the "Status" column below shows which files have content. The documents describe only the evidenced current state; target material is always marked `PROPOSED` with an issue number.
+
+OpenTrix (DX-OS Open-Core) is an open-source platform providing shared capabilities (Identity, Workflow, Data) to internal service applications, with IT Helpdesk as the reference application. This page is the index: what to read, in which order, and what is ready.
+
+### 1. Main documentation set
+
+| Document | Read when you need to | Owner | Status |
+| --- | --- | --- | --- |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Set up Windows/Linux, run locally, follow the development workflow | Bảo | Skeleton |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Understand the topology, Core/Application boundaries, Identity, Workflow, Gateway, Data and the target architecture | Yến | Draft |
+| [API.md](API.md) | Call endpoints, authenticate, authorize, handle error codes, consult OpenAPI | Ánh | Skeleton |
+| [INTEGRATION.md](INTEGRATION.md) | Integrate a new application with Core, following the Helpdesk example | Ánh | Skeleton |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy with Docker Compose, configure, migrate, check health | Bảo | Skeleton |
+| [TESTING.md](TESTING.md) | Run tests, understand test layers, CI and evidence | Ánh | Skeleton |
+| [OPEN_SOURCE.md](OPEN_SOURCE.md) | Assess licensing, SPDX/REUSE, third-party libraries, the publication gate | Yến | Draft |
+| [RELEASE.md](RELEASE.md) | Version, pass release gates, package artifacts, write release notes | Bảo | Skeleton |
+
+**Skeleton:** headings only. **Draft:** content written, pending review. **Reviewed:** reviewed and merged.
+
+### 2. Reading paths by role
+
+- **New developer:** [Root README](../README.md) → [DEVELOPMENT](DEVELOPMENT.md) → [ARCHITECTURE](ARCHITECTURE.md) → [TESTING](TESTING.md)
+- **Application integrator:** [ARCHITECTURE](ARCHITECTURE.md) → [API](API.md) → [INTEGRATION](INTEGRATION.md)
+- **Reviewer / judge:** [Root README](../README.md) → [ARCHITECTURE](ARCHITECTURE.md) → [OPEN_SOURCE](OPEN_SOURCE.md) → [RELEASE](RELEASE.md) → [09-evidence/phase-2/](09-evidence/phase-2/)
+- **Contributor:** [CONTRIBUTING.md](../CONTRIBUTING.md) → [DEVELOPMENT](DEVELOPMENT.md) → [OPEN_SOURCE](OPEN_SOURCE.md)
+
+### 3. Root files
+
+| File | Content |
+| --- | --- |
+| [README.md](../README.md) | Project introduction, release status |
+| [LICENSE](../LICENSE) | Full Apache License 2.0 text |
+| [NOTICE](../NOTICE) | Project copyright attribution |
+| [CHANGELOG.md](../CHANGELOG.md) | Change history by version |
+| [CONTRIBUTING.md](../CONTRIBUTING.md) | Contribution workflow, SPDX headers, license policy |
+| [SECURITY.md](../SECURITY.md) | How to report security vulnerabilities |
+
+### 4. Reference material
+
+- **Architecture decisions (ADRs)** — [08-decisions/](08-decisions/):
+  - [ADR-007 — MVP object storage provider](08-decisions/ADR-007-data-storage.md) (being superseded, #181)
+  - [ADR-008 — MVP analytics dashboard provider](08-decisions/ADR-008-dashboard-tool.md)
+- **Phase 2 audit evidence** — [09-evidence/phase-2/](09-evidence/phase-2/): Block A (architecture), Block B (backend/infrastructure), Block C (application).
+- **Verification reports** — [verification/](verification/): Issue #53 (Helpdesk), Issue #90 (ArchUnit), R31 (Helpdesk API crosswalk).
+
+### 5. Legacy documents in transition
+
+| Legacy folder | Will be merged into |
+| --- | --- |
+| [00-project/](00-project/) | Not decided |
+| [01-architecture/](01-architecture/) | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| [02-core/](02-core/) | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| [06-deployment/](06-deployment/) | [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
+| [evidence/](evidence/) | [09-evidence/](09-evidence/) |
+
+These folders will be removed once their content has been merged. **Do not** use them as the authoritative source.
+
+### 6. Conventions
+
+- Bilingual: Vietnamese first, then English, with the same sections and tables.
+- Each file separates **Current state** (with evidence) from **Target** (marked `PROPOSED` with an issue number).
+- Status is written in words, not icons.
+- New files must carry an SPDX header (see [CONTRIBUTING.md](../CONTRIBUTING.md) and [OPEN_SOURCE.md](OPEN_SOURCE.md)).
