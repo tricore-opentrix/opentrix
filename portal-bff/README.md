@@ -4,9 +4,23 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# DX-OS Portal BFF candidate (Y2.2)
+# DX-OS Portal BFF / Cổng tích hợp phiên và OAuth
 
-Server-side OAuth boundary imported from PR #70 `d833b363d22c1ad30a1f5d7bdc7b3d7712fb7d27`. The integration branch imports the complete `frontend/` tree from PR #71 `c73bbc306a698141169304e5da848ea0686700db`, including its stacked baseline, onto Backend #74 `b6e05d080ebb24b54cc4d61dc4e20e2907fd2eaa`. Only an explicit `integration-local` build connects the Helpdesk Portal to this BFF. Normal builds retain MOCK. LIVE remains blocked; no merge/deployment is authorized.
+**Trạng thái / Status:** Mã và kiểm thử fixture của BFF có trong source; build Frontend mặc định vẫn **MOCK**. `integration-local` là **opt-in**, không phải triển khai LIVE. **Real browser LIVE E2E: UNVERIFIED** tại [#118](https://github.com/tricore-opentrix/opentrix/issues/118). Không coi CI/unit tests là nghiệm thu trình duyệt hoặc database.
+
+**Điều hướng / Navigation:** [Bộ tài liệu / Docs index](../docs/README.md) · [Phát triển / Development](../docs/DEVELOPMENT.md) · [API](../docs/API.md) · [Tích hợp / Integration](../docs/INTEGRATION.md) · [Kiểm thử / Testing](../docs/TESTING.md) · [Frontend](../frontend/README.md)
+
+## Chế độ và ranh giới / Modes and boundaries
+
+| Mode / Chế độ | Hiện trạng có nguồn / Source-grounded meaning | Không được suy diễn / Cannot infer |
+| --- | --- | --- |
+| **MOCK (default)** | `frontend` chạy Vite/fixture giả; không cần BFF/Keycloak/DB. | Real SSO, API ACL, database writes |
+| **integration-local (opt-in)** | `npm.cmd run build:integration-local` chọn Frontend entry có BFF/session/CSRF transport; BFF/Backend/Keycloak/HTTPS ingress/DB phải được cấu hình riêng. | Build hoặc fixture tests PASS không xác nhận browser LIVE |
+| **LIVE E2E acceptance** | Phải có bằng chứng cùng SHA/environment cho login thật, ủy quyền, hành trình Helpdesk, negative paths và persistence. | Hiện vẫn **UNVERIFIED** (#118); không có approval triển khai production qua README này |
+
+**English:** The BFF implements a source-level server-side OAuth/session boundary and controlled integration tests. A dedicated `integration-local` frontend build enables its transport, but it does not demonstrate accepted live authentication or persistence. Consult canonical [API](../docs/API.md), [integration](../docs/INTEGRATION.md), [testing](../docs/TESTING.md) and [development](../docs/DEVELOPMENT.md) guides before attempting a disposable local stack.
+
+**Lịch sử / Historical context:** The OAuth candidate originated in PR #70 (`d833b363d22c1ad30a1f5d7bdc7b3d7712fb7d27`), with frontend from PR #71 (`c73bbc306a698141169304e5da848ea0686700db`) and Backend baseline PR #74 (`b6e05d080ebb24b54cc4d61dc4e20e2907fd2eaa`). These provenance identifiers explain the old integration candidate; they are **not** claims that the current main branch is unmerged or undeployed.
 
 ## Contract
 
@@ -21,9 +35,9 @@ Server-side OAuth boundary imported from PR #70 `d833b363d22c1ad30a1f5d7bdc7b3d7
 
 Run `backend/gradlew.bat -p portal-bff test` with JDK 21. Tests cover anonymous/forged-header rejection, the actual CSRF header obtained from `/bff/session`, PKCE, confidential-client enforcement, session response, origin checks, bearer forwarding, hidden 404/409 propagation, redirect refusal, and no write retry. Frontend tests cover the concrete transport and session composition with mocked fetch. These checks do not prove a real Keycloak session, refresh, provider logout, HTTPS ingress, or PostgreSQL persistence.
 
-## Local setup (PowerShell, from the integration worktree root)
+## Historical local setup (PowerShell, dedicated disposable integration worktree only)
 
-1. Use a fresh disposable environment; do not restart or reuse the retained Helpdesk/Keycloak data. In this run, reserve PostgreSQL `127.0.0.1:55442`, RunId `browser_20261029`, and a new Keycloak at `127.0.0.1:8182`. The running containers `dxos-stage6-pg17-local` (50835) and `dxos-olp-staging-postgres-1` (55426) are protected and must not be changed. Use `scripts/README-helpdesk-local.md` with the new RunId/port after the real users exist. Keep Java bound to `127.0.0.1:8080`; seed the three actual users' issuer/sub membership and Helpdesk actors in the new database. No Stage6 SQL, Flyway V1–V4, Facility, or MinIO changes are needed here.
+1. **Historical reproducibility notes only (2026-10-29)**. The specific ports, paths, RunId, installed tools and recorded verification counts below refer to an earlier isolated setup, not prerequisites guaranteed on today's machine. Use a fresh disposable environment; do not restart or reuse the retained Helpdesk/Keycloak data. In this run, reserve PostgreSQL `127.0.0.1:55442`, RunId `browser_20261029`, and a new Keycloak at `127.0.0.1:8182`. The running containers `dxos-stage6-pg17-local` (50835) and `dxos-olp-staging-postgres-1` (55426) are protected and must not be changed. Use `scripts/README-helpdesk-local.md` with the new RunId/port after the real users exist. Keep Java bound to `127.0.0.1:8080`; seed the three actual users' issuer/sub membership and Helpdesk actors in the new database. No Stage6 SQL, Flyway V1–V4, Facility, or MinIO changes are needed here.
 
 2. In realm `tricore`, provision a **new** OpenID Connect client `dxos-portal-bff-local`: Client authentication ON, Standard flow ON, PKCE S256 required, implicit/direct access grants/service accounts OFF. Require `client_secret_basic`. Exact redirect URI: `https://localhost:8443/login/oauth2/code/keycloak`; exact post-logout URI: `https://localhost:8443/`. No wildcard redirects or browser CORS origins are needed. Supply the generated secret only to the BFF process through environment/secret storage. The application refuses reuse of `tricore-api` and public authentication methods.
 
@@ -71,7 +85,7 @@ Run `backend/gradlew.bat -p portal-bff test` with JDK 21. Tests cover anonymous/
 
    Verify browser trust with no certificate exception before logging in. Caddy's local CA must be trusted by the browser/OS; Java must also trust any HTTPS issuer/backend CA it contacts. The ingress strips untrusted forwarding values, pins forwarded host/protocol, serves SPA fallback, rejects `/api/*`, and routes only BFF/OIDC paths to port 8081. Caddy v2.11.7 was downloaded to the ignored `backend/build/helpdesk-browser-local/tools` directory and checked against its published SHA-512 checksum. Validation succeeded. Verified-CA/hostname HTTPS probes return Portal 200, private `/api/*` 404 and mismatched SNI/Host 421 after adding `strict_sni_host on`. The runtime uses a private CA/storage directory and `install_trust=false`; the user must install its public CA in their browser/OS trust store before browser testing. See [Caddy local TLS/trust](https://caddyserver.com/docs/caddyfile/directives/tls), [proxy headers](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy), and [SNI/Host enforcement](https://caddyserver.com/docs/caddyfile/options).
 
-## Real browser acceptance — NOT RUN / BLOCKED
+## Real browser acceptance — UNVERIFIED (historical run blocked)
 
 Docker Desktop 29.7.2 is available. Retained containers/data were not reused. New Keycloak `dxos-helpdesk-browser-keycloak-20261029` and its private volume/network are prepared but not started; bootstrap admin, client provisioning and secrets are deliberately left to the user. PostgreSQL demo preflight for 55442 passed; actual demo setup awaits real user sub values and setup/runtime passwords. HTTPS ingress and the integration-local Portal build run at 8443, but browser trust installation is still pending. Backend/BFF cannot start until those prerequisites exist, so `/bff/session` currently returns 502. No real BFF→Backend session, browser login, disposable full-stack request, or its persistence is verified. Local manual scripts/instructions are prepared in the ignored `backend/build/helpdesk-browser-local/MANUAL-SETUP.md`; none of their admin/secret/trust steps were executed. BFF/frontend unit tests are not browser E2E evidence.
 
