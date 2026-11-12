@@ -4,7 +4,7 @@
 
 OpenTrix is TRICORE's DX-OS Open-Core implementation, a modular monolith for exploring reusable capabilities behind internal service applications. The Internal Service Portal / IT Support scenario is the main demonstration target. DX-OS is a digital transformation platform concept, not a computer operating system or a claim about the competition's required product.
 
-**Release documentation baseline:** v0.1.0 candidate based on `main@4428346` (PR #103 squash integration). Release acceptance is separate from source and CI verification.
+**Release status:** v0.1.0 was published as a GitHub pre-release on 2026-11-04. v0.2.0 remains unreleased; SOURCE-ONLY candidate evidence does not authorize public publication. See [Release documentation](docs/RELEASE.md) for release status and acceptance gates. Historical source baseline: `main@4428346` (PR #103).
 
 **Navigate:** [Overview](#overview) · [Architecture](#architecture-overview) · [Status](#implementation-status) · [Run v0.1.0](#run-v010) · [Getting started](#getting-started) · [Documentation](#documentation-and-verification) · [License](#license-and-third-party-notices)
 
@@ -231,7 +231,9 @@ This is a high-level map, not a claim that every package is fully implemented.
 ## Documentation and Verification
 
 - [Backend guide](backend/README.md): setup, configuration, APIs, and test limits.
-- Architecture and workflow source documentation: browse the current `docs/` directory; consolidated navigation is tracked in R29.
+- [Documentation index](docs/README.md): canonical documentation navigation and project guides.
+- [Architecture guide](docs/ARCHITECTURE.md): system architecture and implementation boundaries.
+- [Release documentation](docs/RELEASE.md): published versions, SOURCE-ONLY boundaries, verification evidence and release gates.
 - Historical verification: refer to the relevant PR, workflow run and exact commit when reporting evidence.
 - [Glossary](GLOSSARY.md): project terminology.
 - [Issue #38](https://github.com/tricore-opentrix/opentrix/issues/38): license, attribution, and SPDX review.
