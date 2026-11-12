@@ -232,6 +232,7 @@ This is a high-level map, not a claim that every package is fully implemented.
 
 - [Backend guide](backend/README.md): setup, configuration, APIs, and test limits.
 - [Documentation index](docs/README.md): canonical documentation navigation and project guides.
+- [Governance](GOVERNANCE.md): maintainer roles, decision-making, review and release rules.
 - [Architecture guide](docs/ARCHITECTURE.md): system architecture and implementation boundaries.
 - [Release documentation](docs/RELEASE.md): published versions, SOURCE-ONLY boundaries, verification evidence and release gates.
 - Historical verification: refer to the relevant PR, workflow run and exact commit when reporting evidence.

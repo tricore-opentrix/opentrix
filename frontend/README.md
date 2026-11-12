@@ -4,18 +4,30 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# DX-OS Internal Service Portal — Issue #39
+# DX-OS Internal Service Portal / Cổng dịch vụ nội bộ
 
-**MOCK / DEVELOPMENT · Giao diện prototype Tầng 2. Chưa có HTTP end-to-end thật. Issue #39 phải giữ OPEN.**
+**Trạng thái / Status:** Mặc định **MOCK / DEVELOPMENT**. Build **integration-local** là lựa chọn riêng, cần các thành phần chạy thực tế và không tự xác nhận LIVE. **LIVE E2E: UNVERIFIED**; xem [#118](https://github.com/tricore-opentrix/opentrix/issues/118).
 
-Ứng dụng SPA độc lập, tiếng Việt, trình diễn hai dịch vụ IT Support và Facility trên cùng components, request view model, service interface và timeline. Không thay đổi Core, Gateway, Identity, Workflow, Flyway V1–V4 hay PR #35.
+**Điều hướng / Navigation:** [Bộ tài liệu / Docs index](../docs/README.md) · [Phát triển / Development](../docs/DEVELOPMENT.md) · [API](../docs/API.md) · [Tích hợp / Integration](../docs/INTEGRATION.md) · [Kiểm thử / Testing](../docs/TESTING.md) · [Portal BFF](../portal-bff/README.md)
+
+## Phân biệt các chế độ / Mode boundaries
+
+| Chế độ / Mode | Có gì / What exists | Chưa chứng minh / Not evidence of |
+| --- | --- | --- |
+| **MOCK / DEVELOPMENT** (mặc định / default) | `npm.cmd run dev` và `npm.cmd run build` dùng fixtures/dữ liệu giả trong bộ nhớ, không cần Keycloak/Backend/PostgreSQL. | SSO, backend ACL, lưu trữ ticket, tích hợp LIVE |
+| **integration-local** (opt-in) | `npm.cmd run build:integration-local` chọn entry tích hợp với BFF; yêu cầu setup Keycloak, BFF, Backend, HTTPS ingress, database riêng; xem [BFF runbook](../portal-bff/README.md). | Build thành công không chứng minh stack đã chạy hoặc browser acceptance đạt |
+| **LIVE E2E** (cổng nghiệm thu / acceptance gate) | Chỉ có thể đánh giá bằng bằng chứng đăng nhập thật, quyền truy cập, workflow và persistence tại SHA/môi trường cụ thể. | **UNVERIFIED** theo [#118](https://github.com/tricore-opentrix/opentrix/issues/118); không phải tên chế độ tự bật từ MOCK |
+
+**English:** The default Portal uses synthetic in-memory MOCK data. `integration-local` is a separate opt-in build entry, not a deployed or accepted LIVE stack. Real Keycloak login, authorized Helpdesk transitions and database persistence remain **LIVE E2E UNVERIFIED**. See canonical [API](../docs/API.md), [integration](../docs/INTEGRATION.md), [testing](../docs/TESTING.md), and [development](../docs/DEVELOPMENT.md) guides.
+
+**Bối cảnh lịch sử / Historical Issue #39:** Prototype UI tiếng Việt trình diễn IT Support và Facility bằng thành phần giao diện dùng chung. Các dữ liệu Facility trong MOCK **không** chứng minh Facility backend đã triển khai hay chứng minh Core tái sử dụng ở hai ứng dụng. Những kết quả lịch sử chỉ áp dụng cho SHA/fixture đã kiểm chứng; không suy ra trạng thái Issue hiện nay.
 
 ## Chạy localhost
 
 Yêu cầu Node.js >= 22.12 (đã kiểm tra bằng Node 24.19.0), npm và trình duyệt hiện đại.
 
 ```powershell
-Set-Location D:\olp\issue39-university-ui\frontend
+Set-Location frontend
 npm.cmd ci
 npm.cmd run dev
 ```
@@ -50,7 +62,7 @@ tests/portal.spec.ts          Browser smoke, WCAG checks and real screenshots
 scripts/check-security.mjs    Source/bundle credential-pattern check
 ```
 
-MOCK mặc định dùng `RequestService` qua composition root. `HttpApiClient` tách biệt và luôn trả `LIVE_BLOCKED`. APP-10/11/13/14 đã có mapper, Assignment Form, typed HTTP adapter cho chín route candidate PR #63 và Portal feature riêng qua optional `helpdeskService` injection; chỉ kiểm thử bằng fake transport, chưa có concrete LIVE transport, token hay cờ mở LIVE. Không coi view model mock là DTO backend. Xem [kiểm kê MVP và checklist kết nối thật](../docs/application/issue39-mvp-readiness-20261027.md).
+Ở chế độ MOCK, `RequestService` dùng mock fixture qua composition root; `HttpApiClient` của đường MOCK từ chối LIVE với `LIVE_BLOCKED`. Mapper, Assignment Form và typed Helpdesk adapter được kiểm thử với fake transport; đường `integration-local` dùng entry riêng, không biến MOCK mặc định thành LIVE. Không coi view model mock là DTO backend. Xem [API contract](../docs/API.md) và [tài liệu tích hợp](../docs/INTEGRATION.md) để đối chiếu trạng thái hiện hành.
 
 Logout, đổi vai trò và 401 vô hiệu hóa kết quả async của phiên cũ. Response muộn không chuyển trang, phát thông báo hay làm hết hạn phiên mới; 401 của phiên hiện tại vẫn kết thúc phiên sau khi rời màn hình. Assignment không bắt đầu GET Detail sau logout. Lệnh ghi đã gửi không bị hủy/replay; unknown outcome của MVP vẫn khóa để chờ đối soát. Đây là vòng đời phiên demo/fake, chưa phải logout hoặc thu hồi phiên OIDC/BFF.
 
@@ -95,7 +107,7 @@ npm.cmd run test:smoke
 npm.cmd run check:security
 ```
 
-Smoke suite khởi chạy production preview tại `127.0.0.1:4173`, kiểm tra hai luồng UI, lỗi/empty/validation, chặn API, keyboard/modal, desktop/tablet/mobile và axe WCAG 2 A/AA + 2.1 AA. Screenshot được tạo trực tiếp từ localhost tại [evidence](../docs/evidence/issue39-portal/README.md). Không dùng ảnh dựng làm bằng chứng. Script security chỉ là kiểm tra mẫu credentials phổ biến, đi kèm review source và staged diff.
+Smoke suite khởi chạy production preview tại `127.0.0.1:4173`, kiểm tra hai luồng UI, lỗi/empty/validation, chặn API, keyboard/modal, desktop/tablet/mobile và axe WCAG 2 A/AA + 2.1 AA. Screenshot được tạo trực tiếp từ localhost tại evidence cục bộ của từng lần chạy (không có đường dẫn ảnh chuẩn được xác minh trên `main`). Không dùng ảnh dựng làm bằng chứng. Script security chỉ là kiểm tra mẫu credentials phổ biến, đi kèm review source và staged diff.
 
 Python không có trong môi trường triển khai nên browser suite dùng Playwright TypeScript, có thể chạy bằng dependencies đã khóa của dự án.
 
@@ -124,7 +136,7 @@ storage, fixtures, logs hoặc gửi qua mạng. Đăng ký chỉ có Sinh viên
 từ chối giá trị vai trò bị sửa thành admin/processor. Không có quyền thực được cấp.
 
 Test mới nằm tại `src/pages/Auth.test.tsx` và `tests/auth.spec.ts`. Xem
-[ảnh Login/Register](../docs/evidence/issue39-portal/auth/README.md) ở desktop,
+ảnh Login/Register của lần chạy riêng (cần đính kèm log và ảnh ở Issue tương ứng) ở desktop,
 tablet, mobile 390px và 320px. Bộ smoke hiện có tiếp tục kiểm tra tạo yêu cầu,
 phê duyệt, xử lý, timeline và `HttpApiClient` fail-closed. Theme chỉ tăng tương
 phản một số màu chữ phụ để các kiểm tra WCAG hiện có đạt; không đổi bố cục dashboard.
@@ -136,4 +148,4 @@ phản một số màu chữ phụ để các kiểm tra WCAG hiện có đạt;
 - Browser coverage hiện là Chromium; axe không thay thế audit accessibility thủ công đầy đủ. Bảng cuộn ngang bên trong ở màn hình nhỏ.
 - Chưa upload/read file, chưa gửi thông báo thực, chưa triển khai hosting.
 
-Xem [hướng dẫn demo](DEMO_GUIDE.md). Refs #39; chỉ ghi nhận **mock UI prototype hoàn thành** khi local checks đạt, không đóng Issue #39.
+Xem [hướng dẫn demo](DEMO_GUIDE.md). Refs #39; kết quả local chỉ chứng minh đúng phạm vi, SHA và environment từng lần chạy; không suy ra trạng thái đóng/mở Issue #39 hoặc LIVE E2E.
