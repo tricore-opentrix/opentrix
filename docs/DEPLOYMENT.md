@@ -5,15 +5,37 @@ SPDX-License-Identifier: Apache-2.0
 
 # Triển khai / Deployment
 
+**Điều hướng / Navigation:** [Tài liệu](README.md) · [Development](DEVELOPMENT.md) · [Deployment](DEPLOYMENT.md) · [Release](RELEASE.md) · **Ngôn ngữ / Language:** [Tiếng Việt](#vi) | [English](#en)
+
 > **Trạng thái / Status:** DRAFT — independent review required / Bản nháp — cần review độc lập · **Owner:** @lexuanbao258-collab · **Refs:** [#194](https://github.com/tricore-opentrix/opentrix/issues/194), [#197](https://github.com/tricore-opentrix/opentrix/issues/197)
 >
-> **Source inspected:** `6c6b2afd1d7384daad7b65818ac282b955c5f007` (documentation branch; application/infra source unchanged from Phase 2 `832c75fc3164cf170eed3bb8f1e380d24dd65aba`). **No deployment, migration, container startup, or LIVE E2E was executed while preparing this page.**
+> **Source SHA:** `main@e31497f364cc7e9d3cee03ee59b9e48db524ea77` (mã/hạ tầng đã đối chiếu / inspected application and infrastructure), baseline `832c75fc3164cf170eed3bb8f1e380d24dd65aba`; chỉ `docs/` đổi giữa hai SHA. **Deployment, migration, container startup và LIVE E2E: UNVERIFIED tại SHA này.**
 
 [Docs index](README.md) · [Development](DEVELOPMENT.md) · [Testing](TESTING.md) · [Release](RELEASE.md) · [Phase 2 infra evidence](09-evidence/phase-2/block-b-backend-infra.md)
+
+<a id="vi"></a>
 
 ## Tiếng Việt
 
 ### 1. Hiện trạng và phạm vi triển khai (AS-IS)
+
+#### Bảng trạng thái tính năng / Feature status matrix (AS-IS / UNVERIFIED / PROPOSED)
+
+| Thành phần | Nguồn có sẵn | Xác minh / giới hạn |
+| --- | --- | --- |
+| Identity / Keycloak | Backend [OIDC](../backend/src/main/resources/application.yml), BFF [OAuth client](../portal-bff/src/main/resources/application.yml) | **SOURCE IMPLEMENTED**; browser login ba người dùng **LIVE E2E UNVERIFIED** ([#118](https://github.com/tricore-opentrix/opentrix/issues/118)) |
+| Workflow Core | `WorkflowRuntime`, `WorkflowPersistencePort`, PostgreSQL adapter và test source ([Backend](../backend/README.md)) | **SOURCE IMPLEMENTED / TEST-LEVEL**; không chứng minh Flowable/E2E |
+| Helpdesk | `/api/v1/mvp/requests` khi bật `dxos.helpdesk.enabled`, authorization/version test | **SOURCE IMPLEMENTED / TEST-LEVEL**; Golden Path thật **UNVERIFIED** |
+| Portal Frontend | [Frontend](../frontend/package.json): MOCK và build `integration-local` | MOCK dùng dữ liệu giả; build bundle chưa chứng minh kết nối runtime |
+| Portal BFF | [BFF](../portal-bff/README.md): OAuth/PKCE, session, CSRF, fixture test | **TEST-LEVEL**; Keycloak/Browser/DB **LIVE E2E UNVERIFIED** |
+| PostgreSQL / Flyway | [Compose](../infra/compose.workflow-postgres.yml), migration Workflow V1–V4/Helpdesk SQL | **SOURCE IMPLEMENTED**; schema/ACL/restart cùng SHA cần kiểm chứng |
+| Docker Compose | `infra/compose.workflow-postgres.yml`: chỉ PostgreSQL | Full-stack Compose **PROPOSED** [#119](https://github.com/tricore-opentrix/opentrix/issues/119) |
+| APISIX / Flowable | Chưa có runtime tích hợp được nghiệm thu; Workflow dùng engine nội bộ | **PROPOSED** [APISIX #116](https://github.com/tricore-opentrix/opentrix/issues/116) / [Flowable #191](https://github.com/tricore-opentrix/opentrix/issues/191) |
+
+SOURCE IMPLEMENTED = có mã; TEST-LEVEL = chỉ các ca được ghi; UNVERIFIED ≠ FAIL. Nguồn: [Block B](09-evidence/phase-2/block-b-backend-infra.md) / [Block C](09-evidence/phase-2/block-c-application.md).
+
+
+
 
 `AS-IS` nghĩa là có mã/cấu hình tại SHA đã đối chiếu, **không phải đã chạy thành công**. `UNVERIFIED` là thiếu bằng chứng vận hành đúng môi trường/SHA. `PROPOSED` chỉ mục tiêu có Issue. Cấu hình hiện tại phục vụ phát triển và kiểm chứng cục bộ; **chưa có một Compose full-stack được nghiệm thu**.
 
@@ -31,16 +53,18 @@ SPDX-License-Identifier: Apache-2.0
 Từ **root repository**, có Docker Compose v2. `WORKFLOW_LOCAL_DB_PASSWORD` là mật khẩu riêng của fixture, phải cấp qua môi trường/secret an toàn; không commit, echo hay đặt giá trị thật trong hướng dẫn. `config` kiểm tra cấu hình và vẫn yêu cầu biến này được cung cấp.
 
 ```powershell
-# PowerShell; password must have been supplied securely to this process.
+# PowerShell; mật khẩu phải được cung cấp an toàn cho process từ trước.
 docker compose -f infra/compose.workflow-postgres.yml config --quiet
 docker compose -f infra/compose.workflow-postgres.yml ps
 ```
 
 ```sh
-# Linux/macOS; password must have been supplied securely to this process.
+# Linux/macOS; mật khẩu phải được cung cấp an toàn cho process từ trước.
 docker compose -f infra/compose.workflow-postgres.yml config --quiet
 docker compose -f infra/compose.workflow-postgres.yml ps
 ```
+
+**Điều kiện/kết quả kỳ vọng:** cài Docker Compose v2 và cấp `WORKFLOW_LOCAL_DB_PASSWORD` an toàn. `docker compose config --quiet` trả exit code 0 nếu cấu hình hợp lệ, không tạo container; `docker compose ps` liệt kê tài nguyên hiện có, có thể trống. Dù hiển thị `healthy`, `pg_isready` không xác nhận migration, quyền runtime hay dữ liệu nghiệp vụ. **Chưa có log chạy cùng SHA chứng minh PASS.**
 
 Hai lệnh trên chỉ đọc/kiểm tra cấu hình và trạng thái, **không khởi tạo database**. Người vận hành chỉ được dùng `docker compose ... up -d` sau khi xác nhận quyền sở hữu fixture và nguy cơ tạo volume/schema. Không tự chạy `down -v`, xóa volume hoặc dùng Compose này cho dữ liệu dùng chung. Volume đã tồn tại giữ mật khẩu PostgreSQL ban đầu; thay biến môi trường không đổi mật khẩu trong volume.
 
@@ -58,6 +82,9 @@ Hai lệnh trên chỉ đọc/kiểm tra cấu hình và trạng thái, **không
 Mẫu issuer ở `.env.example` và issuer trong runbook BFF có host/port khác nhau. **Không trộn token, subject hoặc client giữa các issuer**. Không đặt password, private key, bearer, cookie hoặc dữ liệu người dùng thật vào Git/PR/log.
 
 ### 4. Migration và chạy cục bộ: hai lộ trình khác nhau
+
+**AS-IS so với chưa xác minh:** Flyway V1–V4 và script setup tồn tại trong source; bản ghi migration thực tế trong PostgreSQL cần được operator đọc/đối chiếu. Không suy ra `flyway migrate` đã chạy chỉ từ tên file SQL. `-Execute -ConfirmDemoDatabase`, `migrate`, `up -d`, `down -v` có thể tạo, sửa hoặc xóa tài nguyên; không chạy trên dữ liệu dùng chung.
+
 
 **Portal MOCK (không có backend/DB):** từ `frontend/` chạy `npm ci` rồi `npm run dev` (PowerShell: `npm.cmd ci`, `npm.cmd run dev`). Lệnh dev bind `127.0.0.1`; đây không phải deployment đã nghiệm thu.
 
@@ -84,9 +111,29 @@ Mẫu issuer ở `.env.example` và issuer trong runbook BFF có host/port khác
 
 ---
 
+<a id="en"></a>
+
 ## English
 
 ### 1. Current deployment boundary (AS-IS)
+
+#### Feature status matrix / Bảng trạng thái tính năng (AS-IS / UNVERIFIED / PROPOSED)
+
+| Component | Existing source | Verification / limits |
+| --- | --- | --- |
+| Identity / Keycloak | Backend [OIDC](../backend/src/main/resources/application.yml), BFF [OAuth client](../portal-bff/src/main/resources/application.yml) | **SOURCE IMPLEMENTED**; real three-principal browser login **LIVE E2E UNVERIFIED** ([#118](https://github.com/tricore-opentrix/opentrix/issues/118)) |
+| Workflow Core | `WorkflowRuntime`, `WorkflowPersistencePort`, PostgreSQL adapter and test sources ([Backend](../backend/README.md)) | **SOURCE IMPLEMENTED / TEST-LEVEL**; does not prove Flowable/E2E |
+| Helpdesk | `/api/v1/mvp/requests` when `dxos.helpdesk.enabled` is enabled, authorization/version tests | **SOURCE IMPLEMENTED / TEST-LEVEL**; real Golden Path **UNVERIFIED** |
+| Portal Frontend | [Frontend](../frontend/package.json): MOCK and `integration-local` build | MOCK uses synthetic data; bundle build is not proof of runtime integration |
+| Portal BFF | [BFF](../portal-bff/README.md): OAuth/PKCE, session, CSRF, fixture test | **TEST-LEVEL**; Keycloak/browser/DB **LIVE E2E UNVERIFIED** |
+| PostgreSQL / Flyway | [Compose](../infra/compose.workflow-postgres.yml), migration Workflow V1–V4/Helpdesk SQL | **SOURCE IMPLEMENTED**; same-SHA schema/ACL/restart evidence pending |
+| Docker Compose | `infra/compose.workflow-postgres.yml`: Workflow PostgreSQL only | Full-stack Compose **PROPOSED** [#119](https://github.com/tricore-opentrix/opentrix/issues/119) |
+| APISIX / Flowable | No accepted integrated runtime; Workflow uses an in-house engine | **PROPOSED** [APISIX #116](https://github.com/tricore-opentrix/opentrix/issues/116) / [Flowable #191](https://github.com/tricore-opentrix/opentrix/issues/191) |
+
+SOURCE IMPLEMENTED = source exists; TEST-LEVEL = recorded test scope only; UNVERIFIED ≠ FAIL. Sources: [Block B](09-evidence/phase-2/block-b-backend-infra.md) / [Block C](09-evidence/phase-2/block-c-application.md).
+
+
+
 
 `AS-IS` means source/configuration was inspected at the pinned SHA, **not** a successful deployment. `UNVERIFIED` means same-environment, same-SHA runtime evidence is missing. `PROPOSED` denotes an issue-tracked target. Current assets support local development and controlled verification; **no accepted full-stack Compose deployment exists**.
 
@@ -115,6 +162,8 @@ docker compose -f infra/compose.workflow-postgres.yml config --quiet
 docker compose -f infra/compose.workflow-postgres.yml ps
 ```
 
+**Prerequisites/expected results:** install Docker Compose v2 and supply `WORKFLOW_LOCAL_DB_PASSWORD` securely. `docker compose config --quiet` exits 0 for valid config without creating a container; `docker compose ps` lists existing resources and can be empty. Even if `healthy`, `pg_isready` does not verify migration, runtime grants or business data. **No same-SHA run log establishes PASS.**
+
 These commands only check configuration/status; they do **not** start a database. Only the fixture owner may decide to run `docker compose ... up -d` after reviewing volume/schema effects. Do not run `down -v`, delete volumes, or reuse this stack for shared data. An existing volume keeps its initial database password; editing an environment variable does not rotate it.
 
 ### 3. Configuration, secrets, ports and trust boundaries
@@ -131,6 +180,9 @@ These commands only check configuration/status; they do **not** start a database
 The issuer in `.env.example` differs by host/port from the BFF runbook issuer. **Do not mix tokens, subjects or clients across issuers.** Keep passwords, private keys, bearer tokens, cookies and actual user data out of Git/PR/logs.
 
 ### 4. Distinct migration and local startup tracks
+
+**AS-IS vs unverified:** Flyway V1–V4 and setup scripts are present in source; real PostgreSQL migration history requires operator inspection. SQL files alone do not establish executed migrations. `-Execute -ConfirmDemoDatabase`, `migrate`, `up -d`, and `down -v` can create, modify or delete resources; never run them against shared data.
+
 
 **MOCK Portal:** From `frontend/` run `npm ci` and `npm run dev` (PowerShell: `npm.cmd ci` / `npm.cmd run dev`). Vite binds loopback; this is not an accepted deployment.
 

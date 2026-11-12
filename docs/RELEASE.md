@@ -5,15 +5,46 @@ SPDX-License-Identifier: Apache-2.0
 
 # Phát hành / Release
 
+**Điều hướng / Navigation:** [Tài liệu](README.md) · [Development](DEVELOPMENT.md) · [Deployment](DEPLOYMENT.md) · [Release](RELEASE.md) · **Ngôn ngữ / Language:** [Tiếng Việt](#vi) | [English](#en)
+
 > **Trạng thái / Status:** DRAFT — independent review required / Bản nháp — cần review độc lập · **Owner:** @lexuanbao258-collab · **Refs:** [#194](https://github.com/tricore-opentrix/opentrix/issues/194), [#197](https://github.com/tricore-opentrix/opentrix/issues/197), [#190](https://github.com/tricore-opentrix/opentrix/issues/190)
 >
-> **Source inspected:** `6c6b2afd1d7384daad7b65818ac282b955c5f007` (docs branch; R24 scripts/workflows unchanged from audited application baseline). This document is a **status and verification guide**, not authorization to create a tag, Release, or GHCR image. No release job or artifact was produced while writing it.
+> **Source SHA:** `main@e31497f364cc7e9d3cee03ee59b9e48db524ea77` (R24 scripts/workflow và CHANGELOG được đối chiếu / inspected). **GitHub Releases kiểm tra ngày 2026-11-12:** v0.1.0 có public pre-release, v0.2.0 chưa có public release; trạng thái có thể thay đổi. Đây không phải phê duyệt tạo tag, Release hay GHCR. / GitHub Releases inspected 2026-11-12: v0.1.0 public pre-release, no public v0.2.0 release; this is not publication approval.
 
 [Docs index](README.md) · [Open source and compliance](OPEN_SOURCE.md) · [Development](DEVELOPMENT.md) · [R24 canonical technical runbook](06-deployment/r24-release.md) · [R24 workflow](../.github/workflows/release.yml)
+
+<a id="vi"></a>
 
 ## Tiếng Việt
 
 ### 1. Trạng thái bản phát hành (AS-IS / UNVERIFIED)
+
+#### Bảng trạng thái tính năng / Feature status matrix (AS-IS / UNVERIFIED / PROPOSED)
+
+| Thành phần | Nguồn có sẵn | Xác minh / giới hạn |
+| --- | --- | --- |
+| Identity / Keycloak | Backend [OIDC](../backend/src/main/resources/application.yml), BFF [OAuth client](../portal-bff/src/main/resources/application.yml) | **SOURCE IMPLEMENTED**; browser login ba người dùng **LIVE E2E UNVERIFIED** ([#118](https://github.com/tricore-opentrix/opentrix/issues/118)) |
+| Workflow Core | `WorkflowRuntime`, `WorkflowPersistencePort`, PostgreSQL adapter và test source ([Backend](../backend/README.md)) | **SOURCE IMPLEMENTED / TEST-LEVEL**; không chứng minh Flowable/E2E |
+| Helpdesk | `/api/v1/mvp/requests` khi bật `dxos.helpdesk.enabled`, authorization/version test | **SOURCE IMPLEMENTED / TEST-LEVEL**; Golden Path thật **UNVERIFIED** |
+| Portal Frontend | [Frontend](../frontend/package.json): MOCK và build `integration-local` | MOCK dùng dữ liệu giả; build bundle chưa chứng minh kết nối runtime |
+| Portal BFF | [BFF](../portal-bff/README.md): OAuth/PKCE, session, CSRF, fixture test | **TEST-LEVEL**; Keycloak/Browser/DB **LIVE E2E UNVERIFIED** |
+| PostgreSQL / Flyway | [Compose](../infra/compose.workflow-postgres.yml), migration Workflow V1–V4/Helpdesk SQL | **SOURCE IMPLEMENTED**; schema/ACL/restart cùng SHA cần kiểm chứng |
+| Docker Compose | `infra/compose.workflow-postgres.yml`: chỉ PostgreSQL | Full-stack Compose **PROPOSED** [#119](https://github.com/tricore-opentrix/opentrix/issues/119) |
+| APISIX / Flowable | Chưa có runtime tích hợp được nghiệm thu; Workflow dùng engine nội bộ | **PROPOSED** [APISIX #116](https://github.com/tricore-opentrix/opentrix/issues/116) / [Flowable #191](https://github.com/tricore-opentrix/opentrix/issues/191) |
+
+SOURCE IMPLEMENTED = có mã; TEST-LEVEL = chỉ các ca được ghi; UNVERIFIED ≠ FAIL. Nguồn: [Block B](09-evidence/phase-2/block-b-backend-infra.md) / [Block C](09-evidence/phase-2/block-c-application.md).
+
+
+
+
+**Bảng phiên bản / Version status** (GitHub Releases kiểm tra ngày 12/11/2026):
+
+| Version | Trạng thái | Phạm vi và bằng chứng |
+| --- | --- | --- |
+| [`v0.1.0`](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0) | **Released — pre-release**, không phải bản ổn định | GitHub Release công khai ngày **04/11/2026**, 2 assets khi kiểm tra; MVP theo [README gốc](../README.md), không suy ra LIVE E2E |
+| `v0.2.0` | **In development / Not released** | SOURCE-ONLY chỉ là phạm vi candidate **dự kiến, có điều kiện** theo [R24](06-deployment/r24-release.md); quyền phân phối còn chặn bởi [#138](https://github.com/tricore-opentrix/opentrix/issues/138)/[#190](https://github.com/tricore-opentrix/opentrix/issues/190) |
+| `v0.3.0+` | **Planned / PROPOSED** | Không có tag/phạm vi/cam kết phát hành đã nghiệm thu; tính năng tương lai chưa được ship |
+
 
 | Đối tượng | Trạng thái có thể công bố | Không được suy diễn |
 | --- | --- | --- |
@@ -85,9 +116,38 @@ Dùng version/tên archive đúng với run thực tế; ví dụ `0.2.0` **khô
 
 ---
 
+<a id="en"></a>
+
 ## English
 
 ### 1. Release status (AS-IS / UNVERIFIED)
+
+#### Feature status matrix / Bảng trạng thái tính năng (AS-IS / UNVERIFIED / PROPOSED)
+
+| Component | Existing source | Verification / limits |
+| --- | --- | --- |
+| Identity / Keycloak | Backend [OIDC](../backend/src/main/resources/application.yml), BFF [OAuth client](../portal-bff/src/main/resources/application.yml) | **SOURCE IMPLEMENTED**; real three-principal browser login **LIVE E2E UNVERIFIED** ([#118](https://github.com/tricore-opentrix/opentrix/issues/118)) |
+| Workflow Core | `WorkflowRuntime`, `WorkflowPersistencePort`, PostgreSQL adapter and test sources ([Backend](../backend/README.md)) | **SOURCE IMPLEMENTED / TEST-LEVEL**; does not prove Flowable/E2E |
+| Helpdesk | `/api/v1/mvp/requests` when `dxos.helpdesk.enabled` is enabled, authorization/version tests | **SOURCE IMPLEMENTED / TEST-LEVEL**; real Golden Path **UNVERIFIED** |
+| Portal Frontend | [Frontend](../frontend/package.json): MOCK and `integration-local` build | MOCK uses synthetic data; bundle build is not proof of runtime integration |
+| Portal BFF | [BFF](../portal-bff/README.md): OAuth/PKCE, session, CSRF, fixture test | **TEST-LEVEL**; Keycloak/browser/DB **LIVE E2E UNVERIFIED** |
+| PostgreSQL / Flyway | [Compose](../infra/compose.workflow-postgres.yml), migration Workflow V1–V4/Helpdesk SQL | **SOURCE IMPLEMENTED**; same-SHA schema/ACL/restart evidence pending |
+| Docker Compose | `infra/compose.workflow-postgres.yml`: Workflow PostgreSQL only | Full-stack Compose **PROPOSED** [#119](https://github.com/tricore-opentrix/opentrix/issues/119) |
+| APISIX / Flowable | No accepted integrated runtime; Workflow uses an in-house engine | **PROPOSED** [APISIX #116](https://github.com/tricore-opentrix/opentrix/issues/116) / [Flowable #191](https://github.com/tricore-opentrix/opentrix/issues/191) |
+
+SOURCE IMPLEMENTED = source exists; TEST-LEVEL = recorded test scope only; UNVERIFIED ≠ FAIL. Sources: [Block B](09-evidence/phase-2/block-b-backend-infra.md) / [Block C](09-evidence/phase-2/block-c-application.md).
+
+
+
+
+**Version status / Bảng phiên bản** (GitHub Releases checked 2026-11-12):
+
+| Version | Status | Scope and evidence |
+| --- | --- | --- |
+| [`v0.1.0`](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0) | **Released — pre-release**, not stable | Public GitHub Release **2026-11-04**, 2 assets at check; MVP scope in [root README](../README.md), not LIVE E2E acceptance |
+| `v0.2.0` | **In development / Not released** | SOURCE-ONLY is a **conditional planned candidate scope** under [R24](06-deployment/r24-release.md); distribution blocked pending [#138](https://github.com/tricore-opentrix/opentrix/issues/138)/[#190](https://github.com/tricore-opentrix/opentrix/issues/190) |
+| `v0.3.0+` | **Planned / PROPOSED** | No accepted tag/scope/publication commitment; future features are not shipped |
+
 
 | Item | Supportable status | Not implied |
 | --- | --- | --- |

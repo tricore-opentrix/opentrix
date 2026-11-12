@@ -6,9 +6,13 @@ SPDX-License-Identifier: Apache-2.0
 
 # Hướng dẫn phát triển / Development guide
 
-> **Trạng thái / Status:** 📝 Bản nháp chờ review / Draft for review · **Owner:** @lexuanbao258-collab · **Issue:** [#194](https://github.com/tricore-opentrix/opentrix/issues/194), [#197](https://github.com/tricore-opentrix/opentrix/issues/197)
+**Điều hướng / Navigation:** [Tài liệu](README.md) · [Development](DEVELOPMENT.md) · [Deployment](DEPLOYMENT.md) · [Release](RELEASE.md) · **Ngôn ngữ / Language:** [Tiếng Việt](#vi) | [English](#en)
+
+> **Trạng thái / Status:** DRAFT — chờ review độc lập / awaiting independent review · **Owner:** @lexuanbao258-collab · **Issue:** [#194](https://github.com/tricore-opentrix/opentrix/issues/194), [#197](https://github.com/tricore-opentrix/opentrix/issues/197)
 >
-> **Source SHA:** `d98aa6f6f8b05add9cf90b67739681eae4e41176` (`main`). So với baseline kiểm kê Giai đoạn 2 `832c75fc3164cf170eed3bb8f1e380d24dd65aba`, các commit sau chỉ thêm/đổi tài liệu dưới `docs/`; mã và cấu hình không đổi (`git diff --name-only 832c75f HEAD`). / Compared with the Phase 2 audit baseline `832c75f…`, later commits touch only `docs/`; code and configuration are unchanged.
+> **Source SHA:** `main@e31497f364cc7e9d3cee03ee59b9e48db524ea77` (mã/config đã đối chiếu / source-config inspected). Baseline Phase 2: `832c75fc3164cf170eed3bb8f1e380d24dd65aba`; diff hai SHA chỉ thay `docs/`, không thay runtime / intervening changes affect `docs/` only, not runtime.
+
+<a id="vi"></a>
 
 ## Tiếng Việt
 
@@ -20,7 +24,7 @@ SPDX-License-Identifier: Apache-2.0
 | **UNVERIFIED** | Chưa có bằng chứng chạy/nghiệm thu. Không được hiểu là PASS. |
 | **PROPOSED (#N)** | Đề xuất/mục tiêu, kèm số Issue theo dõi. Không phải hiện trạng. |
 
-Tài liệu này **không** chạy build, test, database hay dịch vụ nào. Mọi lệnh bên dưới là AS-IS theo source (chưa thực thi khi soạn). Môi trường mẫu của lần kiểm kê trước ghi Java 21.0.11, Node.js 24.19.0, npm 11.17.0: chỉ là phiên bản công cụ, không chứng minh cài đặt hay build từ clone mới. Chưa chạy trên Linux/macOS: **UNVERIFIED**.
+**Ranh giới bằng chứng:** các lệnh dưới đây được xác định từ cấu hình source; không có log thực thi mới cùng SHA trong trang này. Môi trường kiểm kê lịch sử dùng Java 21.0.11, Node.js 24.19.0, npm 11.17.0; phiên bản công cụ không chứng minh fresh-clone build. Linux/macOS local: **UNVERIFIED**.
 
 ### 1. Yêu cầu môi trường
 
@@ -96,12 +100,28 @@ npm --version
 
 ### 3. Chạy local trên Windows và Linux
 
+### Bảng trạng thái tính năng / Feature status matrix (AS-IS / UNVERIFIED / PROPOSED)
+
+| Thành phần | Nguồn có sẵn | Xác minh / giới hạn |
+| --- | --- | --- |
+| Identity / Keycloak | Backend [OIDC](../backend/src/main/resources/application.yml), BFF [OAuth client](../portal-bff/src/main/resources/application.yml) | **SOURCE IMPLEMENTED**; browser login ba người dùng **LIVE E2E UNVERIFIED** ([#118](https://github.com/tricore-opentrix/opentrix/issues/118)) |
+| Workflow Core | `WorkflowRuntime`, `WorkflowPersistencePort`, PostgreSQL adapter và test source ([Backend](../backend/README.md)) | **SOURCE IMPLEMENTED / TEST-LEVEL**; không chứng minh Flowable/E2E |
+| Helpdesk | `/api/v1/mvp/requests` khi bật `dxos.helpdesk.enabled`, authorization/version test | **SOURCE IMPLEMENTED / TEST-LEVEL**; Golden Path thật **UNVERIFIED** |
+| Portal Frontend | [Frontend](../frontend/package.json): MOCK và build `integration-local` | MOCK dùng dữ liệu giả; build bundle chưa chứng minh kết nối runtime |
+| Portal BFF | [BFF](../portal-bff/README.md): OAuth/PKCE, session, CSRF, fixture test | **TEST-LEVEL**; Keycloak/Browser/DB **LIVE E2E UNVERIFIED** |
+| PostgreSQL / Flyway | [Compose](../infra/compose.workflow-postgres.yml), migration Workflow V1–V4/Helpdesk SQL | **SOURCE IMPLEMENTED**; schema/ACL/restart cùng SHA cần kiểm chứng |
+| Docker Compose | `infra/compose.workflow-postgres.yml`: chỉ PostgreSQL | Full-stack Compose **PROPOSED** [#119](https://github.com/tricore-opentrix/opentrix/issues/119) |
+| APISIX / Flowable | Chưa có runtime tích hợp được nghiệm thu; Workflow dùng engine nội bộ | **PROPOSED** [APISIX #116](https://github.com/tricore-opentrix/opentrix/issues/116) / [Flowable #191](https://github.com/tricore-opentrix/opentrix/issues/191) |
+
+SOURCE IMPLEMENTED = có mã; TEST-LEVEL = chỉ các ca được ghi; UNVERIFIED ≠ FAIL. Nguồn: [Block B](09-evidence/phase-2/block-b-backend-infra.md) / [Block C](09-evidence/phase-2/block-c-application.md).
+
+
 Hai chế độ chạy cục bộ và một cổng nghiệm thu (AS-IS về thiết kế; chạy thực tế **UNVERIFIED**):
 
 | Chế độ / cổng | Cung cấp | Không chứng minh |
 |---|---|---|
 | MOCK (chế độ chạy) | Portal với dữ liệu giả trong bộ nhớ | Phân quyền backend, SSO, lưu trữ |
-| integration-local (chế độ chạy) | Build `integration-local` + HTTPS (Caddy) + BFF + Backend + định danh thật + DB dùng một lần | Nghiệm thu trình duyệt |
+| integration-local (cấu hình tích hợp) | Lệnh build bundle tích hợp BFF/Caddy; Keycloak, Backend, DB phải provision riêng | Bundle không phải stack đang chạy/LIVE E2E PASS |
 | LIVE E2E (cổng nghiệm thu, không phải chế độ chạy độc lập) | Bằng chứng hành trình trình duyệt có xác thực, thu được từ stack integration-local | **UNVERIFIED**; theo dõi tại [#118](https://github.com/tricore-opentrix/opentrix/issues/118) |
 
 #### 3.1 Portal MOCK (không cần Java/DB)
@@ -183,6 +203,18 @@ Test dùng fixture có kiểm soát (PKCE, CSRF, kiểm tra origin, bearer forwa
 - Dockerfile trong `infra/release/` chỉ là đầu vào đóng gói, không phải stack triển khai (xem [DEPLOYMENT.md](DEPLOYMENT.md)).
 
 ### 4. Quy trình phát triển
+
+**Điều kiện và kết quả kỳ vọng (không phải kết quả đã chạy):**
+
+| Lệnh/chế độ | Điều kiện | Kỳ vọng |
+| --- | --- | --- |
+| Build Frontend | Node ≥22.12, npm, tải dependency được, từ `frontend/` | Exit 0 và có bundle; **không** suy ra Backend/LIVE |
+| Backend `test` | JDK 21, Gradle Wrapper, từ `backend/` | Exit 0, xem XML và số **SKIPPED**; không mặc định chạy DB/Keycloak |
+| BFF `test` | JDK 21; từ root dùng Wrapper `-p portal-bff` | Exit 0, đọc kết quả fixture; **không** chứng minh SSO thật |
+| `workflowIntegrationTest` | PostgreSQL loopback disposable, đủ biến `WORKFLOW_TEST_*`, operator đồng ý | Suite bắt buộc thực thi, không FAIL/SKIP ngoài dự kiến; thiếu biến thì fail sớm |
+| Frontend MOCK | `npm ci`, sau đó `npm run dev` | `127.0.0.1:5173`, chỉ dữ liệu giả |
+| LIVE E2E | Keycloak, BFF, Backend, HTTPS/CA, DB disposable | **UNVERIFIED** cho đến khi có browser thật, ba principal, negative paths, bằng chứng persistence #118 |
+
 
 #### 4.1 Kiểm thử (AS-IS: lệnh; kết quả **UNVERIFIED** nếu bạn chưa chạy)
 
@@ -267,6 +299,8 @@ Flowable, APISIX và provider object storage chưa được tích hợp vào run
 
 Chi tiết: [Backend](../backend/README.md), [BFF](../portal-bff/README.md), [Frontend](../frontend/README.md), [Helpdesk local](../scripts/README-helpdesk-local.md), [Kiến trúc](ARCHITECTURE.md), [Kiểm thử](TESTING.md), [Triển khai](DEPLOYMENT.md).
 
+<a id="en"></a>
+
 ## English
 
 ### Evidence labels
@@ -277,7 +311,7 @@ Chi tiết: [Backend](../backend/README.md), [BFF](../portal-bff/README.md), [Fr
 | **UNVERIFIED** | No run/acceptance evidence. Never read as PASS. |
 | **PROPOSED (#N)** | Target/proposal with a tracking Issue. Not current state. |
 
-This document ran **no** build, test, database or service. All commands below are AS-IS per source (not executed while drafting). The earlier audit machine reported Java 21.0.11, Node.js 24.19.0, npm 11.17.0: tool versions only, not evidence of a fresh-clone install or build. Execution on Linux/macOS: **UNVERIFIED**.
+**Evidence boundary:** commands are derived from source configuration; this page contains no new same-SHA execution logs. Historical audit tooling was Java 21.0.11, Node.js 24.19.0 and npm 11.17.0; tool versions do not establish a fresh-clone build. Local Linux/macOS: **UNVERIFIED**.
 
 ### 1. Prerequisites
 
@@ -353,12 +387,28 @@ npm --version
 
 ### 3. Run locally on Windows and Linux
 
+### Feature status matrix / Bảng trạng thái tính năng (AS-IS / UNVERIFIED / PROPOSED)
+
+| Component | Existing source | Verification / limits |
+| --- | --- | --- |
+| Identity / Keycloak | Backend [OIDC](../backend/src/main/resources/application.yml), BFF [OAuth client](../portal-bff/src/main/resources/application.yml) | **SOURCE IMPLEMENTED**; real three-principal browser login **LIVE E2E UNVERIFIED** ([#118](https://github.com/tricore-opentrix/opentrix/issues/118)) |
+| Workflow Core | `WorkflowRuntime`, `WorkflowPersistencePort`, PostgreSQL adapter and test sources ([Backend](../backend/README.md)) | **SOURCE IMPLEMENTED / TEST-LEVEL**; does not prove Flowable/E2E |
+| Helpdesk | `/api/v1/mvp/requests` when `dxos.helpdesk.enabled` is enabled, authorization/version tests | **SOURCE IMPLEMENTED / TEST-LEVEL**; real Golden Path **UNVERIFIED** |
+| Portal Frontend | [Frontend](../frontend/package.json): MOCK and `integration-local` build | MOCK uses synthetic data; bundle build is not proof of runtime integration |
+| Portal BFF | [BFF](../portal-bff/README.md): OAuth/PKCE, session, CSRF, fixture test | **TEST-LEVEL**; Keycloak/browser/DB **LIVE E2E UNVERIFIED** |
+| PostgreSQL / Flyway | [Compose](../infra/compose.workflow-postgres.yml), migration Workflow V1–V4/Helpdesk SQL | **SOURCE IMPLEMENTED**; same-SHA schema/ACL/restart evidence pending |
+| Docker Compose | `infra/compose.workflow-postgres.yml`: Workflow PostgreSQL only | Full-stack Compose **PROPOSED** [#119](https://github.com/tricore-opentrix/opentrix/issues/119) |
+| APISIX / Flowable | No accepted integrated runtime; Workflow uses an in-house engine | **PROPOSED** [APISIX #116](https://github.com/tricore-opentrix/opentrix/issues/116) / [Flowable #191](https://github.com/tricore-opentrix/opentrix/issues/191) |
+
+SOURCE IMPLEMENTED = source exists; TEST-LEVEL = recorded test scope only; UNVERIFIED ≠ FAIL. Sources: [Block B](09-evidence/phase-2/block-b-backend-infra.md) / [Block C](09-evidence/phase-2/block-c-application.md).
+
+
 Two local run modes and one acceptance gate (AS-IS as design; actual runs **UNVERIFIED**):
 
 | Mode / gate | Provides | Does not establish |
 |---|---|---|
 | MOCK (run mode) | Portal with synthetic in-memory data | Backend authorization, SSO, persistence |
-| integration-local (run mode) | `integration-local` build + HTTPS (Caddy) + BFF + Backend + real identities + disposable DB | Browser acceptance |
+| integration-local (integration configuration) | BFF/Caddy bundle build; Keycloak, Backend, DB require separate provisioning | Bundle is not a running stack/LIVE E2E PASS |
 | LIVE E2E (acceptance gate, not a standalone run mode) | Evidence of an authenticated browser journey, collected from the integration-local stack | **UNVERIFIED**; tracked in [#118](https://github.com/tricore-opentrix/opentrix/issues/118) |
 
 #### 3.1 MOCK Portal (no Java/DB needed)
@@ -440,6 +490,18 @@ Tests use controlled fixtures (PKCE, CSRF, origin checks, bearer forwarding, red
 - Dockerfiles in `infra/release/` are packaging inputs, not a deployment stack (see [DEPLOYMENT.md](DEPLOYMENT.md)).
 
 ### 4. Development workflow
+
+**Prerequisites and expected results (not execution results):**
+
+| Command/mode | Prerequisites | Expected |
+| --- | --- | --- |
+| Frontend build | Node ≥22.12, npm, dependency download, `frontend/` | Exit 0, bundle exists; not backend/LIVE |
+| Backend `test` | JDK 21, Gradle Wrapper, `backend/` | Exit 0, inspect XML and **SKIPPED**; DB/Keycloak not automatic |
+| BFF `test` | JDK 21; wrapper from root `-p portal-bff` | Exit 0, fixture results; not real SSO |
+| `workflowIntegrationTest` | Disposable loopback PostgreSQL, `WORKFLOW_TEST_*`, authorized owner | Required suites execute with zero unexpected FAIL/SKIP; missing vars fail fast |
+| Frontend MOCK | `npm ci`, then `npm run dev` | `127.0.0.1:5173`, synthetic UI only |
+| LIVE E2E | Keycloak, BFF, Backend, HTTPS/CA, disposable DB | **UNVERIFIED** until real browser, three principals, negative paths, persistence #118 |
+
 
 #### 4.1 Testing (AS-IS: commands; results **UNVERIFIED** until you run them)
 
