@@ -55,6 +55,7 @@ Trạng thái phản ánh nội dung trên `main`. PR nào thay nội dung một
 | [NOTICE](../NOTICE) | Ghi công bản quyền dự án |
 | [CHANGELOG.md](../CHANGELOG.md) | Lịch sử thay đổi theo phiên bản |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Quy trình đóng góp, header SPDX, chính sách giấy phép |
+| [GOVERNANCE.md](../GOVERNANCE.md) | Vai trò maintainer, cách ra quyết định, quy tắc review và phát hành |
 | [SECURITY.md](../SECURITY.md) | Cách báo cáo lỗ hổng bảo mật |
 
 ### 4. Tài liệu tham chiếu
@@ -67,15 +68,19 @@ Trạng thái phản ánh nội dung trên `main`. PR nào thay nội dung một
 
 ### 5. Tài liệu cũ đang chuyển tiếp
 
-| Thư mục cũ | Sẽ gộp vào |
+| Thư mục cũ | Xử lý |
 | --- | --- |
-| [00-project/](00-project/) | Chưa chốt |
-| [01-architecture/](01-architecture/) | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| [02-core/](02-core/) | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| [06-deployment/](06-deployment/) | [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
-| [evidence/](evidence/) | [09-evidence/](09-evidence/) |
+| [00-project/](00-project/) | Chưa chốt nơi gộp; phân loại từng file ở #195 |
+| [01-architecture/](01-architecture/) | Gộp vào [ARCHITECTURE.md](ARCHITECTURE.md); phần Workflow và lưu trữ chờ #191, #181 |
+| [02-core/](02-core/) | Gộp vào [ARCHITECTURE.md](ARCHITECTURE.md); phần Workflow và lưu trữ chờ #191, #181 |
+| [06-deployment/](06-deployment/) | **Giữ lại** — hồ sơ R23/R24/R26; hướng dẫn chuẩn ở [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
+| [evidence/](evidence/) | **Giữ lại** — 3 file SQL là đầu vào của test backend |
 
-Các thư mục này sẽ bị gỡ sau khi nội dung đã được gộp. **Không** dùng chúng làm nguồn chuẩn.
+Nguồn chuẩn là 9 tài liệu chính ở mục 1. Thư mục cũ được giữ làm hồ sơ lịch sử cho đến khi từng file được phân loại và gộp (#195).
+
+- **Không xoá, không đổi tên** `06-deployment/` và `evidence/`: `.github/workflows/release.yml`, `scripts/r24-upstream.py` và test backend đọc file theo đúng các đường dẫn này. [R24 runbook](06-deployment/r24-release.md) vẫn là tài liệu kỹ thuật chuẩn của quy trình R24 (xem [RELEASE.md](RELEASE.md)); điều này không có nghĩa bản phát hành đã được chấp thuận.
+- Nội dung về Workflow và lưu trữ trong thư mục cũ là **lịch sử**, không phải quyết định hiện hành, cho đến khi #191 và #181 được chốt.
+- Facility được **hoãn** theo quyết định phạm vi ở #194; tài liệu Facility cũ chỉ là bản ghi lịch sử, không chứng minh Core đã được tái sử dụng cho hai ứng dụng.
 
 ### 6. Quy ước
 
@@ -127,6 +132,7 @@ Status reflects what is on `main`. A PR that changes a document's content update
 | [NOTICE](../NOTICE) | Project copyright attribution |
 | [CHANGELOG.md](../CHANGELOG.md) | Change history by version |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Contribution workflow, SPDX headers, license policy |
+| [GOVERNANCE.md](../GOVERNANCE.md) | Maintainer roles, decision-making, review and release rules |
 | [SECURITY.md](../SECURITY.md) | How to report security vulnerabilities |
 
 ### 4. Reference material
@@ -139,15 +145,19 @@ Status reflects what is on `main`. A PR that changes a document's content update
 
 ### 5. Legacy documents in transition
 
-| Legacy folder | Will be merged into |
+| Legacy folder | Disposition |
 | --- | --- |
-| [00-project/](00-project/) | Not decided |
-| [01-architecture/](01-architecture/) | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| [02-core/](02-core/) | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| [06-deployment/](06-deployment/) | [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
-| [evidence/](evidence/) | [09-evidence/](09-evidence/) |
+| [00-project/](00-project/) | Destination not decided; per-file classification in #195 |
+| [01-architecture/](01-architecture/) | Merge into [ARCHITECTURE.md](ARCHITECTURE.md); Workflow and storage parts wait for #191, #181 |
+| [02-core/](02-core/) | Merge into [ARCHITECTURE.md](ARCHITECTURE.md); Workflow and storage parts wait for #191, #181 |
+| [06-deployment/](06-deployment/) | **Kept** — R23/R24/R26 records; canonical guides are [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
+| [evidence/](evidence/) | **Kept** — the 3 SQL files are inputs to backend tests |
 
-These folders will be removed once their content has been merged. **Do not** use them as the authoritative source.
+The canonical sources are the 9 main documents in section 1. Legacy folders are kept as historical records until each file is classified and merged (#195).
+
+- **Do not delete or rename** `06-deployment/` or `evidence/`: `.github/workflows/release.yml`, `scripts/r24-upstream.py` and backend tests read files at these exact paths. The [R24 runbook](06-deployment/r24-release.md) remains the canonical technical procedure for R24 (see [RELEASE.md](RELEASE.md)); this does not mean any release has been approved.
+- Workflow and storage content in legacy folders is **historical**, not a current decision, until #191 and #181 are settled.
+- Facility is **deferred** per the scope decision in #194; legacy Facility documents are historical records and do not prove Core reuse across two applications.
 
 ### 6. Conventions
 
