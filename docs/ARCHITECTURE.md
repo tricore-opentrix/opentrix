@@ -11,8 +11,8 @@ SPDX-License-Identifier: Apache-2.0
 [Documentation index](README.md) · [Development](DEVELOPMENT.md) · [Deployment](DEPLOYMENT.md) · [API](API.md)
 
 > **Ngôn ngữ / Language:** [Tiếng Việt](#kiến-trúc-opentrix--tiếng-việt) · [English](#opentrix-architecture--english)
-
-> **Trạng thái tài liệu / Document status:** DRAFT · **Cập nhật / Updated:** 2026-11-11 · **Hiện trạng tại / As-is at:** `5938d8e`
+>
+> **Owner / Phụ trách:** @phanyen06ym-ien · **Issue:** [#195](https://github.com/tricore-opentrix/opentrix/issues/195), [#194](https://github.com/tricore-opentrix/opentrix/issues/194) · **Trạng thái / Status:** Bản nháp — chờ review / Draft — review required · **Hiện trạng tại / As-is at:** `5938d8e`
 
 > **Bằng chứng / Evidence:** [`09-evidence/phase-2/block-a-architecture.md`](09-evidence/phase-2/block-a-architecture.md) · **Kiến trúc mục tiêu / Target architecture:** #191
 
@@ -31,27 +31,16 @@ Mũi tên mô tả luồng giao tiếp và quan hệ phụ thuộc ở mức ki�
 ### 2. Ranh giới năng lực
 
 | Năng lực | Hiện trạng đã có | Chưa có (Issue) |
-
 | --- | --- | --- |
-
 | **Backend** | Một ứng dụng Spring Boot (`DxosApplication`), một project Gradle; package `gateway`, `application`, `core`, `infrastructure`. | Chuẩn hóa module và Java API công khai theo Modular Monolith (#191). |
-
 | **Identity** | OAuth2 Resource Server; kiểm tra JWT theo issuer, thời hạn, audience, subject, loại token; principal chuẩn từ issuer + subject. Portal BFF: OIDC, PKCE, session, CSRF, chuyển tiếp token. | E2E với Keycloak thật (#118); tenant và migration quyền (#191). |
-
 | **Phân quyền** | Quyền kỹ thuật ở gateway (`WorkflowGatewayPrincipalGate`, `workflow:*`); quyền tài nguyên/tenant ở application (`WorkflowAuthorization`, `TenantResourceWorkflowAccessPolicy`). | — |
-
 | **Workflow** | Engine tự viết `WorkflowRuntime` qua `WorkflowPersistencePort`, lưu PostgreSQL. | Embedded Flowable (#191); API workflow tổng quát chưa đăng ký production (#115). |
-
 | **Gateway** | Ranh giới HTTP do Spring Security trong backend. | Năng lực API Gateway chuyên dụng (#116). |
-
 | **Dữ liệu có cấu trúc** | PostgreSQL 17, migration Flyway. | Schema theo module và database role (#191). |
-
 | **Dữ liệu phi cấu trúc** | Hợp đồng `ObjectStoragePort` và contract test (fake in-memory). | Adapter production qua S3-compatible API (#181, #192). |
-
 | **Cách ly module** | ArchUnit `CoreDependencyRulesTest`: Core không phụ thuộc Application/Infrastructure/JDBC; Identity, Workflow, Data không phụ thuộc chéo; có negative canary. | Luật cho Application/Gateway (#90); tách `HelpdeskService` khỏi infrastructure (#193). |
-
 | **Hợp đồng API** | Helpdesk 9 thao tác tại `/api/v1/mvp/requests`; `GET /api/v1/health`. | Đặc tả OpenAPI (#112); Capability/Application Contract (#191). |
-
 | **Ứng dụng** | IT Helpdesk (Golden Path). | Facility — hoãn sau hạn nộp (P3). |
 
 ### 3. Phân định trách nhiệm dữ liệu
@@ -163,27 +152,16 @@ See the as-is diagram in the Vietnamese section. Key boundaries:
 ### 2. Capability boundaries
 
 | Capability | Delivered | Not delivered (issue) |
-
 | --- | --- | --- |
-
 | **Backend** | One Spring Boot application (`DxosApplication`), one Gradle project; `gateway`, `application`, `core`, `infrastructure` packages. | Modules and published Java APIs per the Modular Monolith target (#191). |
-
 | **Identity** | OAuth2 Resource Server; JWT validated for issuer, expiry, audience, subject, token type; canonical principal from issuer + subject. Portal BFF: OIDC, PKCE, session, CSRF, token relay. | E2E with a real Keycloak (#118); tenant model and permission migration (#191). |
-
 | **Authorization** | Technical authorities at the gateway (`WorkflowGatewayPrincipalGate`, `workflow:*`); resource/tenant authorization in application (`WorkflowAuthorization`, `TenantResourceWorkflowAccessPolicy`). | — |
-
 | **Workflow** | In-house `WorkflowRuntime` through `WorkflowPersistencePort`, persisted in PostgreSQL. | Embedded Flowable (#191); generic workflow API not registered in production (#115). |
-
 | **Gateway** | HTTP boundary handled by Spring Security in the backend. | Dedicated API Gateway capability (#116). |
-
 | **Structured data** | PostgreSQL 17 with Flyway migrations. | Module-owned schemas and database roles (#191). |
-
 | **Unstructured data** | `ObjectStoragePort` contract and contract tests (in-memory fake). | Production adapter via an S3-compatible API (#181, #192). |
-
 | **Module isolation** | ArchUnit `CoreDependencyRulesTest`: Core has no dependency on Application/Infrastructure/JDBC; Identity, Workflow and Data stay independent; includes a negative canary. | Rules for Application/Gateway (#90); move `HelpdeskService` out of infrastructure (#193). |
-
 | **API contracts** | Helpdesk's 9 operations at `/api/v1/mvp/requests`; `GET /api/v1/health`. | OpenAPI specification (#112); Capability/Application Contracts (#191). |
-
 | **Applications** | IT Helpdesk (Golden Path). | Facility — deferred past the deadline (P3). |
 
 ### 3. Data ownership

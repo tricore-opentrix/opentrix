@@ -9,6 +9,8 @@ SPDX-License-Identifier: Apache-2.0
 [Documentation index](README.md) · [Architecture](ARCHITECTURE.md) · [Release](RELEASE.md)
 
 > **Ngôn ngữ / Language:** [Tiếng Việt](#nguồn-mở-và-tuân-thủ--tiếng-việt) · [English](#open-source-and-compliance--english)
+>
+> **Owner / Phụ trách:** @phanyen06ym-ien · **Issue:** [#195](https://github.com/tricore-opentrix/opentrix/issues/195), [#194](https://github.com/tricore-opentrix/opentrix/issues/194), [#138](https://github.com/tricore-opentrix/opentrix/issues/138), [#190](https://github.com/tricore-opentrix/opentrix/issues/190) · **Trạng thái / Status:** Bản nháp — chờ review / Draft — review required
 
 ---
 
