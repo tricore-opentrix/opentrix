@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
 > **Ngôn ngữ / Language:** [Tiếng Việt](#kiến-trúc-opentrix--tiếng-việt) · [English](#opentrix-architecture--english)
 >
-> **Owner / Phụ trách:** @phanyen06ym-ien · **Issue:** [#195](https://github.com/tricore-opentrix/opentrix/issues/195), [#194](https://github.com/tricore-opentrix/opentrix/issues/194) · **Trạng thái / Status:** Bản nháp — chờ review / Draft — review required · **Hiện trạng tại / As-is at:** `5938d8e`
+> **Owner / Phụ trách:** @phanyen06ym-ien · **Issue:** [#195](https://github.com/tricore-opentrix/opentrix/issues/195), [#194](https://github.com/tricore-opentrix/opentrix/issues/194) · **Trạng thái / Status:** Đã review — merge ở #201 / Reviewed — merged in #201 · **Hiện trạng tại / As-is at:** `5938d8e`
 
 > **Bằng chứng / Evidence:** [`09-evidence/phase-2/block-a-architecture.md`](09-evidence/phase-2/block-a-architecture.md) · **Kiến trúc mục tiêu / Target architecture:** #191
 
