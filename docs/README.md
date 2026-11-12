@@ -75,7 +75,21 @@ Trạng thái phản ánh nội dung trên `main`. PR nào thay nội dung một
 | [06-deployment/](06-deployment/) | [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
 | [evidence/](evidence/) | [09-evidence/](09-evidence/) |
 
-Các thư mục này sẽ bị gỡ sau khi nội dung đã được gộp. **Không** dùng chúng làm nguồn chuẩn.
+Tài liệu cũ đang được rà soát. Bảng đích ở trên là đề xuất điều hướng,
+không tự chuyển quyền làm nguồn chuẩn hay phê duyệt việc gỡ tệp.
+Đọc từng tài liệu theo trạng thái, phạm vi và SHA nguồn đã ghim;
+bản tóm tắt mới hơn không tự thay thế quyết định, hợp đồng hoặc bằng chứng lịch sử.
+
+Giữ tệp ở đường dẫn hiện tại cho đến khi có quyết định riêng cho từng tệp
+và review độc lập về nội dung cùng các đường dẫn phụ thuộc.
+[Hướng dẫn phát hành](RELEASE.md) vẫn xác định
+[R24](06-deployment/r24-release.md) là tài liệu kỹ thuật chuẩn cho quy trình của nó;
+điều này không xác nhận triển khai, kiểm thử hay chấp thuận phát hành.
+Giữ nguyên phạm vi lịch sử của các bản ghi được lưu lại;
+đề xuất chưa triển khai không vì thế trở thành yêu cầu hiện hành.
+SQL evidence cùng các đường dẫn đầu vào/đầu ra của runtime, test và release
+không thuộc phạm vi gộp hoặc gỡ tệp này.
+Tham chiếu hoặc bằng chứng phê duyệt còn thiếu được ghi là `UNKNOWN`.
 
 ### 6. Quy ước
 
@@ -147,7 +161,21 @@ Status reflects what is on `main`. A PR that changes a document's content update
 | [06-deployment/](06-deployment/) | [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
 | [evidence/](evidence/) | [09-evidence/](09-evidence/) |
 
-These folders will be removed once their content has been merged. **Do not** use them as the authoritative source.
+Legacy documents are under review. The destination table above is a navigation proposal;
+it does not transfer authority or approve file retirement.
+Read each document within its stated status, scope and pinned source SHA;
+a newer summary does not itself supersede a decision, contract or historical evidence.
+
+Keep files at their existing paths until a file-specific disposition and independent
+content and dependency review are recorded.
+The [release guide](RELEASE.md) still identifies the
+[R24 runbook](06-deployment/r24-release.md) as canonical for its technical procedures;
+this does not establish implementation, test or release acceptance.
+Retained records keep their historical scope;
+unimplemented proposals do not thereby become current requirements.
+SQL evidence and runtime, test and release input/output paths are outside this
+content-consolidation or retirement scope.
+Missing references or approval evidence remain `UNKNOWN`.
 
 ### 6. Conventions
 
