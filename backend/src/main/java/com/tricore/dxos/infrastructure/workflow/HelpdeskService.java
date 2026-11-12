@@ -4,11 +4,11 @@
 
 package com.tricore.dxos.infrastructure.workflow;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tricore.dxos.application.authorization.*;
+import com.tricore.dxos.application.helpdesk.api.HelpdeskUseCase;
 import com.tricore.dxos.application.identity.CurrentPrincipal;
 import com.tricore.dxos.core.identity.AuthenticatedPrincipal;
 import com.tricore.dxos.core.workflow.*;
@@ -18,11 +18,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Clock;
-import java.time.Instant;
 import java.util.*;
 
 /** Java authorizes each command inside the transaction that commits its business and Workflow facts. */
-public final class HelpdeskService {
+public final class HelpdeskService implements HelpdeskUseCase {
     private static final ObjectMapper JSON = new ObjectMapper();
     private final PostgresWorkflowPersistence persistence;
     private final CurrentPrincipal principal;
@@ -40,17 +39,7 @@ public final class HelpdeskService {
         this.clock = Objects.requireNonNull(clock);
     }
 
-    public record AssigneeOption(String id, String displayName) {}
-    public record RequestView(UUID id, String title, String description, String requestType,
-            String requesterId, String assigneeId, String resolution, long assignmentVersion,
-            String workflowInstanceId, String state, long version, List<String> allowedActions,
-            @JsonInclude(JsonInclude.Include.NON_NULL) String requesterDisplayName,
-            @JsonInclude(JsonInclude.Include.NON_NULL) String assigneeDisplayName,
-            @JsonInclude(JsonInclude.Include.NON_NULL) List<AssigneeOption> eligibleAssignees) {}
-    public record Page(List<RequestView> items, UUID nextCursor) {}
-    public record HistoryView(String transitionId, String sourceState, String targetState,
-            long version, Instant occurredAt) {}
-
+    @Override
     public RequestView create(String title, String description) {
         var actor = principal.requireVerified();
         UUID id = UUID.randomUUID();
@@ -94,11 +83,13 @@ public final class HelpdeskService {
         });
     }
 
+    @Override
     public RequestView get(UUID id) {
         var actor = principal.requireVerified();
         return persistence.guardedTransaction(false, c -> view(request(c, actor, id, "read", null, null, null), actor, true));
     }
 
+    @Override
     public Page list(UUID after, int limit) {
         var actor = principal.requireVerified();
         if (limit < 1 || limit > 100) throw new IllegalArgumentException("limit must be between 1 and 100");
@@ -123,6 +114,7 @@ public final class HelpdeskService {
         });
     }
 
+    @Override
     public List<HistoryView> history(UUID id) {
         var actor = principal.requireVerified();
         return persistence.guardedTransaction(false, c -> {
@@ -137,12 +129,33 @@ public final class HelpdeskService {
         });
     }
 
+    @Override
     public RequestView assign(UUID id, String assignee, long expectedAssignmentVersion) {
         var actor = principal.requireVerified();
         return persistence.guardedTransaction(true, c -> {
             request(c, actor, id, "assign", assignee, expectedAssignmentVersion, null);
             return view(request(c, actor, id, "read", null, null, null), actor, false);
         });
+    }
+
+    @Override
+    public RequestView triage(UUID id, long expectedVersion) {
+        return transition(id, "triage", expectedVersion, null);
+    }
+
+    @Override
+    public RequestView start(UUID id, long expectedVersion) {
+        return transition(id, "start_work", expectedVersion, null);
+    }
+
+    @Override
+    public RequestView resolve(UUID id, long expectedVersion, String resolution) {
+        return transition(id, "resolve", expectedVersion, resolution);
+    }
+
+    @Override
+    public RequestView confirm(UUID id, long expectedVersion) {
+        return transition(id, "confirm", expectedVersion, null);
     }
 
     public RequestView transition(UUID id, String action, long expectedVersion, String resolution) {

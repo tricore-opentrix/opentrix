@@ -7,7 +7,7 @@ package com.tricore.dxos.gateway.helpdesk;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.tricore.dxos.gateway.workflow.dto.WorkflowVersionDeserializer;
-import com.tricore.dxos.infrastructure.workflow.HelpdeskService;
+import com.tricore.dxos.application.helpdesk.api.HelpdeskUseCase;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -22,8 +22,8 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "dxos.helpdesk.enabled", havingValue = "true")
 @RequestMapping("/api/v1/mvp/requests")
 public class HelpdeskController {
-    private final HelpdeskService service;
-    public HelpdeskController(HelpdeskService service) { this.service = service; }
+    private final HelpdeskUseCase service;
+    public HelpdeskController(HelpdeskUseCase service) { this.service = service; }
 
     public record Create(@NotBlank @Size(max = 200) String title,
                          @NotBlank @Size(max = 4000) String description,
@@ -44,27 +44,27 @@ public class HelpdeskController {
     }
 
     @PostMapping
-    public ResponseEntity<HelpdeskService.RequestView> create(@Valid @RequestBody Create input) {
+    public ResponseEntity<HelpdeskUseCase.RequestView> create(@Valid @RequestBody Create input) {
         var result = service.create(input.title(), input.description());
         return ResponseEntity.created(URI.create("/api/v1/mvp/requests/" + result.id())).body(result);
     }
-    @GetMapping public HelpdeskService.Page list(@RequestParam(required = false) UUID after,
+    @GetMapping public HelpdeskUseCase.Page list(@RequestParam(required = false) UUID after,
             @RequestParam(defaultValue = "50") @Min(1) @Max(100) int limit) { return service.list(after, limit); }
-    @GetMapping("/{id}") public HelpdeskService.RequestView get(@PathVariable UUID id) { return service.get(id); }
-    @GetMapping("/{id}/history") public List<HelpdeskService.HistoryView> history(@PathVariable UUID id) { return service.history(id); }
-    @PostMapping("/{id}/triage") public HelpdeskService.RequestView triage(@PathVariable UUID id, @Valid @RequestBody Version input) {
-        return service.transition(id, "triage", input.expectedVersion(), null);
+    @GetMapping("/{id}") public HelpdeskUseCase.RequestView get(@PathVariable UUID id) { return service.get(id); }
+    @GetMapping("/{id}/history") public List<HelpdeskUseCase.HistoryView> history(@PathVariable UUID id) { return service.history(id); }
+    @PostMapping("/{id}/triage") public HelpdeskUseCase.RequestView triage(@PathVariable UUID id, @Valid @RequestBody Version input) {
+        return service.triage(id, input.expectedVersion());
     }
-    @PostMapping("/{id}/assign") public HelpdeskService.RequestView assign(@PathVariable UUID id, @Valid @RequestBody Assign input) {
+    @PostMapping("/{id}/assign") public HelpdeskUseCase.RequestView assign(@PathVariable UUID id, @Valid @RequestBody Assign input) {
         return service.assign(id, input.assigneeId(), input.expectedAssignmentVersion());
     }
-    @PostMapping("/{id}/start") public HelpdeskService.RequestView start(@PathVariable UUID id, @Valid @RequestBody Version input) {
-        return service.transition(id, "start_work", input.expectedVersion(), null);
+    @PostMapping("/{id}/start") public HelpdeskUseCase.RequestView start(@PathVariable UUID id, @Valid @RequestBody Version input) {
+        return service.start(id, input.expectedVersion());
     }
-    @PostMapping("/{id}/resolve") public HelpdeskService.RequestView resolve(@PathVariable UUID id, @Valid @RequestBody Resolve input) {
-        return service.transition(id, "resolve", input.expectedVersion(), input.resolution());
+    @PostMapping("/{id}/resolve") public HelpdeskUseCase.RequestView resolve(@PathVariable UUID id, @Valid @RequestBody Resolve input) {
+        return service.resolve(id, input.expectedVersion(), input.resolution());
     }
-    @PostMapping("/{id}/confirm") public HelpdeskService.RequestView confirm(@PathVariable UUID id, @Valid @RequestBody Version input) {
-        return service.transition(id, "confirm", input.expectedVersion(), null);
+    @PostMapping("/{id}/confirm") public HelpdeskUseCase.RequestView confirm(@PathVariable UUID id, @Valid @RequestBody Version input) {
+        return service.confirm(id, input.expectedVersion());
     }
 }
