@@ -24,7 +24,7 @@ OpenTrix là nền tảng DX-OS Open-Core cung cấp các năng lực dùng chun
 
 ### 1. Tô-pô hệ thống (hiện trạng)
 
-![Tô-pô hệ thống OpenTrix — hiện trạng / System topology — as-is](diagrams/topology-as-is.svg)
+![Tô-pô mã nguồn OpenTrix — hiện trạng, LIVE E2E chưa xác minh #118 / Source topology — as-is, LIVE E2E unverified #118](diagrams/topology-as-is.svg)
 
 Mũi tên mô tả luồng giao tiếp và quan hệ phụ thuộc ở mức kiến trúc; đường nét đứt đánh dấu quan hệ đặc biệt: hiện thực port hoặc phụ thuộc cần sửa. Luồng React → BFF → Backend → PostgreSQL với Keycloak thật **chưa có bằng chứng end-to-end** (#118).
 
@@ -104,7 +104,7 @@ Mũi tên mô tả luồng giao tiếp và quan hệ phụ thuộc ở mức ki�
 
 ### 6. Kiến trúc mục tiêu — đã chọn, chờ ADR #191
 
-Tám lựa chọn dưới đây do nhóm chốt ngày 2026-11-11. Chưa có ADR được merge và **chưa triển khai**; chỉ ghi nhận là chấp nhận chính thức sau khi #191 merge.
+Các định hướng kiến trúc dưới đây được nhóm thống nhất ở mức thiết kế ngày 2026-11-11. Chúng chưa được phê duyệt bằng ADR đã merge và chưa được xem là đã triển khai; chỉ được ghi nhận là chấp nhận chính thức sau khi #191 merge.
 
 ![Kiến trúc mục tiêu OpenTrix — chờ ADR #191 / Target architecture — pending ADR #191](diagrams/topology-target.svg)
 
@@ -236,32 +236,20 @@ See the as-is diagram in the Vietnamese section. Key boundaries:
 
 ### 6. Target architecture — chosen, pending ADR #191
 
-These eight selections were confirmed by the team on 2026-11-11. No ADR has been merged and they are **not implemented**; they become formally accepted only after #191 is merged. The target diagram is in the Vietnamese section; its arrows show dependency/concept flow, not working connections.
+The architecture directions below were agreed by the team at design level on 2026-11-11. They have not been approved through a merged ADR and must not be treated as implemented; they become formally accepted only after #191 is merged. The target diagram is in the Vietnamese section; its arrows show dependency/concept flow, not working connections.
 
 | Boundary | Team selection | To be specified in the ADR / contracts |
-
 | --- | --- | --- |
-
 | Backend | Spring Boot Modular Monolith | Package/module layout and actual deployment |
-
 | Core / Application | Reusable capabilities vs. business policies | Capability catalogue and concrete dependency rules |
-
 | Application | **Hybrid Manifest-Driven:** manifest declares metadata/capabilities; **Java modules** execute business logic | Manifest schema, validation, versioning, discovery/loading |
-
 | Workflow | **Embedded Flowable** | BPMN definitions, adapter, migration, transactions, engine schema |
-
 | Module API | **Published Java interfaces** | Exported interface inventory and compatibility rules |
-
 | Module isolation | **Strict Module API + ArchUnit** | Actual ArchUnit rules and CI results |
-
 | Dual contracts | **Capability Contract + Application Contract** | Schema/format, ownership, versioning, HTTP/OpenAPI mapping |
-
 | Contract governance | **Documentation + CI** | Concrete checks: contract diff, link check, tests, breaking-change gate |
-
 | Data | **Shared PostgreSQL, Module-Owned Schemas**; access limited by **database roles** and **module contracts** | Grants, per-module migrations, negative cross-schema tests; where Flowable tables live |
-
 | Identity | **Keycloak** owns identity; **backend** owns tenant/resource authorization; permission migration | Tenant structure, permission inheritance, migration mechanics |
-
 | Storage | **S3-compatible API** through a storage port/adapter | Provider, bucket layout, encryption, retention, ACL (#181, #192) |
 
 **Two contract types:**

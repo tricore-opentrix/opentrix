@@ -24,16 +24,18 @@ OpenTrix (DX-OS Open-Core) là nền tảng nguồn mở cung cấp năng lực 
 
 | Tài liệu | Đọc khi | Phụ trách | Trạng thái |
 | --- | --- | --- | --- |
-| [DEVELOPMENT.md](DEVELOPMENT.md) | Cài môi trường Windows/Linux, chạy local, làm theo quy trình phát triển | Bảo | Khung |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Cài môi trường Windows/Linux, chạy local, làm theo quy trình phát triển | Bảo | Khung — bản nháp ở PR #203 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Cần hiểu tô-pô, ranh giới Core/Application, Identity, Workflow, Gateway, Data và kiến trúc mục tiêu | Yến | Bản nháp |
-| [API.md](API.md) | Gọi endpoint, xác thực, phân quyền, xử lý mã lỗi, tra OpenAPI | Ánh | Khung |
-| [INTEGRATION.md](INTEGRATION.md) | Tích hợp ứng dụng mới với Core, theo ví dụ Helpdesk | Ánh | Khung |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Triển khai bằng Docker Compose, cấu hình, migration, health check | Bảo | Khung |
-| [TESTING.md](TESTING.md) | Chạy test, hiểu các lớp test, CI và bằng chứng | Ánh | Khung |
+| [API.md](API.md) | Gọi endpoint, xác thực, phân quyền, xử lý mã lỗi, tra OpenAPI | Ánh | Khung — bản nháp ở PR #200 |
+| [INTEGRATION.md](INTEGRATION.md) | Tích hợp ứng dụng mới với Core, theo ví dụ Helpdesk | Ánh | Khung — bản nháp ở PR #200 |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Triển khai bằng Docker Compose, cấu hình, migration, health check | Bảo | Khung — bản nháp ở PR #203 |
+| [TESTING.md](TESTING.md) | Chạy test, hiểu các lớp test, CI và bằng chứng | Ánh | Khung — bản nháp ở PR #200 |
 | [OPEN_SOURCE.md](OPEN_SOURCE.md) | Đánh giá giấy phép, SPDX/REUSE, thư viện bên thứ ba, cổng xuất bản | Yến | Bản nháp |
-| [RELEASE.md](RELEASE.md) | Gắn phiên bản, qua cổng phát hành, đóng gói artifact, viết release notes | Bảo | Khung |
+| [RELEASE.md](RELEASE.md) | Gắn phiên bản, qua cổng phát hành, đóng gói artifact, viết release notes | Bảo | Khung — bản nháp ở PR #203 |
 
 **Khung:** mới có đề mục. **Bản nháp:** đã có nội dung, chờ review. **Đã review:** đã được review và merge.
+
+Trạng thái phản ánh nội dung trên `main`. PR nào thay nội dung một tài liệu thì cập nhật luôn dòng của tài liệu đó trong bảng này.
 
 ### 2. Lộ trình đọc theo vai trò
 
@@ -94,16 +96,18 @@ OpenTrix (DX-OS Open-Core) is an open-source platform providing shared capabilit
 
 | Document | Read when you need to | Owner | Status |
 | --- | --- | --- | --- |
-| [DEVELOPMENT.md](DEVELOPMENT.md) | Set up Windows/Linux, run locally, follow the development workflow | Bảo | Skeleton |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Set up Windows/Linux, run locally, follow the development workflow | Bảo | Skeleton — draft in PR #203 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Understand the topology, Core/Application boundaries, Identity, Workflow, Gateway, Data and the target architecture | Yến | Draft |
-| [API.md](API.md) | Call endpoints, authenticate, authorize, handle error codes, consult OpenAPI | Ánh | Skeleton |
-| [INTEGRATION.md](INTEGRATION.md) | Integrate a new application with Core, following the Helpdesk example | Ánh | Skeleton |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy with Docker Compose, configure, migrate, check health | Bảo | Skeleton |
-| [TESTING.md](TESTING.md) | Run tests, understand test layers, CI and evidence | Ánh | Skeleton |
+| [API.md](API.md) | Call endpoints, authenticate, authorize, handle error codes, consult OpenAPI | Ánh | Skeleton — draft in PR #200 |
+| [INTEGRATION.md](INTEGRATION.md) | Integrate a new application with Core, following the Helpdesk example | Ánh | Skeleton — draft in PR #200 |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy with Docker Compose, configure, migrate, check health | Bảo | Skeleton — draft in PR #203 |
+| [TESTING.md](TESTING.md) | Run tests, understand test layers, CI and evidence | Ánh | Skeleton — draft in PR #200 |
 | [OPEN_SOURCE.md](OPEN_SOURCE.md) | Assess licensing, SPDX/REUSE, third-party libraries, the publication gate | Yến | Draft |
-| [RELEASE.md](RELEASE.md) | Version, pass release gates, package artifacts, write release notes | Bảo | Skeleton |
+| [RELEASE.md](RELEASE.md) | Version, pass release gates, package artifacts, write release notes | Bảo | Skeleton — draft in PR #203 |
 
 **Skeleton:** headings only. **Draft:** content written, pending review. **Reviewed:** reviewed and merged.
+
+Status reflects what is on `main`. A PR that changes a document's content updates that document's row here in the same PR.
 
 ### 2. Reading paths by role
 
