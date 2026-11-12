@@ -25,8 +25,7 @@ Migrations/smoke cloud cần phê duyệt ghi riêng; không chạy trong bướ
 phải các bước setup mặc định. Giữ hai custom roles hiện có ở `NOLOGIN`.
 Các runtime-privilege/SECURITY DEFINER/event-trigger audit launchers cũng là công cụ
 review optional; guard trong adapter/migrations và integration tests vẫn giữ nguyên.
-Danh sách file cần giữ hoặc có thể loại khỏi PR nằm trong
-[`issue-25-readiness.md`](../docs/evidence/issue-25-readiness.md).
+Xem [docs/TESTING.md](../docs/TESTING.md) để đối chiếu hướng dẫn và bằng chứng kiểm thử hiện hành.
 
 `workflowDevelopmentSmoke` là task riêng trong backend, yêu cầu argument và opt-in
 development chính xác, schema cố định, tài khoản postgres, Direct verify-full và
