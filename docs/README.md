@@ -33,7 +33,7 @@ OpenTrix (DX-OS Open-Core) là nền tảng nguồn mở cung cấp năng lực 
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Triển khai bằng Docker Compose, cấu hình, migration, health check | Bảo | Đã review — #203 |
 | [TESTING.md](TESTING.md) | Chạy test, hiểu các lớp test, CI và bằng chứng | Ánh | Đã review — #200 |
 | [OPEN_SOURCE.md](OPEN_SOURCE.md) | Đánh giá giấy phép, SPDX/REUSE, thư viện bên thứ ba, cổng xuất bản | Yến | Đã review — #201 |
-| [RELEASE.md](RELEASE.md) | Gắn phiên bản, qua cổng phát hành, đóng gói artifact, viết release notes | Bảo | Đã review — #203 |
+| [RELEASE.md](RELEASE.md) | Gắn phiên bản, qua cổng phát hành, đóng gói artifact, viết release notes | Bảo | Đã review — #203, #210 |
 
 **Khung:** mới có đề mục. **Bản nháp:** đã có nội dung, chờ review. **Đã review:** đã được review và merge.
 
@@ -70,13 +70,13 @@ Trạng thái phản ánh nội dung trên `main`. PR nào thay nội dung một
 
 | Thư mục cũ | Xử lý |
 | --- | --- |
-| [00-project/](00-project/) | Chưa chốt nơi gộp; phân loại từng file ở #195 |
-| [01-architecture/](01-architecture/) | Gộp vào [ARCHITECTURE.md](ARCHITECTURE.md); phần Workflow và lưu trữ chờ #191, #181 |
-| [02-core/](02-core/) | Gộp vào [ARCHITECTURE.md](ARCHITECTURE.md); phần Workflow và lưu trữ chờ #191, #181 |
+| [00-project/](00-project/) | **Lịch sử** — hồ sơ dự án ban đầu; xem [README thư mục](00-project/README.md) |
+| [01-architecture/](01-architecture/) | **Lịch sử** — hiện trạng ở [ARCHITECTURE.md](ARCHITECTURE.md); xem [README thư mục](01-architecture/README.md) |
+| [02-core/](02-core/) | **Lịch sử**; Workflow `PENDING #191`, Data `PENDING #181`; xem [README thư mục](02-core/README.md) |
 | [06-deployment/](06-deployment/) | **Giữ lại** — hồ sơ R23/R24/R26; hướng dẫn chuẩn ở [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
 | [evidence/](evidence/) | **Giữ lại** — 3 file SQL là đầu vào của test backend |
 
-Nguồn chuẩn là 9 tài liệu chính ở mục 1. Thư mục cũ được giữ làm hồ sơ lịch sử cho đến khi từng file được phân loại và gộp (#195).
+Nguồn chuẩn là 9 tài liệu chính ở mục 1. Thư mục cũ được giữ nguyên đường dẫn làm hồ sơ lịch sử; phân loại từng file nằm trong README của từng thư mục (#195).
 
 - **Không xoá, không đổi tên** `06-deployment/` và `evidence/`: `.github/workflows/release.yml`, `scripts/r24-upstream.py` và test backend đọc file theo đúng các đường dẫn này. [R24 runbook](06-deployment/r24-release.md) vẫn là tài liệu kỹ thuật chuẩn của quy trình R24 (xem [RELEASE.md](RELEASE.md)); điều này không có nghĩa bản phát hành đã được chấp thuận.
 - Nội dung về Workflow và lưu trữ trong thư mục cũ là **lịch sử**, không phải quyết định hiện hành, cho đến khi #191 và #181 được chốt.
@@ -110,7 +110,7 @@ OpenTrix (DX-OS Open-Core) is an open-source platform providing shared capabilit
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy with Docker Compose, configure, migrate, check health | Bảo | Reviewed — #203 |
 | [TESTING.md](TESTING.md) | Run tests, understand test layers, CI and evidence | Ánh | Reviewed — #200 |
 | [OPEN_SOURCE.md](OPEN_SOURCE.md) | Assess licensing, SPDX/REUSE, third-party libraries, the publication gate | Yến | Reviewed — #201 |
-| [RELEASE.md](RELEASE.md) | Version, pass release gates, package artifacts, write release notes | Bảo | Reviewed — #203 |
+| [RELEASE.md](RELEASE.md) | Version, pass release gates, package artifacts, write release notes | Bảo | Reviewed — #203, #210 |
 
 **Skeleton:** headings only. **Draft:** content written, pending review. **Reviewed:** reviewed and merged.
 
@@ -147,13 +147,13 @@ Status reflects what is on `main`. A PR that changes a document's content update
 
 | Legacy folder | Disposition |
 | --- | --- |
-| [00-project/](00-project/) | Destination not decided; per-file classification in #195 |
-| [01-architecture/](01-architecture/) | Merge into [ARCHITECTURE.md](ARCHITECTURE.md); Workflow and storage parts wait for #191, #181 |
-| [02-core/](02-core/) | Merge into [ARCHITECTURE.md](ARCHITECTURE.md); Workflow and storage parts wait for #191, #181 |
+| [00-project/](00-project/) | **Historical** — early project records; see the [folder README](00-project/README.md) |
+| [01-architecture/](01-architecture/) | **Historical** — current state in [ARCHITECTURE.md](ARCHITECTURE.md); see the [folder README](01-architecture/README.md) |
+| [02-core/](02-core/) | **Historical**; Workflow `PENDING #191`, Data `PENDING #181`; see the [folder README](02-core/README.md) |
 | [06-deployment/](06-deployment/) | **Kept** — R23/R24/R26 records; canonical guides are [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
 | [evidence/](evidence/) | **Kept** — the 3 SQL files are inputs to backend tests |
 
-The canonical sources are the 9 main documents in section 1. Legacy folders are kept as historical records until each file is classified and merged (#195).
+The canonical sources are the 9 main documents in section 1. Legacy folders keep their paths as historical records; the per-file classification is in each folder README (#195).
 
 - **Do not delete or rename** `06-deployment/` or `evidence/`: `.github/workflows/release.yml`, `scripts/r24-upstream.py` and backend tests read files at these exact paths. The [R24 runbook](06-deployment/r24-release.md) remains the canonical technical procedure for R24 (see [RELEASE.md](RELEASE.md)); this does not mean any release has been approved.
 - Workflow and storage content in legacy folders is **historical**, not a current decision, until #191 and #181 are settled.
