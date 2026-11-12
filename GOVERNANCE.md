@@ -7,8 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 
 [Documentation](docs/README.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Code owners](.github/CODEOWNERS)
 
-> **Language / Ngôn ngữ:** [Tiếng Việt](#vi) · [English](#en)  
-> **Owner:** @phanyen06ym-ien · **Tracking:** [#195](https://github.com/tricore-opentrix/opentrix/issues/195), [#194](https://github.com/tricore-opentrix/opentrix/issues/194)  
+> **Language / Ngôn ngữ:** [Tiếng Việt](#vi) · [English](#en)
+> **Owner:** @phanyen06ym-ien · **Tracking:** [#195](https://github.com/tricore-opentrix/opentrix/issues/195), [#194](https://github.com/tricore-opentrix/opentrix/issues/194)
 > **Status:** PROPOSED — pending independent review and merge. This draft does not itself amend repository settings or grant release rights.
 
 ---
