@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 
 [README dự án](../README.md) · [Phát triển](DEVELOPMENT.md) · [Kiến trúc](ARCHITECTURE.md) · [API](API.md)
 
-**Trạng thái bộ tài liệu:** Đã review, chờ nghiệm thu Giai đoạn 3 · **Owner:** @phanyen06ym-ien · **Issue:** #194. Cả 9 tài liệu chính đã được review và merge; việc gộp thư mục cũ và kiểm tra liên kết toàn repo vẫn đang làm ở #194. Cột "Trạng thái" bên dưới cho biết PR đã merge nội dung. Tài liệu chỉ mô tả hiện trạng có bằng chứng; phần mục tiêu luôn ghi rõ `PROPOSED` kèm số Issue.
+**Trạng thái bộ tài liệu:** Đã review, chờ nghiệm thu Giai đoạn 3 · **Owner:** @phanyen06ym-ien · **Issue:** #194. Cả 9 tài liệu chính đã được review và merge; thư mục cũ được giữ nguyên làm hồ sơ lịch sử (mục 5); kiểm tra liên kết toàn repo vẫn đang làm ở #194. Cột "Trạng thái" bên dưới cho biết PR đã merge nội dung. Tài liệu chỉ mô tả hiện trạng có bằng chứng; phần mục tiêu luôn ghi rõ `PROPOSED` kèm số Issue.
 
 OpenTrix (DX-OS Open-Core) là nền tảng nguồn mở cung cấp năng lực dùng chung (Identity, Workflow, Data) cho ứng dụng dịch vụ nội bộ, với ứng dụng minh họa IT Helpdesk. Trang này là mục lục: cần đọc gì, theo thứ tự nào, tài liệu nào đã sẵn sàng.
 
@@ -95,7 +95,7 @@ Nguồn chuẩn là 9 tài liệu chính ở mục 1. Thư mục cũ được gi
 
 [Project README](../README.md) · [Development](DEVELOPMENT.md) · [Architecture](ARCHITECTURE.md) · [API](API.md)
 
-**Documentation status:** Reviewed, pending Phase 3 acceptance · **Owner:** @phanyen06ym-ien · **Issue:** #194. All 9 main documents are reviewed and merged; legacy-folder consolidation and the repo-wide link check are still in progress under #194. The "Status" column below shows the PR that merged the content. The documents describe only the evidenced current state; target material is always marked `PROPOSED` with an issue number.
+**Documentation status:** Reviewed, pending Phase 3 acceptance · **Owner:** @phanyen06ym-ien · **Issue:** #194. All 9 main documents are reviewed and merged; legacy folders are kept as historical records (section 5); the repo-wide link check is still in progress under #194. The "Status" column below shows the PR that merged the content. The documents describe only the evidenced current state; target material is always marked `PROPOSED` with an issue number.
 
 OpenTrix (DX-OS Open-Core) is an open-source platform providing shared capabilities (Identity, Workflow, Data) to internal service applications, with IT Helpdesk as the reference application. This page is the index: what to read, in which order, and what is ready.
 
