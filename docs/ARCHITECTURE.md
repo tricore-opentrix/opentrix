@@ -91,7 +91,7 @@ Mũi tên mô tả luồng giao tiếp và quan hệ phụ thuộc ở mức ki�
 
 - **Phát hành và bản quyền:** tài liệu kiến trúc không chứng minh quyền phân phối mã nguồn hay việc chấp nhận phát hành (#138, #190).
 
-### 6. Kiến trúc mục tiêu — đã chọn, chờ ADR #191
+### 6. Kiến trúc mục tiêu — PROPOSED (#191), đã chọn, chờ ADR
 
 Các định hướng kiến trúc dưới đây được nhóm thống nhất ở mức thiết kế ngày 2026-11-11. Chúng chưa được phê duyệt bằng ADR đã merge và chưa được xem là đã triển khai; chỉ được ghi nhận là chấp nhận chính thức sau khi #191 merge.
 
@@ -212,7 +212,7 @@ See the as-is diagram in the Vietnamese section. Key boundaries:
 
 - **Release and rights:** architecture documentation does not prove distribution rights or release acceptance (#138, #190).
 
-### 6. Target architecture — chosen, pending ADR #191
+### 6. Target architecture — PROPOSED (#191), chosen, pending ADR
 
 The architecture directions below were agreed by the team at design level on 2026-11-11. They have not been approved through a merged ADR and must not be treated as implemented; they become formally accepted only after #191 is merged. The target diagram is in the Vietnamese section; its arrows show dependency/concept flow, not working connections.
 
