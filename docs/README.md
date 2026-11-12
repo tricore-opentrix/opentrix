@@ -10,7 +10,7 @@ SPDX-License-Identifier: Apache-2.0
 
 > **Ngôn ngữ / Language:** [Tiếng Việt](#tài-liệu-opentrix--tiếng-việt) · [English](#opentrix-documentation--english)
 >
-> **Owner / Phụ trách:** @phanyen06ym-ien · **Issue:** [#195](https://github.com/tricore-opentrix/opentrix/issues/195), [#194](https://github.com/tricore-opentrix/opentrix/issues/194) · **Trạng thái / Status:** Bản nháp — chờ review / Draft — review required
+> **Owner / Phụ trách:** @phanyen06ym-ien · **Issue:** [#195](https://github.com/tricore-opentrix/opentrix/issues/195), [#194](https://github.com/tricore-opentrix/opentrix/issues/194) · **Trạng thái / Status:** Đã review — merge ở #201, cập nhật ở #205 / Reviewed — merged in #201, updated in #205
 
 ---
 
@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 
 [README dự án](../README.md) · [Phát triển](DEVELOPMENT.md) · [Kiến trúc](ARCHITECTURE.md) · [API](API.md)
 
-**Trạng thái bộ tài liệu:** Bản nháp, chờ review · **Owner:** @phanyen06ym-ien · **Issue:** #194. Bộ tài liệu đang được viết trong Giai đoạn 3; cột "Trạng thái" bên dưới cho biết file nào đã có nội dung. Tài liệu chỉ mô tả hiện trạng có bằng chứng; phần mục tiêu luôn ghi rõ `PROPOSED` kèm số Issue.
+**Trạng thái bộ tài liệu:** Đã review, chờ nghiệm thu Giai đoạn 3 · **Owner:** @phanyen06ym-ien · **Issue:** #194. Cả 9 tài liệu chính đã được review và merge; việc gộp thư mục cũ và kiểm tra liên kết toàn repo vẫn đang làm ở #194. Cột "Trạng thái" bên dưới cho biết PR đã merge nội dung. Tài liệu chỉ mô tả hiện trạng có bằng chứng; phần mục tiêu luôn ghi rõ `PROPOSED` kèm số Issue.
 
 OpenTrix (DX-OS Open-Core) là nền tảng nguồn mở cung cấp năng lực dùng chung (Identity, Workflow, Data) cho ứng dụng dịch vụ nội bộ, với ứng dụng minh họa IT Helpdesk. Trang này là mục lục: cần đọc gì, theo thứ tự nào, tài liệu nào đã sẵn sàng.
 
@@ -26,14 +26,14 @@ OpenTrix (DX-OS Open-Core) là nền tảng nguồn mở cung cấp năng lực 
 
 | Tài liệu | Đọc khi | Phụ trách | Trạng thái |
 | --- | --- | --- | --- |
-| [DEVELOPMENT.md](DEVELOPMENT.md) | Cài môi trường Windows/Linux, chạy local, làm theo quy trình phát triển | Bảo | Khung — bản nháp ở PR #203 |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Cần hiểu tô-pô, ranh giới Core/Application, Identity, Workflow, Gateway, Data và kiến trúc mục tiêu | Yến | Bản nháp |
-| [API.md](API.md) | Gọi endpoint, xác thực, phân quyền, xử lý mã lỗi, tra OpenAPI | Ánh | Khung — bản nháp ở PR #200 |
-| [INTEGRATION.md](INTEGRATION.md) | Tích hợp ứng dụng mới với Core, theo ví dụ Helpdesk | Ánh | Khung — bản nháp ở PR #200 |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Triển khai bằng Docker Compose, cấu hình, migration, health check | Bảo | Khung — bản nháp ở PR #203 |
-| [TESTING.md](TESTING.md) | Chạy test, hiểu các lớp test, CI và bằng chứng | Ánh | Khung — bản nháp ở PR #200 |
-| [OPEN_SOURCE.md](OPEN_SOURCE.md) | Đánh giá giấy phép, SPDX/REUSE, thư viện bên thứ ba, cổng xuất bản | Yến | Bản nháp |
-| [RELEASE.md](RELEASE.md) | Gắn phiên bản, qua cổng phát hành, đóng gói artifact, viết release notes | Bảo | Khung — bản nháp ở PR #203 |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Cài môi trường Windows/Linux, chạy local, làm theo quy trình phát triển | Bảo | Đã review — #203 |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Cần hiểu tô-pô, ranh giới Core/Application, Identity, Workflow, Gateway, Data và kiến trúc mục tiêu | Yến | Đã review — #201 |
+| [API.md](API.md) | Gọi endpoint, xác thực, phân quyền, xử lý mã lỗi, tra OpenAPI | Ánh | Đã review — #200 |
+| [INTEGRATION.md](INTEGRATION.md) | Tích hợp ứng dụng mới với Core, theo ví dụ Helpdesk | Ánh | Đã review — #200 |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Triển khai bằng Docker Compose, cấu hình, migration, health check | Bảo | Đã review — #203 |
+| [TESTING.md](TESTING.md) | Chạy test, hiểu các lớp test, CI và bằng chứng | Ánh | Đã review — #200 |
+| [OPEN_SOURCE.md](OPEN_SOURCE.md) | Đánh giá giấy phép, SPDX/REUSE, thư viện bên thứ ba, cổng xuất bản | Yến | Đã review — #201 |
+| [RELEASE.md](RELEASE.md) | Gắn phiên bản, qua cổng phát hành, đóng gói artifact, viết release notes | Bảo | Đã review — #203 |
 
 **Khung:** mới có đề mục. **Bản nháp:** đã có nội dung, chờ review. **Đã review:** đã được review và merge.
 
@@ -90,7 +90,7 @@ Các thư mục này sẽ bị gỡ sau khi nội dung đã được gộp. **Kh
 
 [Project README](../README.md) · [Development](DEVELOPMENT.md) · [Architecture](ARCHITECTURE.md) · [API](API.md)
 
-**Documentation status:** Draft, pending review · **Owner:** @phanyen06ym-ien · **Issue:** #194. The documentation set is being written in Phase 3; the "Status" column below shows which files have content. The documents describe only the evidenced current state; target material is always marked `PROPOSED` with an issue number.
+**Documentation status:** Reviewed, pending Phase 3 acceptance · **Owner:** @phanyen06ym-ien · **Issue:** #194. All 9 main documents are reviewed and merged; legacy-folder consolidation and the repo-wide link check are still in progress under #194. The "Status" column below shows the PR that merged the content. The documents describe only the evidenced current state; target material is always marked `PROPOSED` with an issue number.
 
 OpenTrix (DX-OS Open-Core) is an open-source platform providing shared capabilities (Identity, Workflow, Data) to internal service applications, with IT Helpdesk as the reference application. This page is the index: what to read, in which order, and what is ready.
 
@@ -98,14 +98,14 @@ OpenTrix (DX-OS Open-Core) is an open-source platform providing shared capabilit
 
 | Document | Read when you need to | Owner | Status |
 | --- | --- | --- | --- |
-| [DEVELOPMENT.md](DEVELOPMENT.md) | Set up Windows/Linux, run locally, follow the development workflow | Bảo | Skeleton — draft in PR #203 |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Understand the topology, Core/Application boundaries, Identity, Workflow, Gateway, Data and the target architecture | Yến | Draft |
-| [API.md](API.md) | Call endpoints, authenticate, authorize, handle error codes, consult OpenAPI | Ánh | Skeleton — draft in PR #200 |
-| [INTEGRATION.md](INTEGRATION.md) | Integrate a new application with Core, following the Helpdesk example | Ánh | Skeleton — draft in PR #200 |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy with Docker Compose, configure, migrate, check health | Bảo | Skeleton — draft in PR #203 |
-| [TESTING.md](TESTING.md) | Run tests, understand test layers, CI and evidence | Ánh | Skeleton — draft in PR #200 |
-| [OPEN_SOURCE.md](OPEN_SOURCE.md) | Assess licensing, SPDX/REUSE, third-party libraries, the publication gate | Yến | Draft |
-| [RELEASE.md](RELEASE.md) | Version, pass release gates, package artifacts, write release notes | Bảo | Skeleton — draft in PR #203 |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Set up Windows/Linux, run locally, follow the development workflow | Bảo | Reviewed — #203 |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Understand the topology, Core/Application boundaries, Identity, Workflow, Gateway, Data and the target architecture | Yến | Reviewed — #201 |
+| [API.md](API.md) | Call endpoints, authenticate, authorize, handle error codes, consult OpenAPI | Ánh | Reviewed — #200 |
+| [INTEGRATION.md](INTEGRATION.md) | Integrate a new application with Core, following the Helpdesk example | Ánh | Reviewed — #200 |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy with Docker Compose, configure, migrate, check health | Bảo | Reviewed — #203 |
+| [TESTING.md](TESTING.md) | Run tests, understand test layers, CI and evidence | Ánh | Reviewed — #200 |
+| [OPEN_SOURCE.md](OPEN_SOURCE.md) | Assess licensing, SPDX/REUSE, third-party libraries, the publication gate | Yến | Reviewed — #201 |
+| [RELEASE.md](RELEASE.md) | Version, pass release gates, package artifacts, write release notes | Bảo | Reviewed — #203 |
 
 **Skeleton:** headings only. **Draft:** content written, pending review. **Reviewed:** reviewed and merged.
 

@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 
 **Điều hướng / Navigation:** [Tài liệu](README.md) · [Development](DEVELOPMENT.md) · [Deployment](DEPLOYMENT.md) · [Release](RELEASE.md) · **Ngôn ngữ / Language:** [Tiếng Việt](#vi) | [English](#en)
 
-> **Trạng thái / Status:** DRAFT — independent review required / Bản nháp — cần review độc lập · **Owner:** @lexuanbao258-collab · **Refs:** [#194](https://github.com/tricore-opentrix/opentrix/issues/194), [#197](https://github.com/tricore-opentrix/opentrix/issues/197)
+> **Trạng thái / Status:** Đã review — merge ở #203 / Reviewed — merged in #203 · **Owner:** @lexuanbao258-collab · **Refs:** [#194](https://github.com/tricore-opentrix/opentrix/issues/194), [#197](https://github.com/tricore-opentrix/opentrix/issues/197)
 >
 > **Source SHA:** `main@e31497f364cc7e9d3cee03ee59b9e48db524ea77` (mã/hạ tầng đã đối chiếu / inspected application and infrastructure), baseline `832c75fc3164cf170eed3bb8f1e380d24dd65aba`; chỉ `docs/` đổi giữa hai SHA. **Deployment, migration, container startup và LIVE E2E: UNVERIFIED tại SHA này.**
 
