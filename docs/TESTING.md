@@ -3,59 +3,340 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Testing Guide / Hướng dẫn kiểm thử
+# Kiểm thử / Testing
 
-> **Owner:** @ngang02012007-crypto · **Issue:** [#194](https://github.com/tricore-opentrix/opentrix/issues/194) · **Priority:** P0 · **Status:** DRAFT FOR REVIEW; NOT LIVE-ACCEPTED
+[Docs](README.md) · [Architecture](ARCHITECTURE.md) · [API](API.md) · [Testing](TESTING.md) · [Integration](INTEGRATION.md)
 
-**Mốc nguồn mã / Source baseline:** [`832c75fc3164cf170eed3bb8f1e380d24dd65aba`](https://github.com/tricore-opentrix/opentrix/commit/832c75fc3164cf170eed3bb8f1e380d24dd65aba). Đây là bản đối chiếu tài liệu, **không** phải kết quả kiểm thử mới. Chỉ gắn `VERIFIED` khi có kết quả chạy ở SHA, môi trường và log cụ thể.
+[Tiếng Việt](#vi) · [English](#en)
+
+> **Owner / Phụ trách:** @ngang02012007-crypto · **Issue:** [#196](https://github.com/tricore-opentrix/opentrix/issues/196), [#194](https://github.com/tricore-opentrix/opentrix/issues/194) · **Status / Trạng thái:** DRAFT — REVIEW REQUIRED / BẢN NHÁP — CHỜ REVIEW.
+>
+> **Source baseline / Mốc source:** [832c75fc3164cf170eed3bb8f1e380d24dd65aba](https://github.com/tricore-opentrix/opentrix/commit/832c75fc3164cf170eed3bb8f1e380d24dd65aba). **Phase 2 evidence / Bằng chứng kiểm kê:** [5938d8e7cb117aa6bc8226ace1d786be2f7be703](https://github.com/tricore-opentrix/opentrix/commit/5938d8e7cb117aa6bc8226ace1d786be2f7be703). Các mốc khác nhau được giữ riêng; tài liệu không xác nhận runtime mới. / These revisions remain distinct; documentation is not new runtime acceptance.
+
+<a id="vi"></a>
 
 ## Tiếng Việt
 
-### A. Hiện trạng — bằng chứng từ mã nguồn và Giai đoạn 2
+### A. Hiện trạng — mã nguồn và bằng chứng Giai đoạn 2
 
-**Mục đích:** Hướng dẫn phát hiện, chạy và ghi nhận kết quả kiểm thử tại đúng SHA. Các lệnh bên dưới được đối chiếu với cấu hình repository, **chưa được thực thi trong lượt biên soạn này**. Tham chiếu [Khối A](09-evidence/phase-2/block-a-architecture.md), [Khối B](09-evidence/phase-2/block-b-backend-infra.md), [Khối C](09-evidence/phase-2/block-c-application.md) và [CI](../.github/workflows/ci.yml).
+**Phạm vi:** Hướng dẫn các suite, lệnh và giới hạn từ source tại `832c75fc3164cf170eed3bb8f1e380d24dd65aba`; đối chiếu [Khối C](09-evidence/phase-2/block-c-application.md). Không có kết quả thực thi runtime mới trong bản sửa này.
 
-| Tầng | Mã và công cụ đã khai báo | Không được suy diễn |
+#### 1. Tổng quan và nguyên tắc
+
+Tài liệu dành cho developer, QA và reviewer. Baseline source/config là SHA trên; snapshot Phase 2 `5938d8e7cb117aa6bc8226ace1d786be2f7be703` được dẫn riêng (ba commit xen giữa chỉ thêm báo cáo). [DEVELOPMENT](DEVELOPMENT.md) hướng dẫn cài đặt/startup/cấu hình; phải dùng phiên bản có trên nhánh công bố. Không provision, migration, dọn DB hay chạy test ứng dụng khi sửa tài liệu này; lệnh dưới đây là SOURCE-CONFIRMED, không phải kết quả chạy mới.
+
+- `SOURCE-CONFIRMED`: suite/lệnh/điều kiện được source/config hỗ trợ, chưa chứng minh thực thi.
+- `VERIFIED`: phép kiểm thành công tại SHA/môi trường cụ thể, giữ đầu ra và phạm vi; tool version, source hoặc CI cũ không đủ để kết luận runtime mới.
+- `UNVERIFIED`: thiếu bằng chứng thực thi/nghiệm thu cần thiết.
+- `PASS / FAIL / SKIPPED`: ghi riêng kết quả case thực tế; disabled/assumption abort không phải pass. Case từ chối chỉ PASS khi đã chạy và assert đúng rejection.
+
+Phân biệt in-memory contract, MVC filter handoff, transaction PostgreSQL disposable, browser MOCK và LIVE xác thực. Build xanh, health response và bundle không đồng nghĩa tích hợp đã nghiệm thu.
+
+#### 2. Kiến trúc kiểm thử
+
+| Lớp | Source/cơ chế | Ranh giới |
 | --- | --- | --- |
-| Core/Backend | JUnit, Spring Test, Gradle Wrapper, kiểm thử Identity/Workflow, ArchUnit | Có test trong source ≠ test đã chạy ở HEAD |
-| Portal BFF | `PortalSecurityTest`, `PortalBackendClientTest`, session/PKCE/CSRF/forwarding giả lập | Không xác nhận Keycloak/browser thật |
-| Frontend | React/Vitest + Playwright MOCK; `integration-local` mode riêng | Mock fetch và build không phải LIVE E2E |
-| PostgreSQL | Workflow/Helpdesk opt-in integration suites, kiểm version/ACL/history | Nhiều ca chỉ chạy với DB tạm riêng, có thể SKIPPED |
-| CI | Job backend, portal-bff, frontend, compliance, repo-hygiene | Job xanh không chứng minh mọi test DB, Keycloak hay browser |
+| Backend domain/contracts | [core tests](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/core/), JUnit/parameterized/AssertJ | Identity/Workflow/Data; có persistence/storage doubles in-memory |
+| Backend HTTP/security | [gateway](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/gateway/), [identity security](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/), MVC/Test và JWT kiểm soát | Mapping, validation, handoff/authorization; một số suite opt-in issuer thật |
+| Kiến trúc | [CoreDependencyRulesTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/architecture/CoreDependencyRulesTest.java), ArchUnit | Core production classes biên dịch, dependency rules/canary âm |
+| Portal BFF | PortalSecurityTest, PortalBackendClientTest | MockMvc, session OAuth tổng hợp, manager/HTTP client mock |
+| Frontend | [src](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/src/), Vitest/Testing Library/jsdom | Component/service/transport/composition với fake/mock |
+| Browser | [tests](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/), Chromium Playwright/axe | MOCK và fake Helpdesk preview chọn riêng |
+| PostgreSQL | [Workflow infrastructure](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/), JDBC/Flyway/fixture local thật | Persistence, migration, concurrency, privileges, TLS, HTTP/DB |
+| Tooling repo | [scripts](../scripts/), Python unittest/PowerShell assertions | Compliance/release tooling và identity seed local, không product E2E |
 
-**Điều kiện tiên quyết:** JDK 21, Node >=22.12, công cụ JavaScript/Gradle tương ứng; test cơ bản không tự provision cơ sở dữ liệu. Không chạy script/migration có khả năng ghi lên DB đang dùng chung. Token, password và cookie phải giữ ngoài Git/log. Trong môi trường Windows dùng các lệnh sau **từ đúng thư mục**:
+Không suite nào tự xác nhận production object storage, Flowable, APISIX hay Facility E2E. Helper có tên live vẫn có thể dùng kết nối inject/catalog tổng hợp; đọc setup thay vì suy từ tên.
+
+#### 3. Điều kiện trước khi chạy
+
+| Nhóm | Yêu cầu |
+| --- | --- |
+| Java | JDK 21, Gradle Wrapper 8.14.3 trong backend; BFF dùng lại với `-p portal-bff` |
+| Frontend | Node >=22.12.0, dependencies theo package-lock; npm không pin; CI Node22 |
+| Tooling | Python3 hoặc PowerShell actor-seed; CI đã xem không pin Python patch version |
+| Browser | Dependencies và Playwright Chromium đã cài; build MOCK cho standard smoke |
+| PostgreSQL | Fixture local PG17 disposable chuẩn bị riêng, sở hữu độc quyền; tooling pin postgres:17.11-alpine |
+| TLS/audit | CA đúng/sai, hostname khớp certificate, credentials riêng, marker disposable khi cần |
+| Windows | PowerShell/Docker Desktop Linux Engine; Helpdesk dùng context desktop-linux; Workflow verifier còn cần OpenSSL, Windows executables/ACL |
+| Identity thật | Discovery/JWKS đúng issuer, token thật mới/còn hạn, audience/roles đúng; browser cần confidential client, ingress HTTPS, trust CA |
+
+Nguồn version: [Backend build](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/build.gradle), [wrapper](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/gradle/wrapper/gradle-wrapper.properties), [BFF build](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/portal-bff/build.gradle), [package frontend](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/package.json), [Compose](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/infra/compose.workflow-postgres.yml). Version local không chứng minh fresh-clone test. Lệnh POSIX theo wrapper/CI chưa được chạy tại đây; không mặc định helper Windows/ACL portable.
+
+Trước test thường: terminal mới, không kế thừa opt-in DB/token của operator. Chỉ kiểm tên biến, không in secret. Task test vẫn phát hiện integration class; biến môi trường có thể bật ghi DB. Trước DB test: kiểm endpoint/port/database/roles, ownership và quyền dùng độc quyền; loopback không chứng minh disposable và có thể forward tới dịch vụ dùng chung. Fixture có thể tạo/xóa schema, role, event trigger, public probe. Không chạy đồng thời các suite fixture trên cùng DB.
+
+#### 4. Lệnh kiểm nhanh
+
+Giả định dependencies/browser đã cài; không provision môi trường. Cài đặt theo DEVELOPMENT. Tất cả lệnh SOURCE-CONFIRMED, không kèm kết quả PASS giả.
+
+**Backend — thư mục `backend/`, PowerShell:**
 
 ```powershell
-# Repository root: Backend & BFF
-Push-Location backend
 .\gradlew.bat test
-Pop-Location
-.\backend\gradlew.bat -p portal-bff test
+.\gradlew.bat test --tests 'com.tricore.dxos.core.*'
+.\gradlew.bat test --tests com.tricore.dxos.architecture.CoreDependencyRulesTest
+```
 
-# Frontend
-Push-Location frontend
+**Linux/macOS, cùng thư mục:**
+
+```sh
+./gradlew test
+./gradlew test --tests 'com.tricore.dxos.core.*'
+./gradlew test --tests com.tricore.dxos.architecture.CoreDependencyRulesTest
+```
+
+**BFF — từ gốc repo:**
+
+```powershell
+.\backend\gradlew.bat -p portal-bff test
+```
+
+```sh
+./backend/gradlew -p portal-bff test
+```
+
+**Frontend — thư mục `frontend/`:**
+
+```powershell
 npm.cmd test
 npm.cmd run build
 npm.cmd run check:security
-# Playwright smoke cần Chromium đã cài và bản build MOCK
 npm.cmd run test:smoke
-Pop-Location
+npx.cmd playwright test --config tests/mvp.playwright.config.ts
 ```
 
-**Cách đánh giá:** Lưu SHA, thay đổi working tree, phiên bản công cụ, câu lệnh, thời điểm chạy, số `PASS / FAIL / SKIPPED`, log/JUnit XML, test mode (MOCK/local/LIVE) và hạn chế. Test bị skip **không tính PASS**. Một ca test giả lập 401/403 không phải bằng chứng phân quyền LIVE. [TESTING evidence chi tiết trong phần tiếng Anh](#13-test-evidence-and-reporting).
+```sh
+npm test
+npm run build
+npm run check:security
+npm run test:smoke
+npx playwright test --config tests/mvp.playwright.config.ts
+```
 
-**Golden Path cần chứng minh:** Create → Triage → Assign → Start → Resolve → Confirm, cuối cùng `CONFIRMED`, Workflow version 4, history có 4 transition; Assign tăng assignmentVersion riêng. Bài PostgreSQL có điều kiện cần fixture độc quyền; browser ba người dùng Keycloak là acceptance khác. [HelpdeskHttpPostgresTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/HelpdeskHttpPostgresTest.java), [#118](https://github.com/tricore-opentrix/opentrix/issues/118).
+Build trước scan bundle và standard preview. MVP fake dùng dev preview riêng; không thay MOCK build bằng integration-local khi standard smoke.
 
-**Lưu ý an toàn:** Các script trong tài liệu chi tiết có thể tạo container, volume, schema, role và chạy migration trên fixture. Không chạy khi chưa chứng minh sở hữu DB tạm và hiểu tác động; không tự xóa dữ liệu để sửa lỗi test.
+**Ba suite security/exposure được CI kiểm rõ — từ `backend/`:**
+
+```powershell
+.\gradlew.bat test --tests com.tricore.dxos.infrastructure.identity.security.GatewayIdentityHandoffHttpTest --tests com.tricore.dxos.infrastructure.identity.security.SpringSecurityCurrentPrincipalTest --tests com.tricore.dxos.gateway.workflow.controller.WorkflowHttpExposureTest
+```
+
+POSIX dùng ./gradlew cùng arguments. Không chứng minh Keycloak/browser thật. Nguồn: build.gradle, [CI](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/.github/workflows/ci.yml), [npm scripts](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/package.json), [MVP config](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/mvp.playwright.config.ts).
+
+#### 5. Kiểm thử Backend
+
+Mọi selection chạy trong backend bằng ./gradlew hoặc .\gradlew.bat. Matrix source dưới đây không phải kết quả thực thi mới.
+
+| Suite/source | Task/selection | Dependencies | Môi trường | Điều kiện | Bằng chứng cần lưu | Trạng thái |
+| --- | --- | --- | --- | --- | --- | --- |
+| Core Identity/Workflow/Data: WorkflowRuntimeTest, WorkflowPersistencePortTest, ObjectStoragePortTest | `test --tests 'com.tricore.dxos.core.*'` | JDK/wrapper | Không opt-in hạ tầng | JUnit thường, persistence/storage có double memory | XML/HTML mới | SOURCE-CONFIRMED |
+| HealthControllerTest | `test --tests com.tricore.dxos.common.health.HealthControllerTest` | JDK/MVC slice | Config test | Không DB thật | XML/HTML | SOURCE-CONFIRMED |
+| WorkflowAuthorizationTest, TenantResourceWorkflowAccessPolicyTest | `test --tests 'com.tricore.dxos.application.authorization.*'` | JDK/snapshot/principal kiểm soát | Không token thật | Unit policy, không DB ACL thực thi | XML/HTML | SOURCE-CONFIRMED |
+| Security validators/handoff, trừ hai suite real token bên dưới | test hoặc selection mục 4 | JDK/JWT/MockMvc | Gradle fallback OIDC_ISSUER_URI, OIDC_AUDIENCE, OIDC_RESOURCE_CLIENT_ID | Test kiểm soát không cần IdP thật | XML/HTML + CI ba-suite gate | SOURCE-CONFIRMED |
+| WorkflowControllerTest, WorkflowHttpExposureTest, HelpdeskErrorContractTest | test | JDK/Spring test | Controller suite chọn profile workflow-http-tests | Đăng ký controller/profile test không phải production exposure | XML/HTML | SOURCE-CONFIRMED |
+| CoreDependencyRulesTest | Selection mục 4 | Production classes/ArchUnit | Không DB/token | Loại fixture test, có canary âm/dương | XML/HTML và counts/canary output | SOURCE-CONFIRMED |
+| OidcKeycloakIntegrationTest, GatewayKeycloakTokenHttpIntegrationTest | `test --tests '*OidcKeycloakIntegrationTest' --tests '*GatewayKeycloakTokenHttpIntegrationTest'` | Keycloak discovery/JWKS thật | OIDC_TEST_ACCESS_TOKEN | Thiếu token skip cả class; issuer hardcode | XML/HTML và môi trường provider đã làm sạch | SOURCE-CONFIRMED |
+
+Source: [Core](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/core/), [policy](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/application/authorization/), [security](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/), [gateway](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/gateway/), [ArchUnit](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/architecture/CoreDependencyRulesTest.java).
+
+ArchUnit Core chỉ cho java.. và cùng package Core, loại JDBC, cấm dependencies giữa capability Core; chưa cưỡng chế mọi quy tắc Application/Gateway hoặc chứng minh authorization. Real-token suites hardcode issuer `http://localhost:8180/realms/tricore`, audience tricore-api; principal mapping cần đúng bốn authority workflow:create/activate/read/transition. Token 127.0.0.1:8182 không thay thế; không sửa issuer validation để token khớp. Đây là decoder/filter test, không browser login/Helpdesk persistence.
+
+WorkflowRuntimePrivilegeAuditLauncherTest, WorkflowSecurityDefinerReviewLauncherTest, WorkflowApprovedSmokeLauncherTest và một số method WorkflowApprovedMigrationTest/WorkflowSchemaBootstrapTest có @EnabledOnOs(WINDOWS); phải báo skip ở OS khác. Launcher test dùng stub/rejection fixture, không cấp phép chạy operator script thật.
+
+#### 6. Kiểm thử Portal BFF
+
+Lệnh mục 4 không cần Backend, DB hoặc credentials provider thật cho fixture.
+
+| Suite | Điều được kiểm từ source | Fixture/giới hạn |
+| --- | --- | --- |
+| [PortalSecurityTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/portal-bff/src/test/java/com/tricore/dxos/portal/PortalSecurityTest.java) | Từ chối anonymous/header giả, session không token, CSRF ghi/logout, PKCE, confidential client, authorization thiếu/lỗi | WebMvcTest/oauth2Login, client tổng hợp, manager/Backend mock; không callback/provider session thật |
+| [PortalBackendClientTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/portal-bff/src/test/java/com/tricore/dxos/portal/PortalBackendClientTest.java) | Origin HTTPS/loopback, bearer server, không redirect, allowlist, giới hạn body, mất session, refresh mô phỏng, lỗi sạch và unknown-write không replay | Java HttpClient/manager mock; không upstream/refresh/logout provider thật |
+
+COMMIT_OUTCOME_UNKNOWN mô phỏng mất response và assert không retry, không chứng minh DB thật commit. Đối soát LIVE bằng GET detail/history có quyền, không replay POST. Lưu XML mới portal-bff/build/test-results/test và HTML portal-bff/build/reports/tests/test. Cookie/ingress/refresh/logout/trust browser cần nghiệm thu riêng theo [BFF runbook](../portal-bff/README.md).
+
+#### 7. Kiểm thử Frontend
+
+| Suite/vị trí | Lệnh trong frontend | Dependencies/môi trường | Chạy/skip | Bằng chứng | Trạng thái |
+| --- | --- | --- | --- | --- | --- |
+| src/**/*.test.{ts,tsx} theo vite.config.ts | npm test | Node deps/jsdom, không infra variables | Component/service/transport, setup src/test/setup.ts | stdout Vitest, invocation và per-file summary | SOURCE-CONFIRMED |
+| portal.spec.ts, session.spec.ts, auth.spec.ts | npm run build rồi npm run test:smoke | Chromium, dist MOCK, cổng 4173 trống | Config preview có thể tái dùng server ngoài CI; kiểm mode/build | List output, trace/screenshots lỗi khi có | SOURCE-CONFIRMED |
+| helpdesk-mvp.spec.ts | npx playwright test --config tests/mvp.playwright.config.ts | Chromium/fake preview, không Backend/Keycloak/DB | Standard config cố ý skip; MVP đặt metadata.fakeHelpdeskPreview=true | List output và actual temporary output path | SOURCE-CONFIRMED |
+| check-security.mjs | npm run check:security sau build | src/public/dist/package/index | Scan pattern heuristic, không runtime authorization hay kiểm secret đầy đủ | stdout và mode đã kiểm | SOURCE-CONFIRMED |
+| Browser local xác thực | Checklist mục 11 | Full stack/identity thật | Build integration-local chưa đủ | Browser/backend/DB evidence sạch | UNVERIFIED |
+
+Windows dùng npm.cmd/npx.cmd. Nguồn: [vite.config.ts](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/vite.config.ts), [tests](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/), [scan](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/scripts/check-security.mjs). AssignmentForm.integration.test.tsx dùng UI/service/transport fixture; LocalHelpdeskIntegration.test.tsx stub location/fetch. Tên integration không chứng minh HTTP/Keycloak thật; form MOCK login/register không phải xác thực IdP.
+
+**Ảnh chụp có tác dụng ghi file:** portal.spec.ts có thể tạo/ghi đè docs/evidence/issue39-portal từ repo root; auth.spec.ts ghi subfolder auth. Kiểm git status --short trước/sau, giữ evidence hiện có, không tự xóa/clean/revert.
+
+[Standard config](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/playwright.config.ts): list reporter, Chromium, 127.0.0.1:4173, trace retain-on-failure, không cấu hình HTML report. [MVP](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/mvp.playwright.config.ts) chạy Vite riêng và thư mục tạm dxos-app14-browser-*; giữ path thật trước khi mất temporary files. Helpdesk skip trong standard smoke là SKIPPED, không PASS. build:integration-local chọn entry main.tsx và ghi dist, không start Backend/BFF/Keycloak/PostgreSQL/Caddy hoặc chứng minh bff/session. Build thường trả MOCK; hai mode dùng chung dist, phải ghi mode được kiểm.
+
+#### 8. Kiểm thử PostgreSQL và hạ tầng
+
+**Fixture có thể phá dữ liệu:** chỉ dùng DB disposable đã chuẩn bị và sở hữu độc quyền. Không cung cấp connection/command cloud ở đây. Dừng nếu chưa chắc target/credential/TLS/ownership; env var chỉ bật suite, không làm DB an toàn.
+
+##### Chọn suite Workflow
+
+[build.gradle](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/build.gradle) chọn đúng bảy class cho workflowIntegrationTest; chín class tại [source infrastructure/workflow](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/) dưới đây đều SOURCE-CONFIRMED, execution UNVERIFIED.
+
+| Suite | Trong workflowIntegrationTest? | Biến bật class (không rỗng) | Fixture/coverage bổ sung |
+| --- | --- | --- | --- |
+| PostgresWorkflowPersistenceIntegrationTest | Có | WORKFLOW_TEST_JDBC_URL | Runtime/migrator khác nhau, migration schema cô lập, atomicity/conflict/history; least-privilege abort bằng Assumptions nếu không có migration login riêng |
+| WorkflowIsolationIntegrationTest | Có | WORKFLOW_TEST_JDBC_URL | Schema/role/probe; TLS cases còn cần CA đúng/sai |
+| WorkflowEventTriggerGuardIntegrationTest | Có | WORKFLOW_TEST_JDBC_URL | Catalog/event-trigger tổng hợp có quyền; TLS cần CA |
+| WorkflowEventTriggerReviewIntegrationTest | Có | WORKFLOW_TEST_CA_CERT | Còn JDBC/migration credentials, verified TLS và filesystem/ACL capture |
+| WorkflowDevelopmentSmokeIntegrationTest | Có | WORKFLOW_AUDIT_LOCAL_JDBC_URL | Fixture TLS local /postgres, audit credentials/CA/marker, setup dựng dev opt-ins |
+| WorkflowSchemaBootstrapIntegrationTest | Có | WORKFLOW_AUDIT_LOCAL_JDBC_URL | Audit/TLS đúng-sai/marker, tạo/xóa schema/role, kiểm bootstrap |
+| WorkflowApprovedMigrationIntegrationTest | Có | WORKFLOW_AUDIT_LOCAL_JDBC_URL | Audit/TLS/marker, migration V3/V4 ghim và failure boundary |
+| WorkflowRuntimePrivilegeAuditIntegrationTest | Không; ordinary test | WORKFLOW_AUDIT_LOCAL_JDBC_URL | Audit credentials/CA đúng-sai, capture read-only/TLS rejection |
+| WorkflowSecurityDefinerReviewIntegrationTest | Không; ordinary test | WORKFLOW_AUDIT_LOCAL_JDBC_URL | Audit/TLS; setup vẫn tạo SQL objects disposable dù capture read-only |
+
+| Input fixture | Ý nghĩa/điều kiện |
+| --- | --- |
+| WORKFLOW_TEST_JDBC_URL, WORKFLOW_TEST_DB_USER, WORKFLOW_TEST_DB_PASSWORD | Dedicated task bắt buộc trước chạy; URL qua guard loopback/port/database, không query. Chưa tự chuẩn bị roles/schema/TLS/all gates |
+| WORKFLOW_TEST_MIGRATION_USER, WORKFLOW_TEST_MIGRATION_PASSWORD | Credentials migration riêng; fallback runtime có thể làm least-privilege abort và thiếu quyền setup |
+| WORKFLOW_TEST_CA_CERT, WORKFLOW_TEST_WRONG_CA_CERT | CA đúng/sai cho TLS/event review; không tắt verify để bật case |
+| WORKFLOW_AUDIT_LOCAL_JDBC_URL | /postgres disposable riêng cho năm suite; guard khác nhau, hai audit suite cần literal 127.0.0.1 |
+| WORKFLOW_AUDIT_LOCAL_DB_PASSWORD, WORKFLOW_AUDIT_LOCAL_CA_CERT, WORKFLOW_AUDIT_LOCAL_WRONG_CA_CERT | Audit credentials/cert; một số helper dùng fixture login postgres |
+| WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE=true, WF25_DISPOSABLE_TEST=1 | Guard local verifier, không bật cho shared service; fixture liên quan kiểm dxos.wf25_disposable=on trong DB |
+
+Chỉ sau operator chuẩn bị/kiểm fixture đầy đủ, từ backend:
+
+```powershell
+.\gradlew.bat workflowIntegrationTest --no-daemon
+.\gradlew.bat test --tests '*WorkflowRuntimePrivilegeAuditIntegrationTest' --tests '*WorkflowSecurityDefinerReviewIntegrationTest' --no-daemon
+```
+
+POSIX dùng ./gradlew cùng args; helper Windows ACL cần review portability. Task riêng ghi build/test-results/workflowIntegrationTest và build/reports/tests/workflowIntegrationTest; lệnh thứ hai ghi test/. Task xanh vẫn có thể skip class/method. Compose là DB Workflow persistent loopback55425, không đủ TLS/audit/Helpdesk; không trỏ HELPDESK_DISPOSABLE_URL vào đó hoặc lấy owner login làm proof runtime ít quyền. Không sửa migration V1–V4 đã áp dụng hay tắt catalog/privilege guard.
+
+##### Helpdesk HTTP/PostgreSQL và B06 real-token
+
+HelpdeskHttpPostgresTest bật class chỉ khi `HELPDESK_DISPOSABLE_URL=jdbc:postgresql://127.0.0.1:55439/helpdesk_disposable_test`; cần HELPDESK_DISPOSABLE_PASSWORD, login helpdesk_test, WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE=true. Setup tạo issuer/JWKS tổng hợp và HTTP server tạm, phần lớn test HTTP/DB thật nhưng IdP giả, không Keycloak thật.
+
+Với fixture đã chuẩn bị và sở hữu độc quyền, từ backend chọn `.\gradlew.bat test --tests '*HelpdeskHttpPostgresTest' --no-daemon` (POSIX ./gradlew). Case b06RealKeycloakTokensAndPostgres skip nếu thiếu B06_EMPLOYEE_ACCESS_TOKEN; bật cần đủ bốn token thật, khác nhau và mới: B06_EMPLOYEE_ACCESS_TOKEN, B06_COORDINATOR_ACCESS_TOKEN, B06_WORKER_ACCESS_TOKEN, B06_FOREIGN_ACCESS_TOKEN. Issuer hardcode http://localhost:8180/realms/tricore, audience có tricore-api, token còn >90 giây lúc kiểm. B06 không phải BFF/browser journey.
+
+| Runner/source | Lệnh từ repo root | Điều kiện/tác dụng/evidence |
+| --- | --- | --- |
+| [helpdesk-negative-local.ps1](../scripts/helpdesk-negative-local.ps1) | `.\scripts\helpdesk-negative-local.ps1 -RunId <new_id>` | Docker Desktop, image ghim có sẵn, cổng55439 trống, tên/evidence dir mới; tạo và giữ container/volume, xóa opt-in liên quan kể cả B06 employee token; ghi sanitized output/http-postgres-results.json trong backend/build/closeout-ID; B06 skip |
+| [helpdesk-b06-local.ps1](../scripts/helpdesk-b06-local.ps1) | `.\scripts\helpdesk-b06-local.ps1 -ExecuteDisposable` | Review trước opt-in; bốn token thật, Docker/image/port/JDK; tạo container rồi xóa container sở hữu; expected counts phải khớp source; chưa chạy tại đây |
+| [workflow-verify-local.ps1](../scripts/workflow-verify-local.ps1) | `powershell.exe -NoProfile -File .\scripts\workflow-verify-local.ps1` | Windows Docker/JDK21/OpenSSL/ACL; tạo TLS PG17.11 random port, test build, dừng container sở hữu/xóa cert dir; caveat zero-skip bên dưới |
+
+Workflow verifier đòi chín Workflow suite và zero skip trong mọi ordinary-test XML; không provision Helpdesk fixture/token OIDC riêng nên có thể fail dù Workflow pass. Success end-to-end baseline UNVERIFIED. Kiểm per-suite/giải thích skip, không làm yếu guard hoặc bịa token. Provision theo Helpdesk/Backend runbook riêng; không dùng cloud operator bootstrap/migration/smoke làm test setup. Không xóa volume/down -v để sửa test lỗi vì mất dữ liệu/evidence.
+
+#### 9. Kiểm thử bảo mật
+
+| Thuộc tính | Kiểm hiện có | Giới hạn |
+| --- | --- | --- |
+| Authentication | JWT issuer/audience/type/subject/time validators, SecurityConfigTest, principal/header giả handoff; real-token opt-in | JWKS tổng hợp/MockMvc không browser SSO/provider triển khai |
+| Operation/resource authorization | WorkflowAuthorizationTest, TenantResourceWorkflowAccessPolicyTest, HTTP/PG allow/deny Helpdesk | Snapshot unit không xác nhận DB ACL transaction; DB opt-in phải chạy |
+| Tenant/least privilege | Isolation, runtime-permission, cross-actor/tenant/B06 foreign | Credentials/fixture/assumptions thực cần xác nhận, skipped assertion không evidence |
+| Session/CSRF | CSRF bff/session, thiếu/giả token, identity header giả, authorization failures | Cookie/trust/refresh/logout/expiry thật cần browser |
+| Concurrency/unknown writes | Workflow/Helpdesk version/history, no-replay BFF/frontend | Transport failure kiểm soát không phải production commit bị mất |
+| Lộ credentials | Scan frontend heuristic, error/session assertions và manual review | Scan sạch không chứng minh không secrets/toàn diện security |
+
+Theo CONTRIBUTING, security change phải có allow và deny. Giữ 401/403/hidden404, stale409, state/history không đổi khi bị từ chối. Không công bố JWT/cookie/CSRF/password/key/full connection string/real user records. Báo lỗ hổng theo SECURITY.
+
+#### 10. Xác minh CI
+
+Nguồn [.github/workflows/ci.yml](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/.github/workflows/ci.yml):
+
+| Job | Lệnh/kiểm | Không chứng minh |
+| --- | --- | --- |
+| backend | JDK21 ./gradlew build --no-daemon --stacktrace --rerun-tasks; parse cú pháp PowerShell PKCE; XML ba suite GatewayIdentityHandoffHttpTest, SpringSecurityCurrentPrincipalTest, WorkflowHttpExposureTest | Không provision PostgreSQL/Keycloak; opt-in có thể skip; parse không chạy login |
+| portal-bff | ./backend/gradlew -p portal-bff build --no-daemon --stacktrace | Provider/ingress/browser/DB thật |
+| frontend | Node22 npm ci, npm run build, npm test | Không Playwright/security scan/build:integration-local |
+| r23-compliance | Wrapper validation, Python rejection canary, Java/npm SBOM/license/notices | Không product/browser/DB E2E |
+| repo-hygiene | Sau R23; PR title/metadata, wrapper mode, REUSE | Không runtime/release acceptance |
+
+XML gate ba suite yêu cầu tồn tại, có tests, zero failure/error/skip; không chứng minh mọi suite tích hợp chạy. Backend HTML upload chỉ khi failure, retention7 ngày; success XML per-suite không upload thường xuyên. Giữ evidence cần riêng, không suy mọi counts từ job xanh; artifact R23 là compliance riêng.
+
+Từ root, tooling canary `python3 -m unittest discover -s scripts -p 'test_r23_*.py'` (Windows dùng Python executable có sẵn), fixture SBOM tổng hợp không service. Release workflow có gate riêng, không LIVE và không được gọi từ hướng dẫn này. `.\scripts\test-helpdesk-local-actor-seed.ps1` chạy root PowerShell không DB/Docker; assert identity/seed/rejection tổng hợp với JSON tạm, không provision/login Keycloak; source-confirmed, chưa chạy mới. Kết quả CI lịch sử Phase 2 phải giữ SHA attribution, không chuyển counts/PASS sang run mới/commit tài liệu.
+
+#### 11. Nghiệm thu LIVE E2E
+
+**UNVERIFIED ở phạm vi tài liệu.** Chưa thấy Playwright config cung cấp full-stack real-provider acceptance. Theo BFF runbook/DEVELOPMENT trước manual plan.
+
+Điều kiện: commit cụ thể; Helpdesk DB disposable độc quyền/runtime grants đúng; Backend/BFF; Keycloak client confidential Code+PKCE với issuer/audience/client roles đúng; ba identity Employee/Coordinator/Worker thật khác nhau và membership issuer/sub chính xác; bundle integration-local; Caddy HTTPS trusted. Browser context cô lập. Subject đã provision không chứng minh login; bff/session 502 là prerequisite thất bại.
+
+| Bước | Principal | Quan sát/evidence sạch |
+| --- | --- | --- |
+| Create | Employee | Request tổng hợp mới, ID trả về, detail có quyền |
+| Triage rồi Assign | Coordinator | Version hiện hành, assignee hợp lệ server; assignment version riêng |
+| Start rồi Resolve | Worker được giao | Chỉ state transition/resource access hợp lệ |
+| Confirm | Employee gốc | CONFIRMED, không close |
+| Reload/history | Principal có quyền | Workflow version4, bốn transitions triage/start_work/resolve/confirm; assign không thêm transition |
+| Restart Java/đọc lại | Principal có quyền | Cùng DB giữ detail/history, không setup/reset fixture lại |
+
+Negative: anonymous/expired session, CSRF thiếu/sai, thiếu operation role, actor/resource/tenant trái quyền, stale Workflow/assignment, disconnected reads và unknown write. Ghi 401/403/hidden404/409 theo contract, rejected write không đổi state/history, không POST lần hai sau unknown outcome. Kiểm cookie __Host-DXOS-Portal Secure/HttpOnly/host-only/SameSite=Lax, exact HTTPS origin/Host, không bearer browser storage hoặc gọi Backend trực tiếp. Refresh/logout/trust cần quan sát riêng; fixture denial không thay identity thật bị từ chối.
+
+Giữ SHA, role/test-data identifiers sạch, tham chiếu config, trình tự/status/history/version trước-sau, restart persistence, negatives; review network capture riêng và xóa credentials/cookie/token trước chia sẻ. Thiếu case/prerequisite giữ UNVERIFIED, không PASS. Facility/object storage ngoài đường Helpdesk này.
+
+#### 12. Khắc phục sự cố
+
+| Hiện tượng | Cần kiểm |
+| --- | --- |
+| Task xanh nhưng integration skip | Gate class/method/OS/assumption; selection không execution, skip không pass |
+| Thiếu Workflow variables | Task kiểm ba biến nhưng còn CA/audit/fixture; không điền shared endpoint |
+| Privilege case abort | Runtime/migrator fixture riêng được duyệt, không nâng runtime thành owner |
+| TLS/hostname lỗi | SAN, CA đúng/sai, verify-full; Compose thường không TLS fixture, không tắt verify |
+| Schema/role/event-trigger trùng | Dừng dùng đồng thời, xem ownership, giữ resources điều tra, không broad cleanup |
+| Helpdesk class skip/setup fail | URL55439 đúng, helpdesk_test/password/local guard; DB runtime thường khác tên |
+| Keycloak token bị từ chối | Exact localhost:8180, audience/client roles, distinct subjects/freshness; token8182 không thay |
+| Windows launcher skip trên POSIX | Ghi gap OS; helper TLS/ACL còn assumption nền tảng |
+| Frontend test pass không service | Kiểm fake transport/fetch/jsdom và boundary được tuyên bố |
+| Standard smoke skip Helpdesk | Guard fakeHelpdeskPreview có chủ ý; MVP config riêng, standard case ghi SKIPPED |
+| Browser/server thiếu | Chromium/cổng4173, MOCK build trước smoke, dừng preview không liên quan; không cài deps thay chẩn đoán sai mode |
+| Scan không đọc dist | Build mode đúng trước; scan cả bundle/source |
+| Verifier fail dù Workflow pass | Zero-skip mọi ordinary reports bao gồm Helpdesk/OIDC opt-in độc lập |
+| CI xanh không evidence runtime | Đọc exact job steps/report mới; DB/token/browser không được bảo đảm |
+| Unknown write | GET detail/history có quyền đối soát, không replay POST/migration/smoke mù |
+
+#### 13. Bằng chứng và báo cáo test
+
+Mỗi kết quả ghi exact SHA/working-tree changes, OS/tool versions, suite/task/config, ownership fixture và tên env (không secret), command/exit, outcomes, vị trí evidence/giới hạn. UP-TO-DATE/FROM-CACHE/XML cũ là reused evidence, không thực thi mới. Backend CI đã dùng --rerun-tasks; khi cần chạy Java mới chỉ áp dụng sau kiểm an toàn fixture.
+
+Đọc XML có sẵn, không chạy test, từ backend hoặc portal-bff trong PowerShell:
+
+```powershell
+Get-ChildItem -LiteralPath .\build\test-results\test -Filter 'TEST-*.xml' |
+  ForEach-Object {
+    [xml]$report = Get-Content -LiteralPath $_.FullName -Raw
+    $report.testsuite | Select-Object name, tests, failures, errors, skipped
+  }
+```
+
+workflowIntegrationTest đọc folder riêng. Kiểm freshness, class/case chính xác, testcase/skipped reasons và reconcile totals/pass/fail/error/skip. Không output hoặc khác task/SHA không evidence. Disabled/parameterized counts đổi khi bật; không hardcode totals lịch sử. Vitest giữ per-file/case terminal summary; Playwright list, không HTML mặc định: giữ stdout, skip reasons/config/run và actual paths. Trace không chứng minh toàn journey nếu bước trước mock/skip.
+
+Mẫu **chưa chạy**, không chứa counts thành công tự tạo:
+
+```text
+SHA / thay đổi working tree: <SHA chính xác; thay đổi liên quan hoặc không>
+Môi trường: <OS/tool versions; fixture ID/ownership; build mode; không secret>
+Suite / config / ranh giới: <class hoặc browser spec; MOCK/local/LIVE>
+Thư mục và lệnh: <lệnh chính xác>
+Thời gian / exit code: <chưa thu>
+Tổng báo cáo / đã chạy / PASS / failures / errors / SKIPPED: <chưa thu>
+Lý do skip/abort và case không được chọn: <chưa thu>
+Bằng chứng: <XML/log/artifact đã làm sạch; chưa thu>
+Trạng thái: NOT RUN / UNVERIFIED
+Giới hạn: <thiếu điều kiện; ranh giới chưa kiểm; reused evidence>
+```
+
+Dữ liệu tổng hợp có thể dùng title QA disposable request và ID không nhạy cảm do server trả trong evidence riêng; đó là input minh họa, không kết quả. Theo CONTRIBUTING/security và công khai check chưa chạy.
+
+#### 14. Nguồn tham chiếu
+
+- [README](../README.md), [DEVELOPMENT](DEVELOPMENT.md), [CONTRIBUTING](../CONTRIBUTING.md), [SECURITY](../SECURITY.md).
+- [Backend](../backend/README.md), [BFF](../portal-bff/README.md), [Frontend](../frontend/README.md), [Helpdesk runbook](../scripts/README-helpdesk-local.md), [scripts](../scripts/README.md), [CI](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/.github/workflows/ci.yml).
+- Phase2 tại `5938d8e7cb117aa6bc8226ace1d786be2f7be703`: [A](https://github.com/tricore-opentrix/opentrix/blob/5938d8e7cb117aa6bc8226ace1d786be2f7be703/docs/09-evidence/phase-2/block-a-architecture.md), [B](https://github.com/tricore-opentrix/opentrix/blob/5938d8e7cb117aa6bc8226ace1d786be2f7be703/docs/09-evidence/phase-2/block-b-backend-infra.md), [C](https://github.com/tricore-opentrix/opentrix/blob/5938d8e7cb117aa6bc8226ace1d786be2f7be703/docs/09-evidence/phase-2/block-c-application.md); inventory có giới hạn riêng, không runtime acceptance mới.
 
 ### B. Mục tiêu — PROPOSED, chưa nghiệm thu
 
-- **PROPOSED · [#118](https://github.com/tricore-opentrix/opentrix/issues/118):** hoàn tất golden path browser thực với ba người dùng Keycloak, BFF/Backend/PostgreSQL, các ca âm tính và kiểm tra tồn tại sau restart.
-- **PROPOSED · [#112](https://github.com/tricore-opentrix/opentrix/issues/112):** kiểm thử spec OpenAPI xuất từ runtime, tính nhất quán route/schema/error; chưa có bằng chứng nghiệm thu từ runtime export.
-- **PROPOSED · [#194](https://github.com/tricore-opentrix/opentrix/issues/194):** chuẩn hóa báo cáo theo SHA và phân loại `PASS / FAIL / SKIPPED / NOT RUN`, giữ link bằng chứng, có reviewer độc lập.
-- **PROPOSED · [#190](https://github.com/tricore-opentrix/opentrix/issues/190):** không coi kết quả test đã có là release sign-off; các cổng phát hành cần được xét riêng.
+- **PROPOSED · [#118](https://github.com/tricore-opentrix/opentrix/issues/118):** thu LIVE xác thực cùng SHA đủ sáu bước, negatives/restart.
+- **PROPOSED · [#112](https://github.com/tricore-opentrix/opentrix/issues/112):** route/schema/error parity OpenAPI sau export/review độc lập.
+- **PROPOSED · [#194](https://github.com/tricore-opentrix/opentrix/issues/194):** log tái lập, pass/fail/skip thật và reviewer record độc lập.
 
-**Mẫu báo cáo tối thiểu:** `SHA | môi trường | bộ test | lệnh | exit code | executed/passed/failed/skipped | nguồn log | trạng thái | hạn chế` — không tự điền số PASS chưa thu được.
+**Điều kiện công bố:** kiểm link, SHA source, kết quả test thật, SPDX/REUSE và independent review; bản sửa không tự khẳng định PASS.
+
+<a id="en"></a>
 
 ## English
 
@@ -65,9 +346,9 @@ Pop-Location
 
 #### 1. Overview and Testing Principles
 
-This guide documents existing tests for developers, QA and reviewers. **Code/configuration baseline and local HEAD inspected:** `832c75fc3164cf170eed3bb8f1e380d24dd65aba`. The Phase 2 reports referenced below are pinned separately at `5938d8e7cb117aa6bc8226ace1d786be2f7be703`; the three intervening commits only add reports.
+This guide documents existing tests for developers, QA and reviewers. **Code/configuration source baseline:** `832c75fc3164cf170eed3bb8f1e380d24dd65aba`. The Phase 2 reports referenced below are pinned separately at `5938d8e7cb117aa6bc8226ace1d786be2f7be703`; the three intervening commits only add reports.
 
-Use the local draft [DEVELOPMENT.md](DEVELOPMENT.md) for installation, startup and configuration. It is not present on `main` at the audited baseline; before publishing `TESTING.md`, ensure this relative link resolves on the intended branch/PR. No application tests, provisioning, migrations or database cleanup were executed to prepare this guide. All commands are **SOURCE-CONFIRMED**, not fresh execution evidence.
+Use the canonical [DEVELOPMENT.md](DEVELOPMENT.md) for installation, startup and configuration, matching the publication branch. No new application execution, provisioning, migration or cleanup result is claimed. All commands are **SOURCE-CONFIRMED**, not fresh execution evidence.
 
 - **SOURCE-CONFIRMED:** the suite, command or condition is supported by inspected source/configuration; execution is not established.
 - **VERIFIED:** a specific check succeeded at an identified SHA/environment, with retained output and an explicit scope. Source presence, local tool versions and an old CI result are insufficient for a new runtime claim.
@@ -80,13 +361,13 @@ State the boundary of every result: an in-memory contract, MVC filter handoff, d
 
 | Layer | Existing source and mechanism | Boundary |
 | --- | --- | --- |
-| Backend domain/contracts | [core tests](../backend/src/test/java/com/tricore/dxos/core/), JUnit/JUnit parameterized tests and AssertJ | Identity, Workflow and Data contracts; includes in-memory persistence/storage doubles |
-| Backend HTTP/security | [gateway tests](../backend/src/test/java/com/tricore/dxos/gateway/), [identity security tests](../backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/), Spring MVC/Test and controlled JWT fixtures | HTTP mapping, validation, authentication handoff and authorization; some token suites opt into a real issuer |
-| Architecture | [CoreDependencyRulesTest](../backend/src/test/java/com/tricore/dxos/architecture/CoreDependencyRulesTest.java), ArchUnit | Compiled production Core classes, dependency rules and negative canaries |
-| Portal BFF | [PortalSecurityTest](../portal-bff/src/test/java/com/tricore/dxos/portal/PortalSecurityTest.java), [PortalBackendClientTest](../portal-bff/src/test/java/com/tricore/dxos/portal/PortalBackendClientTest.java) | MockMvc, synthetic OAuth sessions, mocked authorized-client manager and HTTP client |
-| Frontend | [frontend/src](../frontend/src/), Vitest/Testing Library in jsdom | Components, services, transports and session composition with fake/mocked responses |
-| Browser | [frontend/tests](../frontend/tests/), Playwright Chromium and axe | MOCK Portal plus an explicitly selected fake Helpdesk preview |
-| PostgreSQL | [Workflow infrastructure tests](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/), JDBC/Flyway and real local fixtures | Persistence, migrations, concurrency, privileges, TLS and HTTP/database integration |
+| Backend domain/contracts | [core tests](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/core/), JUnit/JUnit parameterized tests and AssertJ | Identity, Workflow and Data contracts; includes in-memory persistence/storage doubles |
+| Backend HTTP/security | [gateway tests](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/gateway/), [identity security tests](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/), Spring MVC/Test and controlled JWT fixtures | HTTP mapping, validation, authentication handoff and authorization; some token suites opt into a real issuer |
+| Architecture | [CoreDependencyRulesTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/architecture/CoreDependencyRulesTest.java), ArchUnit | Compiled production Core classes, dependency rules and negative canaries |
+| Portal BFF | [PortalSecurityTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/portal-bff/src/test/java/com/tricore/dxos/portal/PortalSecurityTest.java), [PortalBackendClientTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/portal-bff/src/test/java/com/tricore/dxos/portal/PortalBackendClientTest.java) | MockMvc, synthetic OAuth sessions, mocked authorized-client manager and HTTP client |
+| Frontend | [frontend/src](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/src/), Vitest/Testing Library in jsdom | Components, services, transports and session composition with fake/mocked responses |
+| Browser | [frontend/tests](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/), Playwright Chromium and axe | MOCK Portal plus an explicitly selected fake Helpdesk preview |
+| PostgreSQL | [Workflow infrastructure tests](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/), JDBC/Flyway and real local fixtures | Persistence, migrations, concurrency, privileges, TLS and HTTP/database integration |
 | Repository tooling | [scripts](../scripts/), Python unittest and PowerShell assertions | Compliance/release tooling and local identity-seed generation; not product E2E |
 
 No production object-storage provider, Flowable runtime, APISIX deployment or Facility E2E acceptance is established by these tests. Test helpers with names such as `live` can still use injected local connections or synthetic catalogs; inspect their setup, not just their name.
@@ -104,7 +385,7 @@ No production object-storage provider, Flowable runtime, APISIX deployment or Fa
 | Windows helpers | PowerShell, Docker Desktop Linux Engine, local `desktop-linux` context for Helpdesk; Workflow verifier also uses OpenSSL, Windows executables and ACL APIs |
 | Real identity | Reachable exact issuer, genuine fresh tokens, correct audience/roles; browser E2E additionally needs confidential client, HTTPS ingress and trusted certificates |
 
-Versions come from [Backend build](../backend/build.gradle), [wrapper properties](../backend/gradle/wrapper/gradle-wrapper.properties), [BFF build](../portal-bff/build.gradle), [frontend package](../frontend/package.json) and [Compose](../infra/compose.workflow-postgres.yml). Local version observations are not fresh-clone test results. Linux/macOS commands use the committed POSIX wrapper/CI conventions but were not executed for this guide. Windows fixture/ACL helpers must not be assumed portable.
+Versions come from [Backend build](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/build.gradle), [wrapper properties](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/gradle/wrapper/gradle-wrapper.properties), [BFF build](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/portal-bff/build.gradle), [frontend package](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/package.json) and [Compose](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/infra/compose.workflow-postgres.yml). Local version observations are not fresh-clone test results. Linux/macOS commands use the committed POSIX wrapper/CI conventions but were not executed for this guide. Windows fixture/ACL helpers must not be assumed portable.
 
 **Before ordinary tests:** use a fresh terminal without database/token opt-ins inherited from an operator session. Inspect the names of configured variables without printing secret values. `test` also discovers conditional integration classes; setting their environment variables can activate database writes.
 
@@ -166,21 +447,21 @@ The build is needed before the bundle security scan and standard browser preview
 .\gradlew.bat test --tests com.tricore.dxos.infrastructure.identity.security.GatewayIdentityHandoffHttpTest --tests com.tricore.dxos.infrastructure.identity.security.SpringSecurityCurrentPrincipalTest --tests com.tricore.dxos.gateway.workflow.controller.WorkflowHttpExposureTest
 ```
 
-Linux/macOS: use `./gradlew` with the same arguments. These are the three suites checked explicitly by CI; they do not establish real Keycloak/browser acceptance. Commands derive from [Gradle test tasks](../backend/build.gradle), [CI](../.github/workflows/ci.yml), [npm scripts](../frontend/package.json) and the [MVP config](../frontend/tests/mvp.playwright.config.ts).
+Linux/macOS: use `./gradlew` with the same arguments. These are the three suites checked explicitly by CI; they do not establish real Keycloak/browser acceptance. Commands derive from [Gradle test tasks](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/build.gradle), [CI](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/.github/workflows/ci.yml), [npm scripts](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/package.json) and the [MVP config](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/mvp.playwright.config.ts).
 
 #### 5. Backend Testing
 
-The following matrix describes source-confirmed groups. `test --tests ...` commands run from **`backend/`**, using `./gradlew` on Linux/macOS or `.\gradlew.bat` on Windows. Runtime outcomes remain **UNVERIFIED** in this review.
+The following matrix describes source-confirmed groups. `test --tests ...` commands run from **`backend/`**, using `./gradlew` on Linux/macOS or `.\gradlew.bat` on Windows. Runtime outcomes remain **UNVERIFIED** in the cited evidence scope.
 
 | Test suite / source location | Task / selection | Dependencies | Environment | Execution condition | Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| [Core Identity/Workflow/Data](../backend/src/test/java/com/tricore/dxos/core/), including `WorkflowRuntimeTest`, `WorkflowPersistencePortTest`, `ObjectStoragePortTest` | `test --tests 'com.tricore.dxos.core.*'` | JDK/wrapper | No infrastructure opt-in | Ordinary JUnit cases; persistence/storage contracts include in-memory doubles | Fresh task XML/HTML | SOURCE-CONFIRMED |
-| [HealthControllerTest](../backend/src/test/java/com/tricore/dxos/common/health/HealthControllerTest.java) | `test --tests com.tricore.dxos.common.health.HealthControllerTest` | JDK, MVC slice | Test configuration | No live DB required | XML/HTML | SOURCE-CONFIRMED |
-| [Authorization policy tests](../backend/src/test/java/com/tricore/dxos/application/authorization/), including `WorkflowAuthorizationTest`, `TenantResourceWorkflowAccessPolicyTest` | `test --tests 'com.tricore.dxos.application.authorization.*'` | JDK, controlled snapshots/principals | No real tokens | Unit policy decisions, not database ACL execution | XML/HTML | SOURCE-CONFIRMED |
-| [Security validators/handoff](../backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/), excluding the two real-token suites below | `test`; focused CI selection above | JDK, controlled JWT/MockMvc fixtures | Gradle supplies fallback `OIDC_ISSUER_URI`, `OIDC_AUDIENCE`, `OIDC_RESOURCE_CLIENT_ID` for ordinary `test` | No real IdP required for these controlled tests | XML/HTML; CI's three-suite assertion | SOURCE-CONFIRMED |
-| [WorkflowControllerTest](../backend/src/test/java/com/tricore/dxos/gateway/workflow/controller/WorkflowControllerTest.java), [WorkflowHttpExposureTest](../backend/src/test/java/com/tricore/dxos/gateway/workflow/controller/WorkflowHttpExposureTest.java), [HelpdeskErrorContractTest](../backend/src/test/java/com/tricore/dxos/gateway/helpdesk/HelpdeskErrorContractTest.java) | `test` | JDK/Spring test configuration | Controller suite selects `workflow-http-tests` internally | A test-only profile/controller registration is not production exposure | XML/HTML | SOURCE-CONFIRMED |
-| [CoreDependencyRulesTest](../backend/src/test/java/com/tricore/dxos/architecture/CoreDependencyRulesTest.java) | Focused command above | Compiled production classes, ArchUnit | No DB/token | Imports production classes, excludes test fixtures; positive/negative canaries | XML/HTML and class-count/canary output | SOURCE-CONFIRMED |
-| [OidcKeycloakIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/OidcKeycloakIntegrationTest.java), [GatewayKeycloakTokenHttpIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/GatewayKeycloakTokenHttpIntegrationTest.java) | `test --tests '*OidcKeycloakIntegrationTest' --tests '*GatewayKeycloakTokenHttpIntegrationTest'` | Real reachable Keycloak discovery/JWKS | `OIDC_TEST_ACCESS_TOKEN` | Both classes skip if token absent; exact issuer fixed below | XML/HTML, sanitized provider/environment record | SOURCE-CONFIRMED |
+| [Core Identity/Workflow/Data](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/core/), including `WorkflowRuntimeTest`, `WorkflowPersistencePortTest`, `ObjectStoragePortTest` | `test --tests 'com.tricore.dxos.core.*'` | JDK/wrapper | No infrastructure opt-in | Ordinary JUnit cases; persistence/storage contracts include in-memory doubles | Fresh task XML/HTML | SOURCE-CONFIRMED |
+| [HealthControllerTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/common/health/HealthControllerTest.java) | `test --tests com.tricore.dxos.common.health.HealthControllerTest` | JDK, MVC slice | Test configuration | No live DB required | XML/HTML | SOURCE-CONFIRMED |
+| [Authorization policy tests](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/application/authorization/), including `WorkflowAuthorizationTest`, `TenantResourceWorkflowAccessPolicyTest` | `test --tests 'com.tricore.dxos.application.authorization.*'` | JDK, controlled snapshots/principals | No real tokens | Unit policy decisions, not database ACL execution | XML/HTML | SOURCE-CONFIRMED |
+| [Security validators/handoff](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/), excluding the two real-token suites below | `test`; focused CI selection above | JDK, controlled JWT/MockMvc fixtures | Gradle supplies fallback `OIDC_ISSUER_URI`, `OIDC_AUDIENCE`, `OIDC_RESOURCE_CLIENT_ID` for ordinary `test` | No real IdP required for these controlled tests | XML/HTML; CI's three-suite assertion | SOURCE-CONFIRMED |
+| [WorkflowControllerTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/gateway/workflow/controller/WorkflowControllerTest.java), [WorkflowHttpExposureTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/gateway/workflow/controller/WorkflowHttpExposureTest.java), [HelpdeskErrorContractTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/gateway/helpdesk/HelpdeskErrorContractTest.java) | `test` | JDK/Spring test configuration | Controller suite selects `workflow-http-tests` internally | A test-only profile/controller registration is not production exposure | XML/HTML | SOURCE-CONFIRMED |
+| [CoreDependencyRulesTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/architecture/CoreDependencyRulesTest.java) | Focused command above | Compiled production classes, ArchUnit | No DB/token | Imports production classes, excludes test fixtures; positive/negative canaries | XML/HTML and class-count/canary output | SOURCE-CONFIRMED |
+| [OidcKeycloakIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/OidcKeycloakIntegrationTest.java), [GatewayKeycloakTokenHttpIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/identity/security/GatewayKeycloakTokenHttpIntegrationTest.java) | `test --tests '*OidcKeycloakIntegrationTest' --tests '*GatewayKeycloakTokenHttpIntegrationTest'` | Real reachable Keycloak discovery/JWKS | `OIDC_TEST_ACCESS_TOKEN` | Both classes skip if token absent; exact issuer fixed below | XML/HTML, sanitized provider/environment record | SOURCE-CONFIRMED |
 
 The architecture test enforces Core-only dependencies on `java..` and the same Core package, excludes JDBC, and forbids dependencies between Core capabilities. It does not enforce all proposed Application/Gateway rules or prove authorization semantics.
 
@@ -194,8 +475,8 @@ Run the BFF command in Quick Test Commands; no genuine provider credentials, Bac
 
 | Suite | Source-confirmed checks | Fixture and limitation |
 | --- | --- | --- |
-| [PortalSecurityTest](../portal-bff/src/test/java/com/tricore/dxos/portal/PortalSecurityTest.java) | Anonymous/forged-header rejection, session response without tokens, CSRF on writes/logout, PKCE authorization parameters, confidential-client restrictions, failed/missing authorization handling | `@WebMvcTest`, `oauth2Login()`, synthetic client registration, mocked manager/Backend; not a real Authorization Code callback or provider session |
-| [PortalBackendClientTest](../portal-bff/src/test/java/com/tricore/dxos/portal/PortalBackendClientTest.java) | HTTPS/loopback origin validation, server-held bearer forwarding, denied redirects, route/method allowlist, bounded response bodies, session invalidation, controlled refresh outcomes, sanitized 401/403/404/409, unknown writes with no replay | Mocked Java `HttpClient` and authorized-client manager; no live upstream/refresh/provider logout |
+| [PortalSecurityTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/portal-bff/src/test/java/com/tricore/dxos/portal/PortalSecurityTest.java) | Anonymous/forged-header rejection, session response without tokens, CSRF on writes/logout, PKCE authorization parameters, confidential-client restrictions, failed/missing authorization handling | `@WebMvcTest`, `oauth2Login()`, synthetic client registration, mocked manager/Backend; not a real Authorization Code callback or provider session |
+| [PortalBackendClientTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/portal-bff/src/test/java/com/tricore/dxos/portal/PortalBackendClientTest.java) | HTTPS/loopback origin validation, server-held bearer forwarding, denied redirects, route/method allowlist, bounded response bodies, session invalidation, controlled refresh outcomes, sanitized 401/403/404/409, unknown writes with no replay | Mocked Java `HttpClient` and authorized-client manager; no live upstream/refresh/provider logout |
 
 `COMMIT_OUTCOME_UNKNOWN` tests deliberately model a lost response after a write and assert that it is not retried. They do not establish whether a real database committed. Reconcile live unknown outcomes through authorized detail/history reads, without replaying a POST.
 
@@ -205,19 +486,19 @@ Evidence is fresh `portal-bff/build/test-results/test/` XML and `portal-bff/buil
 
 | Suite / location | Command in `frontend/` | Dependencies / environment | Run/skip condition | Evidence | Status |
 | --- | --- | --- | --- | --- | --- |
-| `src/**/*.test.{ts,tsx}` selected by [vite.config.ts](../frontend/vite.config.ts) | `npm test` (`npm.cmd` on Windows) | Installed Node dependencies, jsdom; no infrastructure variables | Includes component/service/transport tests; test setup is `src/test/setup.ts` | Vitest terminal output; retain invocation and per-file summary | SOURCE-CONFIRMED |
-| [portal.spec.ts](../frontend/tests/portal.spec.ts), [session.spec.ts](../frontend/tests/session.spec.ts), [auth.spec.ts](../frontend/tests/auth.spec.ts) | `npm run build`, then `npm run test:smoke` | Chromium, MOCK `dist`, free port 4173 | Standard config starts preview; can reuse an existing server outside CI, so verify its build/mode | List reporter, test output and retained failure trace/screenshots where produced | SOURCE-CONFIRMED |
-| [helpdesk-mvp.spec.ts](../frontend/tests/helpdesk-mvp.spec.ts) | `npx playwright test --config tests/mvp.playwright.config.ts` (`npx.cmd` on Windows) | Chromium, explicit fake preview; no Backend/Keycloak/DB | Standard config intentionally skips it. Only MVP config supplies `project.metadata.fakeHelpdeskPreview=true` and selects this spec | List output plus the actual temporary output directory printed by the run | SOURCE-CONFIRMED |
-| [check-security.mjs](../frontend/scripts/check-security.mjs) | `npm run check:security` after build | `src`, `public`, `dist`, package/index files present | Heuristic credential-pattern scan; not a test of runtime authorization or comprehensive secret detection | Terminal scan result and reviewed build mode | SOURCE-CONFIRMED |
+| `src/**/*.test.{ts,tsx}` selected by [vite.config.ts](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/vite.config.ts) | `npm test` (`npm.cmd` on Windows) | Installed Node dependencies, jsdom; no infrastructure variables | Includes component/service/transport tests; test setup is `src/test/setup.ts` | Vitest terminal output; retain invocation and per-file summary | SOURCE-CONFIRMED |
+| [portal.spec.ts](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/portal.spec.ts), [session.spec.ts](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/session.spec.ts), [auth.spec.ts](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/auth.spec.ts) | `npm run build`, then `npm run test:smoke` | Chromium, MOCK `dist`, free port 4173 | Standard config starts preview; can reuse an existing server outside CI, so verify its build/mode | List reporter, test output and retained failure trace/screenshots where produced | SOURCE-CONFIRMED |
+| [helpdesk-mvp.spec.ts](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/helpdesk-mvp.spec.ts) | `npx playwright test --config tests/mvp.playwright.config.ts` (`npx.cmd` on Windows) | Chromium, explicit fake preview; no Backend/Keycloak/DB | Standard config intentionally skips it. Only MVP config supplies `project.metadata.fakeHelpdeskPreview=true` and selects this spec | List output plus the actual temporary output directory printed by the run | SOURCE-CONFIRMED |
+| [check-security.mjs](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/scripts/check-security.mjs) | `npm run check:security` after build | `src`, `public`, `dist`, package/index files present | Heuristic credential-pattern scan; not a test of runtime authorization or comprehensive secret detection | Terminal scan result and reviewed build mode | SOURCE-CONFIRMED |
 | Authenticated local browser composition | Manual checklist in section 11 | Full configured stack and real identities | `integration-local` bundle alone is insufficient | Sanitized browser/backend/database evidence | UNVERIFIED |
 
-[AssignmentForm.integration.test.tsx](../frontend/src/components/AssignmentForm.integration.test.tsx) composes UI/service/transport fixtures; [LocalHelpdeskIntegration.test.tsx](../frontend/src/features/helpdesk/LocalHelpdeskIntegration.test.tsx) stubs browser location/fetch. Their names do not imply live HTTP or Keycloak execution. Likewise, MOCK login/register form validation is not identity-provider authentication.
+[AssignmentForm.integration.test.tsx](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/src/components/AssignmentForm.integration.test.tsx) composes UI/service/transport fixtures; [LocalHelpdeskIntegration.test.tsx](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/src/features/helpdesk/LocalHelpdeskIntegration.test.tsx) stubs browser location/fetch. Their names do not imply live HTTP or Keycloak execution. Likewise, MOCK login/register form validation is not identity-provider authentication.
 
 **Screenshot side effects:** when Playwright runs from `frontend/`, `tests/portal.spec.ts` can create or overwrite screenshots in `docs/evidence/issue39-portal/` at repository root; `tests/auth.spec.ts` does so in its `auth/` subdirectory. Run `git status --short` before and after the tests and review new or modified evidence files. Preserve existing evidence; do not automatically delete, clean or revert it.
 
-The [standard Playwright config](../frontend/playwright.config.ts) uses a **list** reporter, Chromium, `http://127.0.0.1:4173` and `trace: retain-on-failure`; it does not configure an HTML report. The [MVP config](../frontend/tests/mvp.playwright.config.ts) starts a separate Vite server and allocates a temporary `dxos-app14-browser-*` output directory. Capture the actual artifact paths before temporary files disappear. An intentional Helpdesk skip under standard smoke is **SKIPPED**, never PASS.
+The [standard Playwright config](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/playwright.config.ts) uses a **list** reporter, Chromium, `http://127.0.0.1:4173` and `trace: retain-on-failure`; it does not configure an HTML report. The [MVP config](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/tests/mvp.playwright.config.ts) starts a separate Vite server and allocates a temporary `dxos-app14-browser-*` output directory. Capture the actual artifact paths before temporary files disappear. An intentional Helpdesk skip under standard smoke is **SKIPPED**, never PASS.
 
-`npm run build:integration-local` selects the integration entry in [src/main.tsx](../frontend/src/main.tsx). It only creates a bundle in `dist`; it does not start Backend/BFF/Keycloak/PostgreSQL/Caddy or prove that `/bff/session` works. Default `npm run build` restores MOCK. Both modes write the same output directory; record which one was tested.
+`npm run build:integration-local` selects the integration entry in [src/main.tsx](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/frontend/src/main.tsx). It only creates a bundle in `dist`; it does not start Backend/BFF/Keycloak/PostgreSQL/Caddy or prove that `/bff/session` works. Default `npm run build` restores MOCK. Both modes write the same output directory; record which one was tested.
 
 #### 8. PostgreSQL and Infrastructure Testing
 
@@ -225,19 +506,19 @@ The [standard Playwright config](../frontend/playwright.config.ts) uses a **list
 
 ##### Workflow suite selection and conditions
 
-[backend/build.gradle](../backend/build.gradle) selects exactly seven classes for `workflowIntegrationTest`. The nine Workflow integration classes below share [this source directory](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/); each row links its actual file. All rows are **SOURCE-CONFIRMED**, with execution **UNVERIFIED** here.
+[backend/build.gradle](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/build.gradle) selects exactly seven classes for `workflowIntegrationTest`. The nine Workflow integration classes below share [this source directory](https://github.com/tricore-opentrix/opentrix/tree/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/); each row links its actual file. All rows are **SOURCE-CONFIRMED**, with execution **UNVERIFIED** here.
 
 | Test suite / location | Included in `workflowIntegrationTest`? | Class-level enabling variable | Additional fixture requirements / coverage |
 | --- | --- | --- | --- |
-| [PostgresWorkflowPersistenceIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/PostgresWorkflowPersistenceIntegrationTest.java) | Yes | `WORKFLOW_TEST_JDBC_URL` nonempty | Runtime/migrator credentials, isolated schema migrations, atomicity/conflicts/history. Least-privilege case aborts via `Assumptions.assumeTrue` unless a distinct migration login is supplied |
-| [WorkflowIsolationIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowIsolationIntegrationTest.java) | Yes | `WORKFLOW_TEST_JDBC_URL` nonempty | Schema/role/probe setup; some TLS cases gated separately by correct/wrong CA variables |
-| [WorkflowEventTriggerGuardIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowEventTriggerGuardIntegrationTest.java) | Yes | `WORKFLOW_TEST_JDBC_URL` nonempty | Privileged synthetic catalog/event-trigger fixture; TLS cases additionally gated by CA variables |
-| [WorkflowEventTriggerReviewIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowEventTriggerReviewIntegrationTest.java) | Yes | `WORKFLOW_TEST_CA_CERT` nonempty | Also needs Workflow JDBC URL and migration credentials; verified TLS plus protected filesystem/ACL capture |
-| [WorkflowDevelopmentSmokeIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowDevelopmentSmokeIntegrationTest.java) | Yes | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Local `/postgres` TLS fixture, audit credentials/CA, marker; builds local development opt-ins inside test setup |
-| [WorkflowSchemaBootstrapIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowSchemaBootstrapIntegrationTest.java) | Yes | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Local audit fixture, correct/wrong CA, marker; creates/drops fixture schemas/roles and checks bootstrap boundaries |
-| [WorkflowApprovedMigrationIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowApprovedMigrationIntegrationTest.java) | Yes | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Local audit fixture, TLS and disposable marker; tests pinned V3/V4 migration and failure boundaries |
-| [WorkflowRuntimePrivilegeAuditIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowRuntimePrivilegeAuditIntegrationTest.java) | **No**; selected through ordinary `test` | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Audit fixture credentials/correct and wrong CA; read-only audit and TLS rejection cases |
-| [WorkflowSecurityDefinerReviewIntegrationTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowSecurityDefinerReviewIntegrationTest.java) | **No**; selected through ordinary `test` | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Audit fixture/TLS; setup itself creates disposable SQL objects even though capture is read-only |
+| [PostgresWorkflowPersistenceIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/PostgresWorkflowPersistenceIntegrationTest.java) | Yes | `WORKFLOW_TEST_JDBC_URL` nonempty | Runtime/migrator credentials, isolated schema migrations, atomicity/conflicts/history. Least-privilege case aborts via `Assumptions.assumeTrue` unless a distinct migration login is supplied |
+| [WorkflowIsolationIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowIsolationIntegrationTest.java) | Yes | `WORKFLOW_TEST_JDBC_URL` nonempty | Schema/role/probe setup; some TLS cases gated separately by correct/wrong CA variables |
+| [WorkflowEventTriggerGuardIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowEventTriggerGuardIntegrationTest.java) | Yes | `WORKFLOW_TEST_JDBC_URL` nonempty | Privileged synthetic catalog/event-trigger fixture; TLS cases additionally gated by CA variables |
+| [WorkflowEventTriggerReviewIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowEventTriggerReviewIntegrationTest.java) | Yes | `WORKFLOW_TEST_CA_CERT` nonempty | Also needs Workflow JDBC URL and migration credentials; verified TLS plus protected filesystem/ACL capture |
+| [WorkflowDevelopmentSmokeIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowDevelopmentSmokeIntegrationTest.java) | Yes | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Local `/postgres` TLS fixture, audit credentials/CA, marker; builds local development opt-ins inside test setup |
+| [WorkflowSchemaBootstrapIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowSchemaBootstrapIntegrationTest.java) | Yes | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Local audit fixture, correct/wrong CA, marker; creates/drops fixture schemas/roles and checks bootstrap boundaries |
+| [WorkflowApprovedMigrationIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowApprovedMigrationIntegrationTest.java) | Yes | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Local audit fixture, TLS and disposable marker; tests pinned V3/V4 migration and failure boundaries |
+| [WorkflowRuntimePrivilegeAuditIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowRuntimePrivilegeAuditIntegrationTest.java) | **No**; selected through ordinary `test` | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Audit fixture credentials/correct and wrong CA; read-only audit and TLS rejection cases |
+| [WorkflowSecurityDefinerReviewIntegrationTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/WorkflowSecurityDefinerReviewIntegrationTest.java) | **No**; selected through ordinary `test` | `WORKFLOW_AUDIT_LOCAL_JDBC_URL` nonempty | Audit fixture/TLS; setup itself creates disposable SQL objects even though capture is read-only |
 
 | Fixture input | Meaning and condition |
 | --- | --- |
@@ -258,11 +539,11 @@ After an operator has prepared and checked the complete fixture, run from **`bac
 
 Linux/macOS: use `./gradlew` with the same arguments; Windows-specific ACL fixture paths still require manual portability review. Inspect **`build/test-results/workflowIntegrationTest/`** and **`build/reports/tests/workflowIntegrationTest/`** for the dedicated task; the second command writes the ordinary **`test/`** reports. A successful dedicated task can still contain conditionally skipped classes/methods.
 
-[Compose](../infra/compose.workflow-postgres.yml) provides a persistent Workflow database at loopback port 55425, not a complete TLS/audit/Helpdesk fixture. Do not point `HELPDESK_DISPOSABLE_URL` at it or assume its owner login verifies a least-privilege runtime. Do not edit applied V1–V4 migrations or disable catalog/privilege guards to satisfy tests.
+[Compose](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/infra/compose.workflow-postgres.yml) provides a persistent Workflow database at loopback port 55425, not a complete TLS/audit/Helpdesk fixture. Do not point `HELPDESK_DISPOSABLE_URL` at it or assume its owner login verifies a least-privilege runtime. Do not edit applied V1–V4 migrations or disable catalog/privilege guards to satisfy tests.
 
 ##### Helpdesk HTTP/PostgreSQL and real-token B06
 
-[HelpdeskHttpPostgresTest](../backend/src/test/java/com/tricore/dxos/infrastructure/workflow/HelpdeskHttpPostgresTest.java) is class-gated on exactly `HELPDESK_DISPOSABLE_URL=jdbc:postgresql://127.0.0.1:55439/helpdesk_disposable_test`. It also needs `HELPDESK_DISPOSABLE_PASSWORD`, the expected fixture login `helpdesk_test`, and `WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE=true`. Setup generates a synthetic issuer/JWKS and an ephemeral HTTP server; most cases are real HTTP/database integration with fake identity-provider data, not real Keycloak.
+[HelpdeskHttpPostgresTest](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/backend/src/test/java/com/tricore/dxos/infrastructure/workflow/HelpdeskHttpPostgresTest.java) is class-gated on exactly `HELPDESK_DISPOSABLE_URL=jdbc:postgresql://127.0.0.1:55439/helpdesk_disposable_test`. It also needs `HELPDESK_DISPOSABLE_PASSWORD`, the expected fixture login `helpdesk_test`, and `WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE=true`. Setup generates a synthetic issuer/JWKS and an ephemeral HTTP server; most cases are real HTTP/database integration with fake identity-provider data, not real Keycloak.
 
 With that **already prepared, exclusively owned fixture**, select it from `backend/` using `.\gradlew.bat test --tests '*HelpdeskHttpPostgresTest' --no-daemon` (POSIX: `./gradlew` with the same arguments). The nested `b06RealKeycloakTokensAndPostgres` case skips without `B06_EMPLOYEE_ACCESS_TOKEN`. When enabled, it requires **all four** genuine, distinct, fresh tokens: `B06_EMPLOYEE_ACCESS_TOKEN`, `B06_COORDINATOR_ACCESS_TOKEN`, `B06_WORKER_ACCESS_TOKEN`, `B06_FOREIGN_ACCESS_TOKEN`; issuer is hardcoded to `http://localhost:8180/realms/tricore`, audience includes `tricore-api`, and tokens must remain valid for more than 90 seconds at the check. B06 is not a BFF/browser journey.
 
@@ -293,7 +574,7 @@ For security changes, follow [CONTRIBUTING.md](../CONTRIBUTING.md): test both al
 
 #### 10. CI Verification
 
-[.github/workflows/ci.yml](../.github/workflows/ci.yml) declares:
+[.github/workflows/ci.yml](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/.github/workflows/ci.yml) declares:
 
 | Job | Tests/checks run | What it does not establish |
 | --- | --- | --- |
@@ -305,7 +586,7 @@ For security changes, follow [CONTRIBUTING.md](../CONTRIBUTING.md): test both al
 
 The explicit Backend XML check requires each of its three suites to exist, contain tests and have zero failures/errors/skips. It does **not** assert that every integration suite executed. Backend HTML test reports are uploaded **on failure**, with seven-day retention; successful-run per-suite XML is not generally uploaded by this workflow. Capture needed evidence separately rather than assuming a green job preserves all counts. R23 artifacts are separate compliance evidence.
 
-Repository tooling canaries can run independently: from root, CI uses `python3 -m unittest discover -s scripts -p 'test_r23_*.py'`; use the available Python executable with the same arguments on Windows. These tests use synthetic SBOM fixtures, not product services. The separate [release workflow](../.github/workflows/release.yml) has its own gates; it is not LIVE E2E proof and is not invoked by this guide.
+Repository tooling canaries can run independently: from root, CI uses `python3 -m unittest discover -s scripts -p 'test_r23_*.py'`; use the available Python executable with the same arguments on Windows. These tests use synthetic SBOM fixtures, not product services. The separate [release workflow](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/.github/workflows/release.yml) has its own gates; it is not LIVE E2E proof and is not invoked by this guide.
 
 The standalone [test-helpdesk-local-actor-seed.ps1](../scripts/test-helpdesk-local-actor-seed.ps1) runs from root as `.\scripts\test-helpdesk-local-actor-seed.ps1` in PowerShell without Docker or a database. It asserts canonical identity/seed generation and rejection behavior using synthetic subjects and a temporary local JSON file; it does not provision identities or authenticate with Keycloak. Invocation and assertions are **SOURCE-CONFIRMED**, not execution results here.
 
@@ -313,7 +594,7 @@ Phase 2 reports contain historical exact-SHA CI observations. Keep those attribu
 
 #### 11. LIVE E2E Acceptance
 
-**UNVERIFIED in this review.** No automated Playwright configuration inspected here supplies full-stack real-provider acceptance. Follow the [BFF acceptance checklist](../portal-bff/README.md) and [local configuration guide](DEVELOPMENT.md) before executing this manual plan.
+**UNVERIFIED in the cited evidence scope.** No automated Playwright configuration inspected here supplies full-stack real-provider acceptance. Follow the [BFF acceptance checklist](../portal-bff/README.md) and [local configuration guide](DEVELOPMENT.md) before executing this manual plan.
 
 Prerequisites: an explicitly selected commit; exclusively owned disposable Helpdesk database and correct runtime grants; Backend/BFF; real Keycloak confidential Code + PKCE client with exact issuer/audience/client roles; three distinct real Employee/Coordinator/Worker identities mapped to exact issuer/sub memberships; `integration-local` bundle; trusted Caddy HTTPS origin. Use isolated browser contexts. A provisioned subject is not proof of successful authentication, and `/bff/session` returning 502 is a failed prerequisite.
 
@@ -391,7 +672,7 @@ Synthetic live test data can use a title such as `QA disposable request` and a n
 
 - [README](../README.md), [DEVELOPMENT](DEVELOPMENT.md), [CONTRIBUTING](../CONTRIBUTING.md), [SECURITY](../SECURITY.md).
 - [Backend runbook](../backend/README.md), [BFF runbook](../portal-bff/README.md), [Frontend guide](../frontend/README.md).
-- [Helpdesk local runbook](../scripts/README-helpdesk-local.md), [script notes](../scripts/README.md), [CI](../.github/workflows/ci.yml).
+- [Helpdesk local runbook](../scripts/README-helpdesk-local.md), [script notes](../scripts/README.md), [CI](https://github.com/tricore-opentrix/opentrix/blob/832c75fc3164cf170eed3bb8f1e380d24dd65aba/.github/workflows/ci.yml).
 - Phase 2 published snapshots at `5938d8e7cb117aa6bc8226ace1d786be2f7be703`: [Block A](https://github.com/tricore-opentrix/opentrix/blob/5938d8e7cb117aa6bc8226ace1d786be2f7be703/docs/09-evidence/phase-2/block-a-architecture.md), [Block B](https://github.com/tricore-opentrix/opentrix/blob/5938d8e7cb117aa6bc8226ace1d786be2f7be703/docs/09-evidence/phase-2/block-b-backend-infra.md), [Block C](https://github.com/tricore-opentrix/opentrix/blob/5938d8e7cb117aa6bc8226ace1d786be2f7be703/docs/09-evidence/phase-2/block-c-application.md). Reports are evidence inventories with their own limitations, not new runtime acceptance.
 
 ### B. Target — PROPOSED, not yet accepted
