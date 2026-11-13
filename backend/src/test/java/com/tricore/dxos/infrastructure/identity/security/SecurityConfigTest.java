@@ -5,7 +5,7 @@
 package com.tricore.dxos.infrastructure.identity.security;
 
 import com.tricore.dxos.gateway.helpdesk.HelpdeskController;
-import com.tricore.dxos.infrastructure.workflow.HelpdeskService;
+import com.tricore.dxos.application.helpdesk.api.HelpdeskUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -48,7 +48,7 @@ class SecurityConfigTest {
     private MockMvc mvc;
 
     @MockitoBean
-    private HelpdeskService helpdeskService;
+    private HelpdeskUseCase helpdeskService;
 
     @MockitoBean
     private JwtDecoder jwtDecoder;
@@ -107,7 +107,7 @@ class SecurityConfigTest {
 
         UUID id = UUID.fromString("f3bf54b7-fdab-4b45-85dd-94cbd8587a9d");
         when(helpdeskService.create("Repair printer", "Printer is offline"))
-                .thenReturn(new HelpdeskService.RequestView(
+                .thenReturn(new HelpdeskUseCase.RequestView(
                         id, "Repair printer", "Printer is offline", "IT_HELPDESK",
                         "user-123", null, null, 0L, "workflow-id", "SUBMITTED", 0L,
                         List.of(), null, null, null));
@@ -119,7 +119,15 @@ class SecurityConfigTest {
                                 {"title":"Repair printer","description":"Printer is offline",
                                  "requestType":"IT_HELPDESK"}
                                 """))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(content().json("""
+                        {"id":"f3bf54b7-fdab-4b45-85dd-94cbd8587a9d",
+                         "title":"Repair printer","description":"Printer is offline",
+                         "requestType":"IT_HELPDESK","requesterId":"user-123",
+                         "assigneeId":null,"resolution":null,"assignmentVersion":0,
+                         "workflowInstanceId":"workflow-id","state":"SUBMITTED","version":0,
+                         "allowedActions":[]}
+                        """, JsonCompareMode.STRICT));
 
         verify(helpdeskService).create("Repair printer", "Printer is offline");
     }
