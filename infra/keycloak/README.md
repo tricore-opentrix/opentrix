@@ -40,6 +40,8 @@ UUID cố định để mã actor trong DB (`oidc:<base64url(issuer)>.<base64url
 
 ## Kiểm tra / Verification
 
+Gateway smoke yêu cầu **PowerShell 7.2 trở lên** và quyền đọc log Docker. Chạy `pwsh -File scripts/gateway-smoke.ps1 -ApisixContainer <ten-container-apisix>` từ gốc repo; secret monitor lấy từ `.env` hoặc environment. Script đối chiếu nonce của request không token với access log APISIX để xác nhận `401` và `upstream=-`; thiếu log tương quan thì BLOCKED. Golden Path tiếp tục BLOCKED cho đến khi có Portal/BFF và evidence thật từ #119. Exit code: `0` = tất cả PASS, `1` = có FAIL, `2` = có BLOCKED và không có FAIL.
+
 Sau `infra/demo/spike/spike-up.sh`, chạy `infra/demo/spike/realm-check.sh`. Kết quả mong đợi: 4 dòng `OK` cho `iss`, `sub`, `aud`, `resource_access`; `GET /api/v1/mvp/requests` với token `gateway-monitor` trả **200**; `POST` trả **403**.
 
 ## Lưu ý / Notes

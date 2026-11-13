@@ -168,7 +168,7 @@ def read_bom(path, project):
     return rows
 
 def audit(paths, destination):
-    rows = []
+    rows = read_bom(Path(__file__).resolve().parent.parent / "infra/apisix/bom.json", "gateway")
     for project, path in paths:
         rows += read_bom(path, project)
     rows.sort(key=lambda r: (r["project"], r["name"].lower(), r["version"], r["purl"]))
@@ -187,7 +187,13 @@ def audit(paths, destination):
         values = [r["project"], r["name"], r["version"],
                   ", ".join(r["licenses"]), r["license_choice"], r["purl"]]
         header.append("| " + " | ".join(str(v).replace("|", "\\|").replace("\n", " ") for v in values) + " |")
-    header += ["", "## Open compliance work", "",
+    header += ["", "## Gateway image scope", "",
+               "`apache/apisix:3.13.0-debian` is the unmodified upstream APISIX gateway image",
+               "(Apache-2.0): [LICENSE](https://github.com/apache/apisix/blob/3.13.0/LICENSE),",
+               "[NOTICE](https://github.com/apache/apisix/blob/3.13.0/NOTICE).",
+               "Its top-level record comes from `infra/apisix/bom.json`; image OS packages and",
+               "transitive dependencies still require a separate distribution review under R24.",
+               "", "## Open compliance work", "",
                "Validate upstream required notice texts, bundled services,",
                "copyright provenance and release packaging separately under R24.", ""]
     (destination / "THIRD-PARTY-NOTICES.md").write_text(
