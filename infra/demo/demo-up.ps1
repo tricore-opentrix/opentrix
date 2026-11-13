@@ -39,13 +39,13 @@ $ready = $false
 for ($i = 1; $i -le 100 -and -not $ready; $i++) {
     docker @compose cp ingress:/data/caddy/pki/authorities/local/root.crt $ca 2>$null | Out-Null
     if ($LASTEXITCODE -eq 0) {
-        $ready = ((curl.exe -s -o NUL -w '%{http_code}' --cacert $ca https://localhost:8443/bff/session) -eq '200')
+        $ready = ((curl.exe -s -o NUL -w '%{http_code}' --ssl-revoke-best-effort --cacert $ca https://localhost:8443/bff/session) -eq '200')
     }
     if (-not $ready) { Start-Sleep 3 }
 }
 if (-not $ready) { throw 'Portal chua len. Xem: docker compose -f infra/compose.demo.yml logs' }
 
-function Code($url) { curl.exe -s -o NUL -w '%{http_code}' --cacert $ca $url }
+function Code($url) { curl.exe -s -o NUL -w '%{http_code}' --ssl-revoke-best-effort --cacert $ca $url }
 $fail = $false
 function Check($name, $got, $want) {
     if ($got -eq $want) { Write-Host "OK   $name ($got)" }
