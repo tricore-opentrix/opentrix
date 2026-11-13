@@ -61,8 +61,7 @@ Trạng thái phản ánh nội dung trên `main`. PR nào thay nội dung một
 ### 4. Tài liệu tham chiếu
 
 - **Quyết định kiến trúc (ADR)** — [08-decisions/](08-decisions/):
-  - [ADR-007 — MVP object storage provider](08-decisions/ADR-007-data-storage.md) (đang được thay thế, #181)
-  - [ADR-008 — MVP analytics dashboard provider](08-decisions/ADR-008-dashboard-tool.md)
+  - [Danh mục ADR](08-decisions/README.md): ADR-007 (đã thay bằng ADR-016), ADR-008, ADR-009 (Modular Monolith + Flowable), ADR-016 (lưu trữ S3-compatible, sở hữu dữ liệu), ADR-017 (phạm vi Helpdesk), ADR-018 (API Gateway APISIX).
 - **Bằng chứng kiểm kê Giai đoạn 2** — [09-evidence/phase-2/](09-evidence/phase-2/): Khối A (kiến trúc), Khối B (backend/hạ tầng), Khối C (ứng dụng).
 - **Báo cáo kiểm chứng** — [verification/](verification/): Issue #53 (Helpdesk), Issue #90 (ArchUnit), R31 (bảng đối chiếu API Helpdesk).
 
@@ -72,7 +71,7 @@ Trạng thái phản ánh nội dung trên `main`. PR nào thay nội dung một
 | --- | --- |
 | [00-project/](00-project/) | **Lịch sử** — hồ sơ dự án ban đầu; xem [README thư mục](00-project/README.md) |
 | [01-architecture/](01-architecture/) | **Lịch sử** — hiện trạng ở [ARCHITECTURE.md](ARCHITECTURE.md); xem [README thư mục](01-architecture/README.md) |
-| [02-core/](02-core/) | **Lịch sử**; Workflow `PENDING #191`, Data `PENDING #181`; xem [README thư mục](02-core/README.md) |
+| [02-core/](02-core/) | **Lịch sử**; Workflow theo [ADR-009](08-decisions/ADR-009-modular-monolith-flowable.md), Data theo [ADR-016](08-decisions/ADR-016-s3-compatible-storage.md); xem [README thư mục](02-core/README.md) |
 | [06-deployment/](06-deployment/) | **Giữ lại** — hồ sơ R23/R24/R26; hướng dẫn chuẩn ở [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
 | [evidence/](evidence/) | **Giữ lại** — 3 file SQL là đầu vào của test backend |
 
@@ -138,8 +137,7 @@ Status reflects what is on `main`. A PR that changes a document's content update
 ### 4. Reference material
 
 - **Architecture decisions (ADRs)** — [08-decisions/](08-decisions/):
-  - [ADR-007 — MVP object storage provider](08-decisions/ADR-007-data-storage.md) (being superseded, #181)
-  - [ADR-008 — MVP analytics dashboard provider](08-decisions/ADR-008-dashboard-tool.md)
+  - [ADR index](08-decisions/README.md): ADR-007 (superseded by ADR-016), ADR-008, ADR-009 (Modular Monolith + Flowable), ADR-016 (S3-compatible storage, data ownership), ADR-017 (Helpdesk scope), ADR-018 (APISIX API gateway).
 - **Phase 2 audit evidence** — [09-evidence/phase-2/](09-evidence/phase-2/): Block A (architecture), Block B (backend/infrastructure), Block C (application).
 - **Verification reports** — [verification/](verification/): Issue #53 (Helpdesk), Issue #90 (ArchUnit), R31 (Helpdesk API crosswalk).
 
@@ -149,7 +147,7 @@ Status reflects what is on `main`. A PR that changes a document's content update
 | --- | --- |
 | [00-project/](00-project/) | **Historical** — early project records; see the [folder README](00-project/README.md) |
 | [01-architecture/](01-architecture/) | **Historical** — current state in [ARCHITECTURE.md](ARCHITECTURE.md); see the [folder README](01-architecture/README.md) |
-| [02-core/](02-core/) | **Historical**; Workflow `PENDING #191`, Data `PENDING #181`; see the [folder README](02-core/README.md) |
+| [02-core/](02-core/) | **Historical**; Workflow per [ADR-009](08-decisions/ADR-009-modular-monolith-flowable.md), Data per [ADR-016](08-decisions/ADR-016-s3-compatible-storage.md); see the [folder README](02-core/README.md) |
 | [06-deployment/](06-deployment/) | **Kept** — R23/R24/R26 records; canonical guides are [DEPLOYMENT.md](DEPLOYMENT.md), [RELEASE.md](RELEASE.md) |
 | [evidence/](evidence/) | **Kept** — the 3 SQL files are inputs to backend tests |
 

@@ -35,19 +35,19 @@ Mũi tên mô tả luồng giao tiếp và quan hệ phụ thuộc ở mức ki�
 | **Backend** | Một ứng dụng Spring Boot (`DxosApplication`), một project Gradle; package `gateway`, `application`, `core`, `infrastructure`. | Chuẩn hóa module và Java API công khai theo Modular Monolith (#191). |
 | **Identity** | OAuth2 Resource Server; kiểm tra JWT theo issuer, thời hạn, audience, subject, loại token; principal chuẩn từ issuer + subject. Portal BFF: OIDC, PKCE, session, CSRF, chuyển tiếp token. | E2E với Keycloak thật (#118); tenant và migration quyền (#191). |
 | **Phân quyền** | Quyền kỹ thuật ở gateway (`WorkflowGatewayPrincipalGate`, `workflow:*`); quyền tài nguyên/tenant ở application (`WorkflowAuthorization`, `TenantResourceWorkflowAccessPolicy`). | — |
-| **Workflow** | Engine tự viết `WorkflowRuntime` qua `WorkflowPersistencePort`, lưu PostgreSQL. | Embedded Flowable (#191); API workflow tổng quát chưa đăng ký production (#115). |
-| **Gateway** | Ranh giới HTTP do Spring Security trong backend. | Năng lực API Gateway chuyên dụng (#116). |
-| **Dữ liệu có cấu trúc** | PostgreSQL 17, migration Flyway. | Schema theo module và database role (#191). |
-| **Dữ liệu phi cấu trúc** | Hợp đồng `ObjectStoragePort` và contract test (fake in-memory). | Adapter production qua S3-compatible API (#181, #192). |
+| **Workflow** | Engine tự viết `WorkflowRuntime` qua `WorkflowPersistencePort`, lưu PostgreSQL. | Embedded Flowable theo [ADR-009](08-decisions/ADR-009-modular-monolith-flowable.md): cổng G1–G4, go/no-go 28/11/2026; API workflow tổng quát chưa đăng ký production (#115). |
+| **Gateway** | Ranh giới HTTP do Spring Security trong backend. | Apache APISIX standalone theo [ADR-018](08-decisions/ADR-018-apisix-api-gateway.md) (#116). |
+| **Dữ liệu có cấu trúc** | PostgreSQL 17, migration Flyway. | Giữ một schema dùng chung tới hết cuộc thi; tách schema theo module sau cuộc thi ([ADR-016](08-decisions/ADR-016-s3-compatible-storage.md)). |
+| **Dữ liệu phi cấu trúc** | Hợp đồng `ObjectStoragePort` và contract test (fake in-memory). | Adapter S3-compatible theo [ADR-016](08-decisions/ADR-016-s3-compatible-storage.md) (#192); tệp đính kèm Helpdesk là ứng dụng đầu tiên. |
 | **Cách ly module** | ArchUnit `CoreDependencyRulesTest`: Core không phụ thuộc Application/Infrastructure/JDBC; Identity, Workflow, Data không phụ thuộc chéo; có negative canary. | Luật cho Application/Gateway (#90); tách `HelpdeskService` khỏi infrastructure (#193). |
 | **Hợp đồng API** | Helpdesk 9 thao tác tại `/api/v1/mvp/requests`; `GET /api/v1/health`. | Đặc tả OpenAPI (#112); Capability/Application Contract (#191). |
-| **Ứng dụng** | IT Helpdesk (Golden Path). | Facility — hoãn sau hạn nộp (P3). |
+| **Ứng dụng** | IT Helpdesk (Golden Path). | Facility — hoãn sau cuộc thi ([ADR-017](08-decisions/ADR-017-helpdesk-first-scope.md)). |
 
 ### 3. Phân định trách nhiệm dữ liệu
 
 - **PostgreSQL (backend sở hữu):** trạng thái workflow (`PostgresWorkflowPersistence`) và dữ liệu Helpdesk; schema quản lý bằng Flyway. Hiện dùng chung một schema, chưa tách theo module.
 
-- **Lưu trữ đối tượng:** mới có hợp đồng `ObjectStoragePort`; chưa có nhà cung cấp chạy thật. ADR-007 (MinIO) đang được thay thế (#181).
+- **Lưu trữ đối tượng:** mới có hợp đồng `ObjectStoragePort`; chưa có nhà cung cấp chạy thật. ADR-007 (MinIO) đã được thay bằng [ADR-016](08-decisions/ADR-016-s3-compatible-storage.md).
 
 - **Keycloak:** quản lý danh tính người dùng; backend không lưu mật khẩu.
 
@@ -101,15 +101,15 @@ Các định hướng kiến trúc dưới đây được nhóm thống nhất �
 | ------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Backend             | Spring Boot Modular Monolith                                                                                  | Cấu trúc package/module và deployment thực tế                                      |
 | Core / Application  | Core cung cấp năng lực dùng chung; ứng dụng chứa chính sách nghiệp vụ                                         | Danh mục capability và quy tắc phụ thuộc cụ thể                                    |
-| Application         | **Hybrid Manifest-Driven:** manifest khai báo metadata/capabilities; **Java module** thực thi nghiệp vụ       | Schema manifest, validation, versioning và discovery/loading                       |
-| Workflow            | **Embedded Flowable**                                                                                         | BPMN definitions, adapter, migration, transaction, engine schema                   |
+| Application         | **Hybrid Manifest-Driven:** manifest khai báo metadata/capabilities; **Java module** thực thi nghiệp vụ — **sau cuộc thi** ([ADR-017](08-decisions/ADR-017-helpdesk-first-scope.md))       | Schema manifest, validation, versioning và discovery/loading                       |
+| Workflow            | **Embedded Flowable** — ACCEPTED ([ADR-009](08-decisions/ADR-009-modular-monolith-flowable.md))                                                                                         | BPMN definitions, adapter, migration, transaction, engine schema                   |
 | Module API          | **Published Java interfaces**                                                                                 | Danh sách interfaces được công bố và quy tắc compatibility                         |
 | Module isolation    | **Strict Module API + ArchUnit**                                                                              | Các ArchUnit rules thực tế và CI result                                            |
-| Dual contract       | **Capability Contract + Application Contract**                                                                | Schema/format, ownership, versioning và mapping ra HTTP/OpenAPI                    |
+| Dual contract       | **Capability Contract + Application Contract** — sau cuộc thi ([ADR-017](08-decisions/ADR-017-helpdesk-first-scope.md))                                                                | Schema/format, ownership, versioning và mapping ra HTTP/OpenAPI                    |
 | Contract governance | **Documentation + CI**                                                                                        | Check cụ thể: contract diff, link check, tests, breaking-change gate               |
-| Dữ liệu             | **Shared PostgreSQL, Module-Owned Schemas**; truy cập giới hạn bởi **database roles** và **module contracts** | Grant, migration theo module, kiểm thử từ chối cross-schema; nơi lưu bảng Flowable |
+| Dữ liệu             | **Shared PostgreSQL**; schema theo module **sau cuộc thi** ([ADR-016](08-decisions/ADR-016-s3-compatible-storage.md)); truy cập giới hạn bởi **database roles** và **module contracts** | Grant, migration theo module, kiểm thử từ chối cross-schema; nơi lưu bảng Flowable |
 | Identity            | **Keycloak** quản lý identity; **backend** quản lý tenant/resource authorization; có permission migration     | Cấu trúc tenant, kế thừa quyền, cơ chế migration                                   |
-| Lưu trữ             | **S3-compatible API** qua storage port/adapter                                                                | Nhà cung cấp, bucket layout, encryption, retention, ACL (#181, #192)               |
+| Lưu trữ             | **S3-compatible API** qua storage port/adapter — ACCEPTED ([ADR-016](08-decisions/ADR-016-s3-compatible-storage.md))                                                               | Nhà cung cấp, bucket layout, encryption, retention, ACL (#181, #192)               |
 
 **Hai loại hợp đồng:**
 
@@ -156,19 +156,19 @@ See the as-is diagram in the Vietnamese section. Key boundaries:
 | **Backend** | One Spring Boot application (`DxosApplication`), one Gradle project; `gateway`, `application`, `core`, `infrastructure` packages. | Modules and published Java APIs per the Modular Monolith target (#191). |
 | **Identity** | OAuth2 Resource Server; JWT validated for issuer, expiry, audience, subject, token type; canonical principal from issuer + subject. Portal BFF: OIDC, PKCE, session, CSRF, token relay. | E2E with a real Keycloak (#118); tenant model and permission migration (#191). |
 | **Authorization** | Technical authorities at the gateway (`WorkflowGatewayPrincipalGate`, `workflow:*`); resource/tenant authorization in application (`WorkflowAuthorization`, `TenantResourceWorkflowAccessPolicy`). | — |
-| **Workflow** | In-house `WorkflowRuntime` through `WorkflowPersistencePort`, persisted in PostgreSQL. | Embedded Flowable (#191); generic workflow API not registered in production (#115). |
-| **Gateway** | HTTP boundary handled by Spring Security in the backend. | Dedicated API Gateway capability (#116). |
-| **Structured data** | PostgreSQL 17 with Flyway migrations. | Module-owned schemas and database roles (#191). |
-| **Unstructured data** | `ObjectStoragePort` contract and contract tests (in-memory fake). | Production adapter via an S3-compatible API (#181, #192). |
+| **Workflow** | In-house `WorkflowRuntime` through `WorkflowPersistencePort`, persisted in PostgreSQL. | Embedded Flowable per [ADR-009](08-decisions/ADR-009-modular-monolith-flowable.md): gates G1–G4, go/no-go 2026-11-28; generic workflow API not registered in production (#115). |
+| **Gateway** | HTTP boundary handled by Spring Security in the backend. | Apache APISIX standalone per [ADR-018](08-decisions/ADR-018-apisix-api-gateway.md) (#116). |
+| **Structured data** | PostgreSQL 17 with Flyway migrations. | One shared schema until after the competition; per-module schemas afterwards ([ADR-016](08-decisions/ADR-016-s3-compatible-storage.md)). |
+| **Unstructured data** | `ObjectStoragePort` contract and contract tests (in-memory fake). | S3-compatible adapter per [ADR-016](08-decisions/ADR-016-s3-compatible-storage.md) (#192); Helpdesk attachments are the first consumer. |
 | **Module isolation** | ArchUnit `CoreDependencyRulesTest`: Core has no dependency on Application/Infrastructure/JDBC; Identity, Workflow and Data stay independent; includes a negative canary. | Rules for Application/Gateway (#90); move `HelpdeskService` out of infrastructure (#193). |
 | **API contracts** | Helpdesk's 9 operations at `/api/v1/mvp/requests`; `GET /api/v1/health`. | OpenAPI specification (#112); Capability/Application Contracts (#191). |
-| **Applications** | IT Helpdesk (Golden Path). | Facility — deferred past the deadline (P3). |
+| **Applications** | IT Helpdesk (Golden Path). | Facility — deferred until after the competition ([ADR-017](08-decisions/ADR-017-helpdesk-first-scope.md)). |
 
 ### 3. Data ownership
 
 - **PostgreSQL (backend-owned):** workflow state (`PostgresWorkflowPersistence`) and Helpdesk data, with Flyway-managed schema. A single shared schema today; not yet split per module.
 
-- **Object storage:** only the `ObjectStoragePort` contract exists; no running provider. ADR-007 (MinIO) is being superseded (#181).
+- **Object storage:** only the `ObjectStoragePort` contract exists; no running provider. ADR-007 (MinIO) is superseded by [ADR-016](08-decisions/ADR-016-s3-compatible-storage.md).
 
 - **Keycloak:** owns user identity; the backend stores no passwords.
 
@@ -220,15 +220,15 @@ The architecture directions below were agreed by the team at design level on 202
 | --- | --- | --- |
 | Backend | Spring Boot Modular Monolith | Package/module layout and actual deployment |
 | Core / Application | Reusable capabilities vs. business policies | Capability catalogue and concrete dependency rules |
-| Application | **Hybrid Manifest-Driven:** manifest declares metadata/capabilities; **Java modules** execute business logic | Manifest schema, validation, versioning, discovery/loading |
-| Workflow | **Embedded Flowable** | BPMN definitions, adapter, migration, transactions, engine schema |
+| Application | **Hybrid Manifest-Driven:** manifest declares metadata/capabilities; **Java modules** execute business logic — **after the competition** ([ADR-017](08-decisions/ADR-017-helpdesk-first-scope.md)) | Manifest schema, validation, versioning, discovery/loading |
+| Workflow | **Embedded Flowable** — ACCEPTED ([ADR-009](08-decisions/ADR-009-modular-monolith-flowable.md)) | BPMN definitions, adapter, migration, transactions, engine schema |
 | Module API | **Published Java interfaces** | Exported interface inventory and compatibility rules |
 | Module isolation | **Strict Module API + ArchUnit** | Actual ArchUnit rules and CI results |
-| Dual contracts | **Capability Contract + Application Contract** | Schema/format, ownership, versioning, HTTP/OpenAPI mapping |
+| Dual contracts | **Capability Contract + Application Contract** — after the competition ([ADR-017](08-decisions/ADR-017-helpdesk-first-scope.md)) | Schema/format, ownership, versioning, HTTP/OpenAPI mapping |
 | Contract governance | **Documentation + CI** | Concrete checks: contract diff, link check, tests, breaking-change gate |
-| Data | **Shared PostgreSQL, Module-Owned Schemas**; access limited by **database roles** and **module contracts** | Grants, per-module migrations, negative cross-schema tests; where Flowable tables live |
+| Data | **Shared PostgreSQL**; module-owned schemas **after the competition** ([ADR-016](08-decisions/ADR-016-s3-compatible-storage.md)); access limited by **database roles** and **module contracts** | Grants, per-module migrations, negative cross-schema tests; where Flowable tables live |
 | Identity | **Keycloak** owns identity; **backend** owns tenant/resource authorization; permission migration | Tenant structure, permission inheritance, migration mechanics |
-| Storage | **S3-compatible API** through a storage port/adapter | Provider, bucket layout, encryption, retention, ACL (#181, #192) |
+| Storage | **S3-compatible API** through a storage port/adapter — ACCEPTED ([ADR-016](08-decisions/ADR-016-s3-compatible-storage.md)) | Provider, bucket layout, encryption, retention, ACL (#181, #192) |
 
 **Two contract types:**
 

@@ -14,9 +14,9 @@ Files in this folder are **pre-Phase 3 records**, kept for design rationale. The
 | File | Trạng thái / Status | Hiện trạng ở / Current source |
 | --- | --- | --- |
 | [identity/identity-architecture.md](identity/identity-architecture.md) | Lịch sử / Historical | [ARCHITECTURE.md](../ARCHITECTURE.md), [API.md](../API.md) |
-| [gateway/gateway-architecture.md](gateway/gateway-architecture.md) | Lịch sử / Historical | [ARCHITECTURE.md](../ARCHITECTURE.md); APISIX `PROPOSED` (#116) |
-| [workflow/workflow-architecture.md](workflow/workflow-architecture.md) | `PENDING #191` | Engine nội bộ hay Flowable chưa chốt / internal engine vs Flowable undecided |
-| [data/data-architecture.md](data/data-architecture.md) | `PENDING #181` | MinIO hay S3-compatible chưa chốt / MinIO vs S3-compatible undecided |
-| [data/storage-adapters.md](data/storage-adapters.md) | `PENDING #181` | Như trên / As above |
+| [gateway/gateway-architecture.md](gateway/gateway-architecture.md) | Lịch sử / Historical | [ARCHITECTURE.md](../ARCHITECTURE.md); APISIX theo / per [ADR-018](../08-decisions/ADR-018-apisix-api-gateway.md) |
+| [workflow/workflow-architecture.md](workflow/workflow-architecture.md) | Lịch sử / Historical | Flowable theo / per [ADR-009](../08-decisions/ADR-009-modular-monolith-flowable.md) |
+| [data/data-architecture.md](data/data-architecture.md) | Lịch sử / Historical | S3-compatible theo / per [ADR-016](../08-decisions/ADR-016-s3-compatible-storage.md) |
+| [data/storage-adapters.md](data/storage-adapters.md) | Lịch sử / Historical | Như trên / As above |
 
 Không sửa, di chuyển hoặc xoá các file này trong Giai đoạn 3; phân loại theo [#195](https://github.com/tricore-opentrix/opentrix/issues/195). / Do not edit, move or delete these files in Phase 3; classification per #195.
