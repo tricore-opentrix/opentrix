@@ -27,7 +27,10 @@ function SessionPortal() {
   if (sessionExpired) return <Login />;
   return (
     <Routes>
-      <Route path="/mvp/helpdesk/*" element={<HelpdeskPortal />} />
+      <Route
+        path="/mvp/helpdesk/*"
+        element={<HelpdeskPortal mode="integration-local" />}
+      />
       <Route path="*" element={<Navigate to="/mvp/helpdesk" replace />} />
     </Routes>
   );

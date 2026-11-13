@@ -162,6 +162,14 @@ it.each([
   await waitFor(() => {
     expect(screen.queryByText("Đang kiểm tra phiên…")).not.toBeInTheDocument();
   });
+  expect(
+    await screen.findByText(/integration-local: backend thật qua BFF/),
+  ).toBeInTheDocument();
+  if (path.endsWith(helpdeskId))
+    expect(
+      await screen.findByText("IT Support · dữ liệu từ backend integration-local"),
+    ).toBeInTheDocument();
+  expect(screen.queryByText(/service kiểm thử|phiên kiểm thử/)).not.toBeInTheDocument();
   expect(screen.queryByText(/Cơ sở vật chất/i)).not.toBeInTheDocument();
   expect(screen.queryByRole("link", { name: /Facility/i })).not.toBeInTheDocument();
   expect(screen.queryByRole("radio", { name: /Facility|Cơ sở vật chất/i })).not.toBeInTheDocument();
