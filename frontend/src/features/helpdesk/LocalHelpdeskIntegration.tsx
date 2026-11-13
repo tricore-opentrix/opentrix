@@ -67,6 +67,10 @@ export default function LocalHelpdeskIntegration() {
     <main id="main-content" className="page">
       <header>
         <h1>DX-OS · Helpdesk integration local</h1>
+        <span className="environment" aria-label="Chế độ demo: integration-local">
+          <span />
+          integration-local
+        </span>
         <Link to="/mvp/helpdesk">Danh sách Helpdesk</Link>
       </header>
       {session === "loading" ? (
