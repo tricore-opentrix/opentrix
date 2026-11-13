@@ -10,17 +10,17 @@ Set-Location (Join-Path (git rev-parse --show-toplevel) 'infra')
 $compose = @('compose', '-f', 'compose.demo.yml')
 
 if (-not (Test-Path .env)) {
-    function R { [System.Security.Cryptography.RandomNumberGenerator]::GetHexString(32).ToLower() }
+    function New-DemoSecret { [System.Security.Cryptography.RandomNumberGenerator]::GetHexString(32).ToLower() }
     @(
         '# Sinh tự động bởi demo-up (#119). KHÔNG commit. Đổi mật khẩu/tên rồi chạy lại demo-up.'
-        "HELPDESK_SETUP_PASSWORD=$(R)"
-        "HELPDESK_RUNTIME_PASSWORD=$(R)"
-        "KEYCLOAK_ADMIN_PASSWORD=$(R)"
-        "PORTAL_OIDC_CLIENT_SECRET=$(R)"
-        "GATEWAY_MONITOR_CLIENT_SECRET=$(R)"
-        "DEMO_EMPLOYEE_PASSWORD=$(R)"
-        "DEMO_COORDINATOR_PASSWORD=$(R)"
-        "DEMO_WORKER_PASSWORD=$(R)"
+        "HELPDESK_SETUP_PASSWORD=$(New-DemoSecret)"
+        "HELPDESK_RUNTIME_PASSWORD=$(New-DemoSecret)"
+        "KEYCLOAK_ADMIN_PASSWORD=$(New-DemoSecret)"
+        "PORTAL_OIDC_CLIENT_SECRET=$(New-DemoSecret)"
+        "GATEWAY_MONITOR_CLIENT_SECRET=$(New-DemoSecret)"
+        "DEMO_EMPLOYEE_PASSWORD=$(New-DemoSecret)"
+        "DEMO_COORDINATOR_PASSWORD=$(New-DemoSecret)"
+        "DEMO_WORKER_PASSWORD=$(New-DemoSecret)"
         'DEMO_EMPLOYEE_NAME=Nhan vien demo'
         'DEMO_COORDINATOR_NAME=Dieu phoi demo'
         'DEMO_WORKER_NAME=Ky thuat vien demo'
