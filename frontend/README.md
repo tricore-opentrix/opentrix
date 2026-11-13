@@ -24,6 +24,8 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Chạy localhost
 
+**Demo #233 / Demo #233:** Tên sản phẩm là **IT Helpdesk · OpenTrix**; bản integration-local giữ badge môi trường và ẩn Workflow version khỏi giao diện. / The product is **IT Helpdesk · OpenTrix**; integration-local keeps its environment badge and hides the workflow version from the UI.
+
 Yêu cầu Node.js >= 22.12 (đã kiểm tra bằng Node 24.19.0), npm và trình duyệt hiện đại.
 
 ```powershell

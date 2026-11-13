@@ -222,9 +222,7 @@ describe("APP-14 Portal MVP presentation integration", () => {
     await user.click(
       await screen.findByRole("link", { name: /Sự cố phần mềm APP-14/ }),
     );
-    expect(await screen.findByTestId("mvp-state")).toHaveTextContent(
-      "SUBMITTED",
-    );
+    expect(await screen.findByTestId("mvp-state")).toHaveTextContent("SUBMITTED");
     expect(
       screen.queryByRole("form", { name: "Phân công xử lý" }),
     ).not.toBeInTheDocument();
@@ -242,7 +240,7 @@ describe("APP-14 Portal MVP presentation integration", () => {
         "1",
       ),
     );
-    expect(screen.getByTestId("mvp-version")).toHaveTextContent("2");
+    expect(screen.queryByTestId("mvp-version")).not.toBeInTheDocument();
     expect(fake.history).toHaveLength(1);
     await user.dblClick(screen.getByRole("button", { name: "Bắt đầu xử lý" }));
     await waitFor(() =>
@@ -268,7 +266,7 @@ describe("APP-14 Portal MVP presentation integration", () => {
     await waitFor(() =>
       expect(screen.getByTestId("mvp-state")).toHaveTextContent("CONFIRMED"),
     );
-    const history = screen.getByRole("region", { name: "Lịch sử Workflow" });
+    const history = screen.getByRole("region", { name: "Lịch sử xử lý" });
     expect(within(history).getAllByRole("listitem")).toHaveLength(4);
     expect(within(history).getByText("start_work")).toBeVisible();
     expect(history).not.toHaveTextContent(/actor|ghi chú|event.id/i);
@@ -496,7 +494,9 @@ describe("APP-14 Portal MVP presentation integration", () => {
     await userEvent
       .setup()
       .click(screen.getByRole("button", { name: "Tải lại dữ liệu" }));
-    expect(await screen.findByTestId("mvp-state")).toHaveTextContent("TRIAGED");
+    expect(await screen.findByTestId("mvp-state")).toHaveTextContent(
+      "TRIAGED",
+    );
     expect(transport).toHaveBeenCalledTimes(4);
   });
 
@@ -566,7 +566,12 @@ describe("APP-14 Portal MVP presentation integration", () => {
         screen.getByRole("button", { name: "Tải lại chi tiết và lịch sử" }),
       );
       await waitFor(() =>
-        expect(screen.getByTestId("mvp-version")).toHaveTextContent("12"),
+        expect(
+          screen.getByRole(
+            action === "assign" ? "combobox" : "button",
+            action === "assign" ? {} : { name },
+          ),
+        ).toBeEnabled(),
       );
       if (action === "assign")
         await user.selectOptions(screen.getByRole("combobox"), "choice-0");
@@ -576,6 +581,22 @@ describe("APP-14 Portal MVP presentation integration", () => {
       expect(
         transport.mock.calls.filter(([request]) => request.method === "POST"),
       ).toHaveLength(1);
+      // A deliberate second action must use the freshly loaded version.
+      await user.click(screen.getByRole("button", { name }));
+      await waitFor(() =>
+        expect(
+          transport.mock.calls.filter(([request]) => request.method === "POST"),
+        ).toHaveLength(2),
+      );
+      expect(
+        transport.mock.calls.filter(
+          ([request]) => request.method === "POST",
+        )[1][0].body,
+      ).toEqual(
+        action === "triage"
+          ? { expectedVersion: 12 }
+          : { assigneeId: "worker", expectedAssignmentVersion: 2 },
+      );
     },
   );
 
@@ -697,8 +718,17 @@ describe("APP-14 Portal MVP presentation integration", () => {
         "1",
       ),
     );
-    expect(screen.getByTestId("mvp-version")).toHaveTextContent("17");
+    expect(screen.queryByText(/Workflow version/)).not.toBeInTheDocument();
     expect(screen.getByText("fake-worker")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Bắt đầu xử lý" }));
+    await waitFor(() =>
+      expect(
+        fake.calls.filter((request) => request.method === "POST"),
+      ).toHaveLength(2),
+    );
+    expect(
+      fake.calls.filter((request) => request.method === "POST")[1].body,
+    ).toEqual({ expectedVersion: 17 });
   });
 
   it("never reads the injected service without the existing demo session", async () => {

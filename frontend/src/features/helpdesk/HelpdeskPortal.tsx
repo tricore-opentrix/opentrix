@@ -43,8 +43,7 @@ const COPY = {
     detail: "IT Support · dữ liệu từ service kiểm thử",
   },
   "integration-local": {
-    footnote:
-      "IT Helpdesk · integration-local: backend thật qua BFF và Keycloak, dữ liệu demo dùng một lần · chưa phải LIVE",
+    footnote: "Môi trường demo integration-local · dữ liệu dùng một lần",
     list: "Yêu cầu IT Support trong môi trường integration-local.",
     empty: "Tạo yêu cầu đầu tiên để bắt đầu.",
     create: "Dữ liệu demo dùng một lần; loại yêu cầu IT_HELPDESK.",
@@ -146,7 +145,7 @@ export function HelpdeskPortal({
           path="*"
           element={
             <Empty
-              title="Không tìm thấy trang MVP"
+              title="Không tìm thấy trang yêu cầu hỗ trợ IT"
               description="Chọn danh sách yêu cầu để tiếp tục."
             />
           }
@@ -167,10 +166,7 @@ function HelpdeskList({ service }: { service: MvpHelpdeskRequestPort }) {
   const read = useHelpdeskRead(load);
   return (
     <>
-      <PageHeading
-        title="IT Helpdesk MVP"
-        description={copy.list}
-      >
+      <PageHeading title="Yêu cầu hỗ trợ IT" description={copy.list}>
         <Link className="button primary" to={`${ROOT}/new`}>
           Tạo yêu cầu IT
         </Link>
@@ -191,14 +187,11 @@ function HelpdeskList({ service }: { service: MvpHelpdeskRequestPort }) {
         ) : read.error ? (
           <ErrorState message={read.error} onRetry={read.reload} />
         ) : !read.data?.items.length ? (
-          <Empty
-            title="Chưa có yêu cầu IT"
-            description={copy.empty}
-          />
+          <Empty title="Chưa có yêu cầu IT" description={copy.empty} />
         ) : (
           <div className="table-scroll">
             <table>
-              <caption className="sr-only">Yêu cầu IT Helpdesk MVP</caption>
+              <caption className="sr-only">Yêu cầu hỗ trợ IT</caption>
               <thead>
                 <tr>
                   <th>Yêu cầu</th>
@@ -288,10 +281,7 @@ function HelpdeskCreate({ service }: { service: MvpHelpdeskRequestPort }) {
       <Link className="back-link" to={ROOT}>
         Danh sách yêu cầu IT
       </Link>
-      <PageHeading
-        title="Tạo yêu cầu IT Support"
-        description={copy.create}
-      />
+      <PageHeading title="Tạo yêu cầu IT Support" description={copy.create} />
       <div className="form-layout">
         <form
           className="panel request-form"
@@ -470,10 +460,7 @@ function HelpdeskDetail({
               </>
             )}
           </section>
-          <section
-            className="panel detail-timeline"
-            aria-label="Lịch sử Workflow"
-          >
+          <section className="panel detail-timeline" aria-label="Lịch sử xử lý">
             <div className="panel-heading">
               <h2>Lịch sử xử lý</h2>
             </div>
@@ -495,7 +482,6 @@ function HelpdeskDetail({
                       <p>
                         {entry.sourceState} → {entry.targetState}
                       </p>
-                      <p>Workflow version: {entry.version}</p>
                     </div>
                   </li>
                 ))}
@@ -509,10 +495,8 @@ function HelpdeskDetail({
               <h2>Thông tin yêu cầu</h2>
             </div>
             <dl>
-              <dt>Trạng thái Workflow</dt>
+              <dt>Trạng thái</dt>
               <dd data-testid="mvp-state">{detail.state}</dd>
-              <dt>Workflow version</dt>
-              <dd data-testid="mvp-version">{detail.version}</dd>
               <dt>Assignment version</dt>
               <dd data-testid="mvp-assignment-version">
                 {detail.assignmentVersion ?? "Chưa được cung cấp"}
@@ -542,7 +526,7 @@ function HelpdeskDetail({
               <p>Không có thao tác được service cung cấp.</p>
             )}
             <fieldset disabled={blocked}>
-              <legend className="sr-only">Workflow actions</legend>
+              <legend className="sr-only">Thao tác trạng thái</legend>
               {actions.includes("resolve") && (
                 <label className="field">
                   Kết quả xử lý

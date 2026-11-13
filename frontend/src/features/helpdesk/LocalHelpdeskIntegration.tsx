@@ -69,7 +69,7 @@ export default function LocalHelpdeskIntegration() {
   return (
     <main id="main-content" className="page">
       <header>
-        <h1>DX-OS · Helpdesk integration local</h1>
+        <h1>IT Helpdesk · OpenTrix</h1>
         <span className="environment" aria-label="Chế độ demo: integration-local">
           <span />
           integration-local

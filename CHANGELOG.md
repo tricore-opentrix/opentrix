@@ -17,6 +17,7 @@ User-visible DX-OS Open Core changes are recorded here. The format follows
 
 ### Changed
 
+- Portal #233: use IT Helpdesk · OpenTrix branding and simpler request/version copy.
 - R26: Prepare OpenTrix canonical repository identity and update organization links, documentation and setup defaults after the existing repository rename; independent post-cutover acceptance remains pending.
 
 ## [0.2.0] - 2026-11-07
