@@ -43,9 +43,9 @@ say "3/4 Labels (area:* and prio:p0)"
 label() { run gh label create "$1" --repo "$REPO" --color "$2" --description "$3" --force; }
 label "area:identity" "1d76db" "Identity Core and Keycloak authentication"
 label "area:gateway" "1d76db" "API Gateway, APISIX, and BFF"
-label "area:workflow" "d93f0b" "Workflow Core, outbox, and Node-RED"
-label "area:data" "d93f0b" "PostgreSQL, MinIO, and Metabase"
-label "area:portal" "0e8a16" "IT Helpdesk and Facility portal"
+label "area:workflow" "d93f0b" "Workflow Core and embedded Flowable engine"
+label "area:data" "d93f0b" "PostgreSQL and S3-compatible object storage"
+label "area:portal" "0e8a16" "IT Helpdesk portal"
 label "area:site" "0e8a16" "Public website, blog, and API documentation"
 label "area:infra" "5319e7" "Compose, CI, and deployment"
 label "area:comms" "fbca04" "Communications, surveys, and reporting"
@@ -68,8 +68,8 @@ milestone() {
 }
 milestone "v0.1.0" "2026-11-04T16:59:59Z" "Initial Core and IT Helpdesk release on main, passing CI, Apache-2.0"
 milestone "v0.2.0" "2026-11-15T16:59:59Z" "Single-command Compose, APISIX, HTTPS, browser authentication"
-milestone "v0.3.0" "2026-11-22T16:59:59Z" "Live pilot, MinIO, Platform API"
-milestone "v0.4.0" "2026-11-29T16:59:59Z" "Facility through API, outbox to Node-RED, Metabase"
+milestone "v0.3.0" "2026-11-22T16:59:59Z" "Live pilot, S3-compatible storage, Platform API"
+milestone "v0.4.0" "2026-11-29T16:59:59Z" "Helpdesk integration hardening, E2E verification, and competition readiness"
 milestone "v1.0.0" "2026-12-05T16:59:59Z" "OLP PMNM 2026 submission"
 echo "Move issues from old M1-M4 milestones to release milestones, then close M1-M4 manually."
 
