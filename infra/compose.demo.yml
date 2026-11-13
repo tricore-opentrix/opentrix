@@ -1,0 +1,152 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+
+# Demo stack vòng trường 19/11 (#119), chế độ integration-local.
+# Chạy bằng infra/demo/demo-up.ps1 (Windows) hoặc infra/demo/demo-up.sh (Linux/macOS).
+# D1: mọi service dùng chung network namespace của "postgres" và gọi nhau qua 127.0.0.1,
+# vì backend/BFF chỉ chấp nhận DB và backend ở loopback. Chỉ mở ra máy: 8443, 8180.
+# APISIX (9080) là overlay riêng: infra/compose.gateway.yml (#116).
+name: opentrix-demo
+
+x-loopback: &loopback
+  network_mode: "service:postgres"
+
+services:
+  postgres:
+    image: postgres:17.11-alpine
+    command: ["postgres", "-c", "listen_addresses=127.0.0.1"]
+    environment:
+      POSTGRES_DB: helpdesk_disposable_demo
+      POSTGRES_USER: helpdesk_setup
+      POSTGRES_PASSWORD: ${HELPDESK_SETUP_PASSWORD:?chay demo-up truoc}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    ports:
+      - "127.0.0.1:8443:8443"   # ingress (Caddy + Portal)
+      - "127.0.0.1:8180:8180"   # Keycloak (issuer cho trình duyệt)
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U helpdesk_setup -d helpdesk_disposable_demo"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+
+  db-init:
+    <<: *loopback
+    image: postgres:17.11-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["sh", "/init/db-init.sh"]
+    environment:
+      PGPASSWORD: ${HELPDESK_SETUP_PASSWORD}
+      HELPDESK_RUNTIME_PASSWORD: ${HELPDESK_RUNTIME_PASSWORD:?chay demo-up truoc}
+      DEMO_EMPLOYEE_NAME: ${DEMO_EMPLOYEE_NAME:-Nhan vien demo}
+      DEMO_COORDINATOR_NAME: ${DEMO_COORDINATOR_NAME:-Dieu phoi demo}
+      DEMO_WORKER_NAME: ${DEMO_WORKER_NAME:-Ky thuat vien demo}
+    volumes:
+      - ./demo/init/db-init.sh:/init/db-init.sh:ro
+      - ../backend/src/main/resources/db:/sql:ro
+    restart: "no"
+
+  keycloak:
+    <<: *loopback
+    image: quay.io/keycloak/keycloak:26.8.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?chay demo-up truoc}
+      KC_HTTP_PORT: "8180"
+      KC_HOSTNAME: http://localhost:8180
+      KC_HTTP_MANAGEMENT_PORT: "9001"
+      JAVA_OPTS_KC_HEAP: -Xmx512m
+    volumes:
+      - ./keycloak/tricore-realm.json:/opt/keycloak/data/import/tricore-realm.json:ro
+
+  kc-init:
+    <<: *loopback
+    image: quay.io/keycloak/keycloak:26.8.0
+    depends_on:
+      keycloak:
+        condition: service_started
+    entrypoint: ["bash", "/init/kc-init.sh"]
+    environment:
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      PORTAL_OIDC_CLIENT_SECRET: ${PORTAL_OIDC_CLIENT_SECRET:?chay demo-up truoc}
+      GATEWAY_MONITOR_CLIENT_SECRET: ${GATEWAY_MONITOR_CLIENT_SECRET:?chay demo-up truoc}
+      DEMO_EMPLOYEE_PASSWORD: ${DEMO_EMPLOYEE_PASSWORD:?chay demo-up truoc}
+      DEMO_COORDINATOR_PASSWORD: ${DEMO_COORDINATOR_PASSWORD:?chay demo-up truoc}
+      DEMO_WORKER_PASSWORD: ${DEMO_WORKER_PASSWORD:?chay demo-up truoc}
+    volumes:
+      - ./demo/init/kc-init.sh:/init/kc-init.sh:ro
+    restart: "no"
+
+  backend:
+    <<: *loopback
+    build:
+      context: ..
+      dockerfile: infra/demo/backend.Dockerfile
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      kc-init:
+        condition: service_completed_successfully
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx512m
+      SERVER_ADDRESS: 127.0.0.1
+      SERVER_PORT: "8080"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://127.0.0.1:5432/helpdesk_disposable_demo?currentSchema=helpdesk_demo,pg_catalog,pg_temp
+      SPRING_DATASOURCE_USERNAME: helpdesk_runtime_demo
+      SPRING_DATASOURCE_PASSWORD: ${HELPDESK_RUNTIME_PASSWORD}
+      SPRING_FLYWAY_ENABLED: "false"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      DXOS_WORKFLOW_SCHEMA: helpdesk_demo
+      DXOS_HELPDESK_ENABLED: "true"
+      DXOS_HELPDESK_JDBCURL: jdbc:postgresql://127.0.0.1:5432/helpdesk_disposable_demo
+      DXOS_HELPDESK_USERNAME: helpdesk_runtime_demo
+      DXOS_HELPDESK_PASSWORD: ${HELPDESK_RUNTIME_PASSWORD}
+      DXOS_HELPDESK_SCHEMA: helpdesk_demo
+      DXOS_HELPDESK_TENANT: demo
+      WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE: "true"
+      OIDC_ISSUER_URI: http://localhost:8180/realms/tricore
+      OIDC_AUDIENCE: tricore-api
+      OIDC_RESOURCE_CLIENT_ID: tricore-api
+    restart: on-failure:5
+
+  portal-bff:
+    <<: *loopback
+    build:
+      context: ..
+      dockerfile: infra/demo/portal-bff.Dockerfile
+    depends_on:
+      kc-init:
+        condition: service_completed_successfully
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx384m
+      SERVER_ADDRESS: 127.0.0.1
+      SERVER_PORT: "8081"
+      PORTAL_PUBLIC_ORIGIN: https://localhost:8443
+      PORTAL_OIDC_REDIRECT_URI: https://localhost:8443/login/oauth2/code/keycloak
+      PORTAL_OIDC_ISSUER_URI: http://localhost:8180/realms/tricore
+      PORTAL_OIDC_CLIENT_ID: dxos-portal-bff-local
+      PORTAL_OIDC_CLIENT_SECRET: ${PORTAL_OIDC_CLIENT_SECRET}
+      # Không APISIX: backend trực tiếp. Overlay #116 đổi thành http://127.0.0.1:9080.
+      PORTAL_BACKEND_BASE_URL: ${PORTAL_BACKEND_BASE_URL:-http://127.0.0.1:8080}
+    restart: on-failure:5
+
+  ingress:
+    <<: *loopback
+    build:
+      context: ..
+      dockerfile: infra/demo/ingress.Dockerfile
+    depends_on:
+      - portal-bff
+    volumes:
+      - caddydata:/data
+
+volumes:
+  pgdata:
+  caddydata:
