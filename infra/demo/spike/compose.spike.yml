@@ -1,0 +1,63 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+
+# Spike D1 (#119): một network namespace dùng chung. Không dùng cho demo thật.
+name: opentrix-spike
+services:
+  postgres:
+    image: postgres:17.11-alpine
+    command: ["postgres", "-c", "listen_addresses=127.0.0.1"]
+    environment:
+      POSTGRES_DB: helpdesk_disposable_demo
+      POSTGRES_USER: helpdesk_setup
+      POSTGRES_PASSWORD: ${HELPDESK_SETUP_PASSWORD:?chay spike-up.sh}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    ports:
+      - "127.0.0.1:8180:8180"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U helpdesk_setup -d helpdesk_disposable_demo"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.0
+    network_mode: "service:postgres"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["start-dev"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?chay spike-up.sh}
+      KC_HTTP_PORT: "8180"
+      KC_HOSTNAME: http://localhost:8180
+
+  backend:
+    build:
+      context: ../../..
+      dockerfile: infra/demo/spike/backend.Dockerfile
+    network_mode: "service:postgres"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx512m
+      SERVER_ADDRESS: 127.0.0.1
+      SERVER_PORT: "8080"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://127.0.0.1:5432/helpdesk_disposable_demo?currentSchema=helpdesk_demo,pg_catalog,pg_temp
+      SPRING_DATASOURCE_USERNAME: helpdesk_runtime_demo
+      SPRING_DATASOURCE_PASSWORD: ${HELPDESK_RUNTIME_PASSWORD:?chay spike-up.sh}
+      SPRING_FLYWAY_ENABLED: "false"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      DXOS_WORKFLOW_SCHEMA: helpdesk_demo
+      DXOS_HELPDESK_ENABLED: "true"
+      DXOS_HELPDESK_JDBCURL: jdbc:postgresql://127.0.0.1:5432/helpdesk_disposable_demo
+      DXOS_HELPDESK_USERNAME: helpdesk_runtime_demo
+      DXOS_HELPDESK_PASSWORD: ${HELPDESK_RUNTIME_PASSWORD:?chay spike-up.sh}
+      DXOS_HELPDESK_SCHEMA: helpdesk_demo
+      DXOS_HELPDESK_TENANT: demo
+      WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE: "true"
+      OIDC_ISSUER_URI: http://localhost:8180/realms/tricore
+      OIDC_AUDIENCE: tricore-api
+      OIDC_RESOURCE_CLIENT_ID: tricore-api
