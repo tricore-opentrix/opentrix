@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+# Ingress demo (#119). Dựa trên portal-bff/Caddyfile.local; khác: đọc Portal từ /srv/portal
+# và nghe trong namespace chung (máy host chỉ publish 127.0.0.1:8443).
+{
+	auto_https disable_redirects
+	servers {
+		strict_sni_host on
+	}
+}
+
+https://localhost:8443 {
+	tls internal
+
+	@bff path /bff/* /oauth2/authorization/* /login/oauth2/code/*
+	handle @bff {
+		reverse_proxy 127.0.0.1:8081 {
+			header_up -Forwarded
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Host localhost:8443
+			header_up X-Forwarded-Proto https
+		}
+	}
+
+	# Không bao giờ mở API Java riêng qua ingress của trình duyệt.
+	handle /api/* {
+		respond 404
+	}
+
+	handle {
+		root * /srv/portal
+		try_files {path} /index.html
+		file_server
+	}
+}
