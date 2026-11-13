@@ -40,6 +40,7 @@ print(ok(c.get("iss")=="http://localhost:8180/realms/tricore"),"iss =",c.get("is
 print(ok(c.get("sub")=="da54a88a-83cb-4e2f-9f52-71ef6d94641b"),"sub =",c.get("sub"))
 print(ok("tricore-api" in aud),"aud =",aud)
 print(ok(sorted(roles)==["workflow:read"]),"resource_access.tricore-api.roles =",roles)
+sys.exit(0 if c.get("iss")=="http://localhost:8180/realms/tricore" and c.get("sub")=="da54a88a-83cb-4e2f-9f52-71ef6d94641b" and "tricore-api" in aud and sorted(roles)==["workflow:read"] else 1)
 PY
 
 echo "== 4. seed actor monitor (thanh vien tenant demo, khong co quyen nghiep vu)"
@@ -55,6 +56,6 @@ COMMIT;
 SQL
 
 echo "== 5. goi API voi token (mong doi 200)"
-$C exec -T -e TOKEN="$TOKEN" postgres sh -c 'wget -S -O - --header "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/mvp/requests 2>&1 | grep -E "HTTP/|^\[|^\{" | head -3'
+$C exec -T -e TOKEN="$TOKEN" postgres sh -c 'wget -S -O - --header "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/mvp/requests 2>&1 | grep -E "HTTP/|^\[|^\{" | head -3' | tee /dev/stderr | grep 'HTTP/1.1 200' >/dev/null || { echo 'FAIL: mong doi 200' >&2; exit 1; }
 echo "== 6. ghi (POST) voi token monitor (mong doi 403)"
-$C exec -T -e TOKEN="$TOKEN" postgres sh -c 'wget -S -O /dev/null --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --post-data "{\"title\":\"x\",\"description\":\"y\",\"requestType\":\"IT_HELPDESK\"}" http://127.0.0.1:8080/api/v1/mvp/requests 2>&1 | grep -m1 "HTTP/"' || true
+$C exec -T -e TOKEN="$TOKEN" postgres sh -c 'wget -S -O /dev/null --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --post-data "{\"title\":\"x\",\"description\":\"y\",\"requestType\":\"IT_HELPDESK\"}" http://127.0.0.1:8080/api/v1/mvp/requests 2>&1 | grep -m1 "HTTP/"' | tee /dev/stderr | grep 'HTTP/1.1 403' >/dev/null || { echo 'FAIL: mong doi 403' >&2; exit 1; }
