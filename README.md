@@ -61,9 +61,9 @@ See the architecture overview above and the repository's `docs/` directory for a
 ## Core Capabilities
 
 - **Identity / SSO:** OIDC trust and authority contracts, with verified security regressions. Portal BFF has PKCE/session/CSRF implementation; live three-principal Keycloak/browser acceptance remains outstanding.
-- **API Gateway:** Spring Boot business API boundary, verified principal checks, exact Workflow authorization and scoped error contracts. APISIX is a selected target, not a verified deployed runtime.
+- **API Gateway:** Spring Boot business API boundary, verified principal checks, exact Workflow authorization and scoped error contracts. APISIX is the accepted gateway ([ADR-018](docs/08-decisions/ADR-018-apisix-api-gateway.md)), not yet a verified deployed runtime.
 - **Workflow:** Provider-neutral definitions, instances, transition/version/history contracts, and PostgreSQL-backed Helpdesk integration. Workflow Core is an in-house state machine; no external BPMN engine is used.
-- **Data Management:** PostgreSQL 17 Helpdesk/Workflow persistence and negative transaction checks. MinIO/object-storage provider integration is not a completed v0.1.0 capability.
+- **Data Management:** PostgreSQL 17 Helpdesk/Workflow persistence and negative transaction checks. Object storage uses an S3-compatible API ([ADR-016](docs/08-decisions/ADR-016-s3-compatible-storage.md), replacing the earlier MinIO direction); no provider adapter is completed yet.
 
 ## Implementation Status
 
@@ -76,7 +76,7 @@ This table summarizes the **v0.1.0 source and tested scope** after PR #103 on `m
 | Portal BFF | OIDC PKCE, server-side session, CSRF and Helpdesk API client | Live browser full-stack acceptance pending |
 | React Portal | Standalone MOCK UI and `integration-local` build mode | MOCK is not proof of connected LIVE runtime |
 | Workflow / Data | Core contracts, PostgreSQL 17-backed Helpdesk/Workflow tests and ArchUnit rules | Deferred provider, privilege and audit checks remain |
-| Reuse / Storage | Core reuse contracts; Facility appears as a request type in the MOCK Portal | Facility E2E and MinIO adapter not accepted |
+| Reuse / Storage | Core reuse contracts; Facility appears as a request type in the MOCK Portal | Facility deferred ([ADR-017](docs/08-decisions/ADR-017-helpdesk-first-scope.md)); S3-compatible adapter not accepted |
 
 ### Historical test checkpoint
 
@@ -94,7 +94,7 @@ On **October 7, 2026**, at commit **`2b51a41`**, documentation recorded **29 Wor
 | Frontend | React 19, TypeScript, Vite; MOCK and integration-local builds |
 | Deployment | Requires commit-specific operational and acceptance evidence |
 
-Keycloak is the selected OIDC provider; APISIX (gateway), MinIO (object storage) and Node-RED (event automation) are planned for v0.2.0–v0.4.0.
+Keycloak is the selected OIDC provider. Accepted targets: APISIX gateway ([ADR-018](docs/08-decisions/ADR-018-apisix-api-gateway.md)), embedded Flowable workflow ([ADR-009](docs/08-decisions/ADR-009-modular-monolith-flowable.md)) and S3-compatible object storage ([ADR-016](docs/08-decisions/ADR-016-s3-compatible-storage.md)). Node-RED and Superset are deferred until after the competition ([ADR-017](docs/08-decisions/ADR-017-helpdesk-first-scope.md)).
 
 ## Run v0.1.0
 
@@ -135,7 +135,7 @@ Start Backend, BFF and the configured local HTTPS ingress **following the BFF ru
 
 - The MOCK Portal is a demonstration, not a live application or security acceptance.
 - The full Keycloak/PKCE browser login, three-persona Helpdesk E2E flow and clean-install release acceptance require R12 evidence.
-- Facility workflow runtime reuse, APISIX edge runtime, MinIO storage and production deployment are not claimed as completed v0.1.0 features.
+- Facility workflow runtime reuse, APISIX edge runtime, S3-compatible storage and production deployment are not claimed as completed v0.1.0 features.
 - Focused PostgreSQL 17 R10 passed with two documented skips; deferred database/provider audits and third-party SPDX/license review are tracked separately.
 
 ## Getting Started

@@ -268,7 +268,7 @@ CI ([ci.yml](../.github/workflows/ci.yml)): `backend`, `portal-bff`, `frontend`,
 | Mục | Issue |
 |---|---|
 | Nghiệm thu trình duyệt Keycloak → BFF → Backend → PostgreSQL | PROPOSED ([#118](https://github.com/tricore-opentrix/opentrix/issues/118)) |
-| Quyết định object storage thay thế MinIO (chưa có adapter production) | PROPOSED ([#181](https://github.com/tricore-opentrix/opentrix/issues/181)) |
+| Quyết định object storage thay thế MinIO (chưa có adapter production) | ACCEPTED ([ADR-016](08-decisions/ADR-016-s3-compatible-storage.md)); adapter: [#192](https://github.com/tricore-opentrix/opentrix/issues/192) |
 | Kiểm chứng OpenAPI tại runtime | PROPOSED ([#112](https://github.com/tricore-opentrix/opentrix/issues/112), theo báo cáo Block C) |
 | Xác minh nguồn gốc/quyền tác giả | PROPOSED ([#138](https://github.com/tricore-opentrix/opentrix/issues/138)) |
 | Tích hợp Flowable (engine hiện tại là `WorkflowRuntime` tự viết) | PROPOSED ([#191](https://github.com/tricore-opentrix/opentrix/issues/191)) |
@@ -555,7 +555,7 @@ CI ([ci.yml](../.github/workflows/ci.yml)): `backend`, `portal-bff`, `frontend`,
 | Item | Issue |
 |---|---|
 | Browser acceptance Keycloak → BFF → Backend → PostgreSQL | PROPOSED ([#118](https://github.com/tricore-opentrix/opentrix/issues/118)) |
-| Object-storage decision replacing MinIO (no production adapter yet) | PROPOSED ([#181](https://github.com/tricore-opentrix/opentrix/issues/181)) |
+| Object-storage decision replacing MinIO (no production adapter yet) | ACCEPTED ([ADR-016](08-decisions/ADR-016-s3-compatible-storage.md)); adapter: [#192](https://github.com/tricore-opentrix/opentrix/issues/192) |
 | Runtime OpenAPI verification | PROPOSED ([#112](https://github.com/tricore-opentrix/opentrix/issues/112), per the Block C report) |
 | Source-origin/rights verification | PROPOSED ([#138](https://github.com/tricore-opentrix/opentrix/issues/138)) |
 | Flowable integration (the current engine is the in-house `WorkflowRuntime`) | PROPOSED ([#191](https://github.com/tricore-opentrix/opentrix/issues/191)) |

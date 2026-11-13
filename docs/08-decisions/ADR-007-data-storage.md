@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # ADR-007 - MVP object storage provider
 
-**Status:** ACCEPTED architecture direction; implementation and integration acceptance PENDING
+**Status:** SUPERSEDED by [ADR-016](ADR-016-s3-compatible-storage.md) on 2026-11-13 (previously: ACCEPTED architecture direction; implementation and integration acceptance PENDING)
 **Decision date:** 2026-10-28
 
 ## Context and decision
