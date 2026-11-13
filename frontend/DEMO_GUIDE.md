@@ -47,4 +47,4 @@ Mở Trạng thái tích hợp và bấm **Kiểm tra chặn LIVE**. Nêu rõ:
 - Identity/Gateway/Workflow chờ security gate #22/#23/#24; API contract chờ #37; attachments chờ API có kiểm quyền #26.
 - Chỉ khi có HTTP end-to-end thật sau security review mới đánh giá DoD của Issue #39. **Giữ Issue OPEN.**
 
-Các screenshot trong [evidence](../docs/evidence/issue39-portal/README.md) được tạo bằng browser automation trên localhost, không phải mockup hình ảnh.
+Hướng dẫn kiểm thử Portal MOCK và lưu bằng chứng xem [TESTING.md](../docs/TESTING.md); tài liệu hướng dẫn không thay thế screenshot hoặc log của lần chạy thực tế và không chứng minh LIVE E2E.
