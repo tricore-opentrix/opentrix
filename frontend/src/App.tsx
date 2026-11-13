@@ -231,9 +231,9 @@ function Layout() {
               />
               <kbd>↵</kbd>
             </form>
-            <span className="environment">
+            <span className="environment" aria-label="Chế độ demo: MOCK">
               <span />
-              MOCK / DEVELOPMENT
+              MOCK
             </span>
             <Link
               className="icon-button help-link"
