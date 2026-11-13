@@ -8,6 +8,7 @@ ISS="http://localhost:8180/realms/tricore"
 EMP=d2a43dd7-e129-46f9-b09a-eccde2cde032
 COO=6afab46d-b455-41e7-a1cb-a2ec6d4841de
 WRK=b79f9591-e3bf-4428-a69b-06b523a5564a
+MON=da54a88a-83cb-4e2f-9f52-71ef6d94641b
 
 b64u() { printf '%s' "$1" | base64 | tr -d '\n=' | tr '+/' '-_'; }
 actor() { echo "oidc:$(b64u "$ISS").$(b64u "$1")"; }
@@ -51,7 +52,7 @@ $PSQL <<SQL
 BEGIN;
 SET LOCAL ROLE helpdesk_owner_demo;
 INSERT INTO helpdesk_demo.tenant_memberships VALUES
-  ('demo','$(actor $EMP)',true), ('demo','$(actor $COO)',true), ('demo','$(actor $WRK)',true)
+  ('demo','$(actor $EMP)',true), ('demo','$(actor $COO)',true), ('demo','$(actor $WRK)',true), ('demo','$(actor $MON)',true)
   ON CONFLICT DO NOTHING;
 INSERT INTO helpdesk_demo.helpdesk_actors (tenant_id,actor_id,submitter,coordinator,worker,display_name) VALUES
   ('demo','$(actor $EMP)',true,false,false,'$(q "$DEMO_EMPLOYEE_NAME")'),
