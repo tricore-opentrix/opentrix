@@ -13,7 +13,7 @@ Một lệnh dựng PostgreSQL 17, Keycloak (realm `tricore`), backend, Portal B
 
 | Hệ điều hành | Lệnh (tại thư mục gốc repo) |
 |---|---|
-| Windows (PowerShell 7) | `pwsh infra/demo/demo-up.ps1` (thêm `-TrustCa` lần đầu) |
+| Windows (PowerShell **7.4+**) | `pwsh infra/demo/demo-up.ps1` (thêm `-TrustCa` lần đầu) |
 | Linux / macOS | `bash infra/demo/demo-up.sh` |
 
 Lần đầu script sinh `infra/.env` (đã nằm trong `.gitignore`) gồm mật khẩu DB, secret client và mật khẩu 3 tài khoản demo. Muốn đổi mật khẩu hoặc tên hiển thị: sửa `infra/.env` rồi chạy lại `demo-up`.
