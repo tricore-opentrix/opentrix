@@ -1,0 +1,215 @@
+{
+  "realm": "tricore",
+  "enabled": true,
+  "displayName": "OpenTrix demo (integration-local)",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "rememberMe": false,
+  "loginWithEmailAllowed": false,
+  "duplicateEmailsAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "roles": {
+    "client": {
+      "tricore-api": [
+        {
+          "name": "workflow:create",
+          "description": "Workflow authority read by the backend from resource_access.tricore-api.roles"
+        },
+        {
+          "name": "workflow:activate",
+          "description": "Workflow authority read by the backend from resource_access.tricore-api.roles"
+        },
+        {
+          "name": "workflow:transition",
+          "description": "Workflow authority read by the backend from resource_access.tricore-api.roles"
+        },
+        {
+          "name": "workflow:read",
+          "description": "Workflow authority read by the backend from resource_access.tricore-api.roles"
+        }
+      ]
+    }
+  },
+  "clients": [
+    {
+      "clientId": "tricore-api",
+      "name": "OpenTrix backend API (resource)",
+      "enabled": true,
+      "bearerOnly": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": false,
+      "redirectUris": [],
+      "webOrigins": []
+    },
+    {
+      "clientId": "dxos-portal-bff-local",
+      "name": "OpenTrix Portal BFF",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": false,
+      "redirectUris": [
+        "https://localhost:8443/login/oauth2/code/keycloak"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "https://localhost:8443/"
+      },
+      "protocolMappers": [
+        {
+          "name": "audience-tricore-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "tricore-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "basic",
+        "roles",
+        "profile",
+        "web-origins",
+        "acr"
+      ],
+      "optionalClientScopes": []
+    },
+    {
+      "clientId": "gateway-monitor",
+      "name": "Gateway smoke monitor (service account, read-only)",
+      "description": "Used only by scripts/gateway-smoke.ps1. Secret is set at runtime from .env.",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "fullScopeAllowed": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "protocolMappers": [
+        {
+          "name": "audience-tricore-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "tricore-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "basic",
+        "roles",
+        "profile",
+        "web-origins",
+        "acr"
+      ],
+      "optionalClientScopes": []
+    }
+  ],
+  "clientScopeMappings": {
+    "tricore-api": [
+      {
+        "client": "dxos-portal-bff-local",
+        "roles": [
+          "workflow:create",
+          "workflow:activate",
+          "workflow:transition",
+          "workflow:read"
+        ]
+      },
+      {
+        "client": "gateway-monitor",
+        "roles": [
+          "workflow:read"
+        ]
+      }
+    ]
+  },
+  "users": [
+    {
+      "id": "d2a43dd7-e129-46f9-b09a-eccde2cde032",
+      "username": "employee-demo",
+      "enabled": true,
+      "emailVerified": false,
+      "firstName": "Employee",
+      "lastName": "Demo",
+      "requiredActions": [],
+      "realmRoles": [],
+      "clientRoles": {
+        "tricore-api": [
+          "workflow:create",
+          "workflow:activate",
+          "workflow:read",
+          "workflow:transition"
+        ]
+      }
+    },
+    {
+      "id": "6afab46d-b455-41e7-a1cb-a2ec6d4841de",
+      "username": "coordinator-demo",
+      "enabled": true,
+      "emailVerified": false,
+      "firstName": "Coordinator",
+      "lastName": "Demo",
+      "requiredActions": [],
+      "realmRoles": [],
+      "clientRoles": {
+        "tricore-api": [
+          "workflow:read",
+          "workflow:transition"
+        ]
+      }
+    },
+    {
+      "id": "b79f9591-e3bf-4428-a69b-06b523a5564a",
+      "username": "worker-demo",
+      "enabled": true,
+      "emailVerified": false,
+      "firstName": "Worker",
+      "lastName": "Demo",
+      "requiredActions": [],
+      "realmRoles": [],
+      "clientRoles": {
+        "tricore-api": [
+          "workflow:read",
+          "workflow:transition"
+        ]
+      }
+    },
+    {
+      "id": "da54a88a-83cb-4e2f-9f52-71ef6d94641b",
+      "username": "service-account-gateway-monitor",
+      "enabled": true,
+      "serviceAccountClientId": "gateway-monitor",
+      "realmRoles": [],
+      "clientRoles": {
+        "tricore-api": [
+          "workflow:read"
+        ]
+      }
+    }
+  ]
+}
