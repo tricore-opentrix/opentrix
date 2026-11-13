@@ -11,7 +11,7 @@ import com.tricore.dxos.core.workflow.WorkflowException;
 import com.tricore.dxos.core.workflow.WorkflowRuntime;
 import com.tricore.dxos.gateway.workflow.controller.WorkflowController;
 import com.tricore.dxos.gateway.workflow.controller.WorkflowExceptionHandler;
-import com.tricore.dxos.infrastructure.workflow.HelpdeskService;
+import com.tricore.dxos.application.helpdesk.api.HelpdeskUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -37,7 +37,7 @@ class HelpdeskErrorContractTest {
     @EnumSource(value = WorkflowErrorCode.class, names = {"DEFINITION_NOT_FOUND", "INSTANCE_NOT_FOUND"})
     void genericKeepsItsBaselineContractWhileHelpdeskHidesMissingDetails(WorkflowErrorCode code) throws Exception {
         WorkflowRuntime runtime = mock(WorkflowRuntime.class);
-        HelpdeskService service = mock(HelpdeskService.class);
+        HelpdeskUseCase service = mock(HelpdeskUseCase.class);
         MockMvc generic = MockMvcBuilders.standaloneSetup(new GenericController(runtime))
                 .setControllerAdvice(new WorkflowExceptionHandler()).build();
         MockMvc helpdesk = MockMvcBuilders.standaloneSetup(new HelpdeskController(service))
@@ -64,7 +64,7 @@ class HelpdeskErrorContractTest {
 
     @Test
     void helpdeskHiddenAndMissingRemainIndistinguishableWithoutWrites() throws Exception {
-        HelpdeskService service = mock(HelpdeskService.class);
+        HelpdeskUseCase service = mock(HelpdeskUseCase.class);
         MockMvc mvc = MockMvcBuilders.standaloneSetup(new HelpdeskController(service))
                 .setControllerAdvice(new HelpdeskExceptionHandler()).build();
 
@@ -85,7 +85,7 @@ class HelpdeskErrorContractTest {
 
     @Test
     void helpdeskUncertainCommitRemains503AndNotRetried() throws Exception {
-        HelpdeskService service = mock(HelpdeskService.class);
+        HelpdeskUseCase service = mock(HelpdeskUseCase.class);
         MockMvc mvc = MockMvcBuilders.standaloneSetup(new HelpdeskController(service))
                 .setControllerAdvice(new HelpdeskExceptionHandler()).build();
         when(service.get(ID)).thenThrow(new WorkflowException(WorkflowErrorCode.COMMIT_OUTCOME_UNKNOWN));
