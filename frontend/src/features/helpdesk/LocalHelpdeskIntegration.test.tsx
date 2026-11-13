@@ -140,3 +140,37 @@ it("keeps an unknown create blocked after navigation without replay", async () =
     fetcher.mock.calls.filter(([, init]) => init?.method === "POST"),
   ).toHaveLength(1);
 });
+
+
+it.each([
+  "/mvp/helpdesk",
+  "/mvp/helpdesk/new",
+  `/mvp/helpdesk/${helpdeskId}`,
+])("labels integration-local and excludes Facility on route %s", async (path) => {
+  const fetcher = vi.fn<typeof fetch>().mockImplementation(async (url) => {
+    if (url === "/bff/session")
+      return Response.json({ authenticated: true, csrfToken: "csrf-test" });
+    if (String(url).endsWith("/history")) return Response.json([]);
+    if (String(url).includes("?limit="))
+      return Response.json({ items: [helpdeskWire()], nextCursor: null });
+    return Response.json(helpdeskWire());
+  });
+  vi.stubGlobal("fetch", fetcher);
+  mount(path);
+  const badge = screen.getByLabelText("Chế độ demo: integration-local");
+  expect(badge).toHaveTextContent("integration-local");
+  await waitFor(() => {
+    expect(screen.queryByText("Đang kiểm tra phiên…")).not.toBeInTheDocument();
+  });
+  expect(
+    await screen.findByText(/integration-local: backend thật qua BFF/),
+  ).toBeInTheDocument();
+  if (path.endsWith(helpdeskId))
+    expect(
+      await screen.findByText("IT Support · dữ liệu từ backend integration-local"),
+    ).toBeInTheDocument();
+  expect(screen.queryByText(/service kiểm thử|phiên kiểm thử/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Cơ sở vật chất/i)).not.toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: /Facility/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole("radio", { name: /Facility|Cơ sở vật chất/i })).not.toBeInTheDocument();
+});

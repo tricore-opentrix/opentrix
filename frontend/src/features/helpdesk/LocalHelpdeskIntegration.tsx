@@ -27,7 +27,10 @@ function SessionPortal() {
   if (sessionExpired) return <Login />;
   return (
     <Routes>
-      <Route path="/mvp/helpdesk/*" element={<HelpdeskPortal />} />
+      <Route
+        path="/mvp/helpdesk/*"
+        element={<HelpdeskPortal mode="integration-local" />}
+      />
       <Route path="*" element={<Navigate to="/mvp/helpdesk" replace />} />
     </Routes>
   );
@@ -67,6 +70,10 @@ export default function LocalHelpdeskIntegration() {
     <main id="main-content" className="page">
       <header>
         <h1>DX-OS · Helpdesk integration local</h1>
+        <span className="environment" aria-label="Chế độ demo: integration-local">
+          <span />
+          integration-local
+        </span>
         <Link to="/mvp/helpdesk">Danh sách Helpdesk</Link>
       </header>
       {session === "loading" ? (

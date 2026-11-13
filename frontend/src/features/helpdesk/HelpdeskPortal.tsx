@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+  createContext,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -30,6 +32,26 @@ import type { MvpHelpdeskRequestPort } from "../../services/mvp/helpdeskPortalPo
 import { useHelpdeskRead } from "./useHelpdeskRead";
 
 const ROOT = "/mvp/helpdesk";
+/** ADR-017: visible copy must match the composition (MOCK seam vs BFF-backed integration-local). */
+export type HelpdeskPortalMode = "mock" | "integration-local";
+const COPY = {
+  mock: {
+    footnote: "IT Helpdesk MVP · service kiểm thử được inject · LIVE BLOCKED",
+    list: "Yêu cầu IT Support trong phiên kiểm thử.",
+    empty: "Tạo yêu cầu để bắt đầu phiên kiểm thử.",
+    create: "Chỉ dùng dữ liệu kiểm thử; loại yêu cầu IT_HELPDESK.",
+    detail: "IT Support · dữ liệu từ service kiểm thử",
+  },
+  "integration-local": {
+    footnote:
+      "IT Helpdesk · integration-local: backend thật qua BFF và Keycloak, dữ liệu demo dùng một lần · chưa phải LIVE",
+    list: "Yêu cầu IT Support trong môi trường integration-local.",
+    empty: "Tạo yêu cầu đầu tiên để bắt đầu.",
+    create: "Dữ liệu demo dùng một lần; loại yêu cầu IT_HELPDESK.",
+    detail: "IT Support · dữ liệu từ backend integration-local",
+  },
+} as const;
+const CopyContext = createContext<(typeof COPY)[HelpdeskPortalMode]>(COPY.mock);
 const CREATE = "helpdesk:create";
 const labels = {
   triage: "Tiếp nhận",
@@ -98,7 +120,10 @@ function useHelpdeskWrite(key: string) {
   };
 }
 
-export function HelpdeskPortal() {
+export function HelpdeskPortal({
+  mode = "mock",
+}: { mode?: HelpdeskPortalMode } = {}) {
+  const copy = COPY[mode];
   const { helpdeskService } = usePortal();
   if (!helpdeskService)
     return (
@@ -108,10 +133,8 @@ export function HelpdeskPortal() {
       />
     );
   return (
-    <>
-      <p className="aside-footnote">
-        IT Helpdesk MVP · service kiểm thử được inject · LIVE BLOCKED
-      </p>
+    <CopyContext.Provider value={copy}>
+      <p className="aside-footnote">{copy.footnote}</p>
       <Routes>
         <Route index element={<HelpdeskList service={helpdeskService} />} />
         <Route
@@ -129,11 +152,12 @@ export function HelpdeskPortal() {
           }
         />
       </Routes>
-    </>
+    </CopyContext.Provider>
   );
 }
 
 function HelpdeskList({ service }: { service: MvpHelpdeskRequestPort }) {
+  const copy = useContext(CopyContext);
   const [params, setParams] = useSearchParams();
   const after = params.get("after") ?? undefined;
   const load = useCallback(
@@ -145,7 +169,7 @@ function HelpdeskList({ service }: { service: MvpHelpdeskRequestPort }) {
     <>
       <PageHeading
         title="IT Helpdesk MVP"
-        description="Yêu cầu IT Support trong phiên kiểm thử."
+        description={copy.list}
       >
         <Link className="button primary" to={`${ROOT}/new`}>
           Tạo yêu cầu IT
@@ -169,7 +193,7 @@ function HelpdeskList({ service }: { service: MvpHelpdeskRequestPort }) {
         ) : !read.data?.items.length ? (
           <Empty
             title="Chưa có yêu cầu IT"
-            description="Tạo yêu cầu để bắt đầu phiên kiểm thử."
+            description={copy.empty}
           />
         ) : (
           <div className="table-scroll">
@@ -235,6 +259,7 @@ function HelpdeskList({ service }: { service: MvpHelpdeskRequestPort }) {
 }
 
 function HelpdeskCreate({ service }: { service: MvpHelpdeskRequestPort }) {
+  const copy = useContext(CopyContext);
   const navigate = useNavigate();
   const write = useHelpdeskWrite(CREATE);
   const [title, setTitle] = useState("");
@@ -265,7 +290,7 @@ function HelpdeskCreate({ service }: { service: MvpHelpdeskRequestPort }) {
       </Link>
       <PageHeading
         title="Tạo yêu cầu IT Support"
-        description="Chỉ dùng dữ liệu kiểm thử; loại yêu cầu IT_HELPDESK."
+        description={copy.create}
       />
       <div className="form-layout">
         <form
@@ -327,6 +352,7 @@ function HelpdeskDetail({
   id: string;
   service: MvpHelpdeskRequestPort;
 }) {
+  const copy = useContext(CopyContext);
   const write = useHelpdeskWrite(id);
   const [resolution, setResolution] = useState("");
   const [invalid, setInvalid] = useState(false);
@@ -426,7 +452,7 @@ function HelpdeskDetail({
       <PageHeading
         eyebrow={detail.id}
         title={detail.title}
-        description="IT Support · dữ liệu từ service kiểm thử"
+        description={copy.detail}
       >
         <span className="badge">{detail.state}</span>
       </PageHeading>

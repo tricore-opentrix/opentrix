@@ -258,3 +258,14 @@ describe("App demo session with optional sessionStorage", () => {
     },
   );
 });
+
+
+describe("ADR-017 MOCK mode visibility", () => {
+  it("labels the MOCK shell and retains Facility on the demo create page", () => {
+    sessionStorage.setItem(ROLE_KEY, "employee");
+    setup("/requests/new");
+    expect(screen.getByLabelText("Chế độ demo: MOCK")).toHaveTextContent("MOCK");
+    expect(screen.getByText("Cơ sở vật chất")).toBeVisible();
+    expect(screen.getByRole("radio", { name: /Cơ sở vật chất/ })).toBeInTheDocument();
+  });
+});
