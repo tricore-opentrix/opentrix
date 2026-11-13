@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Spike D1 (#119): build backend từ mã nguồn.
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /src

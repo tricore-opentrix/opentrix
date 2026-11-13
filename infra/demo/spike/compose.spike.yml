@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Spike D1 (#119): một network namespace dùng chung. Không dùng cho demo thật.
 name: opentrix-spike
 services:

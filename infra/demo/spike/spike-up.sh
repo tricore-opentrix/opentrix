@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
 # Spike D1 (#119): dựng postgres + keycloak + backend trong một namespace, rồi kiểm tra.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)/infra/demo/spike"
