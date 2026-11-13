@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+
+# Build context for infra/demo/*.Dockerfile is the repo root (#119).
+# Images must build from tracked source only: no secrets, local data or prebuilt output.
+
+# Secrets and local runtime data
+**/.env
+**/.env.*
+!**/.env.example
+infra/demo/.local
+**/*.pem
+**/*.key
+**/*.p12
+
+# VCS, worktrees, editors
+.git
+.worktrees
+.vscode
+.idea
+**/.DS_Store
+
+# Dependencies and generated output (rebuilt inside the image)
+**/node_modules
+**/dist
+**/build
+**/.gradle
+**/.vite
+**/*.tsbuildinfo
+**/test-results
+**/playwright-report
+**/coverage
+**/*.log

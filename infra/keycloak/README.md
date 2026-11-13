@@ -7,9 +7,9 @@ SPDX-License-Identifier: Apache-2.0
 
 > **Trạng thái / Status:** Bản nháp cho vòng trường 19/11/2026 · **Issue:** [#119](https://github.com/tricore-opentrix/opentrix/issues/119) · **Quyết định / Decisions:** D1–D5 trong #119, [ADR-018](../../docs/08-decisions/ADR-018-apisix-api-gateway.md)
 
-`tricore-realm.json` là nguồn sự thật cho realm demo. File **không chứa mật khẩu, secret, tên thật hay email**. Secret client và mật khẩu người dùng được đặt lúc chạy từ `.env` cục bộ (đã nằm trong `.gitignore`).
+`tricore-realm.json` là nguồn sự thật cho realm demo. File **không chứa mật khẩu, secret, tên thật hay email thật**. Ba tài khoản demo có email giả `<username>@example.com` (tên miền dành riêng theo RFC 2606), chỉ để Keycloak 26 không bắt nhập hồ sơ (VERIFY_PROFILE) trong demo cục bộ; không gửi email nào. Secret client và mật khẩu người dùng được đặt lúc chạy từ `.env` cục bộ (đã nằm trong `.gitignore`).
 
-`tricore-realm.json` is the source of truth for the demo realm. It contains **no passwords, secrets, real names or emails**; client secrets and user passwords are set at runtime from a local, git-ignored `.env`.
+`tricore-realm.json` is the source of truth for the demo realm. It contains **no passwords, secrets, real names or real emails**; the three demo users carry fake `<username>@example.com` addresses (RFC 2606 reserved domain) only so Keycloak 26 skips the VERIFY_PROFILE action locally, and no email is ever sent; client secrets and user passwords are set at runtime from a local, git-ignored `.env`.
 
 ## Issuer
 
