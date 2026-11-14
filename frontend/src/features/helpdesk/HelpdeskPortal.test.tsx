@@ -362,6 +362,56 @@ describe("APP-14 Portal MVP presentation integration", () => {
     ).not.toBeInTheDocument();
   });
 
+  it.each([
+    {
+      requesterDisplayName: "Người yêu cầu demo",
+      assigneeDisplayName: "Người xử lý demo",
+      assigneeId: "worker",
+      requester: "Người yêu cầu demo",
+      assignee: "Người xử lý demo",
+    },
+    {
+      requesterDisplayName: null,
+      assigneeDisplayName: null,
+      assigneeId: "worker",
+      requester: "Chưa có tên hiển thị",
+      assignee: "Chưa có tên hiển thị",
+    },
+    {
+      requesterDisplayName: "   ",
+      assigneeDisplayName: "   ",
+      assigneeId: "worker",
+      requester: "Chưa có tên hiển thị",
+      assignee: "Chưa có tên hiển thị",
+    },
+    {
+      requesterDisplayName: null,
+      assigneeDisplayName: null,
+      assigneeId: null,
+      requester: "Chưa có tên hiển thị",
+      assignee: "Chưa phân công",
+    },
+  ])(
+    "shows names or honest fallbacks in the list: $assignee",
+    async ({ requester, assignee, ...fields }) => {
+      const transport = vi.fn<HelpdeskHttpTransport>().mockResolvedValue({
+        status: 200,
+        body: { items: [helpdeskWire(fields)], nextCursor: null },
+      });
+      mount(clientFixture(transport).service);
+      const row = (
+        await screen.findByRole("link", { name: "Không thể lưu báo cáo" })
+      ).closest("tr")!;
+      expect(
+        row.querySelector('[data-label="Người yêu cầu"]'),
+      ).toHaveTextContent(requester);
+      expect(row.querySelector('[data-label="Người xử lý"]')).toHaveTextContent(
+        assignee,
+      );
+      expect(transport).toHaveBeenCalledTimes(1);
+    },
+  );
+
   it("honors service capabilities even when role and state suggest other actions", async () => {
     sessionStorage.setItem("dxos-demo-role", "processor");
     const transport = vi
@@ -384,9 +434,9 @@ describe("APP-14 Portal MVP presentation integration", () => {
     expect(
       screen.queryByRole("button", { name: "Tiếp nhận" }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getAllByText("Tên không được cung cấp").length,
-    ).toBeGreaterThan(0);
+    expect(screen.getAllByText("Chưa có tên hiển thị").length).toBeGreaterThan(
+      0,
+    );
     expect(screen.getByText("test-requester-subject")).toBeVisible();
     expect(transport).toHaveBeenCalledTimes(2);
   });

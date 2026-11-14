@@ -66,7 +66,7 @@ const validVersion = (value: number) =>
 const validText = (value: string, max: number) =>
   value.trim().length > 0 && value.length <= max;
 const personName = (name: string | null | undefined) =>
-  name || "Tên không được cung cấp";
+  name?.trim() || "Chưa có tên hiển thị";
 
 /** Shared write lock is scoped to the provider, so navigation cannot replay a
  * pending/unknown write. Only a user-requested authoritative read releases 409.
