@@ -10,6 +10,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "test:smoke": "playwright test",
+    "ui:preview": "playwright test --config tests/ui-preview.playwright.config.ts --project ui-preview",
+    "test:ui-preview": "playwright test --config tests/ui-preview.playwright.config.ts --project ui-preview-check",
     "check:security": "node scripts/check-security.mjs"
   },
   "engines": {

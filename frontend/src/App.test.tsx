@@ -267,5 +267,6 @@ describe("ADR-017 MOCK mode visibility", () => {
     expect(screen.getByLabelText("Chế độ demo: MOCK")).toHaveTextContent("MOCK");
     expect(screen.getByText("Cơ sở vật chất")).toBeVisible();
     expect(screen.getByRole("radio", { name: /Cơ sở vật chất/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Đăng xuất" })).not.toBeInTheDocument();
   });
 });

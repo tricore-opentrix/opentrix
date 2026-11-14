@@ -85,6 +85,58 @@ async function openSession(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe("APP-14 Portal MVP presentation integration", () => {
+  it.each([
+    ["SUBMITTED", "Mới gửi", "state-submitted"],
+    ["TRIAGED", "Đã tiếp nhận", "state-triaged"],
+    ["IN_PROGRESS", "Đang xử lý", "state-in-progress"],
+    ["RESOLVED", "Chờ xác nhận", "state-resolved"],
+    ["CONFIRMED", "Hoàn thành", "state-confirmed"],
+    ["future_state", "future_state", "state-unknown"],
+    ["constructor", "constructor", "state-unknown"],
+  ])(
+    "labels %s in list and detail without changing the API state",
+    async (state, label, css) => {
+      const wire = helpdeskWire({ state, allowedActions: [] });
+      const transport = vi
+        .fn<HelpdeskHttpTransport>()
+        .mockImplementation(async (request) => ({
+          status: 200,
+          body: request.path.endsWith("/history")
+            ? [
+                {
+                  transitionId: "triage",
+                  sourceState: state,
+                  targetState: state,
+                  version: 0,
+                  occurredAt: "2026-11-14T00:00:00Z",
+                },
+              ]
+            : request.path.includes("?limit=")
+              ? { items: [wire], nextCursor: null }
+              : wire,
+        }));
+      mount(clientFixture(transport).service);
+      expect(await screen.findByText(label)).toHaveClass("badge", css);
+      expect(
+        screen.getByRole("heading", { name: "Yêu cầu hỗ trợ IT" }),
+      ).toBeVisible();
+      await userEvent.click(
+        screen.getByRole("link", { name: /Không thể lưu báo cáo/ }),
+      );
+      expect(await screen.findByTestId("mvp-state")).toHaveTextContent(label);
+      for (const badge of screen.getAllByText(label))
+        expect(badge).toHaveClass("badge", css);
+      expect(
+        within(screen.getByRole("region", { name: "Lịch sử xử lý" })).getByText(
+          `${label} → ${label}`,
+        ),
+      ).toBeVisible();
+      expect(screen.getByText("Trạng thái", { selector: "dt" })).toBeVisible();
+      expect(screen.queryByText(/Workflow version/)).not.toBeInTheDocument();
+      expect(wire.state).toBe(state);
+    },
+  );
+
   it.each(["read", "triage"] as const)(
     "expires the same session for a delayed %s 401 after leaving the feature",
     async (operation) => {
@@ -222,15 +274,13 @@ describe("APP-14 Portal MVP presentation integration", () => {
     await user.click(
       await screen.findByRole("link", { name: /Sự cố phần mềm APP-14/ }),
     );
-    expect(await screen.findByTestId("mvp-state")).toHaveTextContent(
-      "SUBMITTED",
-    );
+    expect(await screen.findByTestId("mvp-state")).toHaveTextContent("Mới gửi");
     expect(
       screen.queryByRole("form", { name: "Phân công xử lý" }),
     ).not.toBeInTheDocument();
     await user.dblClick(screen.getByRole("button", { name: "Tiếp nhận" }));
     await waitFor(() =>
-      expect(screen.getByTestId("mvp-state")).toHaveTextContent("TRIAGED"),
+      expect(screen.getByTestId("mvp-state")).toHaveTextContent("Đã tiếp nhận"),
     );
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Người xử lý" }),
@@ -242,11 +292,11 @@ describe("APP-14 Portal MVP presentation integration", () => {
         "1",
       ),
     );
-    expect(screen.getByTestId("mvp-version")).toHaveTextContent("2");
+    expect(screen.queryByTestId("mvp-version")).not.toBeInTheDocument();
     expect(fake.history).toHaveLength(1);
     await user.dblClick(screen.getByRole("button", { name: "Bắt đầu xử lý" }));
     await waitFor(() =>
-      expect(screen.getByTestId("mvp-state")).toHaveTextContent("IN_PROGRESS"),
+      expect(screen.getByTestId("mvp-state")).toHaveTextContent("Đang xử lý"),
     );
     await user.click(screen.getByRole("button", { name: "Ghi kết quả xử lý" }));
     expect(
@@ -260,15 +310,15 @@ describe("APP-14 Portal MVP presentation integration", () => {
       screen.getByRole("button", { name: "Ghi kết quả xử lý" }),
     );
     await waitFor(() =>
-      expect(screen.getByTestId("mvp-state")).toHaveTextContent("RESOLVED"),
+      expect(screen.getByTestId("mvp-state")).toHaveTextContent("Chờ xác nhận"),
     );
     await user.dblClick(
       screen.getByRole("button", { name: "Xác nhận hoàn thành" }),
     );
     await waitFor(() =>
-      expect(screen.getByTestId("mvp-state")).toHaveTextContent("CONFIRMED"),
+      expect(screen.getByTestId("mvp-state")).toHaveTextContent("Hoàn thành"),
     );
-    const history = screen.getByRole("region", { name: "Lịch sử Workflow" });
+    const history = screen.getByRole("region", { name: "Lịch sử xử lý" });
     expect(within(history).getAllByRole("listitem")).toHaveLength(4);
     expect(within(history).getByText("start_work")).toBeVisible();
     expect(history).not.toHaveTextContent(/actor|ghi chú|event.id/i);
@@ -496,7 +546,9 @@ describe("APP-14 Portal MVP presentation integration", () => {
     await userEvent
       .setup()
       .click(screen.getByRole("button", { name: "Tải lại dữ liệu" }));
-    expect(await screen.findByTestId("mvp-state")).toHaveTextContent("TRIAGED");
+    expect(await screen.findByTestId("mvp-state")).toHaveTextContent(
+      "Đã tiếp nhận",
+    );
     expect(transport).toHaveBeenCalledTimes(4);
   });
 
@@ -566,7 +618,12 @@ describe("APP-14 Portal MVP presentation integration", () => {
         screen.getByRole("button", { name: "Tải lại chi tiết và lịch sử" }),
       );
       await waitFor(() =>
-        expect(screen.getByTestId("mvp-version")).toHaveTextContent("12"),
+        expect(
+          screen.getByRole(
+            action === "assign" ? "combobox" : "button",
+            action === "assign" ? {} : { name },
+          ),
+        ).toBeEnabled(),
       );
       if (action === "assign")
         await user.selectOptions(screen.getByRole("combobox"), "choice-0");
@@ -576,6 +633,22 @@ describe("APP-14 Portal MVP presentation integration", () => {
       expect(
         transport.mock.calls.filter(([request]) => request.method === "POST"),
       ).toHaveLength(1);
+      // A deliberate second action must use the freshly loaded version.
+      await user.click(screen.getByRole("button", { name }));
+      await waitFor(() =>
+        expect(
+          transport.mock.calls.filter(([request]) => request.method === "POST"),
+        ).toHaveLength(2),
+      );
+      expect(
+        transport.mock.calls.filter(
+          ([request]) => request.method === "POST",
+        )[1][0].body,
+      ).toEqual(
+        action === "triage"
+          ? { expectedVersion: 12 }
+          : { assigneeId: "worker", expectedAssignmentVersion: 2 },
+      );
     },
   );
 
@@ -697,8 +770,17 @@ describe("APP-14 Portal MVP presentation integration", () => {
         "1",
       ),
     );
-    expect(screen.getByTestId("mvp-version")).toHaveTextContent("17");
+    expect(screen.queryByText(/Workflow version/)).not.toBeInTheDocument();
     expect(screen.getByText("fake-worker")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Bắt đầu xử lý" }));
+    await waitFor(() =>
+      expect(
+        fake.calls.filter((request) => request.method === "POST"),
+      ).toHaveLength(2),
+    );
+    expect(
+      fake.calls.filter((request) => request.method === "POST")[1].body,
+    ).toEqual({ expectedVersion: 17 });
   });
 
   it("never reads the injected service without the existing demo session", async () => {

@@ -7,14 +7,25 @@ import { helpdeskId, helpdeskWire } from "../../../test/helpdeskFixtures";
 import { HelpdeskApiClient } from "./HelpdeskApiClient";
 import {
   bootstrapHelpdeskSession,
+  logoutHelpdeskSession,
   sameOriginHelpdeskTransport,
 } from "./sameOriginTransport";
 
 const base = "/api/v1/mvp/requests";
 beforeEach(() => vi.stubGlobal("location", new URL("https://localhost:8443")));
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe("local same-origin BFF boundary", () => {
+  it.each(["", " "])("rejects logout without a CSRF token: %j", (token) => {
+    const submit = vi.spyOn(HTMLFormElement.prototype, "submit");
+    expect(() => logoutHelpdeskSession(token)).toThrow(
+      "CSRF token is required",
+    );
+    expect(submit).not.toHaveBeenCalled();
+  });
   it("bootstraps only session state and keeps CSRF in memory", async () => {
     const fetcher = vi
       .fn<typeof fetch>()
@@ -56,6 +67,7 @@ describe("local same-origin BFF boundary", () => {
       const fetcher = vi.fn<typeof fetch>();
       await expect(bootstrapHelpdeskSession(fetcher)).rejects.toThrow();
       expect(() => sameOriginHelpdeskTransport("csrf", fetcher)).toThrow();
+      expect(() => logoutHelpdeskSession("csrf")).toThrow();
       expect(fetcher).not.toHaveBeenCalled();
     },
   );

@@ -20,6 +20,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { AssignmentForm } from "../../components/AssignmentForm";
+import { ArrowLeft, ArrowUpRight, Monitor, Plus } from "lucide-react";
 import { Empty, ErrorState, Loading, PageHeading } from "../../components/ui";
 import { usePortal } from "../../context";
 import { useSessionOperation } from "../../hooks/useSessionOperation";
@@ -29,6 +30,7 @@ import {
   MvpApplicationError,
 } from "../../services/mvp/errors";
 import type { MvpHelpdeskRequestPort } from "../../services/mvp/helpdeskPortalPort";
+import { stateClassName, stateLabel } from "../../services/mvp/stateLabels";
 import { useHelpdeskRead } from "./useHelpdeskRead";
 
 const ROOT = "/mvp/helpdesk";
@@ -43,12 +45,11 @@ const COPY = {
     detail: "IT Support · dữ liệu từ service kiểm thử",
   },
   "integration-local": {
-    footnote:
-      "IT Helpdesk · integration-local: backend thật qua BFF và Keycloak, dữ liệu demo dùng một lần · chưa phải LIVE",
-    list: "Yêu cầu IT Support trong môi trường integration-local.",
+    footnote: "Môi trường demo integration-local · dữ liệu dùng một lần",
+    list: "Theo dõi và quản lý các yêu cầu hỗ trợ IT.",
     empty: "Tạo yêu cầu đầu tiên để bắt đầu.",
-    create: "Dữ liệu demo dùng một lần; loại yêu cầu IT_HELPDESK.",
-    detail: "IT Support · dữ liệu từ backend integration-local",
+    create: "Mô tả vấn đề bạn cần hỗ trợ. Chỉ sử dụng dữ liệu demo.",
+    detail: "Thông tin và tiến trình xử lý yêu cầu hỗ trợ IT.",
   },
 } as const;
 const CopyContext = createContext<(typeof COPY)[HelpdeskPortalMode]>(COPY.mock);
@@ -134,24 +135,31 @@ export function HelpdeskPortal({
     );
   return (
     <CopyContext.Provider value={copy}>
-      <p className="aside-footnote">{copy.footnote}</p>
-      <Routes>
-        <Route index element={<HelpdeskList service={helpdeskService} />} />
-        <Route
-          path="new"
-          element={<HelpdeskCreate service={helpdeskService} />}
-        />
-        <Route path=":id" element={<DetailRoute service={helpdeskService} />} />
-        <Route
-          path="*"
-          element={
-            <Empty
-              title="Không tìm thấy trang MVP"
-              description="Chọn danh sách yêu cầu để tiếp tục."
-            />
-          }
-        />
-      </Routes>
+      <div className="helpdesk-portal">
+        <Routes>
+          <Route index element={<HelpdeskList service={helpdeskService} />} />
+          <Route
+            path="new"
+            element={<HelpdeskCreate service={helpdeskService} />}
+          />
+          <Route
+            path=":id"
+            element={<DetailRoute service={helpdeskService} />}
+          />
+          <Route
+            path="*"
+            element={
+              <Empty
+                title="Không tìm thấy trang yêu cầu hỗ trợ IT"
+                description="Chọn danh sách yêu cầu để tiếp tục."
+              />
+            }
+          />
+        </Routes>
+        <p className="aside-footnote helpdesk-environment-note">
+          {copy.footnote}
+        </p>
+      </div>
     </CopyContext.Provider>
   );
 }
@@ -167,15 +175,13 @@ function HelpdeskList({ service }: { service: MvpHelpdeskRequestPort }) {
   const read = useHelpdeskRead(load);
   return (
     <>
-      <PageHeading
-        title="IT Helpdesk MVP"
-        description={copy.list}
-      >
+      <PageHeading title="Yêu cầu hỗ trợ IT" description={copy.list}>
         <Link className="button primary" to={`${ROOT}/new`}>
+          <Plus size={16} aria-hidden="true" />
           Tạo yêu cầu IT
         </Link>
       </PageHeading>
-      <section className="panel">
+      <section className="panel helpdesk-list-panel">
         <div className="panel-heading">
           <h2>Danh sách yêu cầu</h2>
           <button
@@ -191,16 +197,14 @@ function HelpdeskList({ service }: { service: MvpHelpdeskRequestPort }) {
         ) : read.error ? (
           <ErrorState message={read.error} onRetry={read.reload} />
         ) : !read.data?.items.length ? (
-          <Empty
-            title="Chưa có yêu cầu IT"
-            description={copy.empty}
-          />
+          <Empty title="Chưa có yêu cầu IT" description={copy.empty} />
         ) : (
           <div className="table-scroll">
             <table>
-              <caption className="sr-only">Yêu cầu IT Helpdesk MVP</caption>
+              <caption className="sr-only">Yêu cầu hỗ trợ IT</caption>
               <thead>
                 <tr>
+                  <th>Mã</th>
                   <th>Yêu cầu</th>
                   <th>Trạng thái</th>
                   <th>Người yêu cầu</th>
@@ -210,20 +214,27 @@ function HelpdeskList({ service }: { service: MvpHelpdeskRequestPort }) {
               <tbody>
                 {read.data.items.map((item) => (
                   <tr key={item.id}>
-                    <td>
+                    <td data-label="Mã" className="helpdesk-request-code">
+                      <span className="request-id">{item.id}</span>
+                    </td>
+                    <td data-label="Yêu cầu">
                       <Link
                         className="request-title"
                         to={`${ROOT}/${encodeURIComponent(item.id)}`}
                       >
-                        <span className="request-id">{item.id}</span>
                         <strong>{item.title}</strong>
+                        <ArrowUpRight size={14} aria-hidden="true" />
                       </Link>
                     </td>
-                    <td>
-                      <span className="badge">{item.state}</span>
+                    <td data-label="Trạng thái">
+                      <span className={`badge ${stateClassName(item.state)}`}>
+                        {stateLabel(item.state)}
+                      </span>
                     </td>
-                    <td>{personName(item.requesterDisplayName)}</td>
-                    <td>
+                    <td data-label="Người yêu cầu">
+                      {personName(item.requesterDisplayName)}
+                    </td>
+                    <td data-label="Người xử lý">
                       {item.assigneeId === null
                         ? "Chưa phân công"
                         : personName(item.assigneeDisplayName)}
@@ -286,12 +297,10 @@ function HelpdeskCreate({ service }: { service: MvpHelpdeskRequestPort }) {
   return (
     <>
       <Link className="back-link" to={ROOT}>
+        <ArrowLeft size={14} aria-hidden="true" />
         Danh sách yêu cầu IT
       </Link>
-      <PageHeading
-        title="Tạo yêu cầu IT Support"
-        description={copy.create}
-      />
+      <PageHeading title="Tạo yêu cầu IT Support" description={copy.create} />
       <div className="form-layout">
         <form
           className="panel request-form"
@@ -300,21 +309,42 @@ function HelpdeskCreate({ service }: { service: MvpHelpdeskRequestPort }) {
         >
           <fieldset disabled={write.blocked}>
             <legend>Thông tin yêu cầu</legend>
+            {copy === COPY["integration-local"] && (
+              <div className="helpdesk-request-type">
+                <Monitor size={20} aria-hidden="true" />
+                <div>
+                  <span>Loại yêu cầu</span>
+                  <strong>Hỗ trợ IT</strong>
+                </div>
+              </div>
+            )}
             <label className="field">
-              Tiêu đề yêu cầu
+              <span>
+                Tiêu đề yêu cầu{" "}
+                <span className="helpdesk-required" aria-hidden="true">
+                  *
+                </span>
+              </span>
               <input
                 required
                 maxLength={200}
+                placeholder="Ví dụ: Máy in phòng B1 báo kẹt giấy"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
               />
             </label>
             <label className="field">
-              Mô tả chi tiết
+              <span>
+                Mô tả chi tiết{" "}
+                <span className="helpdesk-required" aria-hidden="true">
+                  *
+                </span>
+              </span>
               <textarea
                 required
                 maxLength={4000}
                 rows={5}
+                placeholder="Bạn gặp lỗi gì, ở đâu, từ khi nào?"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
               />
@@ -335,6 +365,21 @@ function HelpdeskCreate({ service }: { service: MvpHelpdeskRequestPort }) {
             </button>
           </div>
         </form>
+        {copy === COPY["integration-local"] && (
+          <aside className="panel helpdesk-form-guide">
+            <h2>Mô tả tốt giúp xử lý nhanh hơn</h2>
+            <ol>
+              <li>Thiết bị hoặc phòng gặp sự cố</li>
+              <li>Lỗi hiện ra thế nào, thông báo gì</li>
+              <li>Bắt đầu từ khi nào</li>
+              <li>Bạn đã thử cách nào chưa</li>
+            </ol>
+            <p>
+              Sau khi gửi, theo dõi trạng thái trong danh sách yêu cầu và xác
+              nhận khi sự cố đã được xử lý.
+            </p>
+          </aside>
+        )}
       </div>
     </>
   );
@@ -447,6 +492,7 @@ function HelpdeskDetail({
   return (
     <>
       <Link className="back-link" to={ROOT}>
+        <ArrowLeft size={14} aria-hidden="true" />
         Danh sách yêu cầu IT
       </Link>
       <PageHeading
@@ -454,7 +500,9 @@ function HelpdeskDetail({
         title={detail.title}
         description={copy.detail}
       >
-        <span className="badge">{detail.state}</span>
+        <span className={`badge ${stateClassName(detail.state)}`}>
+          {stateLabel(detail.state)}
+        </span>
       </PageHeading>
       <div className="detail-layout">
         <div>
@@ -464,23 +512,20 @@ function HelpdeskDetail({
             </div>
             <p className="request-description">{detail.description}</p>
             {detail.resolution !== null && (
-              <>
+              <div className="helpdesk-resolution">
                 <h2>Kết quả xử lý</h2>
                 <p>{detail.resolution}</p>
-              </>
+              </div>
             )}
           </section>
-          <section
-            className="panel detail-timeline"
-            aria-label="Lịch sử Workflow"
-          >
+          <section className="panel detail-timeline" aria-label="Lịch sử xử lý">
             <div className="panel-heading">
               <h2>Lịch sử xử lý</h2>
             </div>
             {!history.length ? (
               <Empty
                 title="Chưa có lịch sử được cung cấp"
-                description="Chỉ hiển thị lịch sử được phép đọc từ service."
+                description="Lịch sử xử lý sẽ hiển thị tại đây."
               />
             ) : (
               <ol className="timeline">
@@ -493,9 +538,9 @@ function HelpdeskDetail({
                         <span>{entry.occurredAt}</span>
                       </div>
                       <p>
-                        {entry.sourceState} → {entry.targetState}
+                        {stateLabel(entry.sourceState)} →{" "}
+                        {stateLabel(entry.targetState)}
                       </p>
-                      <p>Workflow version: {entry.version}</p>
                     </div>
                   </li>
                 ))}
@@ -509,17 +554,19 @@ function HelpdeskDetail({
               <h2>Thông tin yêu cầu</h2>
             </div>
             <dl>
-              <dt>Trạng thái Workflow</dt>
-              <dd data-testid="mvp-state">{detail.state}</dd>
-              <dt>Workflow version</dt>
-              <dd data-testid="mvp-version">{detail.version}</dd>
-              <dt>Assignment version</dt>
+              <dt>Trạng thái</dt>
+              <dd data-testid="mvp-state">
+                <span className={`badge ${stateClassName(detail.state)}`}>
+                  {stateLabel(detail.state)}
+                </span>
+              </dd>
+              <dt>Phiên bản phân công</dt>
               <dd data-testid="mvp-assignment-version">
                 {detail.assignmentVersion ?? "Chưa được cung cấp"}
               </dd>
               <dt>Người yêu cầu</dt>
               <dd>{personName(detail.requesterDisplayName)}</dd>
-              <dt>Requester ID</dt>
+              <dt>Mã người yêu cầu</dt>
               <dd>{detail.requesterId}</dd>
               <dt>Người xử lý</dt>
               <dd>
@@ -529,7 +576,7 @@ function HelpdeskDetail({
               </dd>
               {detail.assigneeId !== null && (
                 <>
-                  <dt>Assignee ID</dt>
+                  <dt>Mã người xử lý</dt>
                   <dd>{detail.assigneeId}</dd>
                 </>
               )}
@@ -539,10 +586,10 @@ function HelpdeskDetail({
             <h2>Thao tác xử lý</h2>
             {write.stopped && <ErrorState message={write.stopped.message} />}
             {!actions.length && !assignment && (
-              <p>Không có thao tác được service cung cấp.</p>
+              <p>Bạn không có thao tác xử lý ở trạng thái hiện tại.</p>
             )}
             <fieldset disabled={blocked}>
-              <legend className="sr-only">Workflow actions</legend>
+              <legend className="sr-only">Thao tác trạng thái</legend>
               {actions.includes("resolve") && (
                 <label className="field">
                   Kết quả xử lý

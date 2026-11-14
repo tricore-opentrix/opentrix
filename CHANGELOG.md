@@ -17,6 +17,9 @@ User-visible DX-OS Open Core changes are recorded here. The format follows
 
 ### Changed
 
+- Portal #233: use IT Helpdesk · OpenTrix branding and simpler request/version copy.
+- Portal #233: add the integration-local login panel and CSRF-protected BFF logout; real OIDC role switching remains unverified.
+- Portal #233 / #106: show Vietnamese workflow labels and distinct text badges, preserving canonical API values and unknown-state fallback.
 - R26: Prepare OpenTrix canonical repository identity and update organization links, documentation and setup defaults after the existing repository rename; independent post-cutover acceptance remains pending.
 
 ## [0.2.0] - 2026-11-07

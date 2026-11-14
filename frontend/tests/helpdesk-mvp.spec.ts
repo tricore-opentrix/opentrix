@@ -39,33 +39,33 @@ test("APP-14 fake transport journey reuses Portal shell with no API/external req
   await page
     .getByRole("link", { name: /APP-14 kiểm tra báo cáo công việc/ })
     .click();
-  await expect(page.getByTestId("mvp-state")).toHaveText("SUBMITTED");
+  await expect(page.getByTestId("mvp-state")).toHaveText("Mới gửi");
   await page.getByRole("button", { name: "Tiếp nhận", exact: true }).dblclick();
-  await expect(page.getByTestId("mvp-state")).toHaveText("TRIAGED");
+  await expect(page.getByTestId("mvp-state")).toHaveText("Đã tiếp nhận");
   await page
     .getByRole("combobox", { name: "Người xử lý" })
     .selectOption("choice-0");
   await page.getByRole("button", { name: "Phân công", exact: true }).dblclick();
   await expect(page.getByTestId("mvp-assignment-version")).toHaveText("1");
-  await expect(page.getByTestId("mvp-version")).toHaveText("2");
+  await expect(page.getByText("Workflow version", { exact: true })).toHaveCount(
+    0,
+  );
   await page.getByRole("button", { name: "Bắt đầu xử lý" }).click();
-  await expect(page.getByTestId("mvp-state")).toHaveText("IN_PROGRESS");
+  await expect(page.getByTestId("mvp-state")).toHaveText("Đang xử lý");
   await page
     .getByRole("textbox", { name: "Kết quả xử lý" })
     .fill("Đã sửa lỗi và kiểm tra lưu báo cáo.");
   await page.getByRole("button", { name: "Ghi kết quả xử lý" }).click();
-  await expect(page.getByTestId("mvp-state")).toHaveText("RESOLVED");
+  await expect(page.getByTestId("mvp-state")).toHaveText("Chờ xác nhận");
   await page.getByRole("button", { name: "Xác nhận hoàn thành" }).dblclick();
-  await expect(page.getByTestId("mvp-state")).toHaveText("CONFIRMED");
+  await expect(page.getByTestId("mvp-state")).toHaveText("Hoàn thành");
   await expect(
-    page
-      .getByRole("region", { name: "Lịch sử Workflow" })
-      .getByRole("listitem"),
+    page.getByRole("region", { name: "Lịch sử xử lý" }).getByRole("listitem"),
   ).toHaveCount(4);
   await page
     .getByRole("button", { name: "Tải lại chi tiết và lịch sử" })
     .click();
-  await expect(page.getByTestId("mvp-state")).toHaveText("CONFIRMED");
+  await expect(page.getByTestId("mvp-state")).toHaveText("Hoàn thành");
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1100 });
     expect(
