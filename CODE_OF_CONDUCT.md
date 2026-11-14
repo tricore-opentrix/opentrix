@@ -1,105 +1,72 @@
 <!--
-SPDX-FileCopyrightText: Contributor Covenant contributors
 SPDX-FileCopyrightText: 2026 TRICORE contributors
-SPDX-License-Identifier: CC-BY-SA-4.0
+SPDX-License-Identifier: Apache-2.0
 -->
 
-> **OpenTrix adoption:** effective only when the adopting PR is merged after governance review. Tracking: [#228](https://github.com/tricore-opentrix/opentrix/issues/228).
->
-> **Tiếng Việt:** Quy tắc ứng xử này dựa trên Contributor Covenant 2.1, yêu cầu giao tiếp tôn trọng, không quấy rối hoặc tiết lộ thông tin riêng tư. Đây là phần tóm tắt; văn bản đầy đủ bằng tiếng Anh ở dưới. Đề nghị duyệt kênh tiếp nhận cùng PR này trước khi áp dụng.
+# OpenTrix - Quy tắc ứng xử / Code of Conduct
 
+**Trạng thái / Status:** Đề xuất trong PR của [#228](https://github.com/tricore-opentrix/opentrix/issues/228); có hiệu lực sau khi được review và merge theo [GOVERNANCE.md](GOVERNANCE.md). / Proposed in the PR for #228; effective after review and merge under GOVERNANCE.md.
 
-# Contributor Covenant Code of Conduct
+## Tiếng Việt
 
-## Our Pledge
+### 1. Làm việc trong dự án
 
-We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
+Quy tắc này áp dụng cho Issue, PR, review, thảo luận, buổi làm việc và kênh cộng đồng do OpenTrix quản lý, cùng hoạt động đại diện chính thức cho dự án. Mọi người tham gia, kể cả maintainer, đều có trách nhiệm tuân thủ.
 
-We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
+Khi trao đổi, tập trung vào vấn đề và bằng chứng. Góp ý cụ thể để người nhận có thể kiểm tra và sửa; giải thích quyết định từ chối đóng góp. Không hạ thấp người ít kinh nghiệm hoặc đối xử bất lợi vì đặc điểm cá nhân, xuất thân hay quan điểm không liên quan đến công việc.
 
-## Our Standards
+Không đe dọa, quấy rối, miệt thị, gửi nội dung tình dục không được mong muốn hoặc trả đũa người phản ánh vấn đề. Không công khai dữ liệu cá nhân, thông tin đăng nhập hoặc nội dung trao đổi riêng khi chưa có sự cho phép phù hợp.
 
-Examples of behavior that contributes to a positive environment for our community include:
+### 2. Gửi phản ánh
 
-* Demonstrating empathy and kindness toward other people
-* Being respectful of differing opinions, viewpoints, and experiences
-* Giving and gracefully accepting constructive feedback
-* Accepting responsibility and apologizing to those affected by our mistakes, and learning from the experience
-* Focusing on what is best not just for us as individuals, but for the overall community
+Danh sách maintainer ở [GOVERNANCE.md](GOVERNANCE.md). Nếu đã có kênh riêng với một maintainer không liên quan đến vụ việc, hãy dùng kênh đó. Nếu chưa có, có thể [mở yêu cầu liên hệ](https://github.com/tricore-opentrix/opentrix/issues/new?title=Private%20contact%20request) chỉ để xin kênh riêng; không ghi tên người bị phản ánh, cáo buộc, ảnh bằng chứng hoặc chi tiết nhạy cảm vào Issue công khai. Bước này không phải hộp thư phản ánh riêng của GitHub.
 
-Examples of unacceptable behavior include:
+Maintainer không liên quan phải bố trí kênh riêng trước khi nhận nội dung vụ việc. Người phản ánh tự quyết định thông tin cần cung cấp; chỉ đề nghị dữ liệu cần thiết để làm rõ sự việc. Nếu không bố trí được người xử lý độc lập hoặc kênh phù hợp, ghi nhận việc tiếp nhận đang bị chặn và xử lý theo GOVERNANCE.md, không yêu cầu công khai vụ việc.
 
-* The use of sexualized language or imagery, and sexual attention or advances of any kind
-* Trolling, insulting or derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or email address, without their explicit permission
-* Other conduct which could reasonably be considered inappropriate in a professional setting
+Báo cáo lỗ hổng bảo mật đi theo [SECURITY.md](SECURITY.md).
 
-## Enforcement Responsibilities
+### 3. Xem xét và xử lý
 
-Community leaders are responsible for clarifying and enforcing our standards of acceptable behavior and will take appropriate and fair corrective action in response to any behavior that they deem inappropriate, threatening, offensive, or harmful.
+Người có liên quan đến vụ việc không tham gia điều tra hoặc quyết định. Người xử lý giới hạn chia sẻ thông tin cho những người cần tham gia, xác minh bối cảnh và cho các bên cơ hội giải thích khi phù hợp. Không hứa bảo mật tuyệt đối hoặc kết luận chỉ dựa trên một cáo buộc chưa kiểm chứng.
 
-Community leaders have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, and will communicate reasons for moderation decisions when appropriate.
+Tùy mức độ, người có thẩm quyền có thể yêu cầu sửa cách trao đổi, hạn chế nội dung gây hại hoặc đề nghị hạn chế tham gia trong một thời hạn xác định. Chỉ dùng quyền truy cập đang được giao và quy trình quản trị hiện hành; văn bản này không tự cấp quyền khóa tài khoản, xóa thành viên hay vượt điều kiện review/merge. Khi cần ngăn tác hại đang diễn ra, ghi lại lý do và chuyển quyết định cho người xử lý độc lập sớm nhất có thể.
 
-## Scope
+Thông báo biện pháp và lý do cho người chịu ảnh hưởng qua kênh phù hợp. Cho phép đề nghị xem xét lại với thông tin bổ sung; người quyết định ban đầu không tự mình quyết định lần xem xét lại. Nếu không có người độc lập, áp dụng quy trình xung đột trong GOVERNANCE.md.
 
-This Code of Conduct applies within all community spaces, and also applies when an individual is officially representing the community in public spaces. Examples of representing our community include using an official e-mail address, posting via an official social media account, or acting as an appointed representative at an online or offline event.
+### 4. Hiệu lực và giấy phép
 
-## Enforcement
+Đây là quy tắc riêng cho cộng đồng OpenTrix, không phải tuyên bố áp dụng Contributor Covenant. Thay đổi quy tắc cần Issue/PR và review theo GOVERNANCE.md.
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at the non-conflicted project maintainers through the contact-request process below. All complaints will be reviewed and investigated promptly and fairly.
+Tài liệu được cấp phép theo [Apache License 2.0](LICENSE). Quy tắc tham gia cộng đồng không bổ sung điều kiện sử dụng hoặc phân phối phần mềm vào giấy phép Apache-2.0. Tài liệu này không xác nhận dự án đã đạt tiêu chí cuộc thi hoặc được phép phát hành.
 
-All community leaders are obligated to respect the privacy and security of the reporter of any incident.
+## English
 
-## Enforcement Guidelines
+### 1. Working in the project
 
-Community leaders will follow these Community Impact Guidelines in determining the consequences for any action they deem in violation of this Code of Conduct:
+These rules cover Issues, PRs, reviews, discussions, working sessions and community channels managed by OpenTrix, as well as official project representation. Every participant, including maintainers, is accountable for following them.
 
-### 1. Correction
+Keep discussion focused on the problem and supporting evidence. Make feedback specific enough to investigate and act on; explain decisions to decline contributions. Do not demean less experienced participants or disadvantage people because of personal characteristics, background or views unrelated to the work.
 
-**Community Impact**: Use of inappropriate language or other behavior deemed unprofessional or unwelcome in the community.
+Threats, harassment, degrading remarks, unwanted sexual material and retaliation against people raising concerns are unacceptable. Do not disclose personal data, credentials or private communications without appropriate permission.
 
-**Consequence**: A private, written warning from community leaders, providing clarity around the nature of the violation and an explanation of why the behavior was inappropriate. A public apology may be requested.
+### 2. Raising a concern
 
-### 2. Warning
+Maintainers are listed in [GOVERNANCE.md](GOVERNANCE.md). Use an existing private channel with an uninvolved maintainer if available. Otherwise, you may [request contact](https://github.com/tricore-opentrix/opentrix/issues/new?title=Private%20contact%20request) solely to arrange a private channel; do not put the reported person's name, allegations, evidence images or sensitive details in a public Issue. This step is not a private GitHub conduct-report inbox.
 
-**Community Impact**: A violation through a single incident or series of actions.
+An uninvolved maintainer must arrange a private channel before receiving the incident details. The reporter decides what information to provide; request only information needed to understand the concern. If independent handling or an appropriate channel cannot be arranged, record intake as blocked and follow GOVERNANCE.md instead of asking for public disclosure.
 
-**Consequence**: A warning with consequences for continued behavior. No interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, for a specified period of time. This includes avoiding interactions in community spaces as well as external channels like social media. Violating these terms may lead to a temporary or permanent ban.
+Report security vulnerabilities through [SECURITY.md](SECURITY.md).
 
-### 3. Temporary Ban
+### 3. Assessment and action
 
-**Community Impact**: A serious violation of community standards, including sustained inappropriate behavior.
+Anyone involved in the incident must not investigate or decide it. Handlers limit information sharing to people who need to participate, check the context and allow the parties to explain where appropriate. Do not promise absolute confidentiality or reach a conclusion solely from an unverified allegation.
 
-**Consequence**: A temporary ban from any sort of interaction or public communication with the community for a specified period of time. No public or private interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, is allowed during this period. Violating these terms may lead to a permanent ban.
+Depending on severity, an authorized person may ask for a change in communication, restrict harmful content or propose a time-limited participation restriction. Use only existing access authority and governance procedures; this document does not grant account-blocking or membership-removal powers or override review and merge requirements. Where ongoing harm requires intervention, record the reason and refer the decision for independent handling as soon as practicable.
 
-### 4. Permanent Ban
+Communicate actions and reasons to affected people through an appropriate channel. Allow reconsideration based on additional information; the original decision-maker must not decide the reconsideration alone. If no independent person is available, use the conflict process in GOVERNANCE.md.
 
-**Community Impact**: Demonstrating a pattern of violation of community standards, including sustained inappropriate behavior, harassment of an individual, or aggression toward or disparagement of classes of individuals.
+### 4. Effect and license
 
-**Consequence**: A permanent ban from any sort of public interaction within the community.
+These are project-specific community rules for OpenTrix, not a declaration of Contributor Covenant adoption. Changes require an Issue/PR and review under GOVERNANCE.md.
 
-## Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 2.1, available at [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html][v2.1].
-
-Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcement ladder][Mozilla CoC].
-
-For answers to common questions about this code of conduct, see the FAQ at [https://www.contributor-covenant.org/faq][FAQ]. Translations are available at [https://www.contributor-covenant.org/translations][translations].
-
-[homepage]: https://www.contributor-covenant.org
-[v2.1]: https://www.contributor-covenant.org/version/2/1/code_of_conduct.html
-[Mozilla CoC]: https://github.com/mozilla/diversity
-[FAQ]: https://www.contributor-covenant.org/faq
-[translations]: https://www.contributor-covenant.org/translations
-
-
-## OpenTrix contact-request process
-
-The maintainers listed in [GOVERNANCE.md](GOVERNANCE.md) handle conduct reports. If you already have a private contact channel with a non-conflicted maintainer, use it. Otherwise, [open a contact request](https://github.com/tricore-opentrix/opentrix/issues/new?title=Code%20of%20Conduct%20contact%20request) containing only the request for a private channel. Do not put allegations, identities, incident details or personal data in a public Issue. A non-conflicted maintainer must arrange a private channel before collecting the report; this document does not claim that GitHub provides a private conduct-report inbox. A maintainer involved in a report must not investigate or decide it. Handle unresolved conflicts under [GOVERNANCE.md](GOVERNANCE.md). Vulnerability reports instead follow [SECURITY.md](SECURITY.md).
-
-**Tiếng Việt:** Nếu đã có kênh riêng với maintainer không liên quan đến vụ việc, dùng kênh đó. Nếu chưa có, mở Issue chỉ yêu cầu kênh liên hệ riêng; không công khai danh tính, cáo buộc hoặc chi tiết sự việc. Maintainer không xung đột lợi ích bố trí kênh riêng trước khi nhận báo cáo. Báo cáo lỗ hổng dùng SECURITY.md.
-
-## Adaptation and license record
-
-Adapted from the [official Contributor Covenant 2.1 Markdown](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) on 2026-11-13. The [official adoption page](https://www.contributor-covenant.org/adopt/) specifies CC BY-SA 4.0 for Contributor Covenant. OpenTrix adds the adoption note, Vietnamese summary, conflict-of-interest rule and contact-request process, and fills the reporting contact placeholder. The upstream pledge, standards and enforcement ladder are retained. Attribution to Contributor Covenant and its referenced sources is retained below. This document is licensed under [CC-BY-SA-4.0](LICENSES/CC-BY-SA-4.0.txt), separately from OpenTrix source code under Apache-2.0.
+This document is licensed under the [Apache License 2.0](LICENSE). Community participation rules do not add software-use or distribution conditions to Apache-2.0. This document does not establish competition compliance or release authorization.

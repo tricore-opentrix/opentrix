@@ -16,7 +16,7 @@ User-visible DX-OS Open Core changes are recorded here. The format follows
 - Align architecture and documentation indexes with ADR-009/016/017/018: Helpdesk-first competition scope, S3-compatible storage direction, and separation of current behavior from target architecture (#221).
 - Align GitHub setup label and milestone descriptions with accepted architecture decisions; editing the script does not update live GitHub metadata (#223).
 - Add the shared-network-namespace demo spike for PostgreSQL, Keycloak and Backend (#226), and the versioned `tricore` demo realm (#227). These changes alone do not establish complete browser E2E acceptance.
-- Add Contributor Covenant 2.1 with its own attribution/license and link the contribution conduct policy from README and CONTRIBUTING (#228).
+- Add OpenTrix-specific community conduct rules under Apache-2.0 and link them from README and CONTRIBUTING (#228); replace the unmerged Contributor Covenant draft.
 - R24 tag-triggered release-candidate packaging (Java jars, frontend, SBOM/NOTICE inventory, SHA256SUMS), with independent distribution-acceptance gate before GitHub Release/GHCR publication.
 - R24 reproducible release tooling, source-only packaging, archive checksums and versioned release-note generation; binary build candidates remain nonpublishable without separate clearance.
 - A fail-closed independent release acceptance gate; candidate builds do not imply redistribution clearance.
