@@ -5,8 +5,8 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)/infra"
 if [ "${1:-}" = "--reset" ]; then
-  docker compose -f compose.demo.yml down -v
+  docker compose -f compose.demo.yml -f compose.gateway.yml down -v
   rm -rf demo/.local
 else
-  docker compose -f compose.demo.yml down
+  docker compose -f compose.demo.yml -f compose.gateway.yml down
 fi

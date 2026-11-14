@@ -2,9 +2,11 @@
 # SPDX-FileCopyrightText: 2026 TRICORE contributors
 # SPDX-License-Identifier: Apache-2.0
 # Dựng demo integration-local (#119) trên Linux/macOS. Bản Windows: demo-up.ps1.
+# --gateway: bật APISIX (infra/compose.gateway.yml, #116); Portal gọi backend qua 127.0.0.1:9080.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)/infra"
 C="docker compose -f compose.demo.yml"
+GW=0; [ "${1:-}" = "--gateway" ] && { GW=1; C="$C -f compose.gateway.yml"; }
 
 if [ ! -f .env ]; then
   umask 077
@@ -48,6 +50,14 @@ check "BFF /bff/session" "$(code https://localhost:8443/bff/session)" 200
 check "/api/* bi chan o ingress" "$(code https://localhost:8443/api/v1/health)" 404
 check "issuer Keycloak" "$(curl -s http://localhost:8180/realms/tricore/.well-known/openid-configuration | grep -o '"issuer":"[^"]*"')" '"issuer":"http://localhost:8180/realms/tricore"'
 check "backend khong mo ra may" "$(curl -s -m 3 -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/api/v1/health || true)" 000
+if [ "$GW" = 1 ]; then
+  gw=000
+  for i in $(seq 1 20); do
+    gw="$(curl -s -m 5 -o /dev/null -w '%{http_code}' http://127.0.0.1:9080/api/v1/health || true)"
+    [ "$gw" = 200 ] && break; sleep 3
+  done
+  check "APISIX /api/v1/health" "$gw" 200
+fi
 [ "$fail" = 0 ] || { echo "Co kiem tra FAIL. Xem: $C logs backend portal-bff" >&2; exit 1; }
 
 echo
