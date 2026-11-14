@@ -180,6 +180,9 @@ it("expires the local session on API 401 and removes the request UI", async () =
   expect(
     screen.queryByRole("button", { name: "Đăng xuất" }),
   ).not.toBeInTheDocument();
+  expect(screen.getByRole("status")).toHaveTextContent(
+    "Phiên Keycloak có thể vẫn đang hoạt động",
+  );
   expect(fetcher).toHaveBeenCalledTimes(2);
 });
 
