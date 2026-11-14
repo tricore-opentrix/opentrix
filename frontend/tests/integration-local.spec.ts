@@ -4,7 +4,7 @@
 
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { helpdeskId } from "../src/test/helpdeskFixtures";
+import { helpdeskId, helpdeskWire } from "../src/test/helpdeskFixtures";
 import { installIntegrationLocalFixture } from "./integration-local-fixture";
 
 test.beforeEach(async ({ context }) => {
@@ -13,6 +13,65 @@ test.beforeEach(async ({ context }) => {
     "Requires integration-local build and integration-local.playwright.config.ts.",
   );
   await installIntegrationLocalFixture(context);
+});
+
+test("list: complete UUIDs stay inside their cells without covering titles (intercepted BFF)", async ({
+  page,
+}) => {
+  const ids = [helpdeskId, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"];
+  const titles = [helpdeskWire().title, "Yêu cầu " + "x".repeat(192)];
+  await page.route("**/bff/api/v1/mvp/requests?*", (route) =>
+    route.fulfill({
+      json: {
+        items: ids.map((id, i) => helpdeskWire({ id, title: titles[i] })),
+        nextCursor: null,
+      },
+    }),
+  );
+  await page.goto("/mvp/helpdesk");
+  const rows = page.locator(".helpdesk-list-panel tbody tr");
+  await expect(rows).toHaveCount(ids.length);
+  for (const width of [1920, 1440, 1280, 1024, 768, 600, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.evaluate(() => document.fonts.ready);
+    for (let i = 0; i < ids.length; i++) {
+      const row = rows.nth(i);
+      await expect(row.locator(".request-id")).toHaveText(ids[i]);
+      await expect(row.getByRole("link")).toHaveAttribute(
+        "href",
+        `/mvp/helpdesk/${ids[i]}`,
+      );
+      const fits = await row.evaluate((element) => {
+        const code = element.querySelector(".request-id")!;
+        const cell = code.closest("td")!.getBoundingClientRect();
+        const title = element
+          .querySelector(".request-title")!
+          .getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(code);
+        const fragments = Array.from(range.getClientRects());
+        return (
+          fragments.length > 0 &&
+          fragments.every(
+            (rect) =>
+              rect.left >= cell.left - 1 &&
+              rect.right <= cell.right + 1 &&
+              rect.top >= cell.top - 1 &&
+              rect.bottom <= cell.bottom + 1 &&
+              (rect.right <= title.left ||
+                rect.left >= title.right ||
+                rect.bottom <= title.top ||
+                rect.top >= title.bottom),
+          )
+        );
+      });
+      expect(fits, `UUID row ${i + 1} at ${width}px`).toBe(true);
+    }
+    await page.screenshot({
+      path: test.info().outputPath(`list-uuid-${width}.png`),
+      fullPage: true,
+    });
+  }
 });
 
 for (const screen of ["login", "list", "create", "detail"] as const) {
