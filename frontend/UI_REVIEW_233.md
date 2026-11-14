@@ -3,15 +3,14 @@
 
 # Đối chiếu giao diện integration-local — Issue #233
 
-Tham chiếu: `docs/ui-reference/OpenTrix-Service-Desk-giao-diện-chính-1 (1).pdf`,
-đã render và đọc trực quan đủ 9 trang. Chỉnh trực tiếp React/CSS của ứng dụng,
+Tham chiếu: thiết kế nội bộ đã được đối chiếu trực quan. Chỉnh trực tiếp React/CSS của ứng dụng,
 không tạo ứng dụng demo khác. CSS mới chỉ áp dụng dưới `.helpdesk-local`.
 
 ## Phần đã áp dụng
 
-| Màn hình | Trang PDF | Giao diện thực hiện |
+| Màn hình | Phạm vi tham chiếu | Giao diện thực hiện |
 | --- | --- | --- |
-| Khung chung | 1–9 | Header trắng, logo OpenTrix/Service Desk, badge integration-local, nút đăng xuất, nền xám nhạt, điều hướng mint, nút teal, card trắng bo tròn. Không thêm hồ sơ tài khoản giả. |
+| Khung chung | 1–9 | Header trắng, logo cỏ ba lá, OpenTrix và IT Helpdesk, badge integration-local, nút đăng xuất, nền xám nhạt, điều hướng mint, nút teal, card trắng bo tròn. Không thêm hồ sơ tài khoản giả. |
 | Login | 5 | Card hai cột, minh họa bằng CSS, lời giới thiệu, nút đăng nhập tổ chức, footer mã nguồn mở. Mobile chuyển một cột; giữ nguyên URL OIDC. |
 | List | 1, 6, 8 | Card bảng, cột mã/tiêu đề/trạng thái/người yêu cầu/người xử lý; nhãn trạng thái tiếng Việt. Mobile chuyển hàng thành thẻ có nhãn để đọc đủ dữ liệu tại 320px. Giữ cursor pagination, tải lại và dữ liệu từ service. |
 | Create | 3 | Form trắng, loại yêu cầu IT cố định, placeholder, đánh dấu bắt buộc, khối hướng dẫn mint bên cạnh. Mobile xếp dọc, nút vừa chiều rộng. Giữ validation, giới hạn ký tự và khóa gửi một lần. |
@@ -24,7 +23,7 @@ API, BFF, backend hoặc phân quyền. Không thêm dependency vào package ứ
 
 ## Khác biệt có chủ đích và phần chưa tích hợp
 
-| Thành phần PDF | Giới hạn hiện tại |
+| Thành phần trong thiết kế nội bộ | Giới hạn hiện tại |
 | --- | --- |
 | Tên/vai trò/avatar tài khoản ở header | `/bff/session` hiện phục vụ trạng thái phiên và CSRF; không dựng tên hoặc suy ra vai trò. Giữ header chung. |
 | Dashboard riêng cho nhân viên/điều phối/kỹ thuật viên, lời chào và số việc | Chưa xây màn hình này trong #233. Danh sách phân trang không chứng minh tổng số toàn hệ thống; không tạo số đếm hoặc persona giả. |
@@ -37,7 +36,7 @@ API, BFF, backend hoặc phân quyền. Không thêm dependency vào package ứ
 ## Ảnh trước/sau
 
 Ảnh chụp từ bản build production integration-local bằng Playwright, không phải
-ảnh dựng từ PDF. BFF `https://localhost:8443` không hoạt động khi kiểm tra;
+ảnh dựng từ thiết kế nội bộ. BFF `https://localhost:8443` không hoạt động khi kiểm tra;
 phản hồi BFF được **giả lập chỉ trong test** để chụp cùng dữ liệu trước/sau.
 Không có fixture hay fallback mock mới trong mã production integration-local.
 Những ảnh này xác nhận bố cục, không chứng minh đăng nhập OIDC, persistence hay
@@ -66,8 +65,7 @@ npm.cmd run check:security
 
 Bộ kiểm tra UI duyệt 1440/768/390/320px, kiểm tra tràn ngang, axe WCAG,
 tên sản phẩm, màu nút teal, điều hướng và loại trừ Facility. Nghiệm thu OIDC và
-Golden Path vẫn cần stack thật hoạt động. Chưa chạy CI từ xa; không commit,
-push, tạo PR hoặc merge.
+Golden Path vẫn cần stack thật hoạt động. CI GitHub cần được kiểm tra trên từng commit trước khi merge.
 
 Kết quả local sau khi chỉnh giao diện:
 
