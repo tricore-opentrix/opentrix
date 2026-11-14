@@ -140,6 +140,7 @@ export default function LocalHelpdeskIntegration() {
             height="40"
           />
           <span className="helpdesk-brand-name">OpenTrix</span>
+          <span className="helpdesk-brand-product">IT Helpdesk</span>
         </Link>
         <span
           className="environment"
