@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/* OpenTrix UI reference, pages 1–9. Scoped to the BFF composition. */
+/* OpenTrix internal UI design. Scoped to the BFF composition. */
 .helpdesk-local {
   --canvas: #f5f6fb;
   --text: #142034;
@@ -19,6 +19,9 @@
   font-size: 14px;
 }
 .helpdesk-local .helpdesk-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   min-height: 72px;
   padding: 12px 28px;
   margin: 0;
