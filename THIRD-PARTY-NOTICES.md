@@ -88,6 +88,7 @@ certification or a substitute for upstream license and NOTICE texts.
 | frontend | react-router-dom | 7.18.4 | MIT |  | pkg:npm/react-router-dom@7.18.4 |
 | frontend | scheduler | 0.28.0 | MIT |  | pkg:npm/scheduler@0.28.0 |
 | frontend | set-cookie-parser | 2.7.2 | MIT |  | pkg:npm/set-cookie-parser@2.7.2 |
+| gateway | apisix | 3.13.0-debian | Apache-2.0 |  | pkg:oci/apisix@sha256:c5c7a55ebb5c07abc210dbb963a37f41030e12c91d23bacedbaa168fec633bd7?repository_url=docker.io/apache/apisix&tag=3.13.0-debian |
 | portal-bff | accessors-smart | 2.5.2 | Apache-2.0 |  | pkg:maven/net.minidev/accessors-smart@2.5.2?type=jar |
 | portal-bff | asm | 9.7.1 | BSD-3-Clause |  | pkg:maven/org.ow2.asm/asm@9.7.1?type=jar |
 | portal-bff | content-type | 2.2 | Apache-2.0 |  | pkg:maven/com.nimbusds/content-type@2.2?type=jar |
@@ -141,6 +142,14 @@ certification or a substitute for upstream license and NOTICE texts.
 | portal-bff | tomcat-embed-core | 10.1.55 | Apache-2.0 |  | pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.55?type=jar |
 | portal-bff | tomcat-embed-el | 10.1.55 | Apache-2.0 |  | pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.55?type=jar |
 | portal-bff | tomcat-embed-websocket | 10.1.55 | Apache-2.0 |  | pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.55?type=jar |
+
+## Gateway image scope
+
+`apache/apisix:3.13.0-debian` is the unmodified upstream APISIX gateway image
+(Apache-2.0): [LICENSE](https://github.com/apache/apisix/blob/3.13.0/LICENSE),
+[NOTICE](https://github.com/apache/apisix/blob/3.13.0/NOTICE).
+Its top-level record comes from `infra/apisix/bom.json`; image OS packages and
+transitive dependencies still require a separate distribution review under R24.
 
 ## Open compliance work
 
