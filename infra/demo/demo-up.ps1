@@ -2,12 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # Dựng demo integration-local (#119) trên Windows. Cần PowerShell 7 và Docker Desktop.
 # -TrustCa: thêm CA cục bộ của Caddy vào kho tin cậy của người dùng hiện tại (Windows sẽ hỏi xác nhận).
+# -Gateway: bật APISIX (infra/compose.gateway.yml, #116); Portal gọi backend qua 127.0.0.1:9080.
 #Requires -Version 7.4
 [CmdletBinding()]
-param([switch]$TrustCa)
+param([switch]$TrustCa, [switch]$Gateway)
 $ErrorActionPreference = 'Stop'
 Set-Location (Join-Path (git rev-parse --show-toplevel) 'infra')
 $compose = @('compose', '-f', 'compose.demo.yml')
+if ($Gateway) { $compose += @('-f', 'compose.gateway.yml') }
 
 if (-not (Test-Path .env)) {
     function New-DemoSecret { [System.Security.Cryptography.RandomNumberGenerator]::GetHexString(32).ToLower() }
@@ -57,6 +59,14 @@ Check '/api/* bi chan o ingress' (Code 'https://localhost:8443/api/v1/health') '
 $iss = (Invoke-RestMethod http://localhost:8180/realms/tricore/.well-known/openid-configuration).issuer
 Check 'issuer Keycloak' $iss 'http://localhost:8180/realms/tricore'
 Check 'backend khong mo ra may' (curl.exe -s -m 3 -o NUL -w '%{http_code}' http://127.0.0.1:8080/api/v1/health) '000'
+if ($Gateway) {
+    $gw = '000'
+    for ($i = 1; $i -le 20 -and $gw -ne '200'; $i++) {
+        $gw = curl.exe -s -m 5 -o NUL -w '%{http_code}' http://127.0.0.1:9080/api/v1/health
+        if ($gw -ne '200') { Start-Sleep 3 }
+    }
+    Check 'APISIX /api/v1/health' $gw '200'
+}
 
 if ($TrustCa) {
     Import-Certificate -FilePath $ca -CertStoreLocation Cert:\CurrentUser\Root | Out-Null
