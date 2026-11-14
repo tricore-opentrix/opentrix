@@ -24,6 +24,12 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Chạy localhost
 
+**Demo #233 / Demo #233:** Tên sản phẩm là **IT Helpdesk · OpenTrix**; bản integration-local giữ badge môi trường và ẩn Workflow version khỏi giao diện. / The product is **IT Helpdesk · OpenTrix**; integration-local keeps its environment badge and hides the workflow version from the UI.
+
+**Phiên integration-local / Integration-local session:** Nút Đăng nhập mở `/oauth2/authorization/keycloak`; Đăng xuất chỉ hiện khi có phiên BFF và POST `/bff/logout` bằng form `_csrf` lấy từ `/bff/session`. Trình duyệt đi theo redirect OIDC; đổi ba tài khoản trên cùng trình duyệt vẫn cần kiểm chứng thực tế. / Login opens `/oauth2/authorization/keycloak`; authenticated logout posts the session CSRF token to `/bff/logout` using a browser form. Real OIDC redirects and three-account switching still require verification.
+
+**Trạng thái #106 / States #106:** `SUBMITTED` → Mới gửi; `TRIAGED` → Đã tiếp nhận; `IN_PROGRESS` → Đang xử lý; `RESOLVED` → Chờ xác nhận; `CONFIRMED` → Hoàn thành. Mã lạ giữ nguyên chữ và dùng badge xám; payload, version và `allowedActions` giữ nguyên. / These Vietnamese labels affect presentation only; unknown codes retain their original text with a gray badge. API values, versions and authorization remain unchanged.
+
 Yêu cầu Node.js >= 22.12 (đã kiểm tra bằng Node 24.19.0), npm và trình duyệt hiện đại.
 
 ```powershell
@@ -98,6 +104,22 @@ Loading được mô phỏng với độ trễ 350 ms. Không có kết quả: h
 Không có secret, admin token, service-role key, database credential hay `X-User`/`X-Role` làm nguồn định danh. Chỉ có tên/vai trò demo trong `sessionStorage`; sửa giá trị này không phải chứng minh authentication/authorization. Fixture visibility (nhân viên xem yêu cầu mẫu của mình; người xử lý xem bộ dữ liệu mẫu) chỉ là hành vi UX.
 
 ## Kiểm thử
+
+Đối chiếu PDF 9 trang, phạm vi tích hợp thực tế và chỉ mục ảnh trước/sau #233:
+xem [UI_REVIEW_233.md](UI_REVIEW_233.md).
+
+Kiểm tra giao diện integration-local (#233) trên entry production hiện tại:
+
+```powershell
+npm.cmd run build:integration-local
+npx.cmd playwright test --config tests/integration-local.playwright.config.ts
+```
+
+Bộ kiểm tra dùng phản hồi BFF giả lập, chụp bốn màn hình ở 1440/768/390/320px
+vào `playwright-report/issue-233/`, kiểm tra tràn ngang và axe WCAG.
+Kết quả này không xác nhận đăng nhập/đăng xuất OIDC, đổi ba tài khoản thật hay
+Golden Path. Các bước đó cần stack Docker hoạt động theo runbook #119.
+Chạy lại `npm.cmd run build` trước bộ smoke MOCK dưới đây.
 
 ```powershell
 npm.cmd run build

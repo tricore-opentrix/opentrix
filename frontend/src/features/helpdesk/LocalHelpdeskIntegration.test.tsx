@@ -10,14 +10,99 @@ import { helpdeskId, helpdeskWire } from "../../test/helpdeskFixtures";
 import LocalHelpdeskIntegration from "./LocalHelpdeskIntegration";
 
 beforeEach(() => vi.stubGlobal("location", new URL("https://localhost:8443")));
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  document
+    .querySelectorAll('form[action$="/bff/logout"]')
+    .forEach((form) => form.remove());
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 function mount(path = "/mvp/helpdesk") {
-  render(
+  return render(
     <MemoryRouter initialEntries={[path]}>
       <LocalHelpdeskIntegration />
     </MemoryRouter>,
   );
 }
+
+it("posts session CSRF through browser logout navigation and offers login after returning", async () => {
+  const submit = vi
+    .spyOn(HTMLFormElement.prototype, "submit")
+    .mockImplementation(function (this: HTMLFormElement) {
+      expect(this.method).toBe("post");
+      expect(this.getAttribute("action")).toBe(
+        "https://localhost:8443/bff/logout",
+      );
+      expect(new FormData(this).get("_csrf")).toBe("csrf-test");
+      expect(this.isConnected).toBe(true);
+    });
+  const fetcher = vi
+    .fn<typeof fetch>()
+    .mockImplementation(async (url) =>
+      Response.json(
+        url === "/bff/session"
+          ? { authenticated: true, csrfToken: "csrf-test" }
+          : { items: [], nextCursor: null },
+      ),
+    );
+  vi.stubGlobal("fetch", fetcher);
+  const view = mount();
+  expect(
+    screen.queryByRole("button", { name: "Đăng xuất" }),
+  ).not.toBeInTheDocument();
+  const logout = await screen.findByRole("button", { name: "Đăng xuất" });
+  await userEvent.dblClick(logout);
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(logout).toBeDisabled();
+  // Keep the form connected until navigation; removing it cancels browser POST.
+  expect(
+    document.querySelector('form[action$="/bff/logout"]'),
+  ).toBeInTheDocument();
+  // Simulate the provider returning to the app with the BFF session ended.
+  view.unmount();
+  fetcher.mockResolvedValue(Response.json({ authenticated: false }));
+  mount();
+  expect(
+    await screen.findByRole("link", { name: "Đăng nhập" }),
+  ).toHaveAttribute("href", "/oauth2/authorization/keycloak");
+  expect(
+    screen.queryByRole("button", { name: "Đăng xuất" }),
+  ).not.toBeInTheDocument();
+  expect(document.querySelectorAll("h1")).toHaveLength(1);
+  expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+    "IT Helpdesk · OpenTrix",
+  );
+  expect(document.querySelector("h1 h1")).toBeNull();
+});
+
+it("reports a failed logout submission without pretending the session ended", async () => {
+  vi.spyOn(HTMLFormElement.prototype, "submit").mockImplementation(() => {
+    throw new Error("blocked");
+  });
+  vi.stubGlobal(
+    "fetch",
+    vi
+      .fn<typeof fetch>()
+      .mockImplementation(async (url) =>
+        Response.json(
+          url === "/bff/session"
+            ? { authenticated: true, csrfToken: "csrf-test" }
+            : { items: [], nextCursor: null },
+        ),
+      ),
+  );
+  mount();
+  await userEvent.click(
+    await screen.findByRole("button", { name: "Đăng xuất" }),
+  );
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Không thể đăng xuất",
+  );
+  expect(screen.getByRole("button", { name: "Đăng xuất" })).toBeEnabled();
+  expect(
+    screen.queryByRole("link", { name: "Đăng nhập" }),
+  ).not.toBeInTheDocument();
+});
 
 it("requires the real BFF session even when a demo persona is set", async () => {
   sessionStorage.setItem("dxos-demo-role", "processor");
@@ -27,8 +112,11 @@ it("requires the real BFF session even when a demo persona is set", async () => 
   vi.stubGlobal("fetch", fetcher);
   mount();
   expect(
-    await screen.findByRole("link", { name: "Đăng nhập Keycloak" }),
+    await screen.findByRole("link", { name: "Đăng nhập" }),
   ).toHaveAttribute("href", "/oauth2/authorization/keycloak");
+  expect(
+    screen.queryByRole("button", { name: "Đăng xuất" }),
+  ).not.toBeInTheDocument();
   expect(fetcher).toHaveBeenCalledTimes(1);
 });
 
@@ -84,10 +172,13 @@ it("expires the local session on API 401 and removes the request UI", async () =
   vi.stubGlobal("fetch", fetcher);
   mount();
   expect(
-    await screen.findByRole("link", { name: "Đăng nhập Keycloak" }),
+    await screen.findByRole("link", { name: "Đăng nhập" }),
   ).toBeInTheDocument();
   expect(
     screen.queryByRole("link", { name: "Tạo yêu cầu IT" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Đăng xuất" }),
   ).not.toBeInTheDocument();
   expect(fetcher).toHaveBeenCalledTimes(2);
 });
@@ -101,6 +192,9 @@ it("shows a session network error without falling back to mocks", async () => {
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Không thể kiểm tra phiên BFF",
   );
+  expect(
+    screen.queryByRole("button", { name: "Đăng xuất" }),
+  ).not.toBeInTheDocument();
   expect(fetcher).toHaveBeenCalledTimes(1);
 });
 
@@ -141,36 +235,59 @@ it("keeps an unknown create blocked after navigation without replay", async () =
   ).toHaveLength(1);
 });
 
-
 it.each([
   "/mvp/helpdesk",
   "/mvp/helpdesk/new",
   `/mvp/helpdesk/${helpdeskId}`,
-])("labels integration-local and excludes Facility on route %s", async (path) => {
-  const fetcher = vi.fn<typeof fetch>().mockImplementation(async (url) => {
-    if (url === "/bff/session")
-      return Response.json({ authenticated: true, csrfToken: "csrf-test" });
-    if (String(url).endsWith("/history")) return Response.json([]);
-    if (String(url).includes("?limit="))
-      return Response.json({ items: [helpdeskWire()], nextCursor: null });
-    return Response.json(helpdeskWire());
-  });
-  vi.stubGlobal("fetch", fetcher);
-  mount(path);
-  const badge = screen.getByLabelText("Chế độ demo: integration-local");
-  expect(badge).toHaveTextContent("integration-local");
-  await waitFor(() => {
-    expect(screen.queryByText("Đang kiểm tra phiên…")).not.toBeInTheDocument();
-  });
-  expect(
-    await screen.findByText(/integration-local: backend thật qua BFF/),
-  ).toBeInTheDocument();
-  if (path.endsWith(helpdeskId))
+  "/mvp/helpdesk/unknown/route",
+])(
+  "labels integration-local and excludes Facility on route %s",
+  async (path) => {
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async (url) => {
+      if (url === "/bff/session")
+        return Response.json({ authenticated: true, csrfToken: "csrf-test" });
+      if (String(url).endsWith("/history")) return Response.json([]);
+      if (String(url).includes("?limit="))
+        return Response.json({ items: [helpdeskWire()], nextCursor: null });
+      return Response.json(helpdeskWire());
+    });
+    vi.stubGlobal("fetch", fetcher);
+    mount(path);
+    const badge = screen.getByLabelText("Chế độ demo: integration-local");
+    expect(badge).toHaveTextContent("integration-local");
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Đang kiểm tra phiên…"),
+      ).not.toBeInTheDocument();
+    });
     expect(
-      await screen.findByText("IT Support · dữ liệu từ backend integration-local"),
+      await screen.findByText(
+        "Môi trường demo integration-local · dữ liệu dùng một lần",
+      ),
     ).toBeInTheDocument();
-  expect(screen.queryByText(/service kiểm thử|phiên kiểm thử/)).not.toBeInTheDocument();
-  expect(screen.queryByText(/Cơ sở vật chất/i)).not.toBeInTheDocument();
-  expect(screen.queryByRole("link", { name: /Facility/i })).not.toBeInTheDocument();
-  expect(screen.queryByRole("radio", { name: /Facility|Cơ sở vật chất/i })).not.toBeInTheDocument();
-});
+    expect(
+      screen.getByRole("heading", { name: "IT Helpdesk · OpenTrix" }),
+    ).toBeVisible();
+    expect(document.body).not.toHaveTextContent(/DX-OS|MVP|University/);
+    if (path.endsWith("unknown/route"))
+      expect(
+        screen.getByText("Không tìm thấy trang yêu cầu hỗ trợ IT"),
+      ).toBeVisible();
+    if (path.endsWith(helpdeskId))
+      expect(
+        await screen.findByText(
+          "Thông tin và tiến trình xử lý yêu cầu hỗ trợ IT.",
+        ),
+      ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/service kiểm thử|phiên kiểm thử/),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Cơ sở vật chất/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Facility/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("radio", { name: /Facility|Cơ sở vật chất/i }),
+    ).not.toBeInTheDocument();
+  },
+);

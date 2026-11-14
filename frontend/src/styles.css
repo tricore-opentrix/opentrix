@@ -874,6 +874,44 @@ tbody tr:hover {
   border-radius: 5px;
   white-space: nowrap;
 }
+.state-submitted { color: #1e40af; background: #dbeafe; }
+.state-triaged { color: #6b21a8; background: #f3e8ff; }
+.state-in-progress { color: #9a3412; background: #ffedd5; }
+.state-resolved { color: #166534; background: #dcfce7; }
+.state-confirmed { color: #ffffff; background: #166534; }
+.state-unknown { color: #374151; background: #f3f4f6; }
+
+.helpdesk-local { min-height: 100dvh; }
+.helpdesk-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.helpdesk-header h1 { font-size: clamp(20px, 3vw, 28px); }
+.helpdesk-header .environment { margin-right: auto; }
+.helpdesk-login {
+  width: min(100%, 460px);
+  margin: clamp(32px, 12vh, 120px) auto;
+  padding: 32px;
+  text-align: center;
+}
+.helpdesk-login p { margin: 16px 0 24px; }
+.helpdesk-local .action-panel fieldset,
+.helpdesk-local .detail-layout > aside > fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.helpdesk-local .detail-layout > aside > fieldset { margin-top: 20px; }
+.helpdesk-local .action-panel fieldset .button {
+  width: 100%;
+  margin-top: 12px;
+  white-space: normal;
+}
+
 .status-pending {
   color: #8b5f13;
   background: #fff8e9;

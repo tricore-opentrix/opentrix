@@ -107,3 +107,28 @@ export function sameOriginHelpdeskTransport(
     return { status: response.status, body };
   };
 }
+
+/** Native POST follows the BFF's OIDC logout redirect as a browser navigation.
+ * Spring Security accepts the session CSRF token as the `_csrf` form field.
+ * API fetches keep redirect:error; no credentials or tokens go in the URL.
+ */
+export function logoutHelpdeskSession(csrfToken: string) {
+  requireLocalHttps();
+  if (!csrfToken.trim()) throw new Error("BFF CSRF token is required.");
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = `${location.origin}/bff/logout`;
+  form.hidden = true;
+  const token = document.createElement("input");
+  token.type = "hidden";
+  token.name = "_csrf";
+  token.value = csrfToken;
+  form.append(token);
+  document.body.append(form);
+  try {
+    form.submit();
+  } catch (error) {
+    form.remove();
+    throw error;
+  }
+}
