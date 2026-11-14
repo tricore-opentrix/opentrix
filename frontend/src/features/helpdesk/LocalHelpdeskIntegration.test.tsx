@@ -265,7 +265,7 @@ it.each([
         "Môi trường demo integration-local · dữ liệu dùng một lần",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "OpenTrix" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "OpenTrix IT Helpdesk" })).toBeVisible();
     expect(document.body).not.toHaveTextContent(/service\s*desk/i);
     expect(document.body).not.toHaveTextContent(/DX-OS|MVP|University/);
     if (path.endsWith("unknown/route"))
