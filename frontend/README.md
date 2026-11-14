@@ -12,11 +12,11 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Phân biệt các chế độ / Mode boundaries
 
-| Chế độ / Mode                                    | Có gì / What exists                                                                                                                                                                 | Chưa chứng minh / Not evidence of                                                                                         |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **MOCK / DEVELOPMENT** (mặc định / default)      | `npm.cmd run dev` và `npm.cmd run build` dùng fixtures/dữ liệu giả trong bộ nhớ, không cần Keycloak/Backend/PostgreSQL.                                                             | SSO, backend ACL, lưu trữ ticket, tích hợp LIVE                                                                           |
-| **integration-local** (opt-in)                   | `npm.cmd run build:integration-local` chọn entry tích hợp với BFF; yêu cầu setup Keycloak, BFF, Backend, HTTPS ingress, database riêng; xem [BFF runbook](../portal-bff/README.md). | Build thành công không chứng minh stack đã chạy hoặc browser acceptance đạt                                               |
-| **LIVE E2E** (cổng nghiệm thu / acceptance gate) | Chỉ có thể đánh giá bằng bằng chứng đăng nhập thật, quyền truy cập, workflow và persistence tại SHA/môi trường cụ thể.                                                              | **UNVERIFIED** theo [#118](https://github.com/tricore-opentrix/opentrix/issues/118); không phải tên chế độ tự bật từ MOCK |
+| Chế độ / Mode | Có gì / What exists | Chưa chứng minh / Not evidence of |
+| --- | --- | --- |
+| **MOCK / DEVELOPMENT** (mặc định / default) | `npm.cmd run dev` và `npm.cmd run build` dùng fixtures/dữ liệu giả trong bộ nhớ, không cần Keycloak/Backend/PostgreSQL. | SSO, backend ACL, lưu trữ ticket, tích hợp LIVE |
+| **integration-local** (opt-in) | `npm.cmd run build:integration-local` chọn entry tích hợp với BFF; yêu cầu setup Keycloak, BFF, Backend, HTTPS ingress, database riêng; xem [BFF runbook](../portal-bff/README.md). | Build thành công không chứng minh stack đã chạy hoặc browser acceptance đạt |
+| **LIVE E2E** (cổng nghiệm thu / acceptance gate) | Chỉ có thể đánh giá bằng bằng chứng đăng nhập thật, quyền truy cập, workflow và persistence tại SHA/môi trường cụ thể. | **UNVERIFIED** theo [#118](https://github.com/tricore-opentrix/opentrix/issues/118); không phải tên chế độ tự bật từ MOCK |
 
 **English:** The default Portal uses synthetic in-memory MOCK data. `integration-local` is a separate opt-in build entry, not a deployed or accepted LIVE stack. Real Keycloak login, authorized Helpdesk transitions and database persistence remain **LIVE E2E UNVERIFIED**. See canonical [API](../docs/API.md), [integration](../docs/INTEGRATION.md), [testing](../docs/TESTING.md), and [development](../docs/DEVELOPMENT.md) guides.
 
@@ -76,18 +76,18 @@ Hai workflow UX dùng chung form, bảng, metadata, action dialog và timeline. 
 
 ## Các màn hình
 
-| Route           | Nội dung                                                                       |
-| --------------- | ------------------------------------------------------------------------------ |
-| `/session`      | Vào/kết thúc phiên demo, đổi vai trò, mô phỏng hết hạn; SSO bị chặn            |
+| Route           | Nội dung                                                            |
+| --------------- | ------------------------------------------------------------------- |
+| `/session`      | Vào/kết thúc phiên demo, đổi vai trò, mô phỏng hết hạn; SSO bị chặn |
 | `/login`        | Form email/mật khẩu, ghi nhớ riêng email; submit và khôi phục mật khẩu bị chặn |
-| `/register`     | Form đăng ký Sinh viên/Giảng viên; không tạo tài khoản hoặc cấp quyền          |
-| `/`             | Dashboard và truy cập nhanh hai dịch vụ                                        |
-| `/requests`     | Search không dấu, filter dịch vụ/trạng thái, phân trang                        |
-| `/requests/new` | Form dùng chung, validation, loading, success/error                            |
-| `/approvals`    | Bàn xử lý dành cho vai trò người xử lý mô phỏng                                |
-| `/requests/:id` | Chi tiết, phiên bản mock, thao tác xử lý và timeline                           |
-| `/history`      | Lịch sử từng yêu cầu, mới nhất trước                                           |
-| `/integration`  | Trạng thái các capability, kiểm tra chặn LIVE và fault controls                |
+| `/register`     | Form đăng ký Sinh viên/Giảng viên; không tạo tài khoản hoặc cấp quyền |
+| `/`             | Dashboard và truy cập nhanh hai dịch vụ                             |
+| `/requests`     | Search không dấu, filter dịch vụ/trạng thái, phân trang             |
+| `/requests/new` | Form dùng chung, validation, loading, success/error                 |
+| `/approvals`    | Bàn xử lý dành cho vai trò người xử lý mô phỏng                     |
+| `/requests/:id` | Chi tiết, phiên bản mock, thao tác xử lý và timeline                |
+| `/history`      | Lịch sử từng yêu cầu, mới nhất trước                                |
+| `/integration`  | Trạng thái các capability, kiểm tra chặn LIVE và fault controls     |
 
 Loading được mô phỏng với độ trễ 350 ms. Không có kết quả: hướng dẫn đổi bộ lọc. Lỗi đọc có nút tải lại do người dùng chủ động. Form giữ nội dung khi lỗi mạng. Ghi có khóa chống double-submit và không tự retry. Khi `COMMIT_OUTCOME_UNKNOWN`, UI vô hiệu hóa gửi tiếp và hướng dẫn kiểm tra lịch sử. Lỗi 401 mô phỏng kết thúc phiên và hiển thị thông báo; 403 và hidden/missing 404 có thông báo an toàn. Đây không phải bằng chứng kiểm quyền backend.
 
