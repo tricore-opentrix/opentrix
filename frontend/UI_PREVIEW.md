@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 TRICORE contributors
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # OpenTrix #233: UI Preview trên Windows, không Docker
 
 Chạy trong PowerShell (Node và dependencies hiện tại của dự án đã có):
