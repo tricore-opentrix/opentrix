@@ -10,6 +10,9 @@ User-visible DX-OS Open Core changes are recorded here. The format follows
 [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+### Fixed
+
+- Prevent Helpdesk request UUIDs from overflowing into request titles in the integration-local list; preserve full identifiers and navigation links (#242, #225).
 
 ### Added
 
