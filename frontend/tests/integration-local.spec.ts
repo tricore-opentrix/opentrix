@@ -36,7 +36,7 @@ for (const screen of ["login", "list", "create", "detail"] as const) {
     await expect(page).toHaveTitle("IT Helpdesk · OpenTrix");
     await expect(
       page.getByRole("link", {
-        name: "OpenTrix",
+        name: "OpenTrix IT Helpdesk",
         exact: true,
       }),
     ).toBeVisible();
@@ -82,8 +82,12 @@ for (const screen of ["login", "list", "create", "detail"] as const) {
     for (const width of [1440, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });
       await page.evaluate(() => document.fonts.ready);
-      const brand = page.getByRole("link", { name: "OpenTrix", exact: true });
-      await expect(brand).toHaveText("OpenTrix");
+      const brand = page.getByRole("link", {
+        name: "OpenTrix IT Helpdesk",
+        exact: true,
+      });
+      await expect(brand).toContainText("OpenTrix");
+      await expect(brand).toContainText("IT Helpdesk");
       const logo = brand.locator("img");
       await expect(logo).toHaveAttribute("alt", "");
       expect(
