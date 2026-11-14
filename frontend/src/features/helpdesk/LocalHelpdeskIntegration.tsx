@@ -30,7 +30,7 @@ function RequestIllustration() {
   );
 }
 
-function Login() {
+function Login({ sessionExpired = false }: { sessionExpired?: boolean }) {
   return (
     <section
       className="panel helpdesk-login-card"
@@ -46,7 +46,15 @@ function Login() {
       <div className="helpdesk-login-form">
         <p className="helpdesk-kicker">Chào mừng đến OpenTrix</p>
         <h1 id="helpdesk-login-title">Yêu cầu hỗ trợ IT</h1>
-        <p>Đăng nhập bằng tài khoản tổ chức để tiếp tục.</p>
+        {sessionExpired ? (
+          <p role="status">
+            Phiên hỗ trợ đã hết hạn. Phiên Keycloak có thể vẫn đang hoạt động;
+            đăng nhập lại có thể quay về tài khoản cũ. Để đổi vai trò, hãy đăng
+            xuất khỏi Keycloak trước khi đăng nhập bằng tài khoản khác.
+          </p>
+        ) : (
+          <p>Đăng nhập bằng tài khoản tổ chức để tiếp tục.</p>
+        )}
         <a className="button primary" href="/oauth2/authorization/keycloak">
           Đăng nhập <ArrowRight size={16} aria-hidden="true" />
         </a>
@@ -60,7 +68,7 @@ function Login() {
 
 function SessionPortal() {
   const { sessionExpired } = usePortal();
-  if (sessionExpired) return <Login />;
+  if (sessionExpired) return <Login sessionExpired />;
   return (
     <Routes>
       <Route
@@ -192,7 +200,7 @@ export default function LocalHelpdeskIntegration() {
               tải lại trang.
             </p>
           ) : typeof session === "string" ? (
-            <Login />
+            <Login sessionExpired={session === "expired"} />
           ) : (
             <PortalProvider helpdeskService={session.service} helpdeskSession>
               <SessionPortal />
