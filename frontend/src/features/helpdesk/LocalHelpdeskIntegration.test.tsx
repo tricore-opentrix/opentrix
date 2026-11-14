@@ -172,7 +172,7 @@ it("expires the local session on API 401 and removes the request UI", async () =
   vi.stubGlobal("fetch", fetcher);
   mount();
   expect(
-    await screen.findByRole("link", { name: "Đăng nhập" }),
+    await screen.findByRole("link", { name: "Đăng nhập lại" }),
   ).toBeInTheDocument();
   expect(
     screen.queryByRole("link", { name: "Tạo yêu cầu IT" }),
