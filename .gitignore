@@ -18,6 +18,8 @@ backend/build/
 Thumbs.db
 .serena/
 .worktrees/
+/portal-bff/bin/
+/portal-bff/build/
 
 # Demo stack (#119): CA cục bộ của Caddy
 infra/demo/.local/
