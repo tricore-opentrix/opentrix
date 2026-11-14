@@ -101,12 +101,17 @@ jobs:
             --output build/r24/upstream
       - name: Package and independently verify candidate archive
         env:
+          EVENT: ${{ github.event_name }}
           TAG: ${{ steps.meta.outputs.tag }}
           SOURCE_SHA: ${{ steps.meta.outputs.sha }}
           MODE: ${{ steps.meta.outputs.mode }}
         run: |
+          preview_args=()
+          if [ "$EVENT" != push ]; then
+            preview_args+=(--validation-only)
+          fi
           python3 scripts/r24-release.py package --mode "$MODE" \
-            --tag "$TAG" --sha "$SOURCE_SHA" --output dist/r24
+            --tag "$TAG" --sha "$SOURCE_SHA" --output dist/r24 "${preview_args[@]}"
           python3 scripts/r24-release.py verify --archive "dist/r24/dxos-open-core-${TAG#v}.tar.gz" --checksums dist/r24/SHA256SUMS
           (cd dist/r24 && sha256sum -c SHA256SUMS)
       - uses: actions/upload-artifact@v4
@@ -122,7 +127,7 @@ jobs:
           SOURCE_SHA: ${{ steps.meta.outputs.sha }}
         run: |
           python3 scripts/r24-release.py package --mode source-only \
-            --tag "$TAG" --sha "$SOURCE_SHA" --output dist/r24-source-only
+            --tag "$TAG" --sha "$SOURCE_SHA" --output dist/r24-source-only --validation-only
           python3 scripts/r24-release.py verify \
             --archive "dist/r24-source-only/dxos-open-core-${TAG#v}.tar.gz" \
             --checksums dist/r24-source-only/SHA256SUMS

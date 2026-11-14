@@ -36,9 +36,15 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def release_notes(changelog, tag):
+def release_notes(changelog, tag, validation_only=False):
     version = re.escape(tag[1:])
     match = re.search(rf"(?ms)^## \[{version}\][^\n]*\n(.*?)(?=^## \[|\Z)", changelog)
+    if match is None and validation_only:
+        match = re.search(r"(?ms)^## \[Unreleased\][^\n]*\n(.*?)(?=^## \[|\Z)", changelog)
+        require(match and match.group(1).strip(), "CHANGELOG is missing nonempty Unreleased notes")
+        return (f"# DX-OS {tag} — validation only\n\n"
+                "Unreleased preview; not approved for publication.\n\n"
+                + match.group(1).strip() + "\n")
     require(match and match.group(1).strip(), "CHANGELOG is missing this version's release notes")
     return f"# DX-OS {tag}\n\n" + match.group(1).strip() + "\n"
 
@@ -75,7 +81,7 @@ def normalize_cyclonedx(raw):
                        separators=(",", ":")) + "\n").encode("utf-8")
 
 
-def package(repo, tag, sha, output, mode="binary"):
+def package(repo, tag, sha, output, mode="binary", validation_only=False):
     require(mode in {"binary", "source-only"}, "unknown R24 release mode")
     require(TAG.fullmatch(tag), "release tag must be vMAJOR.MINOR.PATCH")
     require(SHA.fullmatch(sha), "source SHA must be a full lowercase commit hash")
@@ -151,11 +157,14 @@ def package(repo, tag, sha, output, mode="binary"):
     require(isinstance(inventory, list) and inventory and
             all(row.get("license_policy_status") == "APPROVED" for row in inventory),
             "R23 dependency policy is not approved")
-    notes = release_notes((source / "CHANGELOG.md").read_text(encoding="utf-8"), tag)
+    notes = release_notes((source / "CHANGELOG.md").read_text(encoding="utf-8"), tag,
+                          validation_only=validation_only)
     files[prefix + "RELEASE-NOTES.md"] = notes.encode()
     manifest = {"tag": tag, "source_sha": sha, "mode": mode,
                 "files_sha256": {name[len(prefix):]: digest(data)
                                  for name, data in sorted(files.items())}}
+    if validation_only:
+        manifest["validation_only"] = True
     files[prefix + "MANIFEST.json"] = (json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode()
     archive = output / f"dxos-open-core-{tag[1:]}.tar.gz"
     with archive.open("wb") as raw:
@@ -193,6 +202,8 @@ def verify(archive, checksums):
             "invalid release identity")
     require(prefix == f"dxos-{manifest['tag']}/", "invalid archive root")
     require(manifest.get("mode") in {"binary", "source-only"}, "release mode missing")
+    require(isinstance(manifest.get("validation_only", False), bool),
+            "invalid validation-only marker")
     expected = {prefix + name: d for name, d in manifest["files_sha256"].items()}
     require(set(expected) == set(data) - {manifests[0]}, "archive manifest coverage mismatch")
     require(all(digest(data[name]) == value for name, value in expected.items()),
@@ -203,6 +214,8 @@ def verify(archive, checksums):
 
 def gate(archive, checksums, acceptance, tag, sha, notes_file=None):
     manifest, data, prefix = verify(archive, checksums)
+    require(not manifest.get("validation_only", False),
+            "validation-only archive cannot be published")
     if notes_file is not None:
         require(Path(notes_file).read_bytes() == data[prefix + "RELEASE-NOTES.md"],
                 "standalone release notes mismatch verified archive")
@@ -310,6 +323,8 @@ def main():
     a.add_argument("--tag", required=True)
     a.add_argument("--sha", required=True)
     a.add_argument("--output", default="dist/r24")
+    a.add_argument("--validation-only", action="store_true",
+                   help="Allow Unreleased preview notes; archive cannot pass publication gate")
     a = sp.add_parser("verify")
     a.add_argument("--archive", required=True)
     a.add_argument("--checksums", required=True)
@@ -323,7 +338,7 @@ def main():
     args = p.parse_args()
     try:
         if args.command == "package":
-            package(args.repo, args.tag, args.sha, args.output, args.mode)
+            package(args.repo, args.tag, args.sha, args.output, args.mode, args.validation_only)
         elif args.command == "verify":
             verify(args.archive, args.checksums)
         else:

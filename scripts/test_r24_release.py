@@ -84,6 +84,52 @@ class R24ReleaseTests(unittest.TestCase):
         self.assertEqual(first, release.digest(self.archive.read_bytes()))
         release.verify(self.archive, self.sums)
 
+    def test_unreleased_notes_require_explicit_validation_mode(self):
+        changelog = "## [Unreleased]\n\n### Added\n- preview change\n\n## [0.1.0]\n- old release\n"
+        with self.assertRaisesRegex(ValueError, "this version's release notes"):
+            release.release_notes(changelog, TAG)
+        notes = release.release_notes(changelog, TAG, validation_only=True)
+        self.assertIn("validation only", notes)
+        self.assertIn("preview change", notes)
+        self.assertNotIn("old release", notes)
+
+    def test_validation_mode_still_rejects_missing_or_empty_notes(self):
+        for changelog in ("## [0.1.0]\n- old release\n",
+                          "## [Unreleased]\n\n## [0.1.0]\n- old release\n",
+                          f"## [{TAG[1:]}]\n\n## [Unreleased]\n- preview\n"):
+            with self.subTest(changelog=changelog), self.assertRaises(ValueError):
+                release.release_notes(changelog, TAG, validation_only=True)
+
+    def test_exact_version_notes_take_precedence_over_unreleased(self):
+        changelog = f"## [Unreleased]\n- future\n\n## [{TAG[1:]}]\n- approved version\n"
+        notes = release.release_notes(changelog, TAG, validation_only=True)
+        self.assertIn("approved version", notes)
+        self.assertNotIn("future", notes)
+
+    def test_unreleased_archives_verify_but_cannot_pass_publication_gate(self):
+        self.put("CHANGELOG.md", "## [Unreleased]\n\n- preview change\n")
+        subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
+        subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md"],
+                       cwd=self.repo, check=True)
+        for mode in ("binary", "source-only"):
+            with self.subTest(mode=mode):
+                release.package(self.repo, TAG, SHA, self.output, mode, validation_only=True)
+                manifest, data, prefix = release.verify(self.archive, self.sums)
+                self.assertIs(manifest["validation_only"], True)
+                self.assertIn(b"preview change", data[prefix + "RELEASE-NOTES.md"])
+                first = release.digest(self.archive.read_bytes())
+                release.package(self.repo, TAG, SHA, self.output, mode, validation_only=True)
+                self.assertEqual(first, release.digest(self.archive.read_bytes()))
+                self.accept(mode)
+                with self.assertRaisesRegex(ValueError, "validation-only archive cannot be published"):
+                    self.gate()
+
+    def test_validation_marker_blocks_publication_even_with_versioned_notes(self):
+        release.package(self.repo, TAG, SHA, self.output, validation_only=True)
+        self.accept()
+        with self.assertRaisesRegex(ValueError, "validation-only archive cannot be published"):
+            self.gate()
+
     def test_generated_sbom_timestamp_uuid_and_run_link_do_not_change_archive(self):
         def populate(uuid, timestamp, run):
             generated = {
