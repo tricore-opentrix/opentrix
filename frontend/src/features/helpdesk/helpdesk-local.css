@@ -30,29 +30,19 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 .helpdesk-brand-mark {
-  display: grid;
-  place-items: center;
+  display: block;
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background: #116e68;
-  color: #fff;
 }
-.helpdesk-local .helpdesk-header h1 {
+.helpdesk-brand-name {
   font-size: 20px;
   line-height: 1.2;
   font-weight: 800;
   letter-spacing: -0.65px;
-}
-.helpdesk-brand-caption {
-  display: block;
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 2px;
 }
 .helpdesk-local .helpdesk-header .environment {
   margin-right: auto;
@@ -502,7 +492,7 @@
   font-size: 12px;
   font-weight: 750;
 }
-.helpdesk-login-form h2 {
+.helpdesk-login-form h1 {
   font-size: 26px;
   letter-spacing: -0.7px;
   font-weight: 800;
@@ -638,7 +628,7 @@
     padding: 28px;
     gap: 16px;
   }
-  .helpdesk-login-form h2 {
+  .helpdesk-login-form h1 {
     font-size: 23px;
   }
   .helpdesk-local .page-heading {

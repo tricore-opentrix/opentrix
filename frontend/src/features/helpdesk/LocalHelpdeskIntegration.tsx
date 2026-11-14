@@ -4,15 +4,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Navigate, Route, Routes } from "react-router-dom";
-import {
-  ArrowRight,
-  Check,
-  ListTodo,
-  LogOut,
-  Network,
-  Plus,
-} from "lucide-react";
+import { ArrowRight, Check, ListTodo, LogOut, Plus } from "lucide-react";
 import { PortalProvider, usePortal } from "../../context";
+import cloverLogo from "../../assets/opentrix-clover.svg";
 import { HelpdeskRequestService } from "../../services/mvp/HelpdeskRequestService";
 import { HelpdeskApiClient } from "../../services/mvp/http/HelpdeskApiClient";
 import {
@@ -51,7 +45,7 @@ function Login() {
       </div>
       <div className="helpdesk-login-form">
         <p className="helpdesk-kicker">Chào mừng đến OpenTrix</p>
-        <h2 id="helpdesk-login-title">Hỗ trợ IT nội bộ</h2>
+        <h1 id="helpdesk-login-title">Yêu cầu hỗ trợ IT</h1>
         <p>Đăng nhập bằng tài khoản tổ chức để tiếp tục.</p>
         <a className="button primary" href="/oauth2/authorization/keycloak">
           Đăng nhập <ArrowRight size={16} aria-hidden="true" />
@@ -138,15 +132,14 @@ export default function LocalHelpdeskIntegration() {
       </a>
       <header className="helpdesk-header">
         <Link to="/mvp/helpdesk" className="helpdesk-brand">
-          <span className="helpdesk-brand-mark" aria-hidden="true">
-            <Network size={23} />
-          </span>
-          <div>
-            <h1 aria-label="IT Helpdesk · OpenTrix">
-              <span className="sr-only">IT Helpdesk ·</span> OpenTrix
-            </h1>
-            <span className="helpdesk-brand-caption">SERVICE DESK</span>
-          </div>
+          <img
+            className="helpdesk-brand-mark"
+            src={cloverLogo}
+            alt=""
+            width="40"
+            height="40"
+          />
+          <span className="helpdesk-brand-name">OpenTrix</span>
         </Link>
         <span
           className="environment"

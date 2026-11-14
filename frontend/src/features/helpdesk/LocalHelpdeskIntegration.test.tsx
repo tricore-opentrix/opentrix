@@ -70,7 +70,7 @@ it("posts session CSRF through browser logout navigation and offers login after 
   ).not.toBeInTheDocument();
   expect(document.querySelectorAll("h1")).toHaveLength(1);
   expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-    "IT Helpdesk · OpenTrix",
+    "Yêu cầu hỗ trợ IT",
   );
   expect(document.querySelector("h1 h1")).toBeNull();
 });
@@ -265,9 +265,8 @@ it.each([
         "Môi trường demo integration-local · dữ liệu dùng một lần",
       ),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "IT Helpdesk · OpenTrix" }),
-    ).toBeVisible();
+    expect(screen.getByRole("link", { name: "OpenTrix" })).toBeVisible();
+    expect(document.body).not.toHaveTextContent(/service\s*desk/i);
     expect(document.body).not.toHaveTextContent(/DX-OS|MVP|University/);
     if (path.endsWith("unknown/route"))
       expect(
