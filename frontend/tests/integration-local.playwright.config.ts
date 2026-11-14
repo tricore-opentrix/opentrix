@@ -13,7 +13,11 @@ export default defineConfig({
   workers: 1,
   reporter: "list",
   outputDir: "../playwright-report/issue-233",
-  use: { baseURL: "https://localhost:8443", trace: "retain-on-failure" },
+  use: {
+    baseURL: "https://localhost:9443",
+    serviceWorkers: "block",
+    trace: "retain-on-failure",
+  },
   projects: [
     { name: "integration-local", metadata: { integrationLocalUI: true } },
   ],
