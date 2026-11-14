@@ -5,7 +5,8 @@ import type { BrowserContext } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { helpdeskId, helpdeskWire } from "../src/test/helpdeskFixtures";
 
-export const previewOrigin = "https://localhost:8443";
+// Isolated virtual HTTPS origin, intentionally different from the real Docker ingress (:8443).
+export const previewOrigin = "https://localhost:9443";
 export const helpdeskRoot = "/mvp/helpdesk";
 const base = "/bff/api/v1/mvp/requests";
 const csrfToken = "browser-test-only";
