@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+
+apisix:
+  node_listen: 9080
+  enable_admin: false
+  enable_control: false
+  ssl:
+    enable: false
+
+deployment:
+  role: data_plane
+  role_data_plane:
+    config_provider: yaml
+
+nginx_config:
+  worker_processes: 1
+  envs:
+    - OIDC_ISSUER_URI
+    - OIDC_AUDIENCE
+  http:
+    access_log_format: '$remote_addr $request_method $uri $status upstream=$upstream_status smoke_id=$http_x_opentrix_smoke_id'
+
+plugins:
+  - openid-connect
+  - limit-req
+  - limit-count
+  - request-id
+  - proxy-rewrite

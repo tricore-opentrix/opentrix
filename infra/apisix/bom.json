@@ -1,0 +1,20 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "components": [
+    {
+      "type": "application",
+      "group": "apache",
+      "name": "apisix",
+      "version": "3.13.0-debian",
+      "description": "Upstream gateway image; this record is not an inventory of image OS packages or transitive dependencies.",
+      "purl": "pkg:oci/apisix@sha256:c5c7a55ebb5c07abc210dbb963a37f41030e12c91d23bacedbaa168fec633bd7?repository_url=docker.io/apache/apisix&tag=3.13.0-debian",
+      "licenses": [{"license": {"id": "Apache-2.0"}}],
+      "externalReferences": [
+        {"type": "license", "url": "https://github.com/apache/apisix/blob/3.13.0/LICENSE"},
+        {"type": "other", "url": "https://github.com/apache/apisix/blob/3.13.0/NOTICE"}
+      ]
+    }
+  ]
+}

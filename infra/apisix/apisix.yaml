@@ -1,0 +1,68 @@
+# SPDX-FileCopyrightText: 2026 TRICORE contributors
+# SPDX-License-Identifier: Apache-2.0
+
+routes:
+  - id: health
+    uri: /api/v1/health
+    methods: [GET]
+    upstream_id: backend
+    plugins:
+      limit-count:
+        count: 60
+        time_window: 60
+        key: remote_addr
+        policy: local
+        rejected_code: 429
+
+  - id: helpdesk
+    uris: [/api/v1/mvp/requests, /api/v1/mvp/requests/*]
+    methods: [GET, POST]
+    upstream_id: backend
+    plugins:
+      openid-connect:
+        discovery: "${{OIDC_ISSUER_URI}}/.well-known/openid-configuration"
+        client_id: "${{OIDC_AUDIENCE}}"
+        # JWKS validation does not call introspection or need a client secret.
+        client_secret: ""
+        bearer_only: true
+        use_jwks: true
+        token_signing_alg_values_expected: RS256
+        unauth_action: deny
+        claim_validator:
+          issuer:
+            valid_issuers: ["${{OIDC_ISSUER_URI}}"]
+          audience:
+            required: true
+            match_with_client_id: true
+        set_access_token_header: false
+        set_id_token_header: false
+        set_userinfo_header: false
+        set_refresh_token_header: false
+      limit-req:
+        rate: 20
+        burst: 10
+        key: remote_addr
+        rejected_code: 429
+        nodelay: true
+      request-id:
+        algorithm: uuid
+        include_in_response: true
+
+global_rules:
+  - id: forwarding-boundary
+    plugins:
+      proxy-rewrite:
+        headers:
+          remove: [Forwarded, X-Forwarded-Prefix]
+          set:
+            X-Forwarded-For: "$remote_addr"
+            X-Forwarded-Host: "localhost"
+            X-Forwarded-Port: "9080"
+            X-Forwarded-Proto: "http"
+
+upstreams:
+  - id: backend
+    type: roundrobin
+    nodes:
+      "127.0.0.1:8080": 1
+#END
