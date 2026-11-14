@@ -47,16 +47,22 @@ function Login({ sessionExpired = false }: { sessionExpired?: boolean }) {
         <p className="helpdesk-kicker">Chào mừng đến OpenTrix</p>
         <h1 id="helpdesk-login-title">Yêu cầu hỗ trợ IT</h1>
         {sessionExpired ? (
-          <p role="status">
-            Phiên hỗ trợ đã hết hạn. Phiên Keycloak có thể vẫn đang hoạt động;
-            đăng nhập lại có thể quay về tài khoản cũ. Để đổi vai trò, hãy đăng
-            xuất khỏi Keycloak trước khi đăng nhập bằng tài khoản khác.
-          </p>
+          <div role="status" className="helpdesk-session-expired">
+            <p>
+              Phiên hỗ trợ đã hết hạn. Keycloak có thể vẫn giữ tài khoản trước đó.
+            </p>
+            <p>
+              <strong>Muốn đổi tài khoản khi demo:</strong> bấm Đăng nhập lại
+              (có thể vào tài khoản cũ), sau đó bấm Đăng xuất trên header và
+              đăng nhập bằng tài khoản mới.
+            </p>
+          </div>
         ) : (
           <p>Đăng nhập bằng tài khoản tổ chức để tiếp tục.</p>
         )}
         <a className="button primary" href="/oauth2/authorization/keycloak">
-          Đăng nhập <ArrowRight size={16} aria-hidden="true" />
+          {sessionExpired ? "Đăng nhập lại" : "Đăng nhập"}{" "}
+          <ArrowRight size={16} aria-hidden="true" />
         </a>
         <p className="helpdesk-login-note">
           Xác thực qua tài khoản tổ chức. OpenTrix không lưu mật khẩu của bạn.
