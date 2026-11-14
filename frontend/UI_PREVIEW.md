@@ -18,10 +18,10 @@ và giữ phiên cho đến khi đóng tab chính/cửa sổ hoặc nhấn `Ctrl
 Không cần Docker, backend, Keycloak hay cài chứng chỉ HTTPS.
 Nếu máy chưa có Chromium của Playwright: `npx.cmd playwright install chromium`.
 
-URL bắt đầu: **https://localhost:8443/mvp/helpdesk**.
+URL bắt đầu: **https://localhost:9443/mvp/helpdesk**.
 Phải sử dụng **cửa sổ Chromium do lệnh trên mở**: Playwright chặn các request
-trong browser context này. Đây là HTTPS origin ảo, không phải HTTPS server tại
-port 8443. Dán URL vào Chrome/Edge thông thường sẽ không có preview; URL HTTP
+trong browser context này. Đây là HTTPS origin ảo tách khỏi Docker ingress thật tại cổng 8443,
+không phải HTTPS server tại cổng 9443. Dán URL vào Chrome/Edge thông thường sẽ không có preview; URL HTTP
 port 4176 chỉ phục vụ file tĩnh và không tạo được phiên BFF.
 
 ## Chuyển màn hình
@@ -37,13 +37,13 @@ Trong cùng cửa sổ preview, có thể dán trực tiếp các URL điều kh
 
 | Màn hình / tình huống               | URL                                          |
 | ----------------------------------- | -------------------------------------------- |
-| Login                               | https://localhost:8443/__ui_preview__/login  |
-| List                                | https://localhost:8443/__ui_preview__/list   |
-| Create                              | https://localhost:8443/__ui_preview__/create |
-| Detail mẫu                          | https://localhost:8443/__ui_preview__/detail |
-| Reset dữ liệu, về login             | https://localhost:8443/__ui_preview__/reset  |
-| 401 ở lần đọc API kế tiếp, về login | https://localhost:8443/__ui_preview__/401    |
-| Create, POST kế tiếp trả 409        | https://localhost:8443/__ui_preview__/409    |
+| Login                               | https://localhost:9443/__ui_preview__/login  |
+| List                                | https://localhost:9443/__ui_preview__/list   |
+| Create                              | https://localhost:9443/__ui_preview__/create |
+| Detail mẫu                          | https://localhost:9443/__ui_preview__/detail |
+| Reset dữ liệu, về login             | https://localhost:9443/__ui_preview__/reset  |
+| 401 ở lần đọc API kế tiếp, về login | https://localhost:9443/__ui_preview__/401    |
+| Create, POST kế tiếp trả 409        | https://localhost:9443/__ui_preview__/409    |
 
 Các URL điều khiển chỉ tồn tại trong fixture Playwright. Khi thử 409, điền form
 và gửi để xem lỗi xung đột cùng việc chặn gửi lại của ứng dụng. Dùng URL `create`
@@ -78,6 +78,10 @@ Kiểm tra tự động luồng tương tác và chặn mạng:
 ```powershell
 npm.cmd run test:ui-preview
 ```
+
+Origin giả lập riêng `https://localhost:9443` không trùng với stack
+thật `https://localhost:8443`; tuy nhiên vẫn không dùng preview để chứng minh
+SSO hoặc Golden Path. Mọi request ngoài fixture đều bị chặn.
 
 Hai lệnh preview và kiểm tra dùng chung port 4176, nên đóng preview trước khi
 chạy kiểm tra. Nếu port đã được dùng, lệnh sẽ dừng thay vì tái sử dụng server lạ.
