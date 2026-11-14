@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: "list",
   outputDir: "../test-results/ui-preview",
   use: {
-    baseURL: "https://localhost:8443",
+    baseURL: "https://localhost:9443",
     serviceWorkers: "block",
     viewport: null,
     trace: "off",
