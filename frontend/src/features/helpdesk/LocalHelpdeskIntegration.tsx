@@ -131,7 +131,7 @@ export default function LocalHelpdeskIntegration() {
         Đến nội dung chính
       </a>
       <header className="helpdesk-header">
-        <Link to="/mvp/helpdesk" className="helpdesk-brand">
+        <Link to="/mvp/helpdesk" className="helpdesk-brand" aria-label="OpenTrix IT Helpdesk">
           <img
             className="helpdesk-brand-mark"
             src={cloverLogo}
