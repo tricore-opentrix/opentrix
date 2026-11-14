@@ -273,8 +273,12 @@ Responsibilities do not establish copyright ownership of each contributor's work
 
 ## License and Third-Party Notices
 
-DX-OS original materials covered by the repository's [LICENSE](LICENSE) use **Apache License 2.0 (Apache-2.0)**, with attribution in [NOTICE](NOTICE). Third-party and per-file compliance work is tracked in [Issue #38](https://github.com/tricore-opentrix/opentrix/issues/38).
+Original OpenTrix materials covered by [LICENSE](LICENSE) use **Apache License 2.0 (Apache-2.0)**, with attribution in [NOTICE](NOTICE).
 
-Third-party dependencies, the Gradle Wrapper, adapted materials, and externally sourced assets remain subject to their respective licenses and attribution obligations.
+CI job `repo-hygiene` runs SPDX/REUSE checks through `fsfe/reuse-action`; a REUSE failure fails that job. See [the CI workflow](.github/workflows/ci.yml) and [CONTRIBUTING.md](CONTRIBUTING.md). Check the run at the exact commit under review; this statement describes the configured check, not a guarantee that every future run passes.
 
-Copyright ownership, source-origin verification, NOTICE requirements, and file-level SPDX review are tracked in [Issue #38](https://github.com/tricore-opentrix/opentrix/issues/38). Release-level licensing compliance is not claimed until the outstanding requirements have been reviewed and resolved.
+Third-party dependencies, the Gradle Wrapper, adapted materials and externally sourced assets retain their respective licenses and attribution obligations. In particular, [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) adapts Contributor Covenant 2.1 under CC-BY-SA-4.0; the project's Apache-2.0 license does not replace that license.
+
+Source-origin, copyright and redistribution-rights verification remains tracked in [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138). CI success does not itself establish source-rights clearance or release acceptance.
+
+Community participation follows the [Code of Conduct](CODE_OF_CONDUCT.md) and [contribution guide](CONTRIBUTING.md).

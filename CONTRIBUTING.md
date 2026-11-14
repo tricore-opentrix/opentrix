@@ -17,6 +17,8 @@ OPENTRIX nhận đóng góp cho nền tảng DX-OS Open-Core trong repository n�
 
 ### Trước khi gửi
 
+- Tuân thủ [Code of Conduct](CODE_OF_CONDUCT.md) khi tham gia dự án; quy trình này có hiệu lực sau khi PR áp dụng được merge.
+
 - Đọc [README](README.md), tài liệu kiến trúc và API trong [`docs/`](docs/), và các Issue đang mở.
 - Mở Issue trước khi viết thay đổi lớn nếu thay đổi hợp đồng API công khai, ranh giới giữa core và ứng dụng, phân quyền hay cách lưu trữ dữ liệu.
 - Chỉ dùng mã nguồn, dữ liệu và tài sản mà bạn có quyền đóng góp. Không đưa mật khẩu, token, file `.env` thật, dữ liệu người dùng thật, câu trả lời khảo sát gốc hay hình ảnh chưa được phép vào Issue, pull request, test hay ảnh chụp màn hình. Hãy dùng dữ liệu mẫu tự dựng và giá trị giả trong `.env.example`.
@@ -92,6 +94,8 @@ Báo cáo vấn đề bảo mật qua kênh riêng, không đăng Issue công kh
 OPENTRIX accepts contributions to the DX-OS Open-Core platform in this repository. Your contributions are submitted and distributed under the [Apache License 2.0](LICENSE); the rights to use, modify, and distribute them come from that license, not from any service or agreement. Third-party code, libraries, and assets keep their own licenses and obligations. Review of provenance, permissions, and attribution for existing repository content is still tracked in [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
 
 ### Before submitting
+
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md) when participating in this project; it takes effect when its adopting PR is merged.
 
 - Read the [README](README.md), the architecture and API documents in [`docs/`](docs/), and open Issues.
 - Open an Issue before writing a large patch that changes public API contracts, the core/application boundary, authorization, or data storage.

@@ -13,7 +13,14 @@ User-visible DX-OS Open Core changes are recorded here. The format follows
 
 ### Added
 
+- Align architecture and documentation indexes with ADR-009/016/017/018: Helpdesk-first competition scope, S3-compatible storage direction, and separation of current behavior from target architecture (#221).
+- Align GitHub setup label and milestone descriptions with accepted architecture decisions; editing the script does not update live GitHub metadata (#223).
+- Add the shared-network-namespace demo spike for PostgreSQL, Keycloak and Backend (#226), and the versioned `tricore` demo realm (#227). These changes alone do not establish complete browser E2E acceptance.
+- Add Contributor Covenant 2.1 with its own attribution/license and link the contribution conduct policy from README and CONTRIBUTING (#228).
 - R24 tag-triggered release-candidate packaging (Java jars, frontend, SBOM/NOTICE inventory, SHA256SUMS), with independent distribution-acceptance gate before GitHub Release/GHCR publication.
+- R24 reproducible release tooling, source-only packaging, archive checksums and versioned release-note generation; binary build candidates remain nonpublishable without separate clearance.
+- A fail-closed independent release acceptance gate; candidate builds do not imply redistribution clearance.
+- R26 canonical OpenTrix repository links and documentation alignment (PR #136).
 
 ### Changed
 
@@ -21,20 +28,13 @@ User-visible DX-OS Open Core changes are recorded here. The format follows
 - Portal #233: add the integration-local login panel and CSRF-protected BFF logout; real OIDC role switching remains unverified.
 - Portal #233 / #106: show Vietnamese workflow labels and distinct text badges, preserving canonical API values and unknown-state fallback.
 - R26: Prepare OpenTrix canonical repository identity and update organization links, documentation and setup defaults after the existing repository rename; independent post-cutover acceptance remains pending.
+- Clarify root license information and distinguish CI REUSE/SPDX checks from source-rights clearance (#228).
 
-## [0.2.0] - 2026-11-07
-
-### Added
-
-- R24 reproducible release tooling, source-only packaging, archive checksums and versioned release-note generation; binary build candidates remain nonpublishable without separate clearance.
-- A fail-closed independent release acceptance gate; candidate builds do not imply redistribution clearance.
-- R26 canonical OpenTrix repository links and documentation alignment (PR #136).
-
-### Known verification limitations
+### Verification limits
 
 - This is the planned source-only `v0.2.0` release scope, not confirmation that a public release occurred, nor proof of production integration or R12 browser acceptance.
 - Publishing requires independently approved source-origin and Apache-2.0 rights review (#138), exact-source archive evidence and the independent source-only acceptance (#139). No JAR, built Frontend dist, container image or GHCR distribution is authorized.
-- **Target date 2026-11-07 is conditional.** If release gates are not met, defer publication and update this date to the actual release date before freezing the tagged source; never backdate.
+- The v0.2.0 tag and release date are assigned only when release gates pass; do not backdate or treat this Unreleased section as a published release.
 
 ## [0.1.0] - 2026-11-04
 
