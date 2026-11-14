@@ -105,7 +105,7 @@ Không có secret, admin token, service-role key, database credential hay `X-Use
 
 ## Kiểm thử
 
-Đối chiếu PDF 9 trang, phạm vi tích hợp thực tế và chỉ mục ảnh trước/sau #233:
+Đối chiếu thiết kế nội bộ, phạm vi tích hợp thực tế và chỉ mục ảnh trước/sau #233:
 xem [UI_REVIEW_233.md](UI_REVIEW_233.md).
 
 Kiểm tra giao diện integration-local (#233) trên entry production hiện tại:
