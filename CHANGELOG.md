@@ -17,6 +17,8 @@ _All notable user-visible changes to OpenTrix are recorded here, following Keep 
 
 ### Added · Thêm mới
 
+- Theme đăng nhập Keycloak OpenTrix IT Helpdesk cho môi trường integration-local: bố cục hai cột, tiếng Việt, logo và hình minh họa nội bộ; kế thừa form gốc `keycloak.v2`, giữ nguyên Authorization Code + PKCE (#225: #243).
+  _OpenTrix IT Helpdesk Keycloak login theme for integration-local: two-column layout, Vietnamese locale, local logo and illustration; inherits the stock `keycloak.v2` form and keeps Authorization Code + PKCE._
 - Chạy thử toàn bộ hệ thống bằng một lệnh (`infra/demo/demo-up` / `demo-down`, PowerShell 7 và Bash): build image từ mã nguồn, ingress HTTPS bằng Caddy, sinh bí mật cục bộ và kiểm tra sức khỏe từng thành phần (#119: #229, #234, #237).
   _One-command integration-local demo stack (`infra/demo/demo-up` / `demo-down`, PowerShell 7 and Bash) with source-built images, Caddy HTTPS ingress, generated local secrets and health checks._
 - Cổng API APISIX chạy độc lập: kiểm token qua JWKS, giới hạn tần suất, chuẩn hóa header chuyển tiếp; bật bằng `demo-up -Gateway` / `--gateway` (#116: #232).

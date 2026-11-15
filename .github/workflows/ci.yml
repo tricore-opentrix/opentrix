@@ -203,6 +203,10 @@ jobs:
             exit 1
           fi
       - uses: actions/checkout@v4
+      - name: Verify OpenTrix Keycloak theme contracts
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 -m unittest discover -s scripts -p 'test_opentrix_*.py'
       - name: PR title follows Conventional Commits
         if: github.event_name == 'pull_request'
         env:

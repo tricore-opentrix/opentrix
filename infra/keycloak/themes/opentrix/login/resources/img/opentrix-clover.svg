@@ -1,0 +1,12 @@
+<!-- SPDX-FileCopyrightText: 2026 TRICORE contributors
+     SPDX-License-Identifier: Apache-2.0
+     Original OpenTrix artwork for issue #233, drawn locally from SVG paths.
+     Three heart-shaped leaves rotated around one junction, plus a curved stem.
+     No third-party assets or external resources. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <rect width="40" height="40" rx="12" fill="#116e68"/>
+  <path d="M20 21c0 6 1 10 5 13" fill="none" stroke="#c4f3df" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M20 21C17 18 11 14 11 10c0-5 6-7 9-3 3-4 9-2 9 3 0 4-6 8-9 11Z" fill="#c4f3df"/>
+  <path d="M20 21C17 18 11 14 11 10c0-5 6-7 9-3 3-4 9-2 9 3 0 4-6 8-9 11Z" transform="rotate(120 20 21)" fill="#8fe3c2"/>
+  <path d="M20 21C17 18 11 14 11 10c0-5 6-7 9-3 3-4 9-2 9 3 0 4-6 8-9 11Z" transform="rotate(240 20 21)" fill="#a8ecd0"/>
+</svg>

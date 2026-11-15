@@ -2,6 +2,12 @@
   "realm": "tricore",
   "enabled": true,
   "displayName": "OpenTrix demo (integration-local)",
+  "loginTheme": "opentrix",
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "vi"
+  ],
+  "defaultLocale": "vi",
   "sslRequired": "external",
   "registrationAllowed": false,
   "resetPasswordAllowed": false,

@@ -1,0 +1,34 @@
+<!-- SPDX-FileCopyrightText: 2026 TRICORE contributors
+     SPDX-License-Identifier: Apache-2.0
+     Original OpenTrix artwork for the Keycloak login theme, drawn locally from SVG primitives.
+     A support request card moving through three steps (sent, in progress, confirmed),
+     with a reply bubble and a confirmation mark. Decorative only: no text, no data.
+     No third-party assets or external resources. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 260" fill="none">
+  <!-- queued request behind the active one -->
+  <rect x="86" y="30" width="214" height="150" rx="20" transform="rotate(6 193 105)" fill="#dff1ea"/>
+  <!-- active request card -->
+  <rect x="52" y="44" width="228" height="164" rx="20" fill="#ffffff" stroke="#cfe7df" stroke-width="2"/>
+  <rect x="72" y="64" width="36" height="36" rx="11" fill="#116e68"/>
+  <path d="M82 82.5l5.5 5.5L98 76.5" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="120" y="68" width="96" height="10" rx="5" fill="#142034" fill-opacity=".82"/>
+  <rect x="120" y="86" width="62" height="8" rx="4" fill="#cee5df"/>
+  <rect x="72" y="118" width="188" height="9" rx="4.5" fill="#e6edff"/>
+  <rect x="72" y="136" width="142" height="9" rx="4.5" fill="#efe9ff"/>
+  <!-- three-step progress: sent, in progress, confirmed -->
+  <path d="M84 178h72" stroke="#116e68" stroke-width="3" stroke-linecap="round"/>
+  <path d="M156 178h72" stroke="#cfe7df" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 8"/>
+  <circle cx="84" cy="178" r="8" fill="#116e68"/>
+  <circle cx="156" cy="178" r="8" fill="#116e68"/>
+  <circle cx="156" cy="178" r="13" stroke="#116e68" stroke-opacity=".25" stroke-width="3"/>
+  <circle cx="228" cy="178" r="7" fill="#ffffff" stroke="#9fd0c3" stroke-width="2.5"/>
+  <!-- reply from the support team -->
+  <path d="M252 14h62a14 14 0 0 1 14 14v26a14 14 0 0 1-14 14h-34l-14 12v-12h-14a14 14 0 0 1-14-14V28a14 14 0 0 1 14-14Z" fill="#116e68"/>
+  <circle cx="265" cy="41" r="4" fill="#c4f3df"/>
+  <circle cx="283" cy="41" r="4" fill="#c4f3df"/>
+  <circle cx="301" cy="41" r="4" fill="#c4f3df"/>
+  <!-- confirmation mark -->
+  <circle cx="276" cy="204" r="36" fill="#eaf6f1"/>
+  <circle cx="276" cy="204" r="29" fill="#116e68"/>
+  <path d="M263 204.5l9 9 17-18" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
