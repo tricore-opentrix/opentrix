@@ -1,12 +1,17 @@
 SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 
-OpenTrix — DX-OS Open-Core
+OpenTrix
 Copyright 2026 TRICORE contributors
 
-Licensed under the Apache License, Version 2.0.
-See the LICENSE file at the repository root for the full license text.
+This product includes software developed by TRICORE contributors and is
+licensed under the Apache License, Version 2.0. See the LICENSE file at the
+repository root for the full license text.
 
-This notice covers original OpenTrix / DX-OS Open-Core project material attributed to
-TRICORE contributors. Third-party notices and licenses, where applicable,
-must be preserved and reviewed separately under Issue #38.
+Third-party components, including libraries and the container images and
+services used by the local demo stack (such as Keycloak, PostgreSQL, Apache
+APISIX and Caddy), are distributed under their own licenses and keep their
+own copyright notices; see THIRD-PARTY-NOTICES.md.
+
+The Apache License does not grant permission to use the OpenTrix name or logo,
+except as required to describe the origin of the software.

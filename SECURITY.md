@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# OPENTRIX
+# OpenTrix
 
 > **Ngôn ngữ / Language:** [Tiếng Việt](#vi) · [English](#en)
 
@@ -11,22 +11,22 @@ SPDX-License-Identifier: Apache-2.0
 
 <a id="vi"></a>
 
-## OPENTRIX — Chính sách bảo mật
+## OpenTrix — Chính sách bảo mật
 
 ### 1. Mục đích và phạm vi
 
-Chính sách này mô tả cách báo cáo và xử lý lỗ hổng bảo mật trong mã nguồn OPENTRIX (DX-OS Open-Core) thuộc repository này: core headless, ứng dụng IT Helpdesk, Portal BFF, frontend và cấu hình triển khai mẫu. Phần mềm bên thứ ba (Keycloak, Apache APISIX, PostgreSQL, SeaweedFS, Node-RED…) có chính sách bảo mật riêng; lỗi thuộc chính các dự án đó hãy báo cho dự án gốc.
+Chính sách này mô tả cách báo cáo và xử lý lỗ hổng bảo mật trong mã nguồn OpenTrix thuộc repository này: core headless, ứng dụng IT Helpdesk, Portal BFF, frontend và cấu hình triển khai mẫu. Phần mềm bên thứ ba (Keycloak, Apache APISIX, PostgreSQL, Caddy…) có chính sách bảo mật riêng; lỗi thuộc chính các dự án đó hãy báo cho dự án gốc.
 
-OPENTRIX là dự án do nhóm sinh viên TRICORE phát triển cho cuộc thi OLP Phần mềm nguồn mở 2026. Bản phát hành hiện tại dùng cho thử nghiệm và trình diễn, **chưa được kiểm định để vận hành production**.
+OpenTrix do nhóm TRICORE phát triển. Bản phát hành hiện tại dùng cho thử nghiệm và trình diễn, **chưa được kiểm định để vận hành production**.
 
 ### 2. Phiên bản được hỗ trợ
 
-| Phiên bản | Trạng thái phát hành | Hỗ trợ bảo mật |
-| --- | --- | --- |
-| `main` | Nhánh phát triển | Có |
-| `v0.1.0` | [Pre-release công khai](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0) ngày 2026-11-04 (kèm `dxos-open-core-0.1.0.tar.gz` và `SHA256SUMS`) | Không — bản MVP để thử nghiệm; dùng `main` |
+| Phiên bản | Trạng thái phát hành                                                                                                                                          | Hỗ trợ bảo mật                             |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `main`    | Nhánh phát triển                                                                                                                                              | Có                                         |
+| `v0.1.0`  | [Pre-release công khai](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0) ngày 2026-11-04 (kèm `dxos-open-core-0.1.0.tar.gz` và `SHA256SUMS`) | Không — bản MVP để thử nghiệm; dùng `main` |
 
-Hiện chưa có bản phát hành ổn định (không phải pre-release). Bảng này sẽ được cập nhật khi có bản phát hành ổn định; từ đó bản ổn định mới nhất cũng được hỗ trợ bảo mật. Việc một bản được công bố không có nghĩa là quyền phân phối của toàn bộ nội dung đã được xác minh; phần đó được theo dõi tại [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
+Hiện chưa có bản phát hành ổn định (không phải pre-release). Bảng này sẽ được cập nhật khi có bản phát hành ổn định; từ đó bản ổn định mới nhất cũng được hỗ trợ bảo mật.
 
 ### 3. Báo cáo lỗ hổng
 
@@ -56,11 +56,11 @@ Không đính kèm dữ liệu cá nhân, mật khẩu hay token thật.
 
 ### 6. Thời hạn phản hồi và công bố
 
-| Bước | Thời hạn mục tiêu |
-| --- | --- |
-| Xác nhận đã nhận | Trong 3 ngày làm việc |
-| Đánh giá ban đầu | Trong 7 ngày làm việc |
-| Cập nhật tiến độ | Ít nhất 14 ngày một lần cho đến khi xử lý xong |
+| Bước                | Thời hạn mục tiêu                                           |
+| ------------------- | ----------------------------------------------------------- |
+| Xác nhận đã nhận    | Trong 3 ngày làm việc                                       |
+| Đánh giá ban đầu    | Trong 7 ngày làm việc                                       |
+| Cập nhật tiến độ    | Ít nhất 14 ngày một lần cho đến khi xử lý xong              |
 | Công bố có phối hợp | Sau khi có bản sửa, hoặc tối đa 90 ngày kể từ khi tiếp nhận |
 
 Đây là mục tiêu của một nhóm nhỏ, không phải cam kết hợp đồng. Thời điểm công bố được thống nhất với người báo cáo; nếu lỗ hổng đang bị khai thác, nhóm có thể công bố sớm hơn kèm hướng dẫn giảm thiểu.
@@ -69,16 +69,15 @@ Không đính kèm dữ liệu cá nhân, mật khẩu hay token thật.
 
 Các ranh giới dưới đây là mục tiêu thiết kế. Báo cáo cho thấy một ranh giới bị vượt qua đều nằm trong phạm vi.
 
-| Thành phần | Nội dung trong phạm vi |
-| --- | --- |
-| Keycloak / OIDC | Kiểm tra token (chữ ký, issuer, audience, thời hạn), quản lý phiên, luồng đăng nhập và PKCE |
+| Thành phần           | Nội dung trong phạm vi                                                                                    |
+| -------------------- | --------------------------------------------------------------------------------------------------------- |
+| Keycloak / OIDC      | Kiểm tra token (chữ ký, issuer, audience, thời hạn), quản lý phiên, luồng đăng nhập và PKCE               |
 | API Gateway / APISIX | Ranh giới tin cậy tại gateway, header giả mạo, vượt qua xác thực, truy cập trực tiếp vào service phía sau |
-| Core Workflow | Kiểm tra quyền, leo thang vai trò, chuyển trạng thái quy trình không hợp lệ |
-| Cô lập tenant | Truy cập chéo tenant, phân quyền dữ liệu theo tổ chức |
-| PostgreSQL | SQL injection, quyền truy cập cơ sở dữ liệu, cô lập schema |
-| Lưu trữ đối tượng | Phân quyền theo object, lộ thông tin xác thực, truy cập tệp trái phép |
-| Portal / BFF | Bảo mật phiên, CSRF, XSS, chuyển tiếp token |
-| Hạ tầng mẫu | TLS, quản lý secret, cổng bị lộ, cấu hình mặc định không an toàn trong compose |
+| Core Workflow        | Kiểm tra quyền, leo thang vai trò, chuyển trạng thái quy trình không hợp lệ                               |
+| Cô lập tenant        | Truy cập chéo tenant, phân quyền dữ liệu theo tổ chức                                                     |
+| PostgreSQL           | SQL injection, quyền truy cập cơ sở dữ liệu, cô lập schema                                                |
+| Portal / BFF         | Bảo mật phiên, CSRF, XSS, chuyển tiếp token                                                               |
+| Hạ tầng mẫu          | TLS, quản lý secret, cổng bị lộ, cấu hình mặc định không an toàn trong compose                            |
 
 Giả định triển khai: chỉ gateway được mở ra mạng ngoài; service nội bộ không tin vào danh tính hay tenant do client gửi lên mà không qua kiểm tra token.
 
@@ -87,7 +86,6 @@ Giả định triển khai: chỉ gateway được mở ra mạng ngoài; servic
 - **Keycloak:** đổi mật khẩu quản trị mặc định, dùng HTTPS, giới hạn redirect URI, bật MFA cho tài khoản quản trị.
 - **APISIX:** chỉ mở cổng gateway; khóa Admin API vào mạng nội bộ và đổi admin key mặc định.
 - **PostgreSQL:** dùng tài khoản riêng với quyền tối thiểu cho từng service; không mở cổng cơ sở dữ liệu ra ngoài.
-- **Lưu trữ đối tượng:** dùng khóa truy cập riêng, không để bucket công khai.
 - **Chung:** không commit file `.env` thật; thay mọi giá trị mẫu trong `.env.example`; ghim phiên bản image; cập nhật bản vá bảo mật của các thành phần bên thứ ba.
 - **Tài khoản demo:** xóa hoặc đổi mật khẩu trước khi dùng với dữ liệu thật.
 
@@ -111,22 +109,22 @@ Khi kiểm thử, chỉ dùng môi trường của chính bạn. Không kiểm t
 
 <a id="en"></a>
 
-## OPENTRIX — Security Policy
+## OpenTrix — Security Policy
 
 ### 1. Purpose and scope
 
-This policy describes how to report and handle security vulnerabilities in the OPENTRIX (DX-OS Open-Core) source code in this repository: the headless core, the IT Helpdesk application, the Portal BFF, the frontend, and the sample deployment configuration. Third-party software (Keycloak, Apache APISIX, PostgreSQL, SeaweedFS, Node-RED…) has its own security policies; report issues in those projects themselves to the upstream project.
+This policy describes how to report and handle security vulnerabilities in the OpenTrix source code in this repository: the headless core, the IT Helpdesk application, the Portal BFF, the frontend, and the sample deployment configuration. Third-party software (Keycloak, Apache APISIX, PostgreSQL, Caddy…) has its own security policies; report issues in those projects themselves to the upstream project.
 
-OPENTRIX is developed by the TRICORE student team for the OLP Open Source Software 2026 competition. Current releases are intended for evaluation and demonstration and **have not been audited for production use**.
+OpenTrix is developed by the TRICORE team. Current releases are intended for evaluation and demonstration and **have not been audited for production use**.
 
 ### 2. Supported versions
 
-| Version | Release status | Security support |
-| --- | --- | --- |
-| `main` | Development branch | Yes |
+| Version  | Release status                                                                                                                                                    | Security support                    |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `main`   | Development branch                                                                                                                                                | Yes                                 |
 | `v0.1.0` | [Public pre-release](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0) published 2026-11-04 (with `dxos-open-core-0.1.0.tar.gz` and `SHA256SUMS`) | No — MVP for evaluation; use `main` |
 
-There is no stable (non-pre-release) release yet. This table will be updated when a stable release is published; from then on, the latest stable release will also receive security support. Publication of a release does not mean that redistribution rights for all content have been verified; that is tracked in [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138).
+There is no stable (non-pre-release) release yet. This table will be updated when a stable release is published; from then on, the latest stable release will also receive security support.
 
 ### 3. Reporting a vulnerability
 
@@ -156,11 +154,11 @@ Do not attach real personal data, passwords, or tokens.
 
 ### 6. Response and disclosure timeline
 
-| Step | Target |
-| --- | --- |
-| Acknowledgement | Within 3 business days |
-| Initial assessment | Within 7 business days |
-| Progress updates | At least every 14 days until resolved |
+| Step                   | Target                                                    |
+| ---------------------- | --------------------------------------------------------- |
+| Acknowledgement        | Within 3 business days                                    |
+| Initial assessment     | Within 7 business days                                    |
+| Progress updates       | At least every 14 days until resolved                     |
 | Coordinated disclosure | After a fix is available, or at most 90 days after intake |
 
 These are targets for a small team, not contractual commitments. Disclosure timing is agreed with the reporter; if a vulnerability is being actively exploited, the team may disclose earlier with mitigation guidance.
@@ -169,16 +167,15 @@ These are targets for a small team, not contractual commitments. Disclosure timi
 
 The boundaries below are design goals. Reports showing that any boundary can be crossed are in scope.
 
-| Component | In-scope concerns |
-| --- | --- |
-| Keycloak / OIDC | Token validation (signature, issuer, audience, expiry), session handling, login flows and PKCE |
-| API Gateway / APISIX | Gateway trust boundary, forged headers, authentication bypass, direct access to backend services |
-| Core Workflow | Authorization checks, role escalation, invalid workflow transitions |
-| Tenant isolation | Cross-tenant access, organization-level data authorization |
-| PostgreSQL | SQL injection, database access rights, schema isolation |
-| Object storage | Per-object authorization, credential exposure, unauthorized file access |
-| Portal / BFF | Session security, CSRF, XSS, token relay |
-| Sample infrastructure | TLS, secret handling, exposed ports, insecure defaults in compose files |
+| Component             | In-scope concerns                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| Keycloak / OIDC       | Token validation (signature, issuer, audience, expiry), session handling, login flows and PKCE   |
+| API Gateway / APISIX  | Gateway trust boundary, forged headers, authentication bypass, direct access to backend services |
+| Core Workflow         | Authorization checks, role escalation, invalid workflow transitions                              |
+| Tenant isolation      | Cross-tenant access, organization-level data authorization                                       |
+| PostgreSQL            | SQL injection, database access rights, schema isolation                                          |
+| Portal / BFF          | Session security, CSRF, XSS, token relay                                                         |
+| Sample infrastructure | TLS, secret handling, exposed ports, insecure defaults in compose files                          |
 
 Deployment assumption: only the gateway is exposed to external networks; internal services never trust an identity or tenant supplied by a client without token validation.
 
@@ -187,7 +184,6 @@ Deployment assumption: only the gateway is exposed to external networks; interna
 - **Keycloak:** change the default admin password, use HTTPS, restrict redirect URIs, and enable MFA for administrator accounts.
 - **APISIX:** expose only the gateway port; restrict the Admin API to the internal network and change the default admin key.
 - **PostgreSQL:** use a separate least-privilege account per service; never expose the database port externally.
-- **Object storage:** use dedicated access keys and do not make buckets public.
 - **General:** never commit a real `.env`; replace every placeholder in `.env.example`; pin image versions; apply security updates for third-party components.
 - **Demo accounts:** remove them or change their passwords before using real data.
 

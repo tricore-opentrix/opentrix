@@ -1,284 +1,307 @@
-# OpenTrix — DX-OS Open-Core
+# OpenTrix
 
-**Reusable Digital Capabilities for Internal Service Applications**
+> **Ngôn ngữ / Language:** [Tiếng Việt](#opentrix--tổng-quan) · [English](#opentrix--overview)
 
-OpenTrix is TRICORE's DX-OS Open-Core implementation, a modular monolith for exploring reusable capabilities behind internal service applications. The Internal Service Portal / IT Support scenario is the main demonstration target. DX-OS is a digital transformation platform concept, not a computer operating system or a claim about the competition's required product.
+---
 
-**Release status:** v0.1.0 was published as a GitHub pre-release on 2026-11-04. v0.2.0 remains unreleased; SOURCE-ONLY candidate evidence does not authorize public publication. See [Release documentation](docs/RELEASE.md) for release status and acceptance gates. Historical source baseline: `main@4428346` (PR #103).
+## OpenTrix — Tổng quan
 
-**Navigate:** [Overview](#overview) · [Architecture](#architecture-overview) · [Status](#implementation-status) · [Run v0.1.0](#run-v010) · [Getting started](#getting-started) · [Documentation](#documentation-and-verification) · [License](#license-and-third-party-notices)
+OpenTrix là nền tảng nguồn mở để xây dựng các ứng dụng dịch vụ nội bộ trên một lõi dùng chung,
+theo kiến trúc DX-OS Open-Core. Lõi cung cấp định danh, cổng API, quy trình (workflow) và dữ liệu;
+mỗi ứng dụng chỉ định nghĩa nghiệp vụ của mình. Ứng dụng đầu tiên là **IT Helpdesk**: tiếp nhận,
+phân công, xử lý và xác nhận yêu cầu hỗ trợ IT. Mã nguồn phát hành theo
+[Apache License 2.0](LICENSE).
 
-## Overview
+Bắt đầu nhanh: [chạy thử bằng một lệnh](#chạy-cục-bộ). Người đóng góp: [CONTRIBUTING.md](CONTRIBUTING.md).
+Toàn bộ tài liệu: [mục lục tài liệu](docs/README.md).
 
-Internal service requests often arrive through email, paper, spreadsheets, phone calls, or messaging apps. Scattered channels make ownership, progress, and decision history difficult to track. The proposed Portal brings request submission, assignment, processing, and status into one application.
+## Phạm vi hiện tại
 
-DX-OS aims to supply reusable technical mechanisms for that application and others. An IT Support request may move from submission through review, assignment, resolution, requester confirmation, and closure. The application defines those business steps and permissions; Core supplies mechanisms that can be reused. This is TRICORE's demonstration scenario, not an assertion that OLP PMNM 2026 mandates this product.
-
-## Why DX-OS?
-
-The intended reuse boundary separates shared mechanisms from application-specific rules:
-
-| Capability | Core responsibility | Application responsibility |
-| --- | --- | --- |
-| Identity / SSO | Principal, authentication context, and authority contracts | Business roles and request-specific permissions |
-| API Gateway | API entry point, routing, trusted-context boundary, and error handling | User-facing business operations |
-| Workflow | Definitions, instances, transitions, versions, history, and state safeguards | Business states, transitions, and conditions |
-| Data Management | Persistence and storage contracts with provider adapters | Business data, ownership, and retention rules |
-
-The Portal is a demonstration interface, while the Request package is an application/business prototype. Neither defines the reusable Workflow Core. IT Support and Facility/Access Request could use the same Workflow mechanisms with different business lifecycles; demonstrating that reuse remains an acceptance goal, not a completed end-to-end integration claim.
-
-## Architecture Overview
-
-The backend uses Java 21 and Spring Boot 3.5.16 as a **modular monolith**. Its logical boundaries do not imply separately deployed microservices. The diagram shows intended responsibilities and dependency direction:
-
-```text
-External client / application
-            |
-            v
-    API Gateway boundary
-       /          \
-      v            v
- Identity       Application
- contracts         layer
-                     |
-                     v
-                Workflow Core
-                     |
-                     v
-         WorkflowPersistencePort
-                     |
-                     v
-        Data / persistence adapter
-                     |
-                     v
-                 PostgreSQL
-```
-
-This is an architecture view, not evidence that the full Gateway → Identity → Portal → Workflow → database path is integrated. Workflow owns `WorkflowPersistencePort`; a Data adapter can implement it without redefining Workflow semantics. Workflow does not own IT Support-specific rules, and Gateway does not own business workflows or persistence. Client-supplied identity headers are not trusted merely because they reached an HTTP boundary.
-
-See the architecture overview above and the repository's `docs/` directory for available design material; the documentation index is being consolidated in R29.
-
-## Core Capabilities
-
-- **Identity / SSO:** OIDC trust and authority contracts, with verified security regressions. Portal BFF has PKCE/session/CSRF implementation; live three-principal Keycloak/browser acceptance remains outstanding.
-- **API Gateway:** Spring Boot business API boundary, verified principal checks, exact Workflow authorization and scoped error contracts. APISIX is the accepted gateway ([ADR-018](docs/08-decisions/ADR-018-apisix-api-gateway.md)), not yet a verified deployed runtime.
-- **Workflow:** Provider-neutral definitions, instances, transition/version/history contracts, and PostgreSQL-backed Helpdesk integration. Workflow Core is an in-house state machine; no external BPMN engine is used.
-- **Data Management:** PostgreSQL 17 Helpdesk/Workflow persistence and negative transaction checks. Object storage uses an S3-compatible API ([ADR-016](docs/08-decisions/ADR-016-s3-compatible-storage.md), replacing the earlier MinIO direction); no provider adapter is completed yet.
-
-## Implementation Status
-
-This table summarizes the **v0.1.0 source and tested scope** after PR #103 on `main@4428346`. CI and focused PostgreSQL 17 evidence do not substitute for browser E2E or release sign-off.
-
-| Area | Present in v0.1.0 source | Known verification boundary |
-| --- | --- | --- |
-| Helpdesk Backend | Nine HTTP application routes; tenant/resource authorization; workflow history and transaction guards | R10 PG17 focused tests passed; full R12 Golden Path pending |
-| Identity / Gateway | Verified OIDC/security boundary and exact authority checks | Real three-principal Keycloak/browser SSO pending |
-| Portal BFF | OIDC PKCE, server-side session, CSRF and Helpdesk API client | Live browser full-stack acceptance pending |
-| React Portal | Standalone MOCK UI and `integration-local` build mode | MOCK is not proof of connected LIVE runtime |
-| Workflow / Data | Core contracts, PostgreSQL 17-backed Helpdesk/Workflow tests and ArchUnit rules | Deferred provider, privilege and audit checks remain |
-| Reuse / Storage | Core reuse contracts; Facility appears as a request type in the MOCK Portal | Facility deferred ([ADR-017](docs/08-decisions/ADR-017-helpdesk-first-scope.md)); S3-compatible adapter not accepted |
-
-### Historical test checkpoint
-
-On **October 7, 2026**, at commit **`2b51a41`**, documentation recorded **29 Workflow tests, 109 Request tests, and 139 backend tests**. This is historical evidence, not the v0.1.0 test count; refer to the historical commit for its test record.
-
-## Technology Stack
-
-| Component | Baseline technology or status |
+| Lĩnh vực | Đã có trong mã nguồn |
 | --- | --- |
-| Backend | Java 21; Spring Boot 3.5.16 |
-| Build | Gradle Wrapper 8.14.3 |
-| Database | PostgreSQL 17 Helpdesk/Workflow persistence; Flyway and local demo SQL with separate prerequisites |
-| ORM configuration | Hibernate `ddl-auto: none` |
-| Tests | JUnit and Spring Boot Test; dedicated integration tasks have separate prerequisites |
-| Frontend | React 19, TypeScript, Vite; MOCK and integration-local builds |
-| Deployment | Requires commit-specific operational and acceptance evidence |
+| IT Helpdesk | Tạo yêu cầu, tiếp nhận, phân công, bắt đầu xử lý, ghi kết quả, xác nhận hoàn thành; danh sách, chi tiết, lịch sử xử lý; 9 API HTTP |
+| Định danh | Keycloak OIDC; Portal BFF dùng Authorization Code + PKCE, phiên phía server, chống CSRF; backend kiểm JWT (issuer, audience, chữ ký) |
+| Phân quyền | Theo tổ chức (tenant) và từng yêu cầu; vai trò nghiệp vụ lưu trong cơ sở dữ liệu, không lấy từ header do client gửi |
+| Quy trình | Định nghĩa, phiên bản, chuyển trạng thái và lịch sử dùng chung cho mọi ứng dụng; chặn ghi đè đồng thời bằng phiên bản |
+| Cổng API | Apache APISIX ở biên: kiểm token qua JWKS, giới hạn tần suất, chuẩn hóa header chuyển tiếp |
+| Dữ liệu | PostgreSQL 17, migration Flyway, tách schema và tài khoản theo quyền tối thiểu |
+| Giao diện | Portal React tiếng Việt cho ba vai trò; chế độ MOCK để xem giao diện không cần backend |
+| Chạy thử | Một lệnh dựng toàn bộ stack từ mã nguồn bằng Docker trên Windows, Linux, macOS |
+| Chưa cung cấp | Engine BPMN Flowable ([ADR-009](docs/08-decisions/ADR-009-modular-monolith-flowable.md)), lưu tệp S3 ([ADR-016](docs/08-decisions/ADR-016-s3-compatible-storage.md)), ứng dụng Facility, thông báo, báo cáo, triển khai production |
 
-Keycloak is the selected OIDC provider. Accepted targets: APISIX gateway ([ADR-018](docs/08-decisions/ADR-018-apisix-api-gateway.md)), embedded Flowable workflow ([ADR-009](docs/08-decisions/ADR-009-modular-monolith-flowable.md)) and S3-compatible object storage ([ADR-016](docs/08-decisions/ADR-016-s3-compatible-storage.md)). Node-RED and Superset are deferred until after the competition ([ADR-017](docs/08-decisions/ADR-017-helpdesk-first-scope.md)).
+### Vai trò trong IT Helpdesk
 
-## Run v0.1.0
+| Vai trò | Làm được |
+| --- | --- |
+| Nhân viên | Gửi yêu cầu, theo dõi yêu cầu của mình, xác nhận khi đã xử lý xong |
+| Điều phối viên | Tiếp nhận yêu cầu mới, phân công kỹ thuật viên, theo dõi toàn bộ yêu cầu |
+| Kỹ thuật viên | Bắt đầu xử lý yêu cầu được giao, ghi kết quả xử lý |
 
-### Option A — MOCK Portal (quick UI demonstration)
+Một tài khoản có thể giữ nhiều vai trò. Nút thao tác trên giao diện chỉ hiện khi máy chủ cho phép.
 
-Requires Node.js **22.12.0 or newer**, npm, and a browser. From the repository root:
+Vòng đời yêu cầu: **Mới gửi → Đã tiếp nhận → Đang xử lý → Chờ xác nhận → Hoàn thành**.
 
-```powershell
-Set-Location frontend
-npm.cmd ci
-npm.cmd run dev
+## Sơ đồ kho mã
+
+| Đường dẫn | Trách nhiệm | Bắt đầu đọc |
+| --- | --- | --- |
+| [`backend/`](backend/) | Java 21 / Spring Boot; lõi Identity, Workflow, Data và ứng dụng Helpdesk | [backend/README.md](backend/README.md) |
+| [`portal-bff/`](portal-bff/) | Spring Boot; đăng nhập OIDC, phiên, CSRF, chuyển tiếp API cho trình duyệt | [portal-bff/README.md](portal-bff/README.md) |
+| [`frontend/`](frontend/) | React + TypeScript + Vite; Portal IT Helpdesk | [frontend/README.md](frontend/README.md) |
+| [`infra/`](infra/) | Docker Compose, realm Keycloak, cấu hình APISIX, script chạy thử | [infra/demo/README.md](infra/demo/README.md) |
+| [`scripts/`](scripts/) | Công cụ kiểm tra cục bộ, tuân thủ giấy phép, đóng gói phát hành | [scripts/README.md](scripts/README.md) |
+| [`docs/`](docs/) | Kiến trúc, API, tích hợp, kiểm thử, triển khai, quyết định kiến trúc (ADR) | [docs/README.md](docs/README.md) |
+
+## Kiến trúc tổng quan
+
+```mermaid
+flowchart LR
+    Browser[Trình duyệt] -->|HTTPS| Caddy[Caddy ingress]
+    Caddy --> Portal[Portal React]
+    Caddy --> BFF[Portal BFF]
+    BFF -->|OIDC| Keycloak[(Keycloak)]
+    BFF -->|Bearer token| APISIX[APISIX gateway]
+    APISIX --> Backend[Backend: Identity · Workflow · Data · Helpdesk]
+    APISIX -.->|JWKS| Keycloak
+    Backend -.->|JWKS| Keycloak
+    Backend --> DB[(PostgreSQL 17)]
 ```
 
-Open [http://127.0.0.1:5173](http://127.0.0.1:5173). This uses in-memory demonstration data and **does not require a backend, PostgreSQL, credentials, or live SSO**. Return to the repository root with `Set-Location ..`. On macOS/Linux use `npm` instead of `npm.cmd`.
+Backend là một **modular monolith**: các mô-đun lõi và ứng dụng chạy chung một tiến trình nhưng
+tách ranh giới phụ thuộc, được kiểm bằng ArchUnit. Trình duyệt không giữ access token; BFF giữ
+token phía server và gọi backend thay người dùng. Chi tiết: [ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-### Option B — Local PostgreSQL Helpdesk environment
+## Chạy cục bộ
 
-Follow the [local Helpdesk runbook](scripts/README-helpdesk-local.md) from the repository root and use the [isolated setup script](scripts/helpdesk-local-setup.ps1). It requires Windows PowerShell, Docker Desktop Linux Engine, JDK 21 and free demo ports. Run the script's **read-only preflight** before opting into creation of an isolated PostgreSQL 17 demo database; do not run its `-Execute` step against existing resources. The runbook covers required secrets, real identity subject provisioning and backend startup.
+Yêu cầu: Git, Docker kèm Compose 2.24 trở lên; trên Windows cần **PowerShell 7.4 trở lên**
+(`winget install --id Microsoft.PowerShell`).
 
-### Option C — `integration-local` Portal (configured local stack)
-
-Requires **Node.js >=22.12**, npm, **JDK 21**, Docker Desktop/PostgreSQL 17, a configured **real Keycloak OIDC client**, Backend, Portal BFF, and **Caddy HTTPS ingress** with a browser-trusted local certificate. Follow the [Portal BFF local setup](portal-bff/README.md) and the [Helpdesk local runbook](scripts/README-helpdesk-local.md); provision the exact issuer, three real subjects, database roles and BFF client secrets before claiming an authenticated run.
-
-From the repository root, build the distinct integration bundle:
-
-```powershell
-Set-Location frontend
-npm.cmd ci
-npm.cmd run build:integration-local
-Set-Location ..
-```
-
-Start Backend, BFF and the configured local HTTPS ingress **following the BFF runbook** (including its Caddy configuration); a build alone does not start any server. Only **after** those prerequisites are running and the certificate is trusted, open [https://localhost:8443/mvp/helpdesk](https://localhost:8443/mvp/helpdesk). The integration build uses the BFF's `/bff/session` boundary and real OIDC redirects instead of the MOCK demo-persona flow. Verify in the browser that the Helpdesk page is served by the HTTPS origin, `/bff/session` is reachable, and login requires actual Keycloak authentication. If the BFF or provider is not configured, a 502 or failed login is **not** a successful LIVE run.
-
-**Mode distinction:** Option A (`npm.cmd run dev`) serves synthetic, in-memory MOCK requests at `http://127.0.0.1:5173`. Option C (`npm.cmd run build:integration-local`) creates an integration bundle for HTTPS/BFF hosting, but **R12 fresh-clone and authenticated browser E2E remain unverified** until recorded separately.
-
-## Known limitations
-
-- The MOCK Portal is a demonstration, not a live application or security acceptance.
-- The full Keycloak/PKCE browser login, three-persona Helpdesk E2E flow and clean-install release acceptance require R12 evidence.
-- Facility workflow runtime reuse, APISIX edge runtime, S3-compatible storage and production deployment are not claimed as completed v0.1.0 features.
-- Focused PostgreSQL 17 R10 passed with two documented skips; deferred database/provider audits and third-party SPDX/license review are tracked separately.
-
-## Getting Started
-
-### Prerequisites
-
-- Git and JDK 21; set `JAVA_HOME` to the JDK.
-- Internet access for the first Gradle Wrapper and dependency download.
-- PostgreSQL when starting the full backend or running database-dependent integration tests.
-
-### Test and build on Windows
-
-From a PowerShell terminal:
-
-```powershell
+```bash
 git clone https://github.com/tricore-opentrix/opentrix.git
-Set-Location opentrix\backend
-java -version
-.\gradlew.bat --version
-.\gradlew.bat test --tests 'com.tricore.dxos.core.workflow.*'
-.\gradlew.bat test
-.\gradlew.bat build
+cd opentrix
+
+# Linux / macOS
+bash infra/demo/demo-up.sh --gateway
+
+# Windows (PowerShell 7)
+pwsh -File infra/demo/demo-up.ps1 -Gateway -TrustCa
 ```
 
-Interpret the results from the checked-out commit and actual command output. Some integration tasks have additional prerequisites; see the [backend guide](backend/README.md).
+Lần chạy đầu build toàn bộ image từ mã nguồn (vài phút). Khi xong, script in kết quả kiểm tra
+từng thành phần. Mở **https://localhost:8443** và đăng nhập bằng một trong ba tài khoản thử:
 
-### Run with PostgreSQL
-
-The root [`.env.example`](.env.example) documents `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD`. Spring Boot does not automatically load a `.env` file in this baseline. Supply values to the process without committing credentials.
-
-From `backend/` in PowerShell:
-
-```powershell
-$env:DB_HOST = Read-Host 'DB_HOST'
-$env:DB_PORT = Read-Host 'DB_PORT'
-$env:DB_NAME = Read-Host 'DB_NAME'
-$env:DB_USER = Read-Host 'DB_USER'
-$dbCredential = Get-Credential -UserName $env:DB_USER -Message 'PostgreSQL credentials'
-$env:DB_PASSWORD = $dbCredential.GetNetworkCredential().Password
-.\gradlew.bat bootRun
-```
-
-Review Flyway and database privilege procedures before connecting to a shared database. If startup succeeds on the default port, check the health endpoint from another PowerShell terminal:
-
-```powershell
-Invoke-RestMethod -Uri 'http://localhost:8080/api/v1/health'
-```
-
-An `UP` health result does not establish Workflow, security, database transaction, or Portal acceptance. See the [backend guide](backend/README.md) for startup and test limitations.
-
-## Demonstration and Reuse
-
-The target IT Support lifecycle is:
-
-```text
-Create request → Review / classify → Assign → In progress
-               → Resolve → Requester confirms (CONFIRMED)
-```
-
-The `it-helpdesk@1` workflow ends at `CONFIRMED`; it has no `/close` Helpdesk route. The legacy Request prototype and its `/api/v1/requests/*` routes were removed in R25; the historical Flyway V1/V2 scripts remain immutable. Backend integration is merged, but the full live browser flow remains an R12 gate.
-
-| Area | Acceptance evidence to obtain |
+| Tài khoản | Vai trò |
 | --- | --- |
-| Startup | Reproducible commands and configuration without exposed secrets |
-| Security | Verified caller identity, authorization, and negative tests |
-| Workflow | Valid and rejected transitions, version binding, and history |
-| Data | Persistence and retrieval in a reviewed PostgreSQL environment |
-| Core reuse | Two business cases using the same mechanism with different rules |
-| Traceability | Issue, PR, commit, tests, evidence, and documented limits |
+| `employee-demo` | Nhân viên |
+| `coordinator-demo` | Điều phối viên |
+| `worker-demo` | Kỹ thuật viên |
 
-Mark an item `PASS` only when the evidence is tied to the relevant commit and environment. Mock demonstrations and verified live integration are separate kinds of evidence.
+Mật khẩu được sinh ngẫu nhiên vào `infra/.env` (không đưa lên Git). Đổi vai trò bằng nút
+**Đăng xuất** rồi đăng nhập tài khoản khác.
 
-## Repository Structure
+| Lệnh | Tác dụng |
+| --- | --- |
+| `demo-down.ps1` / `demo-down.sh` | Dừng, giữ dữ liệu |
+| `demo-down.ps1 -Reset` / `demo-down.sh --reset` | Dừng và xóa dữ liệu thử |
 
-```text
-DX-OS/
-├── backend/                  # Java sources, tests, and Gradle Wrapper
-│   └── src/main/java/com/tricore/dxos/
-│       ├── core/             # Identity, Workflow, and Data contracts
-│       ├── application/      # Orchestration and policies
-│       ├── gateway/          # API boundary code
-│       ├── infrastructure/   # Provider and persistence adapters
-│       └── common/
-├── docs/                     # Architecture, contracts, POCs, evidence
-├── infra/
-├── scripts/
-├── .env.example
-└── README.md
+Cổng, xử lý lỗi thường gặp và tin cậy chứng chỉ HTTPS: [infra/demo/README.md](infra/demo/README.md).
+
+### Xem giao diện không cần backend
+
+```bash
+cd frontend
+npm ci
+npm run dev        # http://127.0.0.1:5173, dữ liệu mẫu, có nhãn MOCK
 ```
 
-This is a high-level map, not a claim that every package is fully implemented.
+Cần Node.js 22.12 trở lên.
 
-## Documentation and Verification
+## Làm việc với mã nguồn
 
-- [Backend guide](backend/README.md): setup, configuration, APIs, and test limits.
-- [Documentation index](docs/README.md): canonical documentation navigation and project guides.
-- [Governance](GOVERNANCE.md): maintainer roles, decision-making, review and release rules.
-- [Architecture guide](docs/ARCHITECTURE.md): system architecture and implementation boundaries.
-- [Release documentation](docs/RELEASE.md): published versions, SOURCE-ONLY boundaries, verification evidence and release gates.
-- Historical verification: refer to the relevant PR, workflow run and exact commit when reporting evidence.
-- [Glossary](GLOSSARY.md): project terminology.
-- [Issue #38](https://github.com/tricore-opentrix/opentrix/issues/38): license, attribution, and SPDX review.
-
-A `PASS` claim should identify its commit, environment, command, result, and limitations. Review the relevant Issues and PRs for work newer than the stated baseline.
-
-## Contributing and Development Workflow
-
-The full workflow is in [CONTRIBUTING.md](CONTRIBUTING.md). In short:
-
-1. Every task has an Issue with one assignee, a release milestone and an `area:*` label.
-2. Branch from `main` as `<type>/<area>-<description>`; keep it under three days.
-3. Open a pull request into `main` (at most 400 changed lines) with a Conventional Commits title and `Closes #N`.
-4. CI (`backend`, `portal-bff`, `frontend`, `repo-hygiene`) must pass; release PR #109 additionally requires Bảo and Ánh approvals after R12 acceptance.
-5. Changes land on `main` by squash merge only; nobody pushes to `main` directly.
-
-User-visible changes are recorded in [CHANGELOG.md](CHANGELOG.md).
-
-## Security / Bảo mật
-
-**English:** Do not report vulnerabilities in public Issues. Use [private vulnerability reporting](https://github.com/tricore-opentrix/opentrix/security/advisories/new) as described in [SECURITY.md](SECURITY.md). If that channel is unavailable, open a [Security contact request](https://github.com/tricore-opentrix/opentrix/issues/new?template=security-contact.yml) without any vulnerability details. Contribution rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
-
-**Tiếng Việt:** Không báo cáo lỗ hổng trong Issue công khai. Hãy dùng [kênh báo cáo lỗ hổng riêng tư](https://github.com/tricore-opentrix/opentrix/security/advisories/new) theo hướng dẫn trong [SECURITY.md](SECURITY.md). Nếu kênh này không dùng được, mở [Security contact request](https://github.com/tricore-opentrix/opentrix/issues/new?template=security-contact.yml) và không ghi bất kỳ chi tiết lỗ hổng nào. Quy trình đóng góp nằm trong [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Team
-
-TRICORE is a student team participating in OLP PMNM 2026. These are collaboration areas; Issues and PRs record specific work.
-
-| Member | Primary collaboration area |
+| Phần | Build và kiểm tra |
 | --- | --- |
-| Lê Xuân Bảo | Architecture, Workflow / Gateway, integration, coordination |
-| Phan Hải Yến | Identity / Security, contracts, license and SPDX review |
-| Nguyễn Ngọc Ánh | Data / Storage, Portal, integration review |
+| Backend | `cd backend && ./gradlew test build` (Windows: `.\gradlew.bat test build`) |
+| Portal BFF | `./backend/gradlew -p portal-bff test build` |
+| Frontend | `cd frontend && npm ci && npm test && npm run build` |
+| Giấy phép | CI chạy kiểm tra REUSE/SPDX trên mọi pull request |
 
-Responsibilities do not establish copyright ownership of each contributor's work.
+Hướng dẫn đầy đủ: [DEVELOPMENT.md](docs/DEVELOPMENT.md) và [TESTING.md](docs/TESTING.md).
 
-## License and Third-Party Notices
+## Lộ trình
 
-Original OpenTrix materials covered by [LICENSE](LICENSE) use **Apache License 2.0 (Apache-2.0)**, with attribution in [NOTICE](NOTICE).
+| Phiên bản | Nội dung |
+| --- | --- |
+| `v0.1.0` (đã phát hành) | API IT Helpdesk, Portal BFF với OIDC, Portal React |
+| Bản tiếp theo (đang phát triển) | Chạy thử một lệnh, APISIX gateway, giao diện IT Helpdesk mới, nhãn trạng thái tiếng Việt |
+| Kế hoạch | Flowable BPMN, lưu tệp S3, tài liệu OpenAPI, trao đổi trong yêu cầu, ứng dụng thứ hai trên cùng lõi |
 
-CI job `repo-hygiene` runs SPDX/REUSE checks through `fsfe/reuse-action`; a REUSE failure fails that job. See [the CI workflow](.github/workflows/ci.yml) and [CONTRIBUTING.md](CONTRIBUTING.md). Check the run at the exact commit under review; this statement describes the configured check, not a guarantee that every future run passes.
+Thay đổi theo phiên bản: [CHANGELOG.md](CHANGELOG.md). Công việc được theo dõi bằng
+[Issues](https://github.com/tricore-opentrix/opentrix/issues) và milestone.
 
-Third-party dependencies, the Gradle Wrapper, adapted materials and externally sourced assets retain their respective licenses and attribution obligations. [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) contains OpenTrix-specific community rules licensed under Apache-2.0; it does not declare adoption of Contributor Covenant.
+## Đọc thêm
 
-Source-origin, copyright and redistribution-rights verification remains tracked in [Issue #138](https://github.com/tricore-opentrix/opentrix/issues/138). CI success does not itself establish source-rights clearance or release acceptance.
+- [Mục lục tài liệu](docs/README.md): chọn tài liệu theo việc cần làm.
+- [Kiến trúc](docs/ARCHITECTURE.md) · [API](docs/API.md) · [Tích hợp ứng dụng mới](docs/INTEGRATION.md)
+- [Triển khai](docs/DEPLOYMENT.md) · [Phát hành](docs/RELEASE.md) · [Giấy phép và nguồn mở](docs/OPEN_SOURCE.md)
+- [Quyết định kiến trúc (ADR)](docs/08-decisions/README.md) · [Thuật ngữ](GLOSSARY.md)
+- [Đóng góp](CONTRIBUTING.md) · [Quản trị dự án](GOVERNANCE.md) · [Báo cáo lỗ hổng](SECURITY.md)
 
-Community participation follows the [Code of Conduct](CODE_OF_CONDUCT.md) and [contribution guide](CONTRIBUTING.md).
+## Giấy phép
+
+Mã nguồn OpenTrix phát hành theo [Apache License 2.0](LICENSE), bản quyền 2026 TRICORE
+contributors; xem [NOTICE](NOTICE). Thư viện bên thứ ba, container image và dịch vụ đi kèm giữ
+giấy phép riêng; xem [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Từng tệp mang thông tin
+giấy phép theo chuẩn [REUSE](https://reuse.software/).
+
+---
+
+## OpenTrix — Overview
+
+OpenTrix is an open-source platform for building internal service applications on a shared core,
+following the DX-OS Open-Core architecture. The core provides identity, an API gateway, workflow
+and data; each application defines only its business rules. The first application is
+**IT Helpdesk**: submitting, triaging, assigning, resolving and confirming IT support requests.
+Licensed under the [Apache License 2.0](LICENSE).
+
+Quick start: [run it with one command](#run-locally). Contributors: [CONTRIBUTING.md](CONTRIBUTING.md).
+All documentation: [documentation index](docs/README.md).
+
+## Current scope
+
+| Area | Available in the source |
+| --- | --- |
+| IT Helpdesk | Create, triage, assign, start, resolve and confirm requests; list, detail and activity history; 9 HTTP APIs |
+| Identity | Keycloak OIDC; Portal BFF with Authorization Code + PKCE, server-side session and CSRF protection; backend validates JWTs (issuer, audience, signature) |
+| Authorization | Scoped per tenant and per request; business roles are stored in the database, never taken from client headers |
+| Workflow | Shared definitions, versions, transitions and history; optimistic version checks prevent lost updates |
+| API gateway | Apache APISIX at the edge: JWKS token validation, rate limiting, forwarded-header normalization |
+| Data | PostgreSQL 17, Flyway migrations, least-privilege schemas and roles |
+| User interface | Vietnamese React Portal for three roles; a MOCK mode for UI work without a backend |
+| Trial run | One command builds and starts the whole stack from source with Docker on Windows, Linux and macOS |
+| Not provided yet | Flowable BPMN engine ([ADR-009](docs/08-decisions/ADR-009-modular-monolith-flowable.md)), S3 file storage ([ADR-016](docs/08-decisions/ADR-016-s3-compatible-storage.md)), Facility application, notifications, reports, production deployment |
+
+### IT Helpdesk roles
+
+| Role | Can |
+| --- | --- |
+| Employee | Submit requests, follow their own requests, confirm completion |
+| Coordinator | Triage new requests, assign technicians, monitor all requests |
+| Technician | Start work on assigned requests, record the resolution |
+
+One account may hold several roles. Action buttons appear only when the server allows them.
+
+Request lifecycle: **Submitted → Triaged → In progress → Awaiting confirmation → Completed**.
+
+## Repository map
+
+| Path | Responsibility | Start with |
+| --- | --- | --- |
+| [`backend/`](backend/) | Java 21 / Spring Boot; Identity, Workflow and Data core plus the Helpdesk application | [backend/README.md](backend/README.md) |
+| [`portal-bff/`](portal-bff/) | Spring Boot; OIDC login, session, CSRF and API forwarding for the browser | [portal-bff/README.md](portal-bff/README.md) |
+| [`frontend/`](frontend/) | React + TypeScript + Vite; IT Helpdesk Portal | [frontend/README.md](frontend/README.md) |
+| [`infra/`](infra/) | Docker Compose, Keycloak realm, APISIX configuration, trial scripts | [infra/demo/README.md](infra/demo/README.md) |
+| [`scripts/`](scripts/) | Local checks, license compliance, release packaging | [scripts/README.md](scripts/README.md) |
+| [`docs/`](docs/) | Architecture, API, integration, testing, deployment, architecture decisions (ADR) | [docs/README.md](docs/README.md) |
+
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+    Browser[Browser] -->|HTTPS| Caddy[Caddy ingress]
+    Caddy --> Portal[React Portal]
+    Caddy --> BFF[Portal BFF]
+    BFF -->|OIDC| Keycloak[(Keycloak)]
+    BFF -->|Bearer token| APISIX[APISIX gateway]
+    APISIX --> Backend[Backend: Identity · Workflow · Data · Helpdesk]
+    APISIX -.->|JWKS| Keycloak
+    Backend -.->|JWKS| Keycloak
+    Backend --> DB[(PostgreSQL 17)]
+```
+
+The backend is a **modular monolith**: core and application modules run in one process with
+dependency boundaries enforced by ArchUnit. The browser never holds an access token; the BFF keeps
+tokens server-side and calls the backend on the user's behalf. Details:
+[ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Run locally
+
+Requirements: Git, Docker with Compose 2.24 or later; on Windows, **PowerShell 7.4 or later**
+(`winget install --id Microsoft.PowerShell`).
+
+```bash
+git clone https://github.com/tricore-opentrix/opentrix.git
+cd opentrix
+
+# Linux / macOS
+bash infra/demo/demo-up.sh --gateway
+
+# Windows (PowerShell 7)
+pwsh -File infra/demo/demo-up.ps1 -Gateway -TrustCa
+```
+
+The first run builds every image from source (a few minutes). When it finishes, the script prints
+a health check for each component. Open **https://localhost:8443** and sign in with one of the
+trial accounts:
+
+| Account | Role |
+| --- | --- |
+| `employee-demo` | Employee |
+| `coordinator-demo` | Coordinator |
+| `worker-demo` | Technician |
+
+Passwords are generated into `infra/.env`, which is never committed. Switch roles with
+**Sign out**, then sign in with another account.
+
+| Command | Effect |
+| --- | --- |
+| `demo-down.ps1` / `demo-down.sh` | Stop and keep data |
+| `demo-down.ps1 -Reset` / `demo-down.sh --reset` | Stop and delete trial data |
+
+Ports, troubleshooting and HTTPS certificate trust: [infra/demo/README.md](infra/demo/README.md).
+
+### UI without a backend
+
+```bash
+cd frontend
+npm ci
+npm run dev        # http://127.0.0.1:5173, sample data, labelled MOCK
+```
+
+Requires Node.js 22.12 or later.
+
+## Working on the code
+
+| Part | Build and check |
+| --- | --- |
+| Backend | `cd backend && ./gradlew test build` (Windows: `.\gradlew.bat test build`) |
+| Portal BFF | `./backend/gradlew -p portal-bff test build` |
+| Frontend | `cd frontend && npm ci && npm test && npm run build` |
+| Licensing | CI runs REUSE/SPDX checks on every pull request |
+
+Full guides: [DEVELOPMENT.md](docs/DEVELOPMENT.md) and [TESTING.md](docs/TESTING.md).
+
+## Roadmap
+
+| Version | Content |
+| --- | --- |
+| `v0.1.0` (released) | IT Helpdesk API, Portal BFF with OIDC, React Portal |
+| Next release (in development) | One-command trial stack, APISIX gateway, new IT Helpdesk UI, Vietnamese status labels |
+| Planned | Flowable BPMN, S3 file storage, OpenAPI reference, in-request messaging, a second application on the same core |
+
+Changes by version: [CHANGELOG.md](CHANGELOG.md). Work is tracked in
+[Issues](https://github.com/tricore-opentrix/opentrix/issues) and milestones.
+
+## Further reading
+
+- [Documentation index](docs/README.md): pick a guide by task.
+- [Architecture](docs/ARCHITECTURE.md) · [API](docs/API.md) · [Integrating a new application](docs/INTEGRATION.md)
+- [Deployment](docs/DEPLOYMENT.md) · [Release](docs/RELEASE.md) · [Licensing and open source](docs/OPEN_SOURCE.md)
+- [Architecture decisions (ADR)](docs/08-decisions/README.md) · [Glossary](GLOSSARY.md)
+- [Contributing](CONTRIBUTING.md) · [Governance](GOVERNANCE.md) · [Security reports](SECURITY.md)
+
+## License
+
+OpenTrix source code is licensed under the [Apache License 2.0](LICENSE), copyright 2026 TRICORE
+contributors; see [NOTICE](NOTICE). Third-party libraries, container images and bundled services
+keep their own licenses; see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Every file carries
+license information following the [REUSE](https://reuse.software/) specification.
