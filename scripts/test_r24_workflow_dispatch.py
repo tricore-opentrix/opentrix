@@ -149,6 +149,22 @@ class R24ManualDispatchTests(unittest.TestCase):
         self.assertEqual(preview[0]["if"],
                          "steps.meta.outputs.validation_only == 'true'")
 
+    def test_source_archive_is_built_from_extracted_tar_without_git(self):
+        steps = self.workflow_yaml["jobs"]["candidate"]["steps"]
+        extracted = [step for step in steps
+                     if step.get("name") == "Build verified extracted SOURCE-ONLY archive (no Git worktree)"]
+        self.assertEqual(len(extracted), 1)
+        self.assertIn("steps.meta.outputs.mode == 'source-only'", extracted[0]["if"])
+        self.assertIn('tar -xzf "$archive"', extracted[0]["run"])
+        self.assertIn('test ! -e "$src/.git"', extracted[0]["run"])
+        self.assertIn('gradle --no-daemon -p "$src/backend" bootJar', extracted[0]["run"])
+        self.assertIn('gradle --no-daemon -p "$src/portal-bff" bootJar', extracted[0]["run"])
+        self.assertIn("npm run build:integration-local", extracted[0]["run"])
+        setup = [step for step in steps
+                 if step.get("uses") == "gradle/actions/setup-gradle@v4"]
+        self.assertEqual(len(setup), 1)
+        self.assertEqual(setup[0]["with"]["gradle-version"], "8.14.3")
+
     def test_dispatch_never_opens_publisher_and_artifacts_stay_separate(self):
         self.assertIn("if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')",
                       self.workflow)

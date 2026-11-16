@@ -68,6 +68,8 @@ class R24ReleaseTests(unittest.TestCase):
                "reviewed_by": ["phanyen06ym-ien"],
                "evidence": {key: "https://example.test/verified" for key in
                             (release.GATES if mode == "binary" else release.SOURCE_GATES)}}
+        if mode == "source-only":
+            doc["review_url"] = "https://github.com/tricore-opentrix/opentrix/pull/123#pullrequestreview-456"
         if mode == "binary":
             doc.update({"java_base_image": "eclipse-temurin:21-jre@sha256:" + "b" * 64,
                         "license_groups": {"permissive": {"status": "CLEARED",
@@ -252,6 +254,36 @@ class R24ReleaseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exact tag"):
             release.gate(self.archive, self.sums, self.acceptance, stable, SHA,
                          self.output / "RELEASE-NOTES.md")
+
+    def test_source_only_requires_rights_build_and_independent_review_evidence(self):
+        stable = "v0.2.0"
+        self.put("CHANGELOG.md", "## [Unreleased]\n\n## [0.2.0]\n\n### Added\n- sources\n")
+        subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
+        subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md"],
+                       cwd=self.repo, check=True)
+        self.make("source-only", tag=stable)
+        base = self.accept(mode="source-only")
+        base["tag"] = stable
+        self.acceptance.write_text(json.dumps(base))
+        self.assertEqual(release.gate(self.archive, self.sums, self.acceptance, stable, SHA),
+                         "source-only")
+        for missing in release.SOURCE_GATES:
+            doc = json.loads(json.dumps(base))
+            del doc["evidence"][missing]
+            self.acceptance.write_text(json.dumps(doc))
+            with self.subTest(missing=missing), self.assertRaisesRegex(ValueError,
+                    "source-only release missing evidence"):
+                release.gate(self.archive, self.sums, self.acceptance, stable, SHA)
+        doc = json.loads(json.dumps(base))
+        del doc["review_url"]
+        self.acceptance.write_text(json.dumps(doc))
+        with self.assertRaisesRegex(ValueError, "independently verifiable review URL"):
+            release.gate(self.archive, self.sums, self.acceptance, stable, SHA)
+        doc = json.loads(json.dumps(base))
+        doc["reviewed_by"] = ["unaffiliated-user"]
+        self.acceptance.write_text(json.dumps(doc))
+        with self.assertRaisesRegex(ValueError, "independent compliance reviewer"):
+            release.gate(self.archive, self.sums, self.acceptance, stable, SHA)
 
     def test_stable_v020_binary_publication_is_blocked_even_if_reviewed(self):
         stable = "v0.2.0"
