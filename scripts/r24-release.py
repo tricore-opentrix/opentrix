@@ -6,6 +6,9 @@ import gzip
 import hashlib
 import io
 import json
+import os
+from urllib.error import URLError
+from urllib.request import Request, urlopen
 import re
 import sys
 import subprocess
@@ -18,8 +21,7 @@ REVIEWERS = {"phanyen06ym-ien", "ngang02012007-crypto"}
 JAVA_BASE = re.compile(r"eclipse-temurin:21-jre@sha256:[a-f0-9]{64}$")
 GATES = ("upstream_license_notices", "source_and_relink", "frontend_assets",
          "service_images", "base_images", "archive_and_checksums", "release_notes")
-SOURCE_GATES = ("source_provenance", "source_license", "sbom_source_boundary",
-                "archive_and_checksums", "release_notes")
+SOURCE_GATES = ("source_rights", "archive_verification", "extracted_source_build")
 PERMISSIVE = {"Apache-2.0", "MIT", "BSD-2-Clause", "BSD-3-Clause", "ISC", "0BSD"}
 
 def ident(row):
@@ -79,6 +81,50 @@ def normalize_cyclonedx(raw):
                 component.pop("externalReferences", None)
     return (json.dumps(sbom, sort_keys=True, ensure_ascii=False,
                        separators=(",", ":")) + "\n").encode("utf-8")
+
+
+def _github_json(path):
+    """Fetch GitHub release-approval evidence; never trust JSON URL alone."""
+    token = os.environ.get("GITHUB_TOKEN", "")
+    require(token, "GITHUB_TOKEN is required to verify independent R24 review")
+    url = "https://api.github.com/repos/tricore-opentrix/opentrix/" + path
+    req = Request(url, headers={"Authorization": "Bearer " + token,
+                                "Accept": "application/vnd.github+json",
+                                "X-GitHub-Api-Version": "2022-11-28"})
+    try:
+        with urlopen(req, timeout=15) as response:
+            return json.loads(response.read())
+    except (URLError, ValueError) as exc:
+        raise ValueError("cannot independently verify GitHub review: publication BLOCKED") from exc
+
+
+def verify_independent_review(accepted):
+    """A valid URL must identify an actual merged, approved, independent PR review."""
+    link = accepted.get("review_url", "")
+    pattern = r"https://github[.]com/tricore-opentrix/opentrix/pull/([1-9][0-9]*)#pullrequestreview-([1-9][0-9]*)"
+    match = re.fullmatch(pattern, link) if isinstance(link, str) else None
+    require(match, "invalid independent review_url: expected a GitHub PR review permalink")
+    pr_number, review_id = match.groups()
+    pr = _github_json(f"pulls/{pr_number}")
+    review = _github_json(f"pulls/{pr_number}/reviews/{review_id}")
+    author = (pr.get("user") or {}).get("login")
+    reviewer = (review.get("user") or {}).get("login")
+    require(pr.get("merged_at") and (pr.get("base") or {}).get("ref") == "main",
+            "independent review PR must be merged to main")
+    require(reviewer in REVIEWERS and reviewer != author
+            and reviewer in accepted.get("reviewed_by", []),
+            "independent GitHub reviewer is missing, unauthorized, or the PR author")
+    require(review.get("state") == "APPROVED"
+            and str(review.get("id")) == review_id
+            and review.get("commit_id") == (pr.get("head") or {}).get("sha"),
+            "independent review must APPROVE the final PR HEAD")
+    acceptance_path = f"docs/06-deployment/r24-acceptances/{accepted['tag']}.json"
+    files = _github_json(f"pulls/{pr_number}/files?per_page=100")
+    require(isinstance(files, list)
+            and any(row.get("filename") == acceptance_path for row in files),
+            "independent review PR does not include exact R24 acceptance JSON")
+    require(len(files) < 100, "large acceptance PR needs explicit complete file review")
+    return reviewer
 
 
 def package(repo, tag, sha, output, mode="binary", validation_only=False):
@@ -266,10 +312,13 @@ def gate(archive, checksums, acceptance, tag, sha, notes_file=None):
                 "source-only package unexpectedly includes distributable binaries")
         require(any(name.startswith(prefix + "source/") for name in data),
                 "source-only package has no tracked source")
+        require(isinstance(accepted.get("evidence"), dict),
+                "source-only release evidence object is missing")
         for key in SOURCE_GATES:
-            ref = accepted.get("evidence", {}).get(key, "")
+            ref = accepted["evidence"].get(key, "")
             require(isinstance(ref, str) and ref.startswith("https://"),
                     f"source-only release missing evidence: {key}")
+        verify_independent_review(accepted)
         print("R24_SOURCE_ONLY_GATE_PASS: no binary/GHCR authorization")
         return "source-only"
     require(JAVA_BASE.fullmatch(accepted.get("java_base_image", "")),

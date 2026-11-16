@@ -165,6 +165,19 @@ class R24ManualDispatchTests(unittest.TestCase):
         self.assertEqual(len(setup), 1)
         self.assertEqual(setup[0]["with"]["gradle-version"], "8.14.3")
 
+    def test_release_gate_verifies_review_via_live_github_token_only_in_tag_job(self):
+        wf = self.workflow_yaml
+        candidate = wf["jobs"]["candidate"]
+        publisher = wf["jobs"]["publish"]
+        self.assertEqual(
+            publisher["if"],
+            "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')")
+        gate_steps = [step for step in publisher["steps"]
+                      if step.get("name") == "Refuse publication without exact-SHA R24 distribution acceptance"]
+        self.assertEqual(len(gate_steps), 1)
+        self.assertEqual(gate_steps[0]["env"]["GITHUB_TOKEN"], "${{ secrets.GITHUB_TOKEN }}")
+        self.assertNotIn("GITHUB_TOKEN", candidate.get("env", {}))
+
     def test_demo_dockerfiles_build_in_pr_without_push(self):
         steps = self.workflow_yaml["jobs"]["candidate"]["steps"]
         docker_steps = [step for step in steps if step.get("name") ==

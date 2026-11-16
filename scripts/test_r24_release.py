@@ -8,6 +8,7 @@ import tarfile
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 SPEC = importlib.util.spec_from_file_location("r24_release", Path(__file__).with_name("r24-release.py"))
@@ -19,6 +20,19 @@ ROW = {"project": "backend", "name": "example", "version": "1.0",
        "purl": "pkg:maven/test/example@1.0?type=jar",
        "licenses": ["Apache-2.0"], "license_policy_status": "APPROVED",
        "release_distribution_status": "PENDING"}
+
+
+def fake_github_review(path):
+    if path == "pulls/123":
+        return {"merged_at": "2026-11-17T00:00:00Z", "base": {"ref": "main"},
+                "user": {"login": "r24-acceptance-author"},
+                "head": {"sha": "b" * 40}}
+    if path == "pulls/123/reviews/456":
+        return {"id": 456, "state": "APPROVED",
+                "user": {"login": "phanyen06ym-ien"}, "commit_id": "b" * 40}
+    if path == "pulls/123/files?per_page=100":
+        return [{"filename": "docs/06-deployment/r24-acceptances/v0.2.0.json"}]
+    raise AssertionError("unexpected GitHub review API path: " + path)
 
 
 class R24ReleaseTests(unittest.TestCase):
@@ -53,6 +67,10 @@ class R24ReleaseTests(unittest.TestCase):
                       "origin": "META-INF/LICENSE.txt", "license_text": True}],
             "source": "gradle-cache-jar:example-1.0.jar"}
         put("build/r24/upstream/upstream-index.json", json.dumps([self.index_row]))
+        self._review_stub = mock.patch.object(release, "_github_json",
+                                              side_effect=fake_github_review)
+        self._review_stub.start()
+        self.addCleanup(self._review_stub.stop)
         self.source_sha = SHA  # Binary fixture uses the synthetic historical SHA.
         self.output = self.repo / "output"
         self.make()
@@ -78,6 +96,9 @@ class R24ReleaseTests(unittest.TestCase):
                "reviewed_by": ["phanyen06ym-ien"],
                "evidence": {key: "https://example.test/verified" for key in
                             (release.GATES if mode == "binary" else release.SOURCE_GATES)}}
+        if mode == "source-only":
+            doc["review_url"] = ("https://github.com/tricore-opentrix/opentrix/"
+                                 "pull/123#pullrequestreview-456")
         if mode == "binary":
             doc.update({"java_base_image": "eclipse-temurin:21-jre@sha256:" + "b" * 64,
                         "license_groups": {"permissive": {"status": "CLEARED",
@@ -268,6 +289,45 @@ class R24ReleaseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exact tag"):
             release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha,
                          self.output / "RELEASE-NOTES.md")
+
+    def test_source_only_requires_all_rights_build_and_actual_independent_review(self):
+        stable = "v0.2.0"
+        self.put("CHANGELOG.md", "## [Unreleased]\n\n## [0.2.0]\n\n### Added\n- sources\n")
+        subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
+        subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md"],
+                       cwd=self.repo, check=True)
+        self.commit_sources()
+        self.make("source-only", tag=stable)
+        base = self.accept(mode="source-only")
+        base["tag"] = stable
+        self.acceptance.write_text(json.dumps(base))
+        self.assertEqual(release.gate(self.archive, self.sums, self.acceptance,
+                                      stable, self.source_sha), "source-only")
+        for missing in release.SOURCE_GATES:
+            doc = json.loads(json.dumps(base))
+            del doc["evidence"][missing]
+            self.acceptance.write_text(json.dumps(doc))
+            with self.subTest(missing=missing), self.assertRaisesRegex(ValueError,
+                    "source-only release missing evidence"):
+                release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
+        bad = json.loads(json.dumps(base))
+        bad.pop("review_url")
+        self.acceptance.write_text(json.dumps(bad))
+        with self.assertRaisesRegex(ValueError, "invalid independent review_url"):
+            release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
+        bad = json.loads(json.dumps(base))
+        bad["reviewed_by"] = ["unrelated-contributor"]
+        self.acceptance.write_text(json.dumps(bad))
+        with self.assertRaisesRegex(ValueError, "independent compliance reviewer"):
+            release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
+        self.acceptance.write_text(json.dumps(base))
+        with mock.patch.object(release, "_github_json",
+                side_effect=lambda path: dict(fake_github_review(path),
+                    state="COMMENTED") if path == "pulls/123/reviews/456"
+                    else fake_github_review(path)):
+            with self.assertRaisesRegex(ValueError, "APPROVE the final PR HEAD"):
+                release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
+        self.assertEqual(release.verify_independent_review(base), "phanyen06ym-ien")
 
     def test_stable_v020_binary_publication_is_blocked_even_if_reviewed(self):
         stable = "v0.2.0"

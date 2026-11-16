@@ -258,6 +258,7 @@ jobs:
         id: clearance
         env:
           TAG: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Read merged acceptance PR/review via GitHub API, fail closed
         run: |
           python3 scripts/r24-release.py gate \
             --archive "dist/r24/dxos-open-core-${TAG#v}.tar.gz" \

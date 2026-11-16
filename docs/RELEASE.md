@@ -67,7 +67,7 @@ Quy ước: `AS-IS` = source/workflow đã đối chiếu; `HISTORICAL` = quan s
 
 | Phạm vi R24 | Nội dung archive | Giới hạn |
 | --- | --- | --- |
-| `source-only` (mục tiêu `v0.2.0`) | Mã nguồn được Git theo dõi đủ điều kiện UTF-8, LICENSE, NOTICE, THIRD-PARTY-NOTICES, CHANGELOG, RELEASE-NOTES, ba CycloneDX SBOM, inventory và MANIFEST | Không đóng gói bootJAR, frontend dist hoặc images; SBOM liệt kê phụ thuộc đã resolve **không có nghĩa** nhị phân được phân phối |
+| `source-only` (mục tiêu `v0.2.0`) | Mã nguồn được Git theo dõi đủ điều kiện UTF-8, LICENSE, NOTICE, THIRD-PARTY-NOTICES, CHANGELOG, RELEASE-NOTES, ba CycloneDX SBOM, inventory và MANIFEST | Không đóng gói bootJAR, frontend dist, images hoặc Gradle Wrapper JAR; build từ archive dùng Gradle 8.14.3 **bên ngoài**. SBOM phụ thuộc không phải phân phối binary |
 | `binary` (phạm vi **chưa được phép**) | Backend/BFF bootJAR, frontend dist, SBOM/inventory/notices, upstream license texts, MANIFEST và release notes | Phải qua đánh giá upstream, source/relink, asset, JRE/OCI và các nghĩa vụ license riêng |
 
 Nguồn chuẩn chi tiết: [R24 runbook](06-deployment/r24-release.md), [packager](../scripts/r24-release.py), [workflow](../.github/workflows/release.yml).
@@ -78,9 +78,9 @@ Nguồn chuẩn chi tiết: [R24 runbook](06-deployment/r24-release.md), [packag
 
 2. **Quyền nguồn gốc:** ba maintainer đã xác nhận Q1–Q5 trong [biên bản #138](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6899613976) cho **source-only `v0.2.0`** trong phạm vi quyền của từng người, có công khai giới hạn AI/upstream; chưa phải kiểm chứng nguyên gốc toàn repo hay R24 release acceptance. `reuse lint` và policy allowlist **không chứng minh quyền**. Xem §3.3.
 
-3. **Đóng băng source SHA:** xác định exact Git commit và package hash; kiểm hai ứng viên độc lập trên **cùng source SHA** nếu đang làm xác nhận tính tái lập. Không dùng checksum của SHA khác.
+3. **Đóng băng source SHA:** sau source-rights disposition và ngày công bố thực tế, ghi exact commit SHA. **Đề xuất cần review:** một `publishable-source-only` candidate trên SHA này, xác minh toàn bộ archive/hash/manifest, cộng **một lần build độc lập từ archive giải nén không có .git** (Gradle 8.14.3 bên ngoài, JDK 21, Node 22). Không sử dụng checksum của SHA khác. Trước khi nhóm phê duyệt thay đổi policy, tiêu chí hai candidate lịch sử tại #190 vẫn còn hiệu lực.
 
-4. **Acceptance riêng trên `main`:** sau khi đóng băng source, PR khác có reviewer độc lập phải đưa `docs/06-deployment/r24-acceptances/<tag>.json` lên `main`. JSON cần `tag`, `source_sha`, `mode`, `archive_sha256`, `reviewed_by` và HTTPS evidence đúng mode; file JSON tự nó không chứng minh review đã xảy ra.
+4. **Acceptance riêng trên `main`:** sau source freeze và kiểm chứng artifact, PR khác có reviewer độc lập phải đưa `docs/06-deployment/r24-acceptances/<tag>.json` lên `main`. JSON bắt buộc `tag`, `source_sha`, `mode`, `archive_sha256`, `reviewed_by`; với v0.2.0 SOURCE-ONLY theo schema rút gọn đề xuất, thêm `review_url` và 3 HTTPS evidence: `source_rights` (quyền nguồn + Apache-2.0/third-party/NOTICE), `archive_verification` (SHA256SUMS/MANIFEST/SBOM/notes), `extracted_source_build` (build không có .git). Release gate đối chiếu live GitHub API: acceptance PR phải merge vào main, có đúng JSON của tag và một APPROVED review trên final PR HEAD từ Yến/Ánh không phải tác giả; thông tin trong JSON hoặc URL HTTPS đơn lẻ không phải bằng chứng approval.
 
 5. **Bảo vệ phát hành:** xác minh GitHub Environment `r24-release` cùng reviewer bắt buộc và quy tắc bảo vệ tag trước khi tạo tag. **Khai báo `environment: r24-release` trong YAML không tự chứng minh thiết lập bảo vệ đã có**.
 
@@ -141,7 +141,7 @@ Sau source freeze, acceptance PR phải merge riêng lên `main`; tag được p
 
 | Mode | Evidence bổ sung cho các trường chung ở trên |
 | --- | --- |
-| `source-only` | `source_provenance`, `source_license`, `sbom_source_boundary`, `archive_and_checksums`, `release_notes`; binary license groups không cấp clearance cho mode này |
+| `source-only` — schema rút gọn **đề xuất, chờ duyệt** | `source_rights`, `archive_verification`, `extracted_source_build` và `review_url`; phải kiểm đủ provenance, nguồn/giấy phép/NOTICE/SBOM/notes trong các URL, không miễn các nghĩa vụ này |
 | `binary` — chưa được phép | `eclipse-temurin:21-jre@sha256:<digest>` đã pin; permissive group `CLEARED` kèm evidence, từng exception `CLEARED` cho license ngoài nhóm; source/relink, upstream texts, assets, JRE/OCI, checksum/notes evidence |
 
 Collector `scripts/r24-upstream.py` lấy LICENSE/NOTICE từ Gradle-cache JAR và LICENSE/COPYING/NOTICE từ npm; supplements đã review ở `docs/06-deployment/r24-upstream/<project>/<name>-<version>/`. Bytes được giữ/hash trong `upstream-index.json`: tìm thấy là `COLLECTED_UNREVIEWED`, thiếu là `MISSING`; Maven `type=pom` chỉ là metadata, license identifier trong `package.json` không thay actual texts. Khi chuẩn bị binary-validation inputs cho review, dùng `python3 scripts/r24-upstream.py --root . --inventory build/r23/license-inventory.json --output build/r24/upstream`.
@@ -156,7 +156,7 @@ Yến phải xác minh Environment `r24-release` có independent reviewers Yến
 - **Giới hạn công khai:** không có lịch sử từng prompt; không khẳng định output AI độc lập hoàn toàn với nguồn ngoài; nhóm báo cáo không cố ý sao chép; chưa so sánh chi tiết từng file với upstream. Giữ nguyên `UNKNOWN` / `NOT_RECALLED` / `RIGHTS_PENDING` đối với nội dung chưa xác minh; không tuyên bố toàn repository `CLEARED`.
 - **Điều kiện tài liệu Q3:** PR riêng cập nhật song ngữ `CONTRIBUTING.md` (AI disclosure và xử lý báo cáo trùng nguồn trong 7 ngày), `docs/OPEN_SOURCE.md`, `docs/RELEASE.md`, cùng giấy phép demo images Keycloak/PostgreSQL/APISIX trong `NOTICE`. Chỉ ghi **MERGED** sau khi PR và reviews có bằng chứng.
 - **Q4/Q6:** đối chiếu chi tiết file/upstream được theo dõi trong Issue mới thuộc `v1.0.0`; tự kiểm tra khoảng năm file rủi ro Q6 là **tùy chọn** và kết quả không tìm thấy trùng không chứng minh tính độc lập.
-- **Điều kiện phát hành độc lập:** #138 disposition ≠ R24 gate PASS. `v0.2.0.json` phải được tạo trong PR acceptance riêng sau khi đóng băng source, gắn evidence năm khóa và reviewer thật, rồi qua environment/tag protections. PR lịch sử [#139](https://github.com/tricore-opentrix/opentrix/pull/139) đã CLOSED, không phải approval hiện hành. Đừng đóng #138 trước khi các điều kiện đóng Issue được đáp ứng.
+- **Điều kiện phát hành độc lập:** #138 disposition ≠ R24 gate PASS. `v0.2.0.json` phải được tạo trong PR acceptance riêng sau khi đóng băng source, gắn evidence cho ba nhóm bắt buộc theo schema đề xuất và reviewer thật, rồi qua environment/tag protections. PR lịch sử [#139](https://github.com/tricore-opentrix/opentrix/pull/139) đã CLOSED, không phải approval hiện hành. Đừng đóng #138 trước khi các điều kiện đóng Issue được đáp ứng.
 
 ### 4. Artifact, checksum và kiểm tra không gây phát hành
 
