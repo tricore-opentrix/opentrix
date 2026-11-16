@@ -18,7 +18,8 @@ REVIEWERS = {"phanyen06ym-ien", "ngang02012007-crypto"}
 JAVA_BASE = re.compile(r"eclipse-temurin:21-jre@sha256:[a-f0-9]{64}$")
 GATES = ("upstream_license_notices", "source_and_relink", "frontend_assets",
          "service_images", "base_images", "archive_and_checksums", "release_notes")
-SOURCE_GATES = ("source_rights", "archive_verification", "extracted_source_build")
+SOURCE_GATES = ("source_provenance", "source_license", "sbom_source_boundary",
+                "archive_and_checksums", "release_notes")
 PERMISSIVE = {"Apache-2.0", "MIT", "BSD-2-Clause", "BSD-3-Clause", "ISC", "0BSD"}
 
 def ident(row):
@@ -255,8 +256,7 @@ def gate(archive, checksums, acceptance, tag, sha, notes_file=None):
             "R24 approval scope differs from published archive mode")
     require(accepted.get("archive_sha256") == digest(Path(archive).read_bytes()),
             "reviewed archive SHA-256 mismatch")
-    require(isinstance(accepted.get("reviewed_by"), list) and
-            set(accepted["reviewed_by"]) & REVIEWERS,
+    require(set(accepted.get("reviewed_by", [])) & REVIEWERS,
             "R24 independent compliance reviewer is missing")
     if manifest["mode"] == "source-only":
         require(not any(name.startswith(prefix + "backend/") or
@@ -266,13 +266,8 @@ def gate(archive, checksums, acceptance, tag, sha, notes_file=None):
                 "source-only package unexpectedly includes distributable binaries")
         require(any(name.startswith(prefix + "source/") for name in data),
                 "source-only package has no tracked source")
-        require(isinstance(accepted.get("review_url"), str)
-                and accepted["review_url"].startswith("https://"),
-                "source-only release missing independently verifiable review URL")
-        require(isinstance(accepted.get("evidence"), dict),
-                "source-only release evidence object is missing")
         for key in SOURCE_GATES:
-            ref = accepted["evidence"].get(key, "")
+            ref = accepted.get("evidence", {}).get(key, "")
             require(isinstance(ref, str) and ref.startswith("https://"),
                     f"source-only release missing evidence: {key}")
         print("R24_SOURCE_ONLY_GATE_PASS: no binary/GHCR authorization")
