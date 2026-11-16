@@ -12,12 +12,22 @@ on:
       - 'scripts/r24-upstream.py'
       - 'scripts/test_r24_release.py'
       - 'scripts/test_r24_upstream.py'
+      - 'scripts/test_r24_workflow_dispatch.py'
       - 'infra/release/**'
       - 'docs/06-deployment/r24-*'
       - 'CHANGELOG.md'
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      candidate_mode:
+        description: 'Validation-only by default; source-only publishable format is NOT a release'
+        type: choice
+        required: true
+        default: validation-only
+        options:
+          - validation-only
+          - publishable-source-only
 
 permissions:
   contents: read
@@ -36,6 +46,7 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           REF: ${{ github.ref_name }}
+          REQUESTED_CANDIDATE_MODE: ${{ inputs.candidate_mode || 'validation-only' }}
         run: |
           if [ "$EVENT" = push ]; then
             if ! [[ "$REF" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[1-9][0-9]*)?$ ]]; then
@@ -55,9 +66,22 @@ jobs:
               echo '::error::v0.2.0 is SOURCE-ONLY; binary/JAR/GHCR publication is blocked'; exit 1
             fi
             echo "tag=$REF" >> "$GITHUB_OUTPUT"
+            echo 'validation_only=false' >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = workflow_dispatch ] && [ "$REQUESTED_CANDIDATE_MODE" = publishable-source-only ]; then
+            if [ "$REF" != main ] || [ "$GITHUB_REF" != refs/heads/main ]; then
+              echo '::error::Publishable-format manual candidates must run on the main branch'; exit 1
+            fi
+            MODE=source-only
+            echo 'tag=v0.2.0' >> "$GITHUB_OUTPUT"
+            echo 'validation_only=false' >> "$GITHUB_OUTPUT"
+            echo '::notice::Technical source-only candidate; no tag, release, or publication authorized'
           else
+            if [ "$EVENT" = workflow_dispatch ] && [ "$REQUESTED_CANDIDATE_MODE" != validation-only ]; then
+              echo '::error::Unsupported R24 manual candidate mode'; exit 1
+            fi
             MODE=binary
             echo 'tag=v0.2.0' >> "$GITHUB_OUTPUT"
+            echo 'validation_only=true' >> "$GITHUB_OUTPUT"
             echo '::notice::Validation-only candidate; no publication on pull_request/workflow_dispatch'
           fi
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
@@ -101,13 +125,13 @@ jobs:
             --output build/r24/upstream
       - name: Package and independently verify candidate archive
         env:
-          EVENT: ${{ github.event_name }}
           TAG: ${{ steps.meta.outputs.tag }}
           SOURCE_SHA: ${{ steps.meta.outputs.sha }}
           MODE: ${{ steps.meta.outputs.mode }}
+          VALIDATION_ONLY: ${{ steps.meta.outputs.validation_only }}
         run: |
           preview_args=()
-          if [ "$EVENT" != push ]; then
+          if [ "$VALIDATION_ONLY" = true ]; then
             preview_args+=(--validation-only)
           fi
           python3 scripts/r24-release.py package --mode "$MODE" \
@@ -115,13 +139,22 @@ jobs:
           python3 scripts/r24-release.py verify --archive "dist/r24/dxos-open-core-${TAG#v}.tar.gz" --checksums dist/r24/SHA256SUMS
           (cd dist/r24 && sha256sum -c SHA256SUMS)
       - uses: actions/upload-artifact@v4
+        if: github.event_name != 'workflow_dispatch' || inputs.candidate_mode != 'publishable-source-only'
         with:
           name: r24-candidate-${{ github.run_id }}
           path: dist/r24/
           if-no-files-found: error
           retention-days: 30
+      - name: Upload source-only publishable-format candidate (NOT a release)
+        if: github.event_name == 'workflow_dispatch' && inputs.candidate_mode == 'publishable-source-only'
+        uses: actions/upload-artifact@v4
+        with:
+          name: r24-source-only-publishable-candidate-${{ github.run_id }}
+          path: dist/r24/
+          if-no-files-found: error
+          retention-days: 30
       - name: Verify source-only v0.2.0 candidate (nonpublishable)
-        if: github.event_name != 'push'
+        if: steps.meta.outputs.validation_only == 'true'
         env:
           TAG: ${{ steps.meta.outputs.tag }}
           SOURCE_SHA: ${{ steps.meta.outputs.sha }}
@@ -133,7 +166,7 @@ jobs:
             --checksums dist/r24-source-only/SHA256SUMS
           (cd dist/r24-source-only && sha256sum -c SHA256SUMS)
       - uses: actions/upload-artifact@v4
-        if: github.event_name != 'push'
+        if: steps.meta.outputs.validation_only == 'true'
         with:
           name: r24-source-only-candidate-${{ github.run_id }}
           path: dist/r24-source-only/
