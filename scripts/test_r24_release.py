@@ -3,6 +3,8 @@
 """R24 contract tests: candidate integrity, authorization boundaries, and release modes."""
 import importlib.util
 import json
+import os
+import tarfile
 import subprocess
 import tempfile
 import unittest
@@ -347,6 +349,33 @@ class R24ReleaseTests(unittest.TestCase):
         self.acceptance.write_text(json.dumps(doc))
         with self.assertRaisesRegex(ValueError, "scope differs"):
             self.gate()
+
+    def test_source_only_archive_keeps_git_index_modes_after_extraction(self):
+        self.put("infra/demo/demo-up.sh", "#!/usr/bin/env bash\necho demo\n")
+        self.put("backend/gradlew", "#!/bin/sh\necho gradle\n")
+        self.put("backend/gradle/wrapper/gradle-wrapper.jar", b"wrapper-binary")
+        for name in ("infra/demo/demo-up.sh", "backend/gradlew"):
+            os.chmod(self.repo / name, 0o755)
+        subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
+        subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE",
+                        "CHANGELOG.md", "infra/demo/demo-up.sh", "backend/gradlew",
+                        "backend/gradle/wrapper/gradle-wrapper.jar"], cwd=self.repo,
+                       check=True)
+        self.make("source-only")
+        root = "dxos-" + TAG + "/"
+        with tarfile.open(self.archive, "r:gz") as tf:
+            self.assertEqual(tf.getmember(root + "source/backend/gradlew").mode, 0o755)
+            self.assertEqual(tf.getmember(root + "source/infra/demo/demo-up.sh").mode, 0o755)
+            self.assertEqual(tf.getmember(root + "source/README.md").mode, 0o644)
+            self.assertNotIn(root + "source/backend/gradle/wrapper/gradle-wrapper.jar",
+                             tf.getnames())
+            target = self.repo / "extracted"
+            target.mkdir()
+            tf.extractall(target)
+        self.assertFalse((target / root / "source/.git").exists())
+        self.assertTrue(os.access(target / root / "source/backend/gradlew", os.X_OK))
+        self.assertTrue(os.access(target / root / "source/infra/demo/demo-up.sh", os.X_OK))
+        self.assertEqual(release.verify(self.archive, self.sums)[0]["mode"], "source-only")
 
     def test_rc_tag_validation(self):
         self.assertTrue(release.TAG.fullmatch(TAG))

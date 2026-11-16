@@ -4,8 +4,9 @@
 # Kiểm tra realm file (#119): nạp infra/keycloak/tricore-realm.json vào spike đang chạy,
 # lấy token gateway-monitor, kiểm tra claim, seed actor monitor, gọi API phải được 200.
 set -euo pipefail
-ROOT="$(git rev-parse --show-toplevel)"
-cd "$ROOT/infra/demo/spike"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd -P)"
+cd "$SCRIPT_DIR"
 C="docker compose -f compose.spike.yml"
 set -a; . ./.env; set +a
 ISS=http://localhost:8180/realms/tricore

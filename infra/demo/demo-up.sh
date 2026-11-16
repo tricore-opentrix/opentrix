@@ -4,7 +4,8 @@
 # Dựng demo integration-local (#119) trên Linux/macOS. Bản Windows: demo-up.ps1.
 # --gateway: bật APISIX (infra/compose.gateway.yml, #116); Portal gọi backend qua 127.0.0.1:9080.
 set -euo pipefail
-cd "$(git rev-parse --show-toplevel)/infra"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+cd "$SCRIPT_DIR/.."
 C="docker compose -f compose.demo.yml"
 GW=0; [ "${1:-}" = "--gateway" ] && { GW=1; C="$C -f compose.gateway.yml"; }
 

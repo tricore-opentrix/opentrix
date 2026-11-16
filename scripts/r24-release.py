@@ -90,6 +90,7 @@ def package(repo, tag, sha, output, mode="binary", validation_only=False):
     output.mkdir(parents=True, exist_ok=True)
     prefix = f"dxos-{tag}/"
     files = {}
+    source_modes = {}  # Preserve Git index modes independently of the host filesystem.
     def add(target, path):
         path = source / path
         require(path.is_file() and not path.is_symlink(), f"missing/unsafe release input: {path}")
@@ -112,9 +113,16 @@ def package(repo, tag, sha, output, mode="binary", validation_only=False):
             add("frontend/" + path.relative_to(frontend).as_posix(), path.relative_to(source))
     else:
         # Git tracked sources only: no build outputs, vendored dependencies or runtime jars.
-        proc = subprocess.run(["git", "ls-files", "--cached", "-z"], cwd=source,
-                              check=True, capture_output=True)
-        tracked = sorted(p.decode() for p in proc.stdout.split(b"\0") if p)
+        proc = subprocess.run(["git", "ls-files", "--cached", "--stage", "-z"],
+                              cwd=source, check=True, capture_output=True)
+        index_modes = {}
+        for entry in (row for row in proc.stdout.split(b"\0") if row):
+            metadata, path_bytes = entry.split(b"\t", 1)
+            mode = metadata.split(b" ", 1)[0]
+            require(mode in {b"100644", b"100755"},
+                    f"unsupported tracked file mode: {path_bytes!r}")
+            index_modes[path_bytes.decode("utf-8")] = mode
+        tracked = sorted(index_modes)
         require(tracked, "source-only archive needs a checked-out git worktree")
         disallowed_binary = {".jar", ".war", ".class", ".zip", ".gz", ".tar",
                              ".png", ".jpg", ".jpeg", ".webp", ".gif", ".ico",
@@ -130,6 +138,8 @@ def package(repo, tag, sha, output, mode="binary", validation_only=False):
             require(b"\0" not in raw, f"binary data in source-only archive: {name}")
             raw.decode("utf-8")
             add("source/" + name, Path(name))
+            source_modes[prefix + "source/" + name] = (
+                0o755 if index_modes[name] == b"100755" else 0o644)
 
     # Candidate builds may be incomplete; reviewed upstream texts are added only
     # by the independently approved R24 distribution workstream.
@@ -172,7 +182,7 @@ def package(repo, tag, sha, output, mode="binary", validation_only=False):
             with tarfile.open(fileobj=gz, mode="w") as tf:
                 for name, contents in sorted(files.items()):
                     info = tarfile.TarInfo(name)
-                    info.size, info.mode = len(contents), 0o644
+                    info.size, info.mode = len(contents), source_modes.get(name, 0o644)
                     info.uid = info.gid = info.mtime = 0
                     info.uname = info.gname = ""
                     tf.addfile(info, io.BytesIO(contents))
