@@ -3,7 +3,6 @@
 """R24: reproducible release candidate archives and fail-closed distribution gate."""
 import argparse
 import gzip
-import base64
 import hashlib
 import io
 import json
@@ -242,11 +241,27 @@ def verify_source_evidence(accepted, pr_author):
                 and run.get("event") == "workflow_dispatch"
                 and run.get("head_branch") == "main"
                 and run.get("head_sha") == source_sha
+                and run.get("path") == ".github/workflows/release.yml"
                 and run.get("status") == "completed"
-                and run.get("conclusion") == "success"
-                and isinstance(run.get("inputs"), dict)
-                and run["inputs"].get("candidate_mode") == "publishable-source-only",
+                and run.get("conclusion") == "success",
                 f"source-only evidence run not a successful exact-SHA publishable candidate: {kind}")
+        # GitHub's run REST representation does not expose workflow_dispatch
+        # candidate_mode inputs. Only this workflow's publishable-source-only
+        # input can upload the following specially named artifact.
+        artifact_data = _github_json(f"actions/runs/{run_id}/artifacts?per_page=100")
+        expected_name = f"r24-source-only-publishable-candidate-{run_id}"
+        require(isinstance(artifact_data, dict)
+                and isinstance(artifact_data.get("artifacts"), list)
+                and len(artifact_data["artifacts"]) < 100
+                and any(isinstance(a, dict)
+                        and a.get("name") == expected_name
+                        and a.get("expired") is False
+                        and isinstance(a.get("digest"), str)
+                        and re.fullmatch(r"sha256:[a-f0-9]{64}", a["digest"])
+                        and isinstance(a.get("size_in_bytes"), int)
+                        and a["size_in_bytes"] > 0
+                        for a in artifact_data["artifacts"]),
+                f"source-only evidence run lacks actual publishable-source-only artifact: {kind}")
     return expected_run
 
 

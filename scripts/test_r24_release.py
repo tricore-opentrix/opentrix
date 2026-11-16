@@ -45,7 +45,12 @@ class R24ReleaseTests(unittest.TestCase):
             return {"event": "workflow_dispatch", "head_branch": "main",
                     "head_sha": self.source_sha, "status": "completed",
                     "conclusion": "success",
-                    "inputs": {"candidate_mode": "publishable-source-only"}}
+                    "path": ".github/workflows/release.yml"}
+        if path == "actions/runs/11111/artifacts?per_page=100":
+            return {"artifacts": [
+                {"name": "r24-source-only-publishable-candidate-11111",
+                 "expired": False, "digest": "sha256:" + "a" * 64,
+                 "size_in_bytes": 1024}]}
         for offset, kind in enumerate(release.EVIDENCE_CHECKS, start=701):
             if path == f"issues/comments/{offset}":
                 doc = json.loads(self.acceptance.read_text())
@@ -455,9 +460,21 @@ class R24ReleaseTests(unittest.TestCase):
              "not a successful exact-SHA"),
             ("wrong_run_head", "actions/runs/11111", {"head_sha": "e" * 40},
              "not a successful exact-SHA"),
-            ("validation_only_run", "actions/runs/11111",
-             {"inputs": {"candidate_mode": "validation-only"}},
+            ("wrong_workflow_path", "actions/runs/11111",
+             {"path": ".github/workflows/other.yml"},
              "not a successful exact-SHA"),
+            ("validation_only_artifact", "actions/runs/11111/artifacts?per_page=100",
+             {"artifacts": [{"name": "r24-source-only-candidate-11111",
+                             "expired": False, "digest": "sha256:" + "a" * 64,
+                             "size_in_bytes": 1024}]},
+             "lacks actual publishable-source-only artifact"),
+            ("expired_publishable_artifact", "actions/runs/11111/artifacts?per_page=100",
+             {"artifacts": [{"name": "r24-source-only-publishable-candidate-11111",
+                             "expired": True, "digest": "sha256:" + "a" * 64,
+                             "size_in_bytes": 1024}]},
+             "lacks actual publishable-source-only artifact"),
+            ("missing_publishable_artifact", "actions/runs/11111/artifacts?per_page=100",
+             {"artifacts": []}, "lacks actual publishable-source-only artifact"),
         )
         for name, at, values, expected in failures:
             def spoof(path):

@@ -165,7 +165,11 @@ GitHub Actions run URL in `references`.
 For archive/build links, the gate reads the live GitHub Actions run:
 `workflow_dispatch`, `head_branch=main`, `head_sha=source_sha`,
 `status=completed`, `conclusion=success`, and
-`inputs.candidate_mode=publishable-source-only`. Both evidence records must
+`path=.github/workflows/release.yml` and **the actual unexpired artifact**
+`r24-source-only-publishable-candidate-<run_id>` with a verified GitHub artifact
+digest. GitHub REST run JSON does **not** expose workflow_dispatch inputs;
+this artifact is emitted only by the workflow's publishable-source-only branch.
+Both evidence records must
 refer to the same run, and any missing metadata causes BLOCKED.
 These are auditable technical checks, **not independent legal proof**.
 Yến/Ánh must inspect actual R27 rights dispositions, GitHub logs, archive
