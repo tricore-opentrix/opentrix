@@ -5,13 +5,51 @@ OpenTrix
 Copyright 2026 TRICORE contributors
 
 This product includes software developed by TRICORE contributors and is
-licensed under the Apache License, Version 2.0. See the LICENSE file at the
-repository root for the full license text.
+licensed under the Apache License, Version 2.0, to the extent that the
+contributors have the rights to license their respective contributions.
+See the LICENSE file at the repository root for the full license text.
 
-Third-party components, including libraries and the container images and
-services used by the local demo stack (such as Keycloak, PostgreSQL, Apache
-APISIX and Caddy), are distributed under their own licenses and keep their
-own copyright notices; see THIRD-PARTY-NOTICES.md.
+Third-party software and local demo services retain their respective
+licenses, copyright notices, and attribution requirements.
 
-The Apache License does not grant permission to use the OpenTrix name or logo,
-except as required to describe the origin of the software.
+The local demo stack uses the following independently licensed projects:
+
+- Keycloak
+  Project license: Apache License, Version 2.0
+  Source: https://github.com/keycloak/keycloak
+  License: https://github.com/keycloak/keycloak/blob/main/LICENSE.txt
+
+- PostgreSQL
+  Project license: PostgreSQL License
+  Source: https://www.postgresql.org/
+  License: https://www.postgresql.org/about/licence/
+
+- Apache APISIX
+  Project license: Apache License, Version 2.0
+  Source: https://github.com/apache/apisix
+  License: https://github.com/apache/apisix/blob/master/LICENSE
+
+- Caddy
+  Project license: Apache License, Version 2.0
+  Source: https://github.com/caddyserver/caddy
+  License: https://github.com/caddyserver/caddy/blob/master/LICENSE
+
+These project-level license identifiers do not establish that every
+component bundled in a container image is covered by the same license.
+Container image contents, third-party dependencies, base images, and
+additional notices must be assessed separately where applicable.
+
+See THIRD-PARTY-NOTICES.md for the generated dependency inventory.
+That inventory is not a complete license assessment of external demo
+container images.
+
+The source-only v0.2.0 contributor-rights disposition is documented in
+Issue #138, including its stated limitations concerning AI-assisted
+development and historical source provenance. This notice does not
+constitute repository-wide legal clearance or release authorization.
+
+No third-party copyright, patent, license, or trademark rights are
+transferred to TRICORE by this notice.
+
+The Apache License does not grant permission to use the OpenTrix name
+or logo, except as required to describe the origin of the software.

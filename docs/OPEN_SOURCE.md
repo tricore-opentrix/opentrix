@@ -1,183 +1,238 @@
 <!--
 SPDX-FileCopyrightText: 2026 TRICORE contributors
-
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# OpenTrix open source and compliance
+# OpenTrix — Open source and compliance
 
-[Documentation index](README.md) · [Architecture](ARCHITECTURE.md) · [Release](RELEASE.md)
+[Documentation index](README.md) · [Architecture](ARCHITECTURE.md) · [Release](RELEASE.md) · [Contributing](../CONTRIBUTING.md)
 
-> **Ngôn ngữ / Language:** [Tiếng Việt](#nguồn-mở-và-tuân-thủ--tiếng-việt) · [English](#open-source-and-compliance--english)
+> **Ngôn ngữ / Language:** [Tiếng Việt](#vi) · [English](#en)
 >
-> **Owner / Phụ trách:** @phanyen06ym-ien · **Issue:** [#195](https://github.com/tricore-opentrix/opentrix/issues/195), [#194](https://github.com/tricore-opentrix/opentrix/issues/194), [#138](https://github.com/tricore-opentrix/opentrix/issues/138), [#190](https://github.com/tricore-opentrix/opentrix/issues/190) · **Trạng thái / Status:** Đã review — merge ở #201 / Reviewed — merged in #201
+> **Phụ trách / Owner:** @phanyen06ym-ien · **Theo dõi / Tracking:** [#138](https://github.com/tricore-opentrix/opentrix/issues/138), [#190](https://github.com/tricore-opentrix/opentrix/issues/190), [#194](https://github.com/tricore-opentrix/opentrix/issues/194), [#195](https://github.com/tricore-opentrix/opentrix/issues/195)
+>
+> **Nguồn tài liệu / Document baseline:** [PR #201](https://github.com/tricore-opentrix/opentrix/pull/201). **Bản cập nhật này / This revision:** đề xuất để review theo [biên bản #138 ngày 16/11/2026](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6899613976); chưa phải chứng nhận pháp lý hoặc chấp thuận phát hành / proposed for review; neither legal certification nor release approval.
 
 ---
+
+<a id="vi"></a>
 
 ## Nguồn mở và tuân thủ — Tiếng Việt
 
-[Mục lục tài liệu](README.md) · [Kiến trúc](ARCHITECTURE.md) · [Phát hành](RELEASE.md)
+### 1. Trạng thái xuất bản và phạm vi kết luận
 
-**Trạng thái xuất bản:** Repo đã có giấy phép, metadata SPDX/REUSE và cổng giấy phép phụ thuộc chạy trong CI. Bản công khai duy nhất là `v0.1.0` **pre-release**. Quyền nguồn gốc mã (#138) và bản dự thi (#190) **chưa hoàn tất**; các cổng dưới đây mô tả điều kiện phải đạt, không khẳng định đã đạt. Bằng chứng: B-018…B-021 trong [block-b-backend-infra.md](09-evidence/phase-2/block-b-backend-infra.md), POF-1…POF-6 trong [block-a-architecture.md](09-evidence/phase-2/block-a-architecture.md).
+OpenTrix — DX-OS Open-Core có giấy phép Apache-2.0, metadata SPDX/REUSE và kiểm tra giấy phép phụ thuộc trong CI. Theo trạng thái được ghi nhận ở [Issue #190](https://github.com/tricore-opentrix/opentrix/issues/190), bản phát hành công khai lịch sử `v0.1.0` là **pre-release**, không phải bản ổn định dự thi. Không suy đoán trạng thái phát hành hiện tại từ một báo cáo lịch sử: phải kiểm tra [GitHub Releases](https://github.com/tricore-opentrix/opentrix/releases), tag và asset thực tế trước khi đưa ra tuyên bố mới.
 
-### 1. Ranh giới repo
+Ngày **16/11/2026**, ba maintainer đã ghi nhận đồng thuận Q1–Q5 về **phạm vi xem xét phát hành source-only `v0.2.0`**, dựa trên các cam kết cá nhân có giới hạn quyền. Đây là **quyết định nội bộ có công khai hạn chế**, không phải bằng chứng chứng minh toàn bộ source độc lập với bên thứ ba, không phải xác nhận tất cả file đã được kiểm toán và **không tự động cho phép công bố**:
 
-- Mã nguồn OpenTrix — DX-OS Open-Core phát hành theo **Apache License 2.0** (SPDX: `Apache-2.0`).
-- [`LICENSE`](../LICENSE) chứa toàn văn giấy phép; [`LICENSES/Apache-2.0.txt`](../LICENSES/Apache-2.0.txt) là bản sao theo REUSE, trùng điều khoản với `LICENSE`, chỉ khác cách xuống dòng.
-- [`NOTICE`](../NOTICE) ghi công `Copyright 2026 TRICORE contributors` cho phần mã gốc. Thông báo của bên thứ ba nằm riêng trong [`THIRD-PARTY-NOTICES.md`](../THIRD-PARTY-NOTICES.md).
-- Thư viện, container image và dịch vụ bên ngoài **giữ giấy phép riêng**; giấy phép Apache-2.0 của repo không thay đổi giấy phép của chúng.
-- Đóng góp được nhận và phân phối theo điều 5 của Apache-2.0. Repo **không** yêu cầu CLA; [`CONTRIBUTING.md`](../CONTRIBUTING.md) hiện **không** yêu cầu DCO hay `Signed-off-by`.
+- [Biên bản Q1–Q5](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6899613976)
+- [Xác nhận riêng của Bảo](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6907781691)
+- [Xác nhận riêng của Ánh](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6907788256)
+- [Cam kết gốc của Yến](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6708631841), [Bảo](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6707960117), [Ánh](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6708767215)
 
-### 2. Ranh giới self-hosting
+Kết luận của #138 chỉ có hiệu lực trong phạm vi và điều kiện đã nêu. Việc hoàn thành PR tài liệu Q3, ghi acceptance R24, review độc lập và bảo vệ phát hành vẫn là các bước riêng. Không dùng trạng thái đóng Issue làm bằng chứng thay thế cho bất kỳ bước nào.
 
-- Thành phần trong repo: backend Spring Boot, Portal BFF, React Portal.
-- Dịch vụ chạy tách biệt: **Keycloak** (danh tính) và **PostgreSQL** (dữ liệu). Chúng không được đóng gói vào mã nguồn và **nằm ngoài cổng R23**; image và giấy phép của chúng phải được rà soát thủ công.
-- Chưa phân phối bản nhị phân (JAR, container image) cho tới khi #138 và #190 hoàn tất.
+### 2. Ranh giới repository, giấy phép và quyền đóng góp
 
-### 3. Vệ sinh giấy phép: header SPDX và REUSE
+- Source do TRICORE có quyền cấp phép được cung cấp theo **Apache License 2.0** (`Apache-2.0`); xem [`LICENSE`](../LICENSE) và bản lưu dùng cho REUSE tại [`LICENSES/Apache-2.0.txt`](../LICENSES/Apache-2.0.txt).
+- [`NOTICE`](../NOTICE) ghi nhận attribution của dự án; [`THIRD-PARTY-NOTICES.md`](../THIRD-PARTY-NOTICES.md) kiểm kê thông báo dependency theo quy trình R23. Không suy ra quyền sở hữu từ các dòng SPDX hay Git author/committer.
+- Mỗi contributor chỉ có thể cấp phép **phần đóng góp thuộc quyền của chính mình**. Quyền và giấy phép của mã ngoài, asset, model, dataset, công cụ và container image vẫn thuộc bên tương ứng. Apache-2.0 không mặc nhiên cấp quyền dùng tên/logo OpenTrix như nhãn hiệu.
+- Đóng góp tuân theo Mục 5 của Apache-2.0 và [`CONTRIBUTING.md`](../CONTRIBUTING.md). Repo không yêu cầu CLA riêng; chính sách hiện hành không quy định DCO/`Signed-off-by` bắt buộc.
+- Không sao chép mã, icon, template, fixture, ảnh hoặc tài sản không có quyền sử dụng. Nếu phát hiện khả năng trùng nguồn/giấy phép, xử lý theo chính sách báo cáo và xác minh **trong 7 ngày** tại [`CONTRIBUTING.md`](../CONTRIBUTING.md), sau đó ghi nhận quyết định phù hợp trong [`CHANGELOG.md`](../CHANGELOG.md).
 
-- Repo theo đặc tả **REUSE**: giấy phép nằm trong [`LICENSES/`](../LICENSES/); tệp không chèn được header được khai báo trong [`REUSE.toml`](../REUSE.toml).
-- Mọi tệp nguồn mới do người đóng góp tự viết phải có header SPDX. Java/TypeScript dùng `//`, SQL dùng `--`, YAML/shell dùng `#`, Markdown dùng comment HTML ở dòng đầu (như đầu tệp này):
+### 3. Nguồn gốc mã và phát triển có hỗ trợ AI
+
+Nhóm khai báo đã sử dụng các công cụ như **ChatGPT, Codex, Claude và Claude Code** hỗ trợ thiết kế, sinh/sửa code, kiểm tra và tài liệu, với mức tham gia khác nhau theo người và phạm vi. Các xác nhận này không chứng minh mức đóng góp hoặc quyền sở hữu của từng dòng/hunk.
+
+Các giới hạn được công khai trong quyết định Q2 của #138:
+
+1. **Không có hồ sơ đầy đủ từng prompt AI lịch sử.** Không tự dựng lại prompt để làm bằng chứng nguồn gốc.
+2. **Không khẳng định AI output hoàn toàn độc lập với nguồn bên ngoài.** Nhóm khai báo không **cố ý** sao chép mã bên ngoài hoặc đưa mã bên ngoài cho AI để sao chép; tuyên bố này giới hạn ở hành vi của người khai báo, không kiểm chứng nội dung được sinh ra.
+3. **Chưa đối chiếu chi tiết từng file với source bên ngoài.** Việc kiểm tra sâu hơn, kể cả bằng GitHub Code Search, SCANOSS hoặc ScanCode nếu phù hợp, được chuyển sang issue thuộc milestone `v1.0.0` theo Q4; đây không phải sự miễn trừ các nghĩa vụ còn tồn tại.
+
+Dùng `UNKNOWN` khi chưa xác định nguồn, `NOT_RECALLED` khi người đóng góp không nhớ, `RIGHTS_PENDING` khi quyền cấp phép/phân phối chưa được xác minh. **Không tự chuyển sang `CLEARED`** chỉ vì REUSE, SBOM hay CI PASS. Với bất kỳ phát hiện rủi ro nào, cần xử lý riêng hoặc tiếp tục chặn phạm vi phân phối bị ảnh hưởng. Chính sách khai báo AI cho PR mới được quy định trong [`CONTRIBUTING.md`](../CONTRIBUTING.md); lịch sử được theo dõi tại [#138](https://github.com/tricore-opentrix/opentrix/issues/138).
+
+### 4. Ranh giới self-hosting và dịch vụ bên ngoài
+
+| Thành phần          | Trách nhiệm                          | Phạm vi quyền/triển khai                                               |
+| ------------------- | ------------------------------------ | ---------------------------------------------------------------------- |
+| Spring Boot backend | Identity, Workflow, Data và Helpdesk | Source thuộc phạm vi repo; quyền đóng góp phải được xác minh theo phần |
+| Portal BFF          | OIDC/session, CSRF, chuyển tiếp API  | Source thuộc phạm vi repo                                              |
+| React Portal        | Giao diện Helpdesk                   | Source thuộc phạm vi repo                                              |
+| Keycloak            | Identity provider                    | Thành phần/image bên ngoài, có giấy phép và nghĩa vụ riêng             |
+| Apache APISIX       | API Gateway                          | Thành phần/image bên ngoài, có giấy phép và nghĩa vụ riêng             |
+| PostgreSQL          | Cơ sở dữ liệu                        | Thành phần/image bên ngoài, có giấy phép và nghĩa vụ riêng             |
+| Caddy               | HTTPS ingress và routing demo        | Thành phần/image bên ngoài, có giấy phép và nghĩa vụ riêng             |
+
+Docker Compose và cấu hình demo có thể tham chiếu hoặc kéo các image này; việc tự host **không** làm chúng trở thành mã nguồn do TRICORE sáng tạo. R23 kiểm tra dependency của backend/BFF/frontend, **không thay thế** rà soát giấy phép container image và các dịch vụ chạy riêng. `NOTICE` phải liệt kê attribution và các giấy phép image demo đã được kiểm chứng, theo Q3 của [biên bản #138](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6899613976). Xem [hướng dẫn demo](../infra/demo/README.md) và [tài liệu triển khai/phát hành](RELEASE.md).
+
+### 5. Vệ sinh giấy phép: SPDX và REUSE
+
+- Repo sử dụng [`LICENSES/`](../LICENSES/) và [`REUSE.toml`](../REUSE.toml) cho những tệp không thể hoặc không nên chèn header (do định dạng hay yêu cầu giữ nguyên byte).
+- Tệp nguồn mới do contributor có quyền cấp phép phải mang SPDX phù hợp. Java/TypeScript dùng `//`, SQL dùng `--`, YAML/shell dùng `#`, Markdown dùng comment HTML, trừ ngoại lệ được khai báo qua REUSE.
 
   ```text
   SPDX-FileCopyrightText: 2026 TRICORE contributors
   SPDX-License-Identifier: Apache-2.0
   ```
 
-- CI chạy bước `REUSE licensing check` (`fsfe/reuse-action@v5`) trong job **`repo-hygiene`** của [`ci.yml`](../.github/workflows/ci.yml); lỗi REUSE làm job thất bại. Tại baseline `main@832c75f`: 338/338 tệp có metadata, 0 giấy phép bị thiếu (B-018).
-- Kiểm tra trên máy: `reuse lint`, hoặc `docker run --rm -v "${PWD}:/data" fsfe/reuse lint`.
-- **Không** gắn header TRICORE cho mã bên ngoài hoặc mã chưa xác minh quyền.
+- Chạy `reuse lint`; CI chạy `fsfe/reuse-action` trong job `repo-hygiene`. **Không** gắn header TRICORE lên mã ngoài hoặc nội dung chưa xác minh quyền.
+- Bằng chứng **lịch sử**, không phải chỉ số HEAD hiện tại: Phase 2 tại `main@832c75f` báo cáo **338/338** tệp có metadata và không thiếu license (B-018). Khi công bố tỷ lệ hiện tại phải chạy lại trên SHA tương ứng.
 
-### 4. Chính sách phụ thuộc
+### 6. Dependency, SBOM và notices
 
-- Phụ thuộc chỉ được khai báo qua trình quản lý chuẩn: Gradle ([`backend/build.gradle`](../backend/build.gradle), [`portal-bff/build.gradle`](../portal-bff/build.gradle)) và npm ([`frontend/package.json`](../frontend/package.json) cùng `package-lock.json`). Không commit thư mục `vendor/`, `third_party/` hay `lib/`.
-- Giấy phép phụ thuộc phải nằm trong danh sách được phép ghi ở `CONTRIBUTING.md`.
-- Job **`r23-compliance`** trong `ci.yml` thực thi chính sách này:
-  1. Chạy canary test `scripts/test_r23_*.py`.
-  2. Sinh SBOM CycloneDX: plugin `org.cyclonedx.bom` 3.5.1 cho backend và portal-bff; `@cyclonedx/cyclonedx-npm@6.0.1 --omit dev` cho frontend.
-  3. Chạy [`scripts/r23-compliance.py`](../scripts/r23-compliance.py) để đối chiếu với danh sách được phép.
-  4. So `THIRD-PARTY-NOTICES.md` với bản vừa sinh bằng `diff -u`.
-- Artifact CI **`r23-sbom-and-notices`** (giữ 30 ngày) gồm ba SBOM (`backend`, `portal-bff`, `frontend-sbom.json`), `THIRD-PARTY-NOTICES.md` và `license-inventory.json`.
-- `THIRD-PARTY-NOTICES.md` là bảng kiểm kê sinh tự động, **không phải** xác nhận pháp lý. Inventory gồm 131 thành phần thuộc ba phạm vi phụ thuộc, không phải 131 thư viện đóng gói vào bản phát hành (B-019).
+- Dependency được khai báo qua Gradle ([`backend/build.gradle`](../backend/build.gradle), [`portal-bff/build.gradle`](../portal-bff/build.gradle)) và npm ([`frontend/package.json`](../frontend/package.json) / lockfile). Không đưa mã vendored/third-party vào repo nếu chưa qua quy trình nguồn và giấy phép.
+- CI `r23-compliance` tạo ba SBOM CycloneDX (backend, Portal BFF, frontend production), kiểm chính sách license qua [`scripts/r23-compliance.py`](../scripts/r23-compliance.py), kiểm thử canary và so [`THIRD-PARTY-NOTICES.md`](../THIRD-PARTY-NOTICES.md) với bản được sinh lại.
+- Artifact `r23-sbom-and-notices` có retention được cấu hình ở CI; không coi việc artifact từng có mặt là bằng chứng nó còn tải được. SBOM **liệt kê phụ thuộc được resolve**, không đồng nghĩa mọi mã nhị phân có trong archive source-only.
+- Inventory **131 thành phần** ghi trong báo cáo Phase 2 B-019 là **số liệu của baseline lịch sử**, không khẳng định đó là inventory hiện tại hoặc 131 thư viện được đóng gói/phân phối. `THIRD-PARTY-NOTICES.md` không tự nó là chứng nhận pháp lý.
+- License allow-list và điều kiện dependency được mô tả trong [`CONTRIBUTING.md`](../CONTRIBUTING.md). Image/dịch vụ chạy riêng yêu cầu rà soát và attribution độc lập.
 
-### 5. Tệp nhị phân và tệp giữ nguyên byte
+### 7. File nhị phân và nội dung phải giữ nguyên byte
 
-| Tệp | Nguồn gốc | Giấy phép / ghi công | Ghi chú |
-| --- | --- | --- | --- |
-| `backend/gradle/wrapper/gradle-wrapper.jar` | Gradle 8.14.3 wrapper chính thức | `SPDX-FileCopyrightText = "Gradle contributors"` (qua `REUSE.toml`) | Tệp nhị phân duy nhất được commit; kiểm tra bằng `gradle/actions/wrapper-validation@v6` trong `r23-compliance` và job `candidate` của `release.yml` (B-020) |
-| Migration Flyway `V1`–`V4`, tệp SQL evidence | Mã của nhóm | Khai báo qua `REUSE.toml` | Phải giữ nguyên byte nên không chèn header |
-| `package.json`, `package-lock.json`, `favicon.svg`, `.gitignore` và một số tệp khác | Mã/tài sản của nhóm | Khai báo qua `REUSE.toml` | Định dạng không cho phép comment hoặc phải giữ nguyên byte |
+| File/nhóm                                                                        | Nguồn hoặc xử lý                                                                 | Giới hạn                                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `backend/gradle/wrapper/gradle-wrapper.jar`                                      | Gradle Wrapper upstream, metadata qua `REUSE.toml`; kiểm bằng wrapper validation | Không nhận là mã TRICORE tự sáng tạo; source-only archive đã kiểm tra có quy tắc loại JAR này |
+| Flyway V1–V4 và SQL evidence được giữ nguyên                                     | Metadata REUSE ngoài file khi cần bảo toàn checksum                              | Không thay bytes để thêm header                                                               |
+| `package.json`, `package-lock.json`, `favicon.svg`, `.gitignore` và file đặc thù | Header hoặc `REUSE.toml` tùy định dạng                                           | Metadata không chứng minh quyền tác giả hay asset clearance                                   |
 
-Portal BFF không có wrapper riêng; CI build bằng wrapper của backend (HYG-01). `repo-hygiene` kiểm tra `backend/gradlew` có quyền thực thi.
+Không coi bản kiểm tra wrapper thành xác nhận quyền phân phối của toàn bộ mã nguồn. Theo baseline trước đây, Portal BFF dùng Gradle wrapper của backend trong CI (HYG-01); kiểm tra lại nếu cấu trúc build thay đổi.
 
-### 6. Cổng xuất bản
+### 8. Cổng phát hành source-only `v0.2.0`
 
-Bản dự thi được theo dõi tại [#190](https://github.com/tricore-opentrix/opentrix/issues/190). Chỉ công bố khi đạt đủ:
+Phân biệt rõ **kết luận có giới hạn tại #138**, **nghiệm thu phát hành R24** và **việc kiểm toán chi tiết chuyển tiếp sang v1.0.0**.
 
-1. **Thông quyền nguồn gốc:** hoàn tất #138 — đối chiếu mã với upstream, xác nhận bản quyền và ghi công. Lint REUSE và R23 đạt **không** đồng nghĩa với `RIGHTS_CLEARED` hay `RELEASE_ACCEPTED` (B-020, B-021).
-2. **Gắn tag đúng chuẩn:** tag SemVer mới, **không** đánh dấu pre-release.
-3. **Đính kèm đủ tệp:** `.tar.gz`, `SHA256SUMS`, SBOM và `NOTICE`. Gói ứng viên `r24-candidate-<run_id>` của [`release.yml`](../.github/workflows/release.yml) đã chứa `LICENSE`, `NOTICE`, `THIRD-PARTY-NOTICES.md` và `compliance/*.cdx.json`.
-4. **Qua cổng R24:** job `publish` chỉ chạy với tag `v*` kèm manifest chấp thuận `docs/06-deployment/r24-acceptances/<tag>.json` trên `main`; thư mục này **chưa có** trên `origin/main`. Riêng `v0.2.0` bị ép chế độ `source-only` (không JAR, không đẩy image lên GHCR). Release notes phải ghi đúng trạng thái #138.
+1. **Phạm vi:** `v0.2.0` chỉ được xét phát hành **source-only**. Không được từ đó suy ra quyền phát hành bootJAR, `frontend/dist`, GHCR image hoặc binary khác. Source-only package phải có mã nguồn theo dõi bởi Git trong phạm vi được chấp thuận, LICENSE/NOTICE, CHANGELOG, release notes, SBOM/inventory và MANIFEST theo [R24 runbook](06-deployment/r24-release.md).
+2. **Quyền và attribution:** dựa trên lời khai riêng, biên bản Q1–Q5 và quyết định về các ngoại lệ thực tế. Giới hạn nguồn gốc AI phải được công khai. Các trường hợp chưa được quyết định trong phạm vi phát hành không được âm thầm coi là `CLEARED`.
+3. **Đóng băng source SHA và tái lập:** dùng exact full commit SHA; đối chiếu các lần build độc lập, archive hash, `MANIFEST.json`, `SHA256SUMS` và release notes. **Không sử dụng checksum từ commit khác hoặc từ archive có `validation_only=true`** để thông qua publication gate.
+4. **PR chấp thuận riêng:** sau khi freeze SHA, đưa `docs/06-deployment/r24-acceptances/v0.2.0.json` lên `main` bằng PR có review độc lập. Trường bắt buộc gồm `tag`, `source_sha`, `mode`, `archive_sha256`, `reviewed_by` và năm HTTPS evidence: `source_provenance`, `source_license`, `sbom_source_boundary`, `archive_and_checksums`, `release_notes`. URL và JSON không tự chứng minh tính đúng của bằng chứng.
+5. **Bảo vệ tag và publication:** kiểm tra cấu hình thực tế của environment `r24-release`, required reviewers và quy tắc bảo vệ tag `v*` trước khi tạo tag. Tag phát hành trỏ về **source SHA đã đóng băng trước commit acceptance**. Chỉ xác nhận release khi asset xuất bản thật được tải và hash được kiểm lại.
+6. **Yêu cầu bản dự thi #190:** đối chiếu yêu cầu SemVer không phải pre-release, SBOM/NOTICE được đính kèm theo hình thức được chấp thuận, `CHANGELOG.md` và release notes đúng tình trạng pháp lý/kỹ thuật; nếu workflow chưa đáp ứng yêu cầu asset riêng thì xử lý bằng PR riêng.
 
-Người đóng góp chỉ đưa vào mã, dữ liệu và tài sản mình có quyền đóng góp; **không** sao chép code, template, icon hay asset từ dự án khác; **không** xóa hoặc sửa ghi công, bản quyền hay thông tin công bố về việc dùng AI để che giấu nguồn gốc (B-021).
+Các kết quả CI, REUSE, R23, kiểm tra source hoặc đồng thuận contributor **không thay thế** chấp thuận phát hành. Mốc thời gian cũ là kế hoạch lịch sử, không phải căn cứ để backdate CHANGELOG hoặc tag. [Issue #190](https://github.com/tricore-opentrix/opentrix/issues/190) theo dõi bản dự thi; [#138](https://github.com/tricore-opentrix/opentrix/issues/138) theo dõi quyết định quyền nguồn có giới hạn; [`RELEASE.md`](RELEASE.md) là hướng dẫn vận hành release.
 
-Bản công khai hiện có là [`v0.1.0`](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0) — pre-release ngày 2026-11-04, asset `dxos-open-core-0.1.0.tar.gz` và `SHA256SUMS`, còn một bản Draft trùng tag (POF-3). Đây **không phải** bản dự thi.
+### 9. Bằng chứng và giới hạn
 
-| Hạng mục | Hiện trạng | Bằng chứng / Issue |
-| --- | --- | --- |
-| Toàn văn giấy phép |  `LICENSE`, `LICENSES/Apache-2.0.txt` | B-019, POF-2 |
-| Ghi công dự án |  `NOTICE` | B-019 |
-| SPDX/REUSE từng tệp |  `repo-hygiene` đạt, 338/338 tệp | B-018, POF-2 |
-| Cổng giấy phép phụ thuộc |  `r23-compliance` đạt | B-019, POF-5 |
-| SBOM + third-party notices |  Artifact CI 30 ngày · chưa đính vào release | POF-5, #190 |
-| Xác thực Gradle wrapper |  `wrapper-validation@v6` | B-020 |
-| Đối chiếu mã với upstream |  Chưa thực hiện | B-020, #138 |
-| Thông quyền nguồn gốc |  Chưa thông quyền | B-021, #138 |
-| Bản dự thi (SemVer, không pre-release) |  Chưa phát hành | POF-3, #190 |
+| Hạng mục                  | Đã ghi nhận / Hiện trạng có giới hạn                                          | Nguồn kiểm tra                                                                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Apache-2.0 và attribution | LICENSE, LICENSES, NOTICE có trong repo; không chứng minh mọi nội dung gốc    | Files gốc và [#138](https://github.com/tricore-opentrix/opentrix/issues/138)                                                       |
+| SPDX/REUSE                | CI có kiểm tra; 338/338 là số liệu **lịch sử**                                | Phase 2 B-018, `main@832c75f`                                                                                                      |
+| Dependency policy         | CI R23 và SBOM; 131 là inventory **lịch sử**                                  | Phase 2 B-019                                                                                                                      |
+| Đồng thuận Q1–Q5          | Ba maintainer đã đăng biên bản/xác nhận; giới hạn công khai                   | [Biên bản](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6899613976) và hai xác nhận riêng                  |
+| Kiểm toán nguồn từng file | Chưa hoàn tất; có nội dung được chuyển tiếp sang v1.0.0                       | #138 Q4 / issue theo dõi v1.0.0 khi được tạo                                                                                       |
+| Release `v0.2.0`          | **Không kết luận đã publish** khi chưa kiểm tra tag, acceptance và asset cuối | [Releases](https://github.com/tricore-opentrix/opentrix/releases), [#190](https://github.com/tricore-opentrix/opentrix/issues/190) |
 
-Tài liệu này không khẳng định đã qua rà soát pháp lý hay bảo mật.
+Báo cáo Phase 2 liên quan: [Block B — Backend/Infrastructure](09-evidence/phase-2/block-b-backend-infra.md) (B-018…B-021) và [Block A — Architecture](09-evidence/phase-2/block-a-architecture.md) (POF-1…POF-6). Không diễn giải kết luận của báo cáo ở baseline cũ thành kết quả tại source SHA mới.
+
+**Tuyên bố giới hạn:** Tài liệu này mô tả chính sách, phạm vi và bằng chứng đã ghi nhận. Đây không phải ý kiến pháp lý, chứng nhận quyền sở hữu toàn repository, chứng nhận vận hành production hoặc chấp thuận phát hành riêng biệt.
 
 ---
 
+<a id="en"></a>
+
 ## Open source and compliance — English
 
-[Documentation index](README.md) · [Architecture](ARCHITECTURE.md) · [Release](RELEASE.md)
+### 1. Publication status and decision scope
 
-**Publication status:** The repository has its license, SPDX/REUSE metadata and a dependency-license gate running in CI. The only public release is the `v0.1.0` **pre-release**. Source-rights clearance (#138) and the competition release (#190) are **not complete**; the gates below state what must hold, not that it holds. Evidence: B-018…B-021 in [block-b-backend-infra.md](09-evidence/phase-2/block-b-backend-infra.md), POF-1…POF-6 in [block-a-architecture.md](09-evidence/phase-2/block-a-architecture.md).
+OpenTrix — DX-OS Open-Core has an Apache-2.0 license, SPDX/REUSE metadata and automated dependency-license checks in CI. [Issue #190](https://github.com/tricore-opentrix/opentrix/issues/190) records the historical public `v0.1.0` release as a **pre-release**, not a stable competition release. Do not extrapolate today's publication status from a historical report: verify actual [GitHub Releases](https://github.com/tricore-opentrix/opentrix/releases), tags and assets before making a current claim.
 
-### 1. Repository boundary
+On **16 November 2026**, all three maintainers recorded agreement on Q1–Q5 for the prospective **source-only `v0.2.0`** scope, based on individual declarations limited to each contributor's rights. This is a **bounded internal disposition with explicit limitations**, not proof that all source is independently originated, not a repository-wide file-level audit, and **not automatic publication authorization**:
 
-- OpenTrix — DX-OS Open-Core source is released under the **Apache License 2.0** (SPDX: `Apache-2.0`).
-- [`LICENSE`](../LICENSE) holds the full license text; [`LICENSES/Apache-2.0.txt`](../LICENSES/Apache-2.0.txt) is the REUSE copy, with the same terms and different line wrapping.
-- [`NOTICE`](../NOTICE) attributes original material to `Copyright 2026 TRICORE contributors`. Third-party notices are kept separately in [`THIRD-PARTY-NOTICES.md`](../THIRD-PARTY-NOTICES.md).
-- Libraries, container images and external services **keep their own licenses**; the repository's Apache-2.0 license does not change them.
-- Contributions are accepted and distributed under section 5 of Apache-2.0. **No** CLA is required; [`CONTRIBUTING.md`](../CONTRIBUTING.md) currently does **not** require DCO or `Signed-off-by`.
+- [Q1–Q5 disposition record](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6899613976)
+- [Bảo's individual confirmation](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6907781691)
+- [Ánh's individual confirmation](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6907788256)
+- [Original declarations from Yến](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6708631841), [Bảo](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6707960117), and [Ánh](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6708767215)
 
-### 2. Self-hosting boundary
+The #138 disposition is effective only within the recorded scope and conditions. Merging the Q3 documentation PR, R24 acceptance, independent review and publication protection are separate steps. A closed Issue is not a substitute for any of these gates.
 
-- In the repository: the Spring Boot backend, Portal BFF and React Portal.
-- Running separately: **Keycloak** (identity) and **PostgreSQL** (data). They are not bundled with the source and are **outside the R23 gate**; their images and licenses must be reviewed manually.
-- No binaries (JARs, container images) are distributed until #138 and #190 are complete.
+### 2. Repository boundary, licensing and contribution rights
 
-### 3. Licensing hygiene: SPDX headers and REUSE
+- Source that TRICORE has the authority to license is provided under the **Apache License 2.0** (`Apache-2.0`); see [`LICENSE`](../LICENSE) and the REUSE copy [`LICENSES/Apache-2.0.txt`](../LICENSES/Apache-2.0.txt).
+- [`NOTICE`](../NOTICE) records project attribution; [`THIRD-PARTY-NOTICES.md`](../THIRD-PARTY-NOTICES.md) inventories dependency notices under R23. SPDX and Git author/committer data do not establish ownership.
+- Each contributor can license only **contributions within their own rights**. Third-party code, assets, models, datasets, tooling and container images retain their respective licenses. Apache-2.0 does not generally grant rights to use the OpenTrix name or logo as a trademark.
+- Contributions follow Section 5 of Apache-2.0 and [`CONTRIBUTING.md`](../CONTRIBUTING.md). No separate CLA is required; current policy does not mandate DCO/`Signed-off-by`.
+- Do not copy code, icons, templates, fixtures, images or assets without permission. Potential source/license overlap must be reported and investigated **within seven days** under [`CONTRIBUTING.md`](../CONTRIBUTING.md), with appropriate resolution recorded in [`CHANGELOG.md`](../CHANGELOG.md).
 
-- The repository follows the **REUSE** specification: licenses live in [`LICENSES/`](../LICENSES/); files that cannot carry a header are declared in [`REUSE.toml`](../REUSE.toml).
-- Every new source file a contributor writes must carry an SPDX header. Java/TypeScript use `//`, SQL uses `--`, YAML/shell use `#`, Markdown uses an HTML comment on the first line (as at the top of this file):
+### 3. Source provenance and AI-assisted development
+
+The team has disclosed the use of tools including **ChatGPT, Codex, Claude and Claude Code** for design, code generation/modification, checks and documentation, with different contributor-specific scopes. These declarations do not resolve authorship or rights for individual lines or hunks.
+
+The limitations disclosed under Q2 of #138 are:
+
+1. **Complete per-prompt historical records are unavailable.** Do not reconstruct prompts and present them as provenance evidence.
+2. **AI-generated output is not asserted to be independent of external sources.** Contributors report that they did not **intentionally** copy external source code or provide external code for AI to copy; this describes their actions, not a verification of generated content.
+3. **Detailed file-by-file comparison with external source has not been completed.** Further review, potentially including GitHub Code Search, SCANOSS or ScanCode where appropriate, is deferred to an issue under milestone `v1.0.0` per Q4; deferral does not waive remaining obligations.
+
+Use `UNKNOWN` for unidentified origins, `NOT_RECALLED` for contributor recollection gaps and `RIGHTS_PENDING` where licensing/distribution rights remain unverified. **Do not silently upgrade entries to `CLEARED`** because REUSE, SBOM or CI passes. Any material risks require a separate disposition or continued blocking of affected distribution scope. New-PR AI disclosure is governed by [`CONTRIBUTING.md`](../CONTRIBUTING.md); historical work is tracked in [#138](https://github.com/tricore-opentrix/opentrix/issues/138).
+
+### 4. Self-hosting boundary and external services
+
+| Component           | Responsibility                            | Rights/deployment boundary                              |
+| ------------------- | ----------------------------------------- | ------------------------------------------------------- |
+| Spring Boot backend | Identity, Workflow, Data and Helpdesk     | In-repository source; contribution rights remain scoped |
+| Portal BFF          | OIDC/session, CSRF and backend forwarding | In-repository source                                    |
+| React Portal        | Helpdesk user interface                   | In-repository source                                    |
+| Keycloak            | Identity provider                         | External software/image with its own terms              |
+| Apache APISIX       | API Gateway                               | External software/image with its own terms              |
+| PostgreSQL          | Database                                  | External software/image with its own terms              |
+| Caddy               | HTTPS ingress and demo routing            | External software/image with its own terms              |
+
+Docker Compose and demo configuration may reference or pull these images; self-hosting does **not** make them TRICORE-authored source. R23 checks application dependency scopes and **does not replace** licensing review for separate service/container images. `NOTICE` must record verified attribution and demo image licenses as required by Q3 of the [#138 disposition](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6899613976). See the [demo guide](../infra/demo/README.md) and [release documentation](RELEASE.md).
+
+### 5. Licensing hygiene: SPDX and REUSE
+
+- The repository uses [`LICENSES/`](../LICENSES/) and [`REUSE.toml`](../REUSE.toml) for files that cannot or should not include inline headers due to format or byte-preservation constraints.
+- New original source that a contributor has the rights to license requires appropriate SPDX metadata. Java/TypeScript use `//`, SQL uses `--`, YAML/shell use `#` and Markdown uses an HTML comment, except for properly declared REUSE exceptions.
 
   ```text
   SPDX-FileCopyrightText: 2026 TRICORE contributors
   SPDX-License-Identifier: Apache-2.0
   ```
 
-- CI runs the `REUSE licensing check` step (`fsfe/reuse-action@v5`) in the **`repo-hygiene`** job of [`ci.yml`](../.github/workflows/ci.yml); a REUSE error fails the job. At baseline `main@832c75f`: 338/338 files with metadata, 0 missing licenses (B-018).
-- Local check: `reuse lint`, or `docker run --rm -v "${PWD}:/data" fsfe/reuse lint`.
-- **Never** apply the TRICORE header to external code or code whose rights are unverified.
+- Run `reuse lint`; CI uses `fsfe/reuse-action` in the `repo-hygiene` job. **Never** apply the TRICORE header to external or rights-unverified material.
+- **Historical evidence**, not a current HEAD metric: Phase 2 at `main@832c75f` reported **338/338** files with metadata and no missing licenses (B-018). Rerun against the exact relevant SHA before publishing a current figure.
 
-### 4. Dependency policy
+### 6. Dependencies, SBOMs and notices
 
-- Dependencies are declared only through standard managers: Gradle ([`backend/build.gradle`](../backend/build.gradle), [`portal-bff/build.gradle`](../portal-bff/build.gradle)) and npm ([`frontend/package.json`](../frontend/package.json) with `package-lock.json`). No `vendor/`, `third_party/` or `lib/` directory is committed.
-- Dependency licenses must be on the allow-list in `CONTRIBUTING.md`.
-- The **`r23-compliance`** job in `ci.yml` enforces this policy:
-  1. Runs the canary tests `scripts/test_r23_*.py`.
-  2. Generates CycloneDX SBOMs: the `org.cyclonedx.bom` 3.5.1 plugin for backend and portal-bff; `@cyclonedx/cyclonedx-npm@6.0.1 --omit dev` for the frontend.
-  3. Runs [`scripts/r23-compliance.py`](../scripts/r23-compliance.py) against the allow-list.
-  4. Compares `THIRD-PARTY-NOTICES.md` with the freshly generated copy using `diff -u`.
-- The CI artifact **`r23-sbom-and-notices`** (kept 30 days) holds three SBOMs (`backend`, `portal-bff`, `frontend-sbom.json`), `THIRD-PARTY-NOTICES.md` and `license-inventory.json`.
-- `THIRD-PARTY-NOTICES.md` is a generated inventory, **not** a legal certification. The inventory covers 131 components across three dependency scopes, not 131 libraries shipped in a release (B-019).
+- Dependencies are declared through Gradle ([`backend/build.gradle`](../backend/build.gradle), [`portal-bff/build.gradle`](../portal-bff/build.gradle)) and npm ([`frontend/package.json`](../frontend/package.json) / lockfile). Do not introduce vendored/third-party material without origin and license review.
+- `r23-compliance` CI produces three CycloneDX SBOMs (backend, Portal BFF, production frontend), checks licensing with [`scripts/r23-compliance.py`](../scripts/r23-compliance.py), runs canary tests and compares [`THIRD-PARTY-NOTICES.md`](../THIRD-PARTY-NOTICES.md) to generated output.
+- `r23-sbom-and-notices` CI artifact availability depends on configured retention. An older artifact's existence does not prove it is still downloadable. An SBOM **inventories resolved dependencies**, not binaries necessarily included in a source-only archive.
+- The **131 components** in the Phase 2 B-019 report are a **historical baseline**, not a current inventory or a count of shipped packages. `THIRD-PARTY-NOTICES.md` is not a legal certification.
+- License allow-list and conditional dependency rules are in [`CONTRIBUTING.md`](../CONTRIBUTING.md). Separate images/services require independent license and attribution review.
 
-### 5. Binary and byte-preserved files
+### 7. Binary and byte-preserved files
 
-| File | Origin | License / attribution | Note |
-| --- | --- | --- | --- |
-| `backend/gradle/wrapper/gradle-wrapper.jar` | Official Gradle 8.14.3 wrapper | `SPDX-FileCopyrightText = "Gradle contributors"` (via `REUSE.toml`) | The only committed binary; validated by `gradle/actions/wrapper-validation@v6` in `r23-compliance` and in the `candidate` job of `release.yml` (B-020) |
-| Flyway migrations `V1`–`V4`, SQL evidence files | Team code | Declared in `REUSE.toml` | Must stay byte-identical, so no inline header |
-| `package.json`, `package-lock.json`, `favicon.svg`, `.gitignore` and a few others | Team code/assets | Declared in `REUSE.toml` | Format does not allow comments or must stay byte-identical |
+| File/group                                                                         | Origin or handling                                          | Limitation                                                                     |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `backend/gradle/wrapper/gradle-wrapper.jar`                                        | Upstream Gradle Wrapper, REUSE metadata; wrapper validation | Not claimed as TRICORE-created; tested source-only packaging excludes this JAR |
+| Flyway V1–V4 and byte-preserved SQL evidence                                       | External REUSE metadata where checksums must remain fixed   | Do not edit bytes to add inline headers                                        |
+| `package.json`, `package-lock.json`, `favicon.svg`, `.gitignore` and special files | Inline metadata or `REUSE.toml` as applicable               | Metadata does not establish authorship or asset clearance                      |
 
-Portal BFF has no wrapper of its own; CI builds it with the backend wrapper (HYG-01). `repo-hygiene` checks that `backend/gradlew` is executable.
+Wrapper checks are not repository-wide redistribution authorization. Under the earlier baseline, Portal BFF used the backend Gradle wrapper in CI (HYG-01); recheck if the build layout changes.
 
-### 6. Publication gate
+### 8. `v0.2.0` source-only publication gate
 
-The competition release is tracked in [#190](https://github.com/tricore-opentrix/opentrix/issues/190). It is published only when all of these hold:
+Keep separate the **bounded #138 contributor disposition**, **R24 release acceptance**, and **deferred file-level v1.0.0 review**.
 
-1. **Clear source rights:** complete #138 — compare the source with upstream, confirm copyright and attribution. Passing REUSE lint and R23 does **not** mean `RIGHTS_CLEARED` or `RELEASE_ACCEPTED` (B-020, B-021).
-2. **Tag correctly:** a new SemVer tag, **not** marked pre-release.
-3. **Attach every file:** `.tar.gz`, `SHA256SUMS`, SBOM and `NOTICE`. The `r24-candidate-<run_id>` package from [`release.yml`](../.github/workflows/release.yml) already contains `LICENSE`, `NOTICE`, `THIRD-PARTY-NOTICES.md` and `compliance/*.cdx.json`.
-4. **Pass the R24 gate:** the `publish` job runs only on a `v*` tag with an acceptance manifest at `docs/06-deployment/r24-acceptances/<tag>.json` on `main`; that directory **does not yet exist** on `origin/main`. `v0.2.0` is forced into `source-only` mode (no JARs, no GHCR images). Release notes must state the actual status of #138.
+1. **Scope:** `v0.2.0` is eligible only for a **source-only** release. This does not authorize bootJARs, `frontend/dist`, GHCR images or other binary distribution. The package must include accepted Git-tracked source plus LICENSE/NOTICE, CHANGELOG, release notes, SBOM/inventory and MANIFEST as specified in the [R24 runbook](06-deployment/r24-release.md).
+2. **Rights and attribution:** use the individual declarations, Q1–Q5 record and actual exception dispositions. Disclose AI-origin limitations. Never silently treat unresolved in-scope findings as `CLEARED`.
+3. **Source freeze and reproducibility:** use the exact full source SHA; compare independent candidate builds, archive digests, `MANIFEST.json`, `SHA256SUMS` and release notes. **Do not reuse hashes from a different SHA or from `validation_only=true` archives** to pass the publication gate.
+4. **Separate acceptance PR:** after source freeze, merge `docs/06-deployment/r24-acceptances/v0.2.0.json` to `main` via independent review. Required fields: `tag`, `source_sha`, `mode`, `archive_sha256`, `reviewed_by` and five HTTPS evidence keys: `source_provenance`, `source_license`, `sbom_source_boundary`, `archive_and_checksums`, `release_notes`. JSON URLs alone do not establish evidentiary sufficiency.
+5. **Tag protection and publication:** verify the actual `r24-release` environment, required reviewers and `v*` tag protection before creating a tag. The published tag targets the **frozen source SHA predating the acceptance commit**. Claim publication only after downloading and hashing the actual release assets.
+6. **Competition requirements #190:** confirm non-prerelease SemVer, approved attachment treatment of SBOM/NOTICE, and CHANGELOG/release notes accurately reflecting technical and rights status. If the workflow cannot provide required separate attachments, resolve that in a separately reviewed PR.
 
-Contributors submit only code, data and assets they have the right to contribute; **never** copy code, templates, icons or assets from other projects; **never** remove or alter attribution, copyright or AI-use disclosures to conceal origin (B-021).
+CI, REUSE, R23, source scanning and contributor agreement are **not substitutes** for release acceptance. Historical target dates must not be used to backdate a CHANGELOG entry or tag. [#190](https://github.com/tricore-opentrix/opentrix/issues/190) tracks the competition release; [#138](https://github.com/tricore-opentrix/opentrix/issues/138) the bounded contributor decision; [`RELEASE.md`](RELEASE.md) is the operational release guide.
 
-The current public release is [`v0.1.0`](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0) — a pre-release from 2026-11-04 with assets `dxos-open-core-0.1.0.tar.gz` and `SHA256SUMS`, plus a duplicate Draft for the same tag (POF-3). It is **not** the competition release.
+### 9. Evidence and limitations
 
-| Item | Status | Evidence / Issue |
-| --- | --- | --- |
-| Full license text |  `LICENSE`, `LICENSES/Apache-2.0.txt` | B-019, POF-2 |
-| Project attribution |  `NOTICE` | B-019 |
-| Per-file SPDX/REUSE |  `repo-hygiene` passes, 338/338 files | B-018, POF-2 |
-| Dependency license gate |  `r23-compliance` passes | B-019, POF-5 |
-| SBOM + third-party notices |  30-day CI artifact · not yet attached to a release | POF-5, #190 |
-| Gradle wrapper validation |  `wrapper-validation@v6` | B-020 |
-| Source comparison with upstream |  Not done | B-020, #138 |
-| Source-rights clearance |  Not cleared | B-021, #138 |
-| Competition release (SemVer, not pre-release) |  Not released | POF-3, #190 |
+| Item                           | Recorded / limited status                                                               | Reference                                                                                                                          |
+| ------------------------------ | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Apache-2.0 and attribution     | LICENSE, LICENSES and NOTICE exist; not proof of origin for all content                 | Root files and [#138](https://github.com/tricore-opentrix/opentrix/issues/138)                                                     |
+| SPDX/REUSE                     | CI enforces checks; 338/338 is **historical**                                           | Phase 2 B-018, `main@832c75f`                                                                                                      |
+| Dependency policy              | R23 CI and SBOM; 131 is a **historical** inventory                                      | Phase 2 B-019                                                                                                                      |
+| Q1–Q5 agreement                | Three maintainers recorded a bounded disposition with limitations                       | [Decision](https://github.com/tricore-opentrix/opentrix/issues/138#issuecomment-6899613976) and individual sign-offs               |
+| File-level upstream comparison | Not completed; work deferred in part to v1.0.0                                          | #138 Q4 / follow-up issue when created                                                                                             |
+| `v0.2.0` release               | **Not asserted published** without current tag, acceptance and final asset verification | [Releases](https://github.com/tricore-opentrix/opentrix/releases), [#190](https://github.com/tricore-opentrix/opentrix/issues/190) |
 
-This document does not assert that any legal or security review has passed.
+Related Phase 2 reports: [Block B — Backend/Infrastructure](09-evidence/phase-2/block-b-backend-infra.md) (B-018…B-021) and [Block A — Architecture](09-evidence/phase-2/block-a-architecture.md) (POF-1…POF-6). Do not treat historical report conclusions as evidence for a newer source SHA.
+
+**Limitations:** This document describes policy, scope and recorded evidence. It is not legal advice, repository-wide ownership certification, production certification or an independent release approval.
