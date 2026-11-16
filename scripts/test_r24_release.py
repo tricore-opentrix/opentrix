@@ -31,7 +31,8 @@ def fake_github_review(path):
         return {"id": 456, "state": "APPROVED",
                 "user": {"login": "phanyen06ym-ien"}, "commit_id": "b" * 40}
     if path == "pulls/123/files?per_page=100":
-        return [{"filename": "docs/06-deployment/r24-acceptances/v0.2.0.json"}]
+        return [{"filename": "docs/06-deployment/r24-acceptances/v0.2.0.json"},
+                {"filename": "docs/06-deployment/r24-acceptances/v0.2.0-rc.1.json"}]
     raise AssertionError("unexpected GitHub review API path: " + path)
 
 
