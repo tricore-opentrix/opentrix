@@ -15,12 +15,14 @@ _All notable user-visible changes to OpenTrix are recorded here, following Keep 
 
 ## [Unreleased]
 
-_Chưa có mục thay đổi mới sau bản ứng viên v0.2.0. / No new entries after the v0.2.0 candidate._
+_Chưa có thay đổi mới sau bản ứng viên v0.2.0._
+_No new changes have been recorded after the v0.2.0 release candidate._
 
 ## [0.2.0]
 
-> **Trạng thái:** Nội dung bản ứng viên SOURCE-ONLY; chỉ đánh dấu đã phát hành sau khi hoàn tất nghiệm thu R24, tạo tag và GitHub Release được phép. Ngày phát hành phải là ngày công bố thực tế.
-> _Status: SOURCE-ONLY release-candidate notes. Publication requires independent R24 acceptance, authorized tag and GitHub Release. Record the actual publication date when finalized._
+> **Trạng thái / Status:** SOURCE-ONLY Release Candidate — Chưa phát hành chính thức.
+>
+> _SOURCE-ONLY Release Candidate — Not officially published._
 
 ### Added · Thêm mới
 
@@ -32,8 +34,8 @@ _Chưa có mục thay đổi mới sau bản ứng viên v0.2.0. / No new entrie
   _Standalone APISIX gateway overlay with JWKS token validation, rate limiting and forwarded-header rewrite, enabled with `demo-up -Gateway` / `--gateway`._
 - Realm Keycloak `tricore` có phiên bản cho môi trường demo, cùng cấu hình mạng dùng chung cho PostgreSQL, Keycloak và Backend (#226, #227).
   _Versioned `tricore` Keycloak demo realm and a shared-network demo setup for PostgreSQL, Keycloak and Backend._
-- Chuẩn bị đóng gói và nghiệm thu bản phát hành SOURCE-ONLY: gói mã nguồn, SBOM và NOTICE, SHA256SUMS, release notes và cổng phê duyệt trước công bố. Không phân phối JAR, frontend `dist` hoặc container images trong v0.2.0.
-  _Prepare SOURCE-ONLY packaging and acceptance: source archive, SBOM and NOTICE, SHA256SUMS, release notes and publication gate. No JARs, frontend `dist` or container images are distributed in v0.2.0._
+- Chuẩn bị đóng gói và nghiệm thu bản phát hành SOURCE-ONLY: gói mã nguồn, SBOM và NOTICE, SHA256SUMS, ghi chú phát hành và cổng phê duyệt trước công bố. Không phân phối JAR, frontend `dist` hoặc Docker/GHCR images trong v0.2.0.
+  _Prepare SOURCE-ONLY release packaging and acceptance: source archive, SBOM and NOTICE, SHA256SUMS, release notes, and a publication approval gate. Version 0.2.0 does not distribute JARs, frontend `dist`, or Docker/GHCR images._
 - Quyết định kiến trúc ADR-009, ADR-016, ADR-017, ADR-018 và mục lục tài liệu kiến trúc tương ứng (#221).
   _Architecture decisions ADR-009, ADR-016, ADR-017 and ADR-018 with aligned architecture and documentation indexes._
 
