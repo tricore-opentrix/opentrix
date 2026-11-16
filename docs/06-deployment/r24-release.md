@@ -60,7 +60,14 @@ required source-rights documentation PRs must be merged and the final
 > This section proposes replacing the historical two-candidate requirement with
 > **one fully verified publishable-format technical candidate** plus an independent
 > build from the actual extracted archive. No candidate is release authorization.
-> Until the team approves the policy update, #190 retains its existing blockers.
+> **Yến's formal PR #250 decision: NO / CHANGES_REQUESTED.** The current
+> **two independent publishable-format R4 candidates remain mandatory** under #190.
+> A single candidate plus an extracted-source build is **not equivalent** to two
+> independent archive packaging runs: it loses the cross-run archive SHA256,
+> MANIFEST, SBOM and member-byte reproducibility comparison. Buildability tests
+> do not prove independently reproduced archive bytes. Any future reduction needs
+> a newly approved, explicit acceptance of that evidentiary risk by the team.
+> **No such approval exists; do NOT change #190 or run only one final candidate.**
 
 1. Finalize bounded source-rights disposition for the actual archived files under #138;
    agree the actual release date and update the dated `## [0.2.0]` CHANGELOG section.
@@ -116,10 +123,58 @@ independent acceptance PR review and Environment/tag safeguards all pass.
 
 A versioned JSON must be merged to main in a **separate independently reviewed PR after source SHA is frozen**, under docs/06-deployment/r24-acceptances/<tag>.json. Point the tag at the earlier source SHA (not the newer acceptance commit), avoiding a circular self-reference. The publish workflow reads this file from main.
 
-Both modes require tag, full source_sha, archive_sha256, explicit mode, independent reviewer assertion and supporting HTTPS evidence. For source-only v0.2.0 the reduced acceptance JSON additionally requires a verifiable independent `review_url` plus `evidence.source_rights`, `evidence.archive_verification`, and `evidence.extracted_source_build`. The rights URL must cover provenance/Apache-2.0, third-party assets, NOTICE and recorded UNKNOWN/RIGHTS_PENDING limitations; the archive URL must cover checksums/MANIFEST/SBOM/notes. The release gate checks the review permalink against GitHub's live PR and review APIs: the acceptance PR must be merged to main, contain the exact acceptance JSON, and have an APPROVED review from an authorized independent reviewer at its final PR HEAD. The publish job supplies a read-scoped GitHub token for this verification. JSON assertions or a mere HTTPS prefix are insufficient.
+Both modes require tag, full source_sha, archive_sha256, explicit mode, independent reviewer assertion and supporting HTTPS evidence. For source-only v0.2.0 the reduced acceptance JSON additionally requires a verifiable independent `review_url` plus `evidence.source_rights`, `evidence.archive_verification`, and `evidence.extracted_source_build`. The rights URL must cover provenance/Apache-2.0, third-party assets, NOTICE and recorded UNKNOWN/RIGHTS_PENDING limitations; the archive URL must cover checksums/MANIFEST/SBOM/notes. The Draft release gate checks the live merged acceptance PR, its final-HEAD independent APPROVED review and file path. **F02:** it additionally compares Git blob SHA-1 of the exact publisher-used JSON bytes with GitHub Contents blob IDs at the approved PR HEAD, merge commit and current main. **F03:** stale/dismissed/self review, unmerged PR, absent file or unavailable API fail closed. **F04:** the evidence comment must carry the structured tag/source SHA/archive SHA256/reviewer/checklists and successful workflow-run identity described below. A bare HTTPS URL is rejected. **These changes are a Draft proposal, not effective release policy.**
 
 - Binary mode: pinned eclipse-temurin:21-jre@sha256 digest, a CLEARED permissive group evidence URL, individual CLEARED exceptions for all other shipped licenses, source/relink, upstream texts, assets, OCI service/base images, checksums and notes evidence.
 - Source-only v0.2.0 mode (proposed reduced schema): `source_rights`, `archive_verification`, `extracted_source_build` plus `reviewed_by` and `review_url`; binary license groups do not authorize this mode.
+
+### Proposed machine-verifiable evidence checklist (F02–F04) — NOT effective release policy
+
+The Draft acceptance schema retains three HTTPS evidence comment permalinks:
+`evidence.source_rights`, `evidence.archive_verification`, and
+`evidence.extracted_source_build`. Each link must point to a GitHub comment in
+`tricore-opentrix/opentrix` (issue or pull-request conversation) by an
+independent Yến/Ánh reviewer listed in `reviewed_by` who is NOT the acceptance
+PR author. The comment must contain exactly one versioned structured block:
+
+```text
+<!-- R24_SOURCE_EVIDENCE_V1
+{"kind":"source_rights","tag":"v0.2.0","mode":"source-only",
+ "source_sha":"<40-character frozen source SHA>",
+ "archive_sha256":"<64-character verified archive SHA256>",
+ "reviewer":"phanyen06ym-ien","verdict":"PASS",
+ "checks":{"source_provenance":true,"apache_2_0_rights":true,
+ "third_party_attribution":true,"notice":true,
+ "exceptions_disposition":true,"independent_rights_review":true},
+ "unresolved_distribution_blockers":[],
+ "references":["https://github.com/tricore-opentrix/opentrix/issues/138"]}
+-->
+```
+
+The example is **not** a rights statement. Replace placeholders only after
+checking real source/rights documents. The archive/build comments use the same
+identity fields, their appropriate `kind`, `run_id` (integer) and the actual
+GitHub Actions run URL in `references`.
+
+| Kind | Mandatory checks (every listed key is exactly `true`) |
+| --- | --- |
+| `source_rights` | `source_provenance`, `apache_2_0_rights`, `third_party_attribution`, `notice`, `exceptions_disposition`, `independent_rights_review`; `unresolved_distribution_blockers` must be `[]` |
+| `archive_verification` | `sha256sums`, `manifest`, `three_cyclonedx_sboms`, `license`, `notice`, `release_notes`, `frozen_sha`, `independent_archive_review` |
+| `extracted_source_build` | `no_git_checkout`, `external_gradle_8_14_3_jdk21`, `backend_build`, `portal_bff_build`, `frontend_node22_build`, `independent_build_review` |
+
+For archive/build links, the gate reads the live GitHub Actions run:
+`workflow_dispatch`, `head_branch=main`, `head_sha=source_sha`,
+`status=completed`, `conclusion=success`, and
+`inputs.candidate_mode=publishable-source-only`. Both evidence records must
+refer to the same run, and any missing metadata causes BLOCKED.
+These are auditable technical checks, **not independent legal proof**.
+Yến/Ánh must inspect actual R27 rights dispositions, GitHub logs, archive
+hashes, MANIFEST, SBOM, LICENSE/NOTICE and source assets; no checklist can
+turn `UNKNOWN`, `NOT_RECALLED` or `RIGHTS_PENDING` into `CLEARED`.
+
+**F01 still blocks policy change:** The current TWO independently packaged
+final candidates (with hash/byte comparison) remain mandatory in #190.
+A proposed ONE-candidate evidence comment cannot replace that gate.
 
 **Yến must establish the protected r24-release GitHub Environment with required independent reviewers (Yến and Ánh) plus v* tag protection ruleset BEFORE any tag is created or pushed.** A workflow environment declaration alone does not guarantee protected configuration.
 
@@ -130,7 +185,7 @@ GHCR image tags and GitHub Releases are non-atomic: partial publishing requires 
 1. Run python3 -m unittest discover -s scripts -p 'test_r24_*.py'.
 2. Produce the R23 SBOMs and inventory; run python3 scripts/r24-upstream.py --root . --inventory build/r23/license-inventory.json --output build/r24/upstream.
 3. Run python3 scripts/r24-release.py package --mode source-only --tag v0.2.0 --sha <full-source-SHA> --output dist/r24.
-4. Run python3 scripts/r24-release.py verify --archive dist/r24/dxos-open-core-0.2.0.tar.gz --checksums dist/r24/SHA256SUMS and, from dist/r24, sha256sum -c SHA256SUMS. After the final source SHA and the required CHANGELOG entry are frozen, run **one** `publishable-source-only` workflow_dispatch candidate under the proposed procedure above; independently verify SHA256/MANIFEST/SBOM/NOTICE/notes and build the extracted archive outside Git before acceptance. This proposed one-candidate policy needs reviewer approval and merge before superseding the two-candidate gate in #190.
+4. Run python3 scripts/r24-release.py verify --archive dist/r24/dxos-open-core-0.2.0.tar.gz --checksums dist/r24/SHA256SUMS and, from dist/r24, sha256sum -c SHA256SUMS. After the final source SHA and the required CHANGELOG entry are frozen, run **two independent** `publishable-source-only` workflow_dispatch candidates on the same frozen source SHA under the currently binding #190 rule. Verify both archives and compare SHA256/MANIFEST/member bytes, SBOM/NOTICE/notes; independently build the extracted source outside Git. One-candidate reduction remains UNAPPROVED (F01).
 5. After merge, source SHA freeze, independent acceptance, Yến's environment/tag readiness and approved tag publication, verify real release assets, GHCR image digests (binary only), and the exact archive hash.
 
 **R24 implementation Done** requires independent review, green CI and merge. **Full R24 source-only release Done** requires #138 rights clearance, exact-source #139 acceptance and review, protected `v0.2.0` tag publication, GitHub Release source-only assets and an independently verified downloaded SHA256SUMS. **Binary/JAR/GHCR distribution remains BLOCKED** until separately authorized; none of its obligations are waived.

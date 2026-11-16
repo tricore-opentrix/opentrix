@@ -3,6 +3,7 @@
 """R24: reproducible release candidate archives and fail-closed distribution gate."""
 import argparse
 import gzip
+import base64
 import hashlib
 import io
 import json
@@ -83,8 +84,26 @@ def normalize_cyclonedx(raw):
                        separators=(",", ":")) + "\n").encode("utf-8")
 
 
+# This proposed SOURCE-ONLY gate is NOT an enacted one-candidate policy.
+# Current R24 release authorization still requires TWO independent final candidates.
+EVIDENCE_CHECKS = {
+    "source_rights": (
+        "source_provenance", "apache_2_0_rights", "third_party_attribution",
+        "notice", "exceptions_disposition", "independent_rights_review",
+    ),
+    "archive_verification": (
+        "sha256sums", "manifest", "three_cyclonedx_sboms", "license",
+        "notice", "release_notes", "frozen_sha", "independent_archive_review",
+    ),
+    "extracted_source_build": (
+        "no_git_checkout", "external_gradle_8_14_3_jdk21", "backend_build",
+        "portal_bff_build", "frontend_node22_build", "independent_build_review",
+    ),
+}
+
+
 def _github_json(path):
-    """Fetch GitHub release-approval evidence; never trust JSON URL alone."""
+    """Read live GitHub state; a missing/inaccessible API response blocks publication."""
     token = os.environ.get("GITHUB_TOKEN", "")
     require(token, "GITHUB_TOKEN is required to verify independent R24 review")
     url = "https://api.github.com/repos/tricore-opentrix/opentrix/" + path
@@ -94,37 +113,141 @@ def _github_json(path):
     try:
         with urlopen(req, timeout=15) as response:
             return json.loads(response.read())
-    except (URLError, ValueError) as exc:
-        raise ValueError("cannot independently verify GitHub review: publication BLOCKED") from exc
+    except (URLError, ValueError, OSError) as exc:
+        raise ValueError("cannot independently verify GitHub review/evidence: publication BLOCKED") from exc
 
 
-def verify_independent_review(accepted):
-    """A valid URL must identify an actual merged, approved, independent PR review."""
+def _blob_oid(contents):
+    """Git blob object SHA-1 for exact bytes; not the SHA-256 release archive hash."""
+    return hashlib.sha1(b"blob " + str(len(contents)).encode("ascii")
+                        + b"\0" + contents).hexdigest()
+
+
+def verify_independent_review(accepted, acceptance_file):
+    """Bind publisher-used JSON bytes to APPROVED PR HEAD, merge, and current main."""
     link = accepted.get("review_url", "")
-    pattern = r"https://github[.]com/tricore-opentrix/opentrix/pull/([1-9][0-9]*)#pullrequestreview-([1-9][0-9]*)"
+    pattern = (r"https://github[.]com/tricore-opentrix/opentrix/pull/"
+               r"([1-9][0-9]*)#pullrequestreview-([1-9][0-9]*)")
     match = re.fullmatch(pattern, link) if isinstance(link, str) else None
     require(match, "invalid independent review_url: expected a GitHub PR review permalink")
     pr_number, review_id = match.groups()
     pr = _github_json(f"pulls/{pr_number}")
     review = _github_json(f"pulls/{pr_number}/reviews/{review_id}")
+    require(isinstance(pr, dict) and isinstance(review, dict),
+            "invalid GitHub review response")
     author = (pr.get("user") or {}).get("login")
     reviewer = (review.get("user") or {}).get("login")
     require(pr.get("merged_at") and (pr.get("base") or {}).get("ref") == "main",
             "independent review PR must be merged to main")
-    require(reviewer in REVIEWERS and reviewer != author
-            and reviewer in accepted.get("reviewed_by", []),
+    require(isinstance(accepted.get("reviewed_by"), list)
+            and reviewer in REVIEWERS and reviewer != author
+            and reviewer in accepted["reviewed_by"],
             "independent GitHub reviewer is missing, unauthorized, or the PR author")
+    head_sha = (pr.get("head") or {}).get("sha")
+    merge_sha = pr.get("merge_commit_sha")
+    require(isinstance(head_sha, str) and SHA.fullmatch(head_sha)
+            and isinstance(merge_sha, str) and SHA.fullmatch(merge_sha),
+            "cannot identify reviewed PR HEAD and merged commit")
     require(review.get("state") == "APPROVED"
             and str(review.get("id")) == review_id
-            and review.get("commit_id") == (pr.get("head") or {}).get("sha"),
-            "independent review must APPROVE the final PR HEAD")
+            and review.get("commit_id") == head_sha,
+            "independent review must APPROVE the final PR HEAD (not dismissed)")
     acceptance_path = f"docs/06-deployment/r24-acceptances/{accepted['tag']}.json"
     files = _github_json(f"pulls/{pr_number}/files?per_page=100")
-    require(isinstance(files, list)
-            and any(row.get("filename") == acceptance_path for row in files),
+    require(isinstance(files, list) and len(files) < 100
+            and any(row.get("filename") == acceptance_path for row in files
+                    if isinstance(row, dict)),
             "independent review PR does not include exact R24 acceptance JSON")
-    require(len(files) < 100, "large acceptance PR needs explicit complete file review")
-    return reviewer
+    reviewed_oid = _blob_oid(Path(acceptance_file).read_bytes())
+    for commit_ref in (head_sha, merge_sha, "main"):
+        info = _github_json(f"contents/{acceptance_path}?ref={commit_ref}")
+        require(isinstance(info, dict) and info.get("type") == "file"
+                and info.get("sha") == reviewed_oid,
+                "acceptance JSON bytes differ from approved PR HEAD/merged main")
+    return reviewer, author
+
+
+def verify_source_evidence(accepted, pr_author):
+    """Verify live author-attributed attestations and the actual publishable CI run.
+
+    Human review of referenced underlying materials remains mandatory. An attestation
+    with checkboxes is not independent legal proof of provenance or ownership.
+    """
+    evidence = accepted.get("evidence")
+    require(isinstance(evidence, dict), "source-only release evidence object is missing")
+    source_sha = accepted["source_sha"]
+    archive_sha = accepted["archive_sha256"]
+    tag = accepted["tag"]
+    expected_run = None
+    for kind, checklist in EVIDENCE_CHECKS.items():
+        url = evidence.get(kind, "")
+        m = re.fullmatch(
+            r"https://github[.]com/tricore-opentrix/opentrix/"
+            r"(?:issues|pull)/[1-9][0-9]*#issuecomment-([1-9][0-9]*)",
+            url) if isinstance(url, str) else None
+        require(m, f"source-only release missing verified GitHub evidence: {kind}")
+        comment = _github_json(f"issues/comments/{m.group(1)}")
+        require(isinstance(comment, dict)
+                and comment.get("html_url") == url,
+                f"source-only evidence permalink mismatch: {kind}")
+        user = (comment.get("user") or {}).get("login")
+        require(user in REVIEWERS and user != pr_author
+                and user in accepted.get("reviewed_by", []),
+                f"unauthorized/ non-independent evidence reviewer: {kind}")
+        body = comment.get("body") or ""
+        markers = re.findall(
+            r"<!-- R24_SOURCE_EVIDENCE_V1\n(.*?)\n-->",
+            body, re.DOTALL) if isinstance(body, str) else []
+        require(len(markers) == 1,
+                f"missing unique machine-readable evidence checklist: {kind}")
+        try:
+            data = json.loads(markers[0])
+        except (ValueError, TypeError) as exc:
+            raise ValueError(f"invalid evidence JSON: {kind}") from exc
+        require(isinstance(data, dict)
+                and data.get("kind") == kind
+                and data.get("tag") == tag
+                and data.get("mode") == "source-only"
+                and data.get("source_sha") == source_sha
+                and data.get("archive_sha256") == archive_sha
+                and data.get("reviewer") == user
+                and data.get("verdict") == "PASS",
+                f"source-only evidence identity/verdict mismatch: {kind}")
+        checks = data.get("checks")
+        require(isinstance(checks, dict)
+                and all(checks.get(key) is True for key in checklist),
+                f"source-only evidence incomplete mandatory checklist: {kind}")
+        links = data.get("references")
+        require(isinstance(links, list) and links
+                and all(isinstance(ref, str) and ref.startswith("https://")
+                        for ref in links),
+                f"source-only evidence lacks actual supporting references: {kind}")
+        # The evidence used for rights must list no unresolved distribution blockers.
+        if kind == "source_rights":
+            require(data.get("unresolved_distribution_blockers") == [],
+                    "source-only source rights remain unresolved")
+            continue
+        run_id = data.get("run_id")
+        require(isinstance(run_id, int) and not isinstance(run_id, bool)
+                and run_id > 0,
+                f"source-only evidence missing actual workflow run ID: {kind}")
+        if expected_run is not None:
+            require(run_id == expected_run,
+                    "archive and extracted build evidence refer to different runs")
+        expected_run = run_id
+        require(f"https://github.com/tricore-opentrix/opentrix/actions/runs/{run_id}" in links,
+                f"source-only evidence missing original workflow run URL: {kind}")
+        run = _github_json(f"actions/runs/{run_id}")
+        require(isinstance(run, dict)
+                and run.get("event") == "workflow_dispatch"
+                and run.get("head_branch") == "main"
+                and run.get("head_sha") == source_sha
+                and run.get("status") == "completed"
+                and run.get("conclusion") == "success"
+                and isinstance(run.get("inputs"), dict)
+                and run["inputs"].get("candidate_mode") == "publishable-source-only",
+                f"source-only evidence run not a successful exact-SHA publishable candidate: {kind}")
+    return expected_run
 
 
 def package(repo, tag, sha, output, mode="binary", validation_only=False):
@@ -318,7 +441,8 @@ def gate(archive, checksums, acceptance, tag, sha, notes_file=None):
             ref = accepted["evidence"].get(key, "")
             require(isinstance(ref, str) and ref.startswith("https://"),
                     f"source-only release missing evidence: {key}")
-        verify_independent_review(accepted)
+        _, pr_author = verify_independent_review(accepted, path)
+        verify_source_evidence(accepted, pr_author)
         print("R24_SOURCE_ONLY_GATE_PASS: no binary/GHCR authorization")
         return "source-only"
     require(JAVA_BASE.fullmatch(accepted.get("java_base_image", "")),

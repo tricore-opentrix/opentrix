@@ -22,21 +22,54 @@ ROW = {"project": "backend", "name": "example", "version": "1.0",
        "release_distribution_status": "PENDING"}
 
 
-def fake_github_review(path):
-    if path == "pulls/123":
-        return {"merged_at": "2026-11-17T00:00:00Z", "base": {"ref": "main"},
-                "user": {"login": "r24-acceptance-author"},
-                "head": {"sha": "b" * 40}}
-    if path == "pulls/123/reviews/456":
-        return {"id": 456, "state": "APPROVED",
-                "user": {"login": "phanyen06ym-ien"}, "commit_id": "b" * 40}
-    if path == "pulls/123/files?per_page=100":
-        return [{"filename": "docs/06-deployment/r24-acceptances/v0.2.0.json"},
-                {"filename": "docs/06-deployment/r24-acceptances/v0.2.0-rc.1.json"}]
-    raise AssertionError("unexpected GitHub review API path: " + path)
-
 
 class R24ReleaseTests(unittest.TestCase):
+    def fake_github_review(self, path):
+        head = "b" * 40
+        merged = "c" * 40
+        if path == "pulls/123":
+            return {"merged_at": "2026-11-17T00:00:00Z",
+                    "merge_commit_sha": merged, "base": {"ref": "main"},
+                    "user": {"login": "r24-acceptance-author"},
+                    "head": {"sha": head}}
+        if path == "pulls/123/reviews/456":
+            return {"id": 456, "state": "APPROVED",
+                    "user": {"login": "phanyen06ym-ien"}, "commit_id": head}
+        if path == "pulls/123/files?per_page=100":
+            return [{"filename": "docs/06-deployment/r24-acceptances/v0.2.0.json"},
+                    {"filename": "docs/06-deployment/r24-acceptances/v0.2.0-rc.1.json"}]
+        if path.startswith("contents/docs/06-deployment/r24-acceptances/"):
+            return {"type": "file",
+                    "sha": release._blob_oid(self.acceptance.read_bytes())}
+        if path == "actions/runs/11111":
+            return {"event": "workflow_dispatch", "head_branch": "main",
+                    "head_sha": self.source_sha, "status": "completed",
+                    "conclusion": "success",
+                    "inputs": {"candidate_mode": "publishable-source-only"}}
+        for offset, kind in enumerate(release.EVIDENCE_CHECKS, start=701):
+            if path == f"issues/comments/{offset}":
+                doc = json.loads(self.acceptance.read_text())
+                evidence = {"kind": kind, "tag": doc["tag"],
+                            "mode": "source-only",
+                            "source_sha": doc["source_sha"],
+                            "archive_sha256": doc["archive_sha256"],
+                            "reviewer": "phanyen06ym-ien", "verdict": "PASS",
+                            "checks": {c: True for c in release.EVIDENCE_CHECKS[kind]},
+                            "references": ["https://github.com/tricore-opentrix/opentrix/issues/138"]}
+                if kind == "source_rights":
+                    evidence["unresolved_distribution_blockers"] = []
+                else:
+                    evidence["run_id"] = 11111
+                    evidence["references"].append(
+                        "https://github.com/tricore-opentrix/opentrix/actions/runs/11111")
+                return {
+                    "html_url": f"https://github.com/tricore-opentrix/opentrix/issues/190#issuecomment-{offset}",
+                    "user": {"login": "phanyen06ym-ien"},
+                    "body": "<!-- R24_SOURCE_EVIDENCE_V1\n"
+                            + json.dumps(evidence) + "\n-->"
+                }
+        raise AssertionError("unexpected GitHub review API path: " + path)
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
@@ -69,7 +102,7 @@ class R24ReleaseTests(unittest.TestCase):
             "source": "gradle-cache-jar:example-1.0.jar"}
         put("build/r24/upstream/upstream-index.json", json.dumps([self.index_row]))
         self._review_stub = mock.patch.object(release, "_github_json",
-                                              side_effect=fake_github_review)
+                                              side_effect=self.fake_github_review)
         self._review_stub.start()
         self.addCleanup(self._review_stub.stop)
         self.source_sha = SHA  # Binary fixture uses the synthetic historical SHA.
@@ -98,6 +131,9 @@ class R24ReleaseTests(unittest.TestCase):
                "evidence": {key: "https://example.test/verified" for key in
                             (release.GATES if mode == "binary" else release.SOURCE_GATES)}}
         if mode == "source-only":
+            doc["evidence"] = {kind: (
+                f"https://github.com/tricore-opentrix/opentrix/issues/190#issuecomment-{701 + i}")
+                for i, kind in enumerate(release.SOURCE_GATES)}
             doc["review_url"] = ("https://github.com/tricore-opentrix/opentrix/"
                                  "pull/123#pullrequestreview-456")
         if mode == "binary":
@@ -323,12 +359,122 @@ class R24ReleaseTests(unittest.TestCase):
             release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
         self.acceptance.write_text(json.dumps(base))
         with mock.patch.object(release, "_github_json",
-                side_effect=lambda path: dict(fake_github_review(path),
+                side_effect=lambda path: dict(self.fake_github_review(path),
                     state="COMMENTED") if path == "pulls/123/reviews/456"
-                    else fake_github_review(path)):
+                    else self.fake_github_review(path)):
             with self.assertRaisesRegex(ValueError, "APPROVE the final PR HEAD"):
                 release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
-        self.assertEqual(release.verify_independent_review(base), "phanyen06ym-ien")
+        self.assertEqual(release.verify_independent_review(base, self.acceptance)[0],
+                         "phanyen06ym-ien")
+
+    def make_accepted_source_case(self):
+        stable = "v0.2.0"
+        self.put("CHANGELOG.md", "## [Unreleased]\n\n## [0.2.0]\n\n### Added\n- sources\n")
+        subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
+        subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md"],
+                       cwd=self.repo, check=True)
+        self.commit_sources()
+        self.make("source-only", tag=stable)
+        doc = self.accept("source-only")
+        doc["tag"] = stable
+        self.acceptance.write_text(json.dumps(doc))
+        return doc, stable
+
+    def assert_source_gate_rejected(self, stable, error):
+        with self.assertRaisesRegex(ValueError, error):
+            release.gate(self.archive, self.sums, self.acceptance,
+                         stable, self.source_sha)
+
+    def test_f02_acceptance_bytes_bound_to_pr_head_squash_merge_and_main(self):
+        doc, stable = self.make_accepted_source_case()
+        self.assertEqual(release.gate(self.archive, self.sums, self.acceptance,
+                                      stable, self.source_sha), "source-only")
+        for ref in ("b" * 40, "c" * 40, "main"):
+            path_ref = f"?ref={ref}"
+            def spoof(path):
+                if path.startswith("contents/") and path.endswith(path_ref):
+                    return {"type": "file", "sha": "d" * 40}
+                return self.fake_github_review(path)
+            with self.subTest(ref=ref), mock.patch.object(release, "_github_json",
+                                                           side_effect=spoof):
+                self.assert_source_gate_rejected(
+                    stable, "acceptance JSON bytes differ from approved PR HEAD/merged main")
+
+    def test_f03_invalid_independent_review_cases_fail_closed(self):
+        _, stable = self.make_accepted_source_case()
+        mutations = (
+            ("outdated_head", "pulls/123/reviews/456", {"commit_id": "e" * 40},
+             "APPROVE the final PR HEAD"),
+            ("dismissed", "pulls/123/reviews/456", {"state": "DISMISSED"},
+             "APPROVE the final PR HEAD"),
+            ("self_review", "pulls/123", {"user": {"login": "phanyen06ym-ien"}},
+             "unauthorized, or the PR author"),
+            ("unmerged", "pulls/123", {"merged_at": None},
+             "must be merged to main"),
+            ("missing_file", "pulls/123/files?per_page=100",
+             [{"filename": "unrelated.json"}], "does not include exact"),
+            ("missing_merge_commit", "pulls/123", {"merge_commit_sha": None},
+             "cannot identify reviewed PR HEAD"),
+        )
+        for name, at, mutated, expected in mutations:
+            def spoof(path):
+                original = self.fake_github_review(path)
+                if path == at:
+                    if isinstance(mutated, list):
+                        return mutated
+                    return dict(original, **mutated)
+                return original
+            with self.subTest(name=name), mock.patch.object(
+                    release, "_github_json", side_effect=spoof):
+                self.assert_source_gate_rejected(stable, expected)
+        with mock.patch.object(release, "_github_json",
+                               side_effect=ValueError("API unreachable")):
+            self.assert_source_gate_rejected(stable, "API unreachable")
+
+    def test_f04_evidence_identity_checklists_reviewer_rights_and_run(self):
+        _, stable = self.make_accepted_source_case()
+        self.assertEqual(release.gate(self.archive, self.sums, self.acceptance,
+                                      stable, self.source_sha), "source-only")
+        failures = (
+            ("wrong_source_sha", "issues/comments/701", {"source_sha": "d" * 40},
+             "evidence identity/verdict mismatch"),
+            ("wrong_archive_sha", "issues/comments/702",
+             {"archive_sha256": "d" * 64}, "evidence identity/verdict mismatch"),
+            ("wrong_reviewer", "issues/comments/703", {"reviewer": "other"},
+             "evidence identity/verdict mismatch"),
+            ("wrong_mode", "issues/comments/701", {"mode": "binary"},
+             "evidence identity/verdict mismatch"),
+            ("blocked_rights", "issues/comments/701",
+             {"unresolved_distribution_blockers": ["UPSTREAM_RIGHTS_PENDING"]},
+             "source rights remain unresolved"),
+            ("missing_check", "issues/comments/702", {"checks": {}},
+             "incomplete mandatory checklist"),
+            ("wrong_run_id", "issues/comments/703", {"run_id": 9},
+             "different runs"),
+            ("bad_run_status", "actions/runs/11111", {"conclusion": "failure"},
+             "not a successful exact-SHA"),
+            ("wrong_run_head", "actions/runs/11111", {"head_sha": "e" * 40},
+             "not a successful exact-SHA"),
+            ("validation_only_run", "actions/runs/11111",
+             {"inputs": {"candidate_mode": "validation-only"}},
+             "not a successful exact-SHA"),
+        )
+        for name, at, values, expected in failures:
+            def spoof(path):
+                result = self.fake_github_review(path)
+                if path == at and path.startswith("issues/comments/"):
+                    altered = dict(result)
+                    mark = "R24_SOURCE_EVIDENCE_V1\n"
+                    details = json.loads(result["body"].split(mark)[1].split("\n-->")[0])
+                    details.update(values)
+                    altered["body"] = "<!-- " + mark + json.dumps(details) + "\n-->"
+                    return altered
+                if path == at:
+                    return dict(result, **values)
+                return result
+            with self.subTest(name=name), mock.patch.object(
+                    release, "_github_json", side_effect=spoof):
+                self.assert_source_gate_rejected(stable, expected)
 
     def test_stable_v020_binary_publication_is_blocked_even_if_reviewed(self):
         stable = "v0.2.0"
