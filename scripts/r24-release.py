@@ -117,10 +117,10 @@ def package(repo, tag, sha, output, mode="binary", validation_only=False):
         index_modes = {}
         for entry in (row for row in proc.stdout.split(b"\0") if row):
             metadata, path_bytes = entry.split(b"\t", 1)
-            mode = metadata.split(b" ", 1)[0]
-            require(mode in {b"100644", b"100755"},
+            entry_mode = metadata.split(b" ", 1)[0]
+            require(entry_mode in {b"100644", b"100755"},
                     f"unsupported tracked file mode: {path_bytes!r}")
-            index_modes[path_bytes.decode("utf-8")] = mode
+            index_modes[path_bytes.decode("utf-8")] = entry_mode
         tracked = sorted(index_modes)
         require(tracked, "source-only archive needs a checked-out git worktree")
         disallowed_binary = {".jar", ".war", ".class", ".zip", ".gz", ".tar",
