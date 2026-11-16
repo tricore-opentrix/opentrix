@@ -102,13 +102,10 @@ set -e
 
 (cd frontend && npm ci && npx --yes @cyclonedx/cyclonedx-npm@6.0.1 --omit dev --output-format JSON --output-file ../frontend-sbom.json)
 
-python3 scripts/r23-compliance.py \\
-
-  --backend backend/build/reports/cyclonedx/bom.json \\
-
-  --portal-bff portal-bff/build/reports/cyclonedx/bom.json \\
-
-  --frontend frontend-sbom.json --output build/r23
+python3 scripts/r23-compliance.py \
+  --backend backend/build/reports/cyclonedx/bom.json \
+  --portal-bff portal-bff/build/reports/cyclonedx/bom.json \
+  --frontend frontend-sbom.json --output build/r23
 
 diff -u THIRD-PARTY-NOTICES.md build/r23/THIRD-PARTY-NOTICES.md
 
@@ -178,9 +175,8 @@ Yến phải xác minh Environment `r24-release` có independent reviewers Yến
 
 sha256sum -c SHA256SUMS
 
-python3 /path/to/repository/scripts/r24-release.py verify \\
-
-  --archive dxos-open-core-0.2.0.tar.gz --checksums SHA256SUMS
+python3 /path/to/repository/scripts/r24-release.py verify \
+  --archive dxos-open-core-0.2.0.tar.gz --checksums SHA256SUMS
 
 ```
 
@@ -200,15 +196,12 @@ SOURCE_SHA="$(git rev-parse HEAD)"
 
 TAG=v0.2.0
 
-python3 scripts/r24-release.py package --mode source-only \\
+python3 scripts/r24-release.py package --mode source-only \
+  --tag "$TAG" --sha "$SOURCE_SHA" --output dist/r24-source-only
 
-  --tag "$TAG" --sha "$SOURCE_SHA" --output dist/r24-source-only
-
-python3 scripts/r24-release.py verify \\
-
-  --archive dist/r24-source-only/dxos-open-core-0.2.0.tar.gz \\
-
-  --checksums dist/r24-source-only/SHA256SUMS
+python3 scripts/r24-release.py verify \
+  --archive dist/r24-source-only/dxos-open-core-0.2.0.tar.gz \
+  --checksums dist/r24-source-only/SHA256SUMS
 
 (cd dist/r24-source-only && sha256sum -c SHA256SUMS)
 
@@ -363,13 +356,10 @@ set -e
 
 (cd frontend && npm ci && npx --yes @cyclonedx/cyclonedx-npm@6.0.1 --omit dev --output-format JSON --output-file ../frontend-sbom.json)
 
-python3 scripts/r23-compliance.py \\
-
-  --backend backend/build/reports/cyclonedx/bom.json \\
-
-  --portal-bff portal-bff/build/reports/cyclonedx/bom.json \\
-
-  --frontend frontend-sbom.json --output build/r23
+python3 scripts/r23-compliance.py \
+  --backend backend/build/reports/cyclonedx/bom.json \
+  --portal-bff portal-bff/build/reports/cyclonedx/bom.json \
+  --frontend frontend-sbom.json --output build/r23
 
 diff -u THIRD-PARTY-NOTICES.md build/r23/THIRD-PARTY-NOTICES.md
 
@@ -439,9 +429,8 @@ To **verify an existing candidate artifact without publishing**, download the ex
 
 sha256sum -c SHA256SUMS
 
-python3 /path/to/repository/scripts/r24-release.py verify \\
-
-  --archive dxos-open-core-0.2.0.tar.gz --checksums SHA256SUMS
+python3 /path/to/repository/scripts/r24-release.py verify \
+  --archive dxos-open-core-0.2.0.tar.gz --checksums SHA256SUMS
 
 ```
 
@@ -461,15 +450,12 @@ SOURCE_SHA="$(git rev-parse HEAD)"
 
 TAG=v0.2.0
 
-python3 scripts/r24-release.py package --mode source-only \\
+python3 scripts/r24-release.py package --mode source-only \
+  --tag "$TAG" --sha "$SOURCE_SHA" --output dist/r24-source-only
 
-  --tag "$TAG" --sha "$SOURCE_SHA" --output dist/r24-source-only
-
-python3 scripts/r24-release.py verify \\
-
-  --archive dist/r24-source-only/dxos-open-core-0.2.0.tar.gz \\
-
-  --checksums dist/r24-source-only/SHA256SUMS
+python3 scripts/r24-release.py verify \
+  --archive dist/r24-source-only/dxos-open-core-0.2.0.tar.gz \
+  --checksums dist/r24-source-only/SHA256SUMS
 
 (cd dist/r24-source-only && sha256sum -c SHA256SUMS)
 
