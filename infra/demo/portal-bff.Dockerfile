@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 TRICORE contributors
 # SPDX-License-Identifier: Apache-2.0
-# Demo (#119): build Portal BFF từ mã nguồn (dùng Gradle Wrapper của backend), chạy non-root.
+# Demo (#119): build Portal BFF từ mã nguồn bằng Gradle 8.14.3 bên ngoài, chạy non-root.
 FROM gradle:8.14.3-jdk21 AS build
 WORKDIR /home/gradle
 COPY --chown=gradle:gradle portal-bff/ portal-bff/

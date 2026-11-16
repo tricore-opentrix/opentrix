@@ -125,6 +125,8 @@ Cần Node.js 22.12 trở lên.
 | Frontend | `cd frontend && npm ci && npm test && npm run build` |
 | Giấy phép | CI chạy kiểm tra REUSE/SPDX trên mọi pull request |
 
+**Gói SOURCE-ONLY đã giải nén:** Các lệnh `./gradlew` / `gradlew.bat` ở bảng trên dành cho **Git checkout**. Archive không phân phối `gradle-wrapper.jar`; cần cài **Gradle 8.14.3 bên ngoài** và JDK 21, rồi chạy `gradle -p backend test build` và `gradle -p portal-bff test build`. CI R24 kiểm thử build từ archive không có `.git`; xem [R24 release](docs/06-deployment/r24-release.md).
+
 Hướng dẫn đầy đủ: [DEVELOPMENT.md](docs/DEVELOPMENT.md) và [TESTING.md](docs/TESTING.md).
 
 ## Lộ trình
@@ -277,6 +279,8 @@ Requires Node.js 22.12 or later.
 | Portal BFF | `./backend/gradlew -p portal-bff test build` |
 | Frontend | `cd frontend && npm ci && npm test && npm run build` |
 | Licensing | CI runs REUSE/SPDX checks on every pull request |
+
+**Extracted SOURCE-ONLY archive:** The `./gradlew` / `gradlew.bat` commands above apply to a **Git checkout**. The archive omits `gradle-wrapper.jar`; install **external Gradle 8.14.3** and JDK 21, then run `gradle -p backend test build` and `gradle -p portal-bff test build`. R24 CI verifies the extracted archive without `.git`; see [R24 release](docs/06-deployment/r24-release.md).
 
 Full guides: [DEVELOPMENT.md](docs/DEVELOPMENT.md) and [TESTING.md](docs/TESTING.md).
 
