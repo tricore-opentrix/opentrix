@@ -15,6 +15,13 @@ _All notable user-visible changes to OpenTrix are recorded here, following Keep 
 
 ## [Unreleased]
 
+_Chưa có mục thay đổi mới sau bản ứng viên v0.2.0. / No new entries after the v0.2.0 candidate._
+
+## [0.2.0]
+
+> **Trạng thái:** Nội dung bản ứng viên SOURCE-ONLY; chỉ đánh dấu đã phát hành sau khi hoàn tất nghiệm thu R24, tạo tag và GitHub Release được phép. Ngày phát hành phải là ngày công bố thực tế.
+> _Status: SOURCE-ONLY release-candidate notes. Publication requires independent R24 acceptance, authorized tag and GitHub Release. Record the actual publication date when finalized._
+
 ### Added · Thêm mới
 
 - Theme đăng nhập Keycloak OpenTrix IT Helpdesk cho môi trường integration-local: bố cục hai cột, tiếng Việt, logo và hình minh họa nội bộ; kế thừa form gốc `keycloak.v2`, giữ nguyên Authorization Code + PKCE (#225: #243).
@@ -25,8 +32,8 @@ _All notable user-visible changes to OpenTrix are recorded here, following Keep 
   _Standalone APISIX gateway overlay with JWKS token validation, rate limiting and forwarded-header rewrite, enabled with `demo-up -Gateway` / `--gateway`._
 - Realm Keycloak `tricore` có phiên bản cho môi trường demo, cùng cấu hình mạng dùng chung cho PostgreSQL, Keycloak và Backend (#226, #227).
   _Versioned `tricore` Keycloak demo realm and a shared-network demo setup for PostgreSQL, Keycloak and Backend._
-- Đóng gói phát hành theo tag: gói mã nguồn, bản build Java và frontend, SBOM và NOTICE, checksum SHA256, ghi chú phát hành theo phiên bản; có cổng nghiệm thu trước khi công bố.
-  _Tag-triggered release packaging: source archive, Java and frontend builds, SBOM and NOTICE inventory, SHA256 checksums and versioned release notes, guarded by an acceptance gate before publication._
+- Chuẩn bị đóng gói và nghiệm thu bản phát hành SOURCE-ONLY: gói mã nguồn, SBOM và NOTICE, SHA256SUMS, release notes và cổng phê duyệt trước công bố. Không phân phối JAR, frontend `dist` hoặc container images trong v0.2.0.
+  _Prepare SOURCE-ONLY packaging and acceptance: source archive, SBOM and NOTICE, SHA256SUMS, release notes and publication gate. No JARs, frontend `dist` or container images are distributed in v0.2.0._
 - Quyết định kiến trúc ADR-009, ADR-016, ADR-017, ADR-018 và mục lục tài liệu kiến trúc tương ứng (#221).
   _Architecture decisions ADR-009, ADR-016, ADR-017 and ADR-018 with aligned architecture and documentation indexes._
 
