@@ -20,9 +20,9 @@ _No new changes have been recorded after the v0.2.0 release candidate._
 
 ## [0.2.0]
 
-> **Trạng thái / Status:** SOURCE-ONLY Release Candidate — Chưa phát hành chính thức.
+> **Phạm vi / Scope:** v0.2.0 chỉ phân phối gói mã nguồn và tài liệu/bằng chứng phát hành đi kèm; không bao gồm JAR dựng sẵn, frontend `dist` hoặc Docker/GHCR images.
 >
-> _SOURCE-ONLY Release Candidate — Not officially published._
+> _Version 0.2.0 distributes source code and accompanying release documentation/evidence only; it excludes prebuilt JARs, frontend `dist`, and Docker/GHCR images._
 
 ### Added · Thêm mới
 
@@ -99,5 +99,6 @@ _No new changes have been recorded after the v0.2.0 release candidate._
 - Gỡ workflow CI riêng của Issue #23; các kiểm tra bảo mật chạy trong CI dùng chung.
   _The separate Issue #23 workflow; its security checks run in shared CI._
 
-[Unreleased]: https://github.com/tricore-opentrix/opentrix/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/tricore-opentrix/opentrix/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/tricore-opentrix/opentrix/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tricore-opentrix/opentrix/releases/tag/v0.1.0
