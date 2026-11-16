@@ -97,6 +97,11 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned YAML parser for R24 workflow contract tests
+        run: python3 -m pip install --disable-pip-version-check --no-input PyYAML==6.0.3
       - name: R24 release contract tests
         run: python3 -m unittest discover -s scripts -p 'test_r24_*.py'
       - name: Build executable jars and runtime CycloneDX SBOMs

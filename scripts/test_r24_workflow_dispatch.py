@@ -8,6 +8,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/release.yml"
 
@@ -34,6 +36,8 @@ class R24ManualDispatchTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.workflow = WORKFLOW.read_text(encoding="utf-8")
+        # BaseLoader preserves the YAML 'on' key (YAML 1.1 SafeLoader treats it as True).
+        cls.workflow_yaml = yaml.load(cls.workflow, Loader=yaml.BaseLoader)
         cls.bash = find_bash()
         if not cls.bash:
             raise unittest.SkipTest("Bash is required for R24 workflow contract tests")
@@ -89,6 +93,61 @@ class R24ManualDispatchTests(unittest.TestCase):
         result = self.run_meta(requested="unexpected")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Unsupported R24 manual candidate mode", result.stdout)
+
+    def test_parsed_yaml_publisher_has_tag_only_job_guard(self):
+        # R1: assert the real job-level guard, not text fragments elsewhere.
+        wf = self.workflow_yaml
+        self.assertEqual(wf["on"]["push"]["tags"], ["v*"])
+        self.assertIn("workflow_dispatch", wf["on"])
+        self.assertEqual(set(wf["jobs"]), {"candidate", "publish"})
+        publisher = wf["jobs"]["publish"]
+        self.assertEqual(publisher["needs"], "candidate")
+        self.assertEqual(
+            publisher["if"],
+            "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')",
+        )
+        self.assertEqual(publisher["environment"], "r24-release")
+        # Manually dispatched events are not push events and cannot meet this guard.
+        self.assertNotIn("workflow_dispatch", publisher["if"])
+
+    def test_parsed_yaml_candidate_cannot_write_or_publish(self):
+        # R1: root/candidate are read-only, only the tag-gated publisher may write.
+        wf = self.workflow_yaml
+        self.assertEqual(wf["permissions"], {"contents": "read"})
+        candidate = wf["jobs"]["candidate"]
+        effective_permissions = candidate.get("permissions", wf["permissions"])
+        for scope in ("contents", "packages"):
+            self.assertNotEqual(effective_permissions.get(scope), "write", scope)
+        self.assertNotIn("environment", candidate)
+        publisher_permissions = wf["jobs"]["publish"]["permissions"]
+        self.assertEqual(publisher_permissions,
+                         {"contents": "write", "packages": "write"})
+        for job_id, job in wf["jobs"].items():
+            permissions = job.get("permissions", wf["permissions"])
+            if any(value == "write" for value in permissions.values()):
+                self.assertEqual(job_id, "publish")
+
+    def test_parsed_yaml_dispatch_modes_and_artifact_separation(self):
+        wf = self.workflow_yaml
+        mode = wf["on"]["workflow_dispatch"]["inputs"]["candidate_mode"]
+        self.assertEqual(mode["default"], "validation-only")
+        self.assertEqual(mode["required"], "true")
+        self.assertEqual(mode["type"], "choice")
+        self.assertEqual(mode["options"],
+                         ["validation-only", "publishable-source-only"])
+        steps = wf["jobs"]["candidate"]["steps"]
+        publishable = [step for step in steps if
+            (step.get("with") or {}).get("name", "").startswith(
+                "r24-source-only-publishable-candidate-")]
+        self.assertEqual(len(publishable), 1)
+        self.assertEqual(publishable[0]["if"],
+            "github.event_name == 'workflow_dispatch' && inputs.candidate_mode == 'publishable-source-only'")
+        self.assertTrue(publishable[0]["uses"].startswith("actions/upload-artifact@"))
+        preview = [step for step in steps if
+            (step.get("with") or {}).get("name", "").startswith("r24-source-only-candidate-")]
+        self.assertEqual(len(preview), 1)
+        self.assertEqual(preview[0]["if"],
+                         "steps.meta.outputs.validation_only == 'true'")
 
     def test_dispatch_never_opens_publisher_and_artifacts_stay_separate(self):
         self.assertIn("if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')",
