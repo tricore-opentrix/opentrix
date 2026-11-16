@@ -3,6 +3,8 @@
 """R24 contract tests: candidate integrity, authorization boundaries, and release modes."""
 import importlib.util
 import json
+import os
+import tarfile
 import subprocess
 import tempfile
 import unittest
@@ -51,17 +53,27 @@ class R24ReleaseTests(unittest.TestCase):
                       "origin": "META-INF/LICENSE.txt", "license_text": True}],
             "source": "gradle-cache-jar:example-1.0.jar"}
         put("build/r24/upstream/upstream-index.json", json.dumps([self.index_row]))
+        self.source_sha = SHA  # Binary fixture uses the synthetic historical SHA.
         self.output = self.repo / "output"
         self.make()
         self.acceptance = self.repo / "acceptance.json"
 
+    def commit_sources(self):
+        subprocess.run(["git", "-c", "user.name=R24 Contract Tests",
+                        "-c", "user.email=r24@example.invalid", "commit", "-q",
+                        "-m", "tracked source fixture"], cwd=self.repo, check=True)
+        self.source_sha = subprocess.check_output(["git", "rev-parse", "HEAD"],
+                                                  cwd=self.repo, text=True).strip()
+
     def make(self, mode="binary", tag=TAG):
-        release.package(self.repo, tag, SHA, self.output, mode)
+        release.package(self.repo, tag, self.source_sha if mode == "source-only" else SHA,
+                        self.output, mode)
         self.archive = self.output / f"dxos-open-core-{tag[1:]}.tar.gz"
         self.sums = self.output / "SHA256SUMS"
 
     def accept(self, mode="binary"):
-        doc = {"tag": TAG, "source_sha": SHA, "mode": mode,
+        doc = {"tag": TAG, "source_sha": self.source_sha if mode == "source-only" else SHA,
+               "mode": mode,
                "archive_sha256": release.digest(self.archive.read_bytes()),
                "reviewed_by": ["phanyen06ym-ien"],
                "evidence": {key: "https://example.test/verified" for key in
@@ -75,7 +87,7 @@ class R24ReleaseTests(unittest.TestCase):
         return doc
 
     def gate(self):
-        return release.gate(self.archive, self.sums, self.acceptance, TAG, SHA,
+        return release.gate(self.archive, self.sums, self.acceptance, TAG, self.source_sha,
                             self.output / "RELEASE-NOTES.md")
 
     def test_archive_reproducible_and_verified(self):
@@ -111,14 +123,17 @@ class R24ReleaseTests(unittest.TestCase):
         subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
         subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md"],
                        cwd=self.repo, check=True)
+        self.commit_sources()
         for mode in ("binary", "source-only"):
             with self.subTest(mode=mode):
-                release.package(self.repo, TAG, SHA, self.output, mode, validation_only=True)
+                release.package(self.repo, TAG, self.source_sha if mode == "source-only" else SHA,
+                                self.output, mode, validation_only=True)
                 manifest, data, prefix = release.verify(self.archive, self.sums)
                 self.assertIs(manifest["validation_only"], True)
                 self.assertIn(b"preview change", data[prefix + "RELEASE-NOTES.md"])
                 first = release.digest(self.archive.read_bytes())
-                release.package(self.repo, TAG, SHA, self.output, mode, validation_only=True)
+                release.package(self.repo, TAG, self.source_sha if mode == "source-only" else SHA,
+                                self.output, mode, validation_only=True)
                 self.assertEqual(first, release.digest(self.archive.read_bytes()))
                 self.accept(mode)
                 with self.assertRaisesRegex(ValueError, "validation-only archive cannot be published"):
@@ -171,6 +186,7 @@ class R24ReleaseTests(unittest.TestCase):
         subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
         subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md"],
                        cwd=self.repo, check=True)
+        self.commit_sources()
 
         retained = [
             {"type": "vcs", "url": "https://github.com/tricore-opentrix/dxos-open-core"},
@@ -218,6 +234,7 @@ class R24ReleaseTests(unittest.TestCase):
         subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
         subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md"],
                        cwd=self.repo, check=True)
+        self.commit_sources()
         self.put("frontend-sbom.json",
                  json.dumps({"bomFormat": "CycloneDX", "serialNumber": "urn:uuid:old",
                              "metadata": {"timestamp": "2026-11-05T12:00:00Z"}}))
@@ -237,18 +254,19 @@ class R24ReleaseTests(unittest.TestCase):
         subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
         subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md"],
                        cwd=self.repo, check=True)
+        self.commit_sources()
         self.make("source-only", tag=stable)
         doc = self.accept(mode="source-only")
         doc["tag"] = stable
         self.acceptance.write_text(json.dumps(doc))
         self.assertEqual(
-            release.gate(self.archive, self.sums, self.acceptance, stable, SHA,
+            release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha,
                          self.output / "RELEASE-NOTES.md"),
             "source-only")
         doc["tag"] = "v0.2.0-rc.1"
         self.acceptance.write_text(json.dumps(doc))
         with self.assertRaisesRegex(ValueError, "exact tag"):
-            release.gate(self.archive, self.sums, self.acceptance, stable, SHA,
+            release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha,
                          self.output / "RELEASE-NOTES.md")
 
     def test_stable_v020_binary_publication_is_blocked_even_if_reviewed(self):
@@ -260,7 +278,7 @@ class R24ReleaseTests(unittest.TestCase):
         doc["tag"] = stable
         self.acceptance.write_text(json.dumps(doc))
         with self.assertRaisesRegex(ValueError, "SOURCE-ONLY"):
-            release.gate(self.archive, self.sums, self.acceptance, stable, SHA,
+            release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha,
                          self.output / "RELEASE-NOTES.md")
 
     def test_invalid_tag_and_checksum_rejected(self):
@@ -335,6 +353,7 @@ class R24ReleaseTests(unittest.TestCase):
         subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md",
                         "frontend/src/example.ts",
                         "backend/gradle/wrapper/gradle-wrapper.jar"], cwd=self.repo, check=True)
+        self.commit_sources()
         self.make("source-only")
         doc = self.accept(mode="source-only")
         self.assertEqual(self.gate(), "source-only")
@@ -347,6 +366,54 @@ class R24ReleaseTests(unittest.TestCase):
         self.acceptance.write_text(json.dumps(doc))
         with self.assertRaisesRegex(ValueError, "scope differs"):
             self.gate()
+
+    def test_source_only_archive_keeps_git_index_modes_after_extraction(self):
+        self.put("infra/demo/demo-up.sh", "#!/usr/bin/env bash\necho demo\n")
+        self.put("backend/gradlew", "#!/bin/sh\necho gradle\n")
+        self.put("backend/gradle/wrapper/gradle-wrapper.jar", b"wrapper-binary")
+        for name in ("infra/demo/demo-up.sh", "backend/gradlew"):
+            os.chmod(self.repo / name, 0o755)
+        subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
+        subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE",
+                        "CHANGELOG.md", "infra/demo/demo-up.sh", "backend/gradlew",
+                        "backend/gradle/wrapper/gradle-wrapper.jar"], cwd=self.repo,
+                       check=True)
+        self.commit_sources()
+        self.make("source-only")
+        root = "dxos-" + TAG + "/"
+        with tarfile.open(self.archive, "r:gz") as tf:
+            self.assertEqual(tf.getmember(root + "source/backend/gradlew").mode, 0o755)
+            self.assertEqual(tf.getmember(root + "source/infra/demo/demo-up.sh").mode, 0o755)
+            self.assertEqual(tf.getmember(root + "source/README.md").mode, 0o644)
+            self.assertNotIn(root + "source/backend/gradle/wrapper/gradle-wrapper.jar",
+                             tf.getnames())
+            target = self.repo / "extracted"
+            target.mkdir()
+            tf.extractall(target)
+        self.assertFalse((target / root / "source/.git").exists())
+        self.assertTrue(os.access(target / root / "source/backend/gradlew", os.X_OK))
+        self.assertTrue(os.access(target / root / "source/infra/demo/demo-up.sh", os.X_OK))
+        self.assertEqual(release.verify(self.archive, self.sums)[0]["mode"], "source-only")
+
+    def test_source_integrity_rejects_wrong_sha_dirty_and_staged_inputs(self):
+        subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
+        subprocess.run(["git", "add", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md"],
+                       cwd=self.repo, check=True)
+        self.commit_sources()
+        with self.assertRaisesRegex(ValueError, "source SHA must match"):
+            release.package(self.repo, TAG, SHA, self.output, mode="source-only")
+        self.put("README.md", "tampered working tree")
+        with self.assertRaisesRegex(ValueError, "tracked working tree/index differs"):
+            self.make("source-only")
+        self.put("README.md", "source")
+        self.put("unknown-untracked.md", "must not be included")
+        self.make("source-only")
+        manifest, data, prefix = release.verify(self.archive, self.sums)
+        self.assertEqual(manifest["source_sha"], self.source_sha)
+        self.assertNotIn(prefix + "source/unknown-untracked.md", data)
+        subprocess.run(["git", "add", "unknown-untracked.md"], cwd=self.repo, check=True)
+        with self.assertRaisesRegex(ValueError, "tracked working tree/index differs"):
+            self.make("source-only")
 
     def test_rc_tag_validation(self):
         self.assertTrue(release.TAG.fullmatch(TAG))

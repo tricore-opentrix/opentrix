@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Dừng demo (#119). --reset: xóa luôn dữ liệu (DB, CA Caddy); giữ infra/.env.
 set -euo pipefail
-cd "$(git rev-parse --show-toplevel)/infra"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+cd "$SCRIPT_DIR/.."
 if [ "${1:-}" = "--reset" ]; then
   docker compose -f compose.demo.yml -f compose.gateway.yml down -v
   rm -rf demo/.local

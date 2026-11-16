@@ -170,6 +170,58 @@ jobs:
             --archive "dist/r24-source-only/dxos-open-core-${TAG#v}.tar.gz" \
             --checksums dist/r24-source-only/SHA256SUMS
           (cd dist/r24-source-only && sha256sum -c SHA256SUMS)
+      # Independent proof that the exact source tarball builds without Git metadata
+      # or a Gradle Wrapper JAR. Build outputs are verification-only, not shipped.
+      - uses: gradle/actions/setup-gradle@v4
+        if: steps.meta.outputs.mode == 'source-only' || steps.meta.outputs.validation_only == 'true'
+        with:
+          gradle-version: '8.14.3'
+      - name: Build verified extracted SOURCE-ONLY archive (no Git worktree)
+        if: steps.meta.outputs.mode == 'source-only' || steps.meta.outputs.validation_only == 'true'
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
+          VALIDATION_ONLY: ${{ steps.meta.outputs.validation_only }}
+        run: |
+          set -euo pipefail
+          archive_dir=dist/r24
+          if [ "$VALIDATION_ONLY" = true ]; then archive_dir=dist/r24-source-only; fi
+          archive="$PWD/$archive_dir/dxos-open-core-${TAG#v}.tar.gz"
+          unpack_dir="$(mktemp -d)"
+          trap 'rm -rf "$unpack_dir"' EXIT
+          tar -xzf "$archive" -C "$unpack_dir"
+          src="$unpack_dir/dxos-$TAG/source"
+          test -f "$src/README.md"
+          test ! -e "$src/.git"
+          test ! -e "$src/backend/gradle/wrapper/gradle-wrapper.jar"
+          for exe in backend/gradlew infra/demo/demo-up.sh infra/demo/demo-down.sh \
+              infra/demo/init/db-init.sh infra/demo/init/kc-init.sh \
+              infra/demo/spike/spike-up.sh infra/demo/spike/spike-down.sh \
+              infra/demo/spike/realm-check.sh scripts/git-cleanup-report.sh scripts/setup-github.sh; do
+            test -x "$src/$exe" || { echo "::error::Missing executable mode: $exe"; exit 1; }
+            bash -n "$src/$exe"
+          done
+          if grep -R --include='*.sh' -F 'git rev-parse --show-toplevel' "$src/infra/demo"; then
+            echo '::error::Demo scripts still require Git metadata'; exit 1
+          fi
+          gradle --version | grep -F 'Gradle 8.14.3'
+          gradle --no-daemon -p "$src/backend" bootJar -x test
+          gradle --no-daemon -p "$src/portal-bff" bootJar -x test
+          test -n "$(find "$src/backend/build/libs" -maxdepth 1 -name '*.jar' -print -quit)"
+          test -n "$(find "$src/portal-bff/build/libs" -maxdepth 1 -name '*.jar' -print -quit)"
+          (cd "$src/frontend" && npm ci --no-audit --no-fund && npm run build:integration-local)
+          test -f "$src/frontend/dist/index.html"
+          echo 'R24_EXTRACTED_SOURCE_BUILD_PASS (external Gradle 8.14.3, Node 22, no .git)'
+      - name: Docker build smoke for three demo Dockerfiles (no push)
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          for dockerfile in infra/demo/backend.Dockerfile \
+              infra/demo/portal-bff.Dockerfile \
+              infra/demo/spike/backend.Dockerfile; do
+            echo "R24_DOCKER_BUILD_SMOKE_START: $dockerfile"
+            docker build --progress=plain --target build --file "$dockerfile" .
+            echo "R24_DOCKER_BUILD_SMOKE_PASS: $dockerfile"
+          done
       - uses: actions/upload-artifact@v4
         if: steps.meta.outputs.validation_only == 'true'
         with:

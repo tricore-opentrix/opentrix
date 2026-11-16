@@ -20,7 +20,9 @@ Issue #5 bổ sung tạo, danh sách và chi tiết Request; Issue #7 bổ sung 
   do Issue #3 cung cấp.
 
 Dự án sử dụng Spring Boot 3.5.16, Gradle Groovy và Gradle Wrapper 8.14.3.
-Không cần cài Gradle riêng. Các lệnh bên dưới chạy từ thư mục `backend/`.
+**Chỉ với Git checkout:** không cần cài Gradle riêng vì có `gradle-wrapper.jar`; các lệnh `gradlew` bên dưới chạy từ thư mục `backend/`.
+
+**Với SOURCE-ONLY archive đã giải nén:** file bootstrap `gradle-wrapper.jar` không được phân phối, nên `gradlew` không khả dụng. Cài **Gradle 8.14.3 bên ngoài** và JDK 21, chạy từ thư mục `source/`: `gradle -p backend test build`; với Portal BFF: `gradle -p portal-bff test build`. Đây là build verification, không phải phát hành binary. Xem [R24](../docs/06-deployment/r24-release.md).
 
 ## Build và test trên Windows
 

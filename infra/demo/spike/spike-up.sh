@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Spike D1 (#119): dựng postgres + keycloak + backend trong một namespace, rồi kiểm tra.
 set -euo pipefail
-cd "$(git rev-parse --show-toplevel)/infra/demo/spike"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+cd "$SCRIPT_DIR"
 C="docker compose -f compose.spike.yml"
 
 if [ ! -f .env ]; then

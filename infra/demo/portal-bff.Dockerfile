@@ -1,12 +1,11 @@
 # SPDX-FileCopyrightText: 2026 TRICORE contributors
 # SPDX-License-Identifier: Apache-2.0
-# Demo (#119): build Portal BFF từ mã nguồn (dùng Gradle Wrapper của backend), chạy non-root.
-FROM eclipse-temurin:21-jdk AS build
-WORKDIR /src
-COPY backend/gradlew backend/gradlew
-COPY backend/gradle backend/gradle
-COPY portal-bff/ portal-bff/
-RUN chmod +x backend/gradlew && ./backend/gradlew --no-daemon -p portal-bff bootJar -x test \
+# Demo (#119): build Portal BFF từ mã nguồn bằng Gradle 8.14.3 bên ngoài, chạy non-root.
+FROM gradle:8.14.3-jdk21 AS build
+WORKDIR /home/gradle
+COPY --chown=gradle:gradle portal-bff/ portal-bff/
+RUN gradle --version | grep -F 'Gradle 8.14.3' \
+ && gradle --no-daemon -p portal-bff bootJar -x test \
  && cp "$(ls portal-bff/build/libs/*.jar | grep -v -- '-plain.jar' | head -n1)" /app.jar
 
 FROM eclipse-temurin:21-jre

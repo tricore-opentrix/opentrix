@@ -149,6 +149,36 @@ class R24ManualDispatchTests(unittest.TestCase):
         self.assertEqual(preview[0]["if"],
                          "steps.meta.outputs.validation_only == 'true'")
 
+    def test_source_archive_is_built_from_extracted_tar_without_git(self):
+        steps = self.workflow_yaml["jobs"]["candidate"]["steps"]
+        extracted = [step for step in steps
+                     if step.get("name") == "Build verified extracted SOURCE-ONLY archive (no Git worktree)"]
+        self.assertEqual(len(extracted), 1)
+        self.assertIn("steps.meta.outputs.mode == 'source-only'", extracted[0]["if"])
+        self.assertIn('tar -xzf "$archive"', extracted[0]["run"])
+        self.assertIn('test ! -e "$src/.git"', extracted[0]["run"])
+        self.assertIn('gradle --no-daemon -p "$src/backend" bootJar', extracted[0]["run"])
+        self.assertIn('gradle --no-daemon -p "$src/portal-bff" bootJar', extracted[0]["run"])
+        self.assertIn("npm run build:integration-local", extracted[0]["run"])
+        setup = [step for step in steps
+                 if step.get("uses") == "gradle/actions/setup-gradle@v4"]
+        self.assertEqual(len(setup), 1)
+        self.assertEqual(setup[0]["with"]["gradle-version"], "8.14.3")
+
+    def test_demo_dockerfiles_build_in_pr_without_push(self):
+        steps = self.workflow_yaml["jobs"]["candidate"]["steps"]
+        docker_steps = [step for step in steps if step.get("name") ==
+                        "Docker build smoke for three demo Dockerfiles (no push)"]
+        self.assertEqual(len(docker_steps), 1)
+        script = docker_steps[0]["run"]
+        self.assertEqual(docker_steps[0]["if"], "github.event_name == 'pull_request'")
+        for name in ("infra/demo/backend.Dockerfile",
+                     "infra/demo/portal-bff.Dockerfile",
+                     "infra/demo/spike/backend.Dockerfile"):
+            self.assertIn(name, script)
+        self.assertIn("docker build --progress=plain --target build", script)
+        self.assertNotIn("docker push", script)
+
     def test_dispatch_never_opens_publisher_and_artifacts_stay_separate(self):
         self.assertIn("if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')",
                       self.workflow)
