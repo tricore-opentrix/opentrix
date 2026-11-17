@@ -116,7 +116,7 @@ and environment/tag gates pass.
 
 A versioned JSON must be merged to main in a **separate independently reviewed PR after source SHA is frozen**, under docs/06-deployment/r24-acceptances/<tag>.json. Point the tag at the earlier source SHA (not the newer acceptance commit), avoiding a circular self-reference. The publish workflow reads this file from main.
 
-Both modes require tag, full source_sha, archive_sha256, explicit mode, independent reviewer assertion and supporting evidence. **SOURCE-ONLY hardening (separate technical PR, pending approval)** adds `review_url` (permalink of independent APPROVED review at final acceptance PR HEAD) and `candidate_run_ids` (**exactly two distinct numeric workflow run IDs**) without removing any existing SOURCE-ONLY evidence categories. Assertions in JSON are not review proof: verify the acceptance PR and underlying evidence.
+Both modes require tag, full source_sha, archive_sha256, explicit mode, independent reviewer assertion and supporting evidence. **SOURCE-ONLY hardening (separate technical PR, pending approval)** adds `acceptance_pr` (GitHub PR number known before final independent approval) and `candidate_run_ids` (**exactly two distinct numeric workflow run IDs**) without removing any existing SOURCE-ONLY evidence categories. Assertions in JSON are not review proof: verify the acceptance PR and underlying evidence.
 
 - Binary mode: pinned eclipse-temurin:21-jre@sha256 digest, a CLEARED permissive group evidence URL, individual CLEARED exceptions for all other shipped licenses, source/relink, upstream texts, assets, OCI service/base images, checksums and notes evidence.
 - Source-only mode: evidence for source_provenance, source_license, sbom_source_boundary, archive_and_checksums and release_notes; binary license groups do not authorize this mode.
@@ -125,7 +125,7 @@ Both modes require tag, full source_sha, archive_sha256, explicit mode, independ
 
 **Existing two-candidate policy is unchanged.** The acceptance JSON must include
 `candidate_run_ids: [RUN_ID_1, RUN_ID_2]` with **two different integers**, plus
-`review_url` pointing to the actual independently APPROVED acceptance PR review.
+`acceptance_pr` containing the acceptance PR number. The publisher discovers its actual final-HEAD APPROVED review via GitHub API.
 All five original `evidence` fields are retained, not replaced or merged:
 `source_provenance`, `source_license`, `sbom_source_boundary`,
 `archive_and_checksums`, and `release_notes`.
@@ -145,10 +145,12 @@ Rebuilding the extracted SOURCE-ONLY archive without `.git` remains an
 **additional** buildability check, NOT a substitute for the second candidate.
 
 **F02 — acceptance JSON byte integrity:** `verify_independent_review()`
-compares the Git blob object ID of the exact file publisher reads against
-GitHub's file blob ID at independently reviewed PR final HEAD, merged commit
-and current `main`. Review must be `APPROVED` by Yến/Ánh and not authored
-by the reviewed PR's author. Stale, dismissed or unmerged review is rejected.
+uses the `acceptance_pr` number (available before approval), discovers the
+latest independent APPROVED review at the final PR HEAD via GitHub API,
+and compares the Git blob object ID of the exact JSON bytes read by publisher
+to file blob IDs at reviewed PR HEAD, merged commit and current `main`.
+A future review URL inside its own JSON would cause a circular dependency,
+so it is NOT required. Stale, superseded, dismissed or unmerged reviews fail.
 
 **F04 — human-auditable evidence:** Each existing evidence URL must be a
 GitHub issue/PR comment permalink authored by an authorized independent

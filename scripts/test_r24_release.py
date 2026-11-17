@@ -43,9 +43,9 @@ class R24ReleaseTests(unittest.TestCase):
                     "merge_commit_sha": merged, "base": {"ref": "main"},
                     "user": {"login": "r24-acceptance-author"},
                     "head": {"sha": head}}
-        if path == "pulls/123/reviews/456":
-            return {"id": 456, "state": "APPROVED",
-                    "user": {"login": "phanyen06ym-ien"}, "commit_id": head}
+        if path == "pulls/123/reviews?per_page=100":
+            return [{"id": 456, "state": "APPROVED",
+                     "user": {"login": "phanyen06ym-ien"}, "commit_id": head}]
         if path == "pulls/123/files?per_page=100":
             return [{"filename": "docs/06-deployment/r24-acceptances/v0.2.0.json"},
                     {"filename": "docs/06-deployment/r24-acceptances/v0.2.0-rc.1.json"}]
@@ -158,8 +158,7 @@ class R24ReleaseTests(unittest.TestCase):
             doc["evidence"] = {kind: (
                 f"https://github.com/tricore-opentrix/opentrix/issues/190#issuecomment-{701 + i}")
                 for i, kind in enumerate(release.SOURCE_GATES)}
-            doc["review_url"] = ("https://github.com/tricore-opentrix/opentrix/"
-                                 "pull/123#pullrequestreview-456")
+            doc["acceptance_pr"] = 123
         if mode == "binary":
             doc.update({"java_base_image": "eclipse-temurin:21-jre@sha256:" + "b" * 64,
                         "license_groups": {"permissive": {"status": "CLEARED",
@@ -372,9 +371,9 @@ class R24ReleaseTests(unittest.TestCase):
                     "source-only release missing evidence"):
                 release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
         bad = json.loads(json.dumps(base))
-        bad.pop("review_url")
+        bad.pop("acceptance_pr")
         self.acceptance.write_text(json.dumps(bad))
-        with self.assertRaisesRegex(ValueError, "invalid independent review_url"):
+        with self.assertRaisesRegex(ValueError, "invalid acceptance_pr"):
             release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
         bad = json.loads(json.dumps(base))
         bad["reviewed_by"] = ["unrelated-contributor"]
@@ -383,10 +382,11 @@ class R24ReleaseTests(unittest.TestCase):
             release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
         self.acceptance.write_text(json.dumps(base))
         with mock.patch.object(release, "_github_json",
-                side_effect=lambda path: dict(self.fake_github_review(path),
-                    state="COMMENTED") if path == "pulls/123/reviews/456"
-                    else self.fake_github_review(path)):
-            with self.assertRaisesRegex(ValueError, "APPROVE the final PR HEAD"):
+                side_effect=lambda path: [
+                    dict(r, state="COMMENTED") for r in self.fake_github_review(path)
+                ] if path == "pulls/123/reviews?per_page=100"
+                else self.fake_github_review(path)):
+            with self.assertRaisesRegex(ValueError, "APPROVE final PR HEAD"):
                 release.gate(self.archive, self.sums, self.acceptance, stable, self.source_sha)
         self.assertEqual(release.verify_independent_review(base, self.acceptance)[0],
                          "phanyen06ym-ien")
@@ -426,34 +426,48 @@ class R24ReleaseTests(unittest.TestCase):
 
     def test_f03_invalid_independent_review_cases_fail_closed(self):
         _, stable = self.make_accepted_source_case()
-        mutations = (
-            ("outdated_head", "pulls/123/reviews/456", {"commit_id": "e" * 40},
-             "APPROVE the final PR HEAD"),
-            ("dismissed", "pulls/123/reviews/456", {"state": "DISMISSED"},
-             "APPROVE the final PR HEAD"),
-            ("self_review", "pulls/123", {"user": {"login": "phanyen06ym-ien"}},
-             "unauthorized, or the PR author"),
-            ("unmerged", "pulls/123", {"merged_at": None},
+        cases = (
+            ("outdated_head", "review", {"commit_id": "e" * 40},
+             "APPROVE final PR HEAD"),
+            ("dismissed", "review", {"state": "DISMISSED"},
+             "APPROVE final PR HEAD"),
+            ("unapproved", "review", {"state": "COMMENTED"},
+             "APPROVE final PR HEAD"),
+            ("self_review", "pr", {"user": {"login": "phanyen06ym-ien"}},
+             "APPROVE final PR HEAD"),
+            ("unmerged", "pr", {"merged_at": None},
              "must be merged to main"),
-            ("missing_file", "pulls/123/files?per_page=100",
-             [{"filename": "unrelated.json"}], "does not include exact"),
-            ("missing_merge_commit", "pulls/123", {"merge_commit_sha": None},
-             "cannot identify reviewed PR HEAD"),
+            ("missing_file", "files", [{"filename": "unrelated.json"}],
+             "does not include exact"),
+            ("missing_merge_commit", "pr", {"merge_commit_sha": None},
+             "cannot identify reviewed acceptance PR HEAD"),
         )
-        for name, at, mutated, expected in mutations:
+        for name, target, mutation, expected in cases:
             def spoof(path):
                 original = self.fake_github_review(path)
-                if path == at:
-                    if isinstance(mutated, list):
-                        return mutated
-                    return dict(original, **mutated)
+                if target == "review" and path == "pulls/123/reviews?per_page=100":
+                    return [dict(original[0], **mutation)]
+                if target == "pr" and path == "pulls/123":
+                    return dict(original, **mutation)
+                if target == "files" and path == "pulls/123/files?per_page=100":
+                    return mutation
                 return original
             with self.subTest(name=name), mock.patch.object(
                     release, "_github_json", side_effect=spoof):
                 self.assert_source_gate_rejected(stable, expected)
+        # A later CHANGES_REQUESTED review by the same reviewer revokes
+        # the earlier approval; reviewers cannot rely on historical approvals.
+        def superseded(path):
+            original = self.fake_github_review(path)
+            if path == "pulls/123/reviews?per_page=100":
+                return original + [dict(original[0], id=457, state="CHANGES_REQUESTED")]
+            return original
+        with mock.patch.object(release, "_github_json", side_effect=superseded):
+            self.assert_source_gate_rejected(stable, "APPROVE final PR HEAD")
         with mock.patch.object(release, "_github_json",
-                               side_effect=ValueError("API unreachable")):
-            self.assert_source_gate_rejected(stable, "API unreachable")
+                               side_effect=ValueError("GitHub API unavailable")):
+            self.assert_source_gate_rejected(stable, "GitHub API unavailable")
+
 
     def test_f04_original_five_evidence_categories_and_identity(self):
         _, stable = self.make_accepted_source_case()

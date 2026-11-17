@@ -127,39 +127,49 @@ def _blob_oid(contents):
 
 
 def verify_independent_review(accepted, acceptance_file):
-    """Bind publisher-used JSON bytes to APPROVED PR HEAD, merge, and current main."""
-    link = accepted.get("review_url", "")
-    pattern = (r"https://github[.]com/tricore-opentrix/opentrix/pull/"
-               r"([1-9][0-9]*)#pullrequestreview-([1-9][0-9]*)")
-    match = re.fullmatch(pattern, link) if isinstance(link, str) else None
-    require(match, "invalid independent review_url: expected a GitHub PR review permalink")
-    pr_number, review_id = match.groups()
+    """Verify actual reviewed bytes without a circular future review URL.
+
+    The acceptance PR number is known before final review; the final APPROVED
+    review is discovered from live GitHub API after it has been submitted.
+    """
+    pr_number = accepted.get("acceptance_pr")
+    require(isinstance(pr_number, int) and not isinstance(pr_number, bool)
+            and pr_number > 0,
+            "invalid acceptance_pr: expected existing GitHub PR number")
     pr = _github_json(f"pulls/{pr_number}")
-    review = _github_json(f"pulls/{pr_number}/reviews/{review_id}")
-    require(isinstance(pr, dict) and isinstance(review, dict),
-            "invalid GitHub review response")
+    reviews = _github_json(f"pulls/{pr_number}/reviews?per_page=100")
+    require(isinstance(pr, dict) and isinstance(reviews, list)
+            and len(reviews) < 100,
+            "cannot exhaustively verify actual GitHub PR reviews")
     author = (pr.get("user") or {}).get("login")
-    reviewer = (review.get("user") or {}).get("login")
     require(pr.get("merged_at") and (pr.get("base") or {}).get("ref") == "main",
-            "independent review PR must be merged to main")
-    require(isinstance(accepted.get("reviewed_by"), list)
-            and reviewer in REVIEWERS and reviewer != author
-            and reviewer in accepted["reviewed_by"],
-            "independent GitHub reviewer is missing, unauthorized, or the PR author")
+            "independent acceptance PR must be merged to main")
     head_sha = (pr.get("head") or {}).get("sha")
     merge_sha = pr.get("merge_commit_sha")
     require(isinstance(head_sha, str) and SHA.fullmatch(head_sha)
             and isinstance(merge_sha, str) and SHA.fullmatch(merge_sha),
-            "cannot identify reviewed PR HEAD and merged commit")
-    require(review.get("state") == "APPROVED"
-            and str(review.get("id")) == review_id
-            and review.get("commit_id") == head_sha,
-            "independent review must APPROVE the final PR HEAD (not dismissed)")
+            "cannot identify reviewed acceptance PR HEAD and merged commit")
+    # Most recent submitted review for each user supersedes earlier approvals.
+    # REST review responses are chronological; dismissed/latest CHANGES_REQUESTED
+    # cannot be silently overridden by a prior APPROVED review.
+    latest = {}
+    for review in reviews:
+        require(isinstance(review, dict), "invalid GitHub review response")
+        login = (review.get("user") or {}).get("login")
+        if login:
+            latest[login] = review
+    eligible = [name for name, review in latest.items()
+                if name in REVIEWERS
+                and name != author
+                and name in accepted.get("reviewed_by", [])
+                and review.get("state") == "APPROVED"
+                and review.get("commit_id") == head_sha]
+    require(eligible, "independent review must APPROVE final PR HEAD (not dismissed)")
     acceptance_path = f"docs/06-deployment/r24-acceptances/{accepted['tag']}.json"
     files = _github_json(f"pulls/{pr_number}/files?per_page=100")
     require(isinstance(files, list) and len(files) < 100
-            and any(row.get("filename") == acceptance_path for row in files
-                    if isinstance(row, dict)),
+            and any(isinstance(row, dict)
+                    and row.get("filename") == acceptance_path for row in files),
             "independent review PR does not include exact R24 acceptance JSON")
     reviewed_oid = _blob_oid(Path(acceptance_file).read_bytes())
     for commit_ref in (head_sha, merge_sha, "main"):
@@ -167,7 +177,7 @@ def verify_independent_review(accepted, acceptance_file):
         require(isinstance(info, dict) and info.get("type") == "file"
                 and info.get("sha") == reviewed_oid,
                 "acceptance JSON bytes differ from approved PR HEAD/merged main")
-    return reviewer, author
+    return eligible[0], author
 
 
 def verify_source_evidence(accepted, pr_author):
