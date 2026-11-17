@@ -13,3 +13,6 @@ gradlew text eol=lf
 *.jpg binary
 *.ico binary
 *.pdf binary
+
+# Không dua nh? phân c?a Gradle vào gói Source code GitHub t? sinh (PoF tiêu chí 5).
+backend/gradle/wrapper/gradle-wrapper.jar export-ignore
