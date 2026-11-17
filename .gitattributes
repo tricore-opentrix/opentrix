@@ -14,5 +14,5 @@ gradlew text eol=lf
 *.ico binary
 *.pdf binary
 
-# Không dua nh? phân c?a Gradle vào gói Source code GitHub t? sinh (PoF tiêu chí 5).
+# Keep the Gradle wrapper binary out of GitHub-generated source archives (OLP PoF criterion 5).
 backend/gradle/wrapper/gradle-wrapper.jar export-ignore
