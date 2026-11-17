@@ -80,7 +80,7 @@ Nguồn chuẩn chi tiết: [R24 runbook](06-deployment/r24-release.md), [packag
 
 3. **Đóng băng source SHA:** xác định exact Git commit và package hash; kiểm hai ứng viên độc lập trên **cùng source SHA** nếu đang làm xác nhận tính tái lập. Không dùng checksum của SHA khác.
 
-4. **Acceptance riêng trên `main`:** sau khi đóng băng source, PR khác có reviewer độc lập phải đưa `docs/06-deployment/r24-acceptances/<tag>.json` lên `main`. JSON cần `tag`, `source_sha`, `mode`, `archive_sha256`, `reviewed_by` và HTTPS evidence đúng mode; file JSON tự nó không chứng minh review đã xảy ra.
+4. **Acceptance riêng trên `main`:** sau khi đóng băng source, PR khác có reviewer độc lập phải đưa `docs/06-deployment/r24-acceptances/<tag>.json` lên `main`. JSON cần `tag`, `source_sha`, `mode`, `archive_sha256`, `reviewed_by` và **giữ nguyên 5 evidence categories SOURCE-ONLY hiện hành**. **Technical hardening PR (chờ review):** thêm `review_url` và `candidate_run_ids` gồm **hai run ID độc lập**; gate đối chiếu bytes JSON với PR HEAD đã duyệt, merge/main, kiểm GitHub evidence comments và **tải thực tế cả hai candidate artifacts** để đối chiếu SHA256/MANIFEST/SBOM/member bytes cùng frozen SHA. Các phần này không giảm yêu cầu hai candidates; không tự coi checklists là bằng chứng quyền nguồn. Xem [R24 runbook](06-deployment/r24-release.md).
 
 5. **Bảo vệ phát hành:** xác minh GitHub Environment `r24-release` cùng reviewer bắt buộc và quy tắc bảo vệ tag trước khi tạo tag. **Khai báo `environment: r24-release` trong YAML không tự chứng minh thiết lập bảo vệ đã có**.
 

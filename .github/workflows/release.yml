@@ -239,6 +239,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      actions: read # Needed to download both independently packaged R4 candidate ZIPs
     steps:
       - uses: actions/checkout@v4
         with:
@@ -258,6 +259,7 @@ jobs:
         id: clearance
         env:
           TAG: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Live review, evidence, and actual R4 candidate ZIP verification
         run: |
           python3 scripts/r24-release.py gate \
             --archive "dist/r24/dxos-open-core-${TAG#v}.tar.gz" \

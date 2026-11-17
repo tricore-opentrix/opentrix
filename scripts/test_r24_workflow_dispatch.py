@@ -121,7 +121,7 @@ class R24ManualDispatchTests(unittest.TestCase):
         self.assertNotIn("environment", candidate)
         publisher_permissions = wf["jobs"]["publish"]["permissions"]
         self.assertEqual(publisher_permissions,
-                         {"contents": "write", "packages": "write"})
+                         {"contents": "write", "packages": "write", "actions": "read"})
         for job_id, job in wf["jobs"].items():
             permissions = job.get("permissions", wf["permissions"])
             if any(value == "write" for value in permissions.values()):

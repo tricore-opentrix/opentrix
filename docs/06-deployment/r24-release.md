@@ -116,10 +116,79 @@ and environment/tag gates pass.
 
 A versioned JSON must be merged to main in a **separate independently reviewed PR after source SHA is frozen**, under docs/06-deployment/r24-acceptances/<tag>.json. Point the tag at the earlier source SHA (not the newer acceptance commit), avoiding a circular self-reference. The publish workflow reads this file from main.
 
-Both modes require tag, full source_sha, archive_sha256, explicit mode, independent reviewer assertion and supporting HTTPS evidence. Assertions in JSON are not review proof: verify the acceptance PR and underlying evidence.
+Both modes require tag, full source_sha, archive_sha256, explicit mode, independent reviewer assertion and supporting evidence. **SOURCE-ONLY hardening (separate technical PR, pending approval)** adds `review_url` (permalink of independent APPROVED review at final acceptance PR HEAD) and `candidate_run_ids` (**exactly two distinct numeric workflow run IDs**) without removing any existing SOURCE-ONLY evidence categories. Assertions in JSON are not review proof: verify the acceptance PR and underlying evidence.
 
 - Binary mode: pinned eclipse-temurin:21-jre@sha256 digest, a CLEARED permissive group evidence URL, individual CLEARED exceptions for all other shipped licenses, source/relink, upstream texts, assets, OCI service/base images, checksums and notes evidence.
 - Source-only mode: evidence for source_provenance, source_license, sbom_source_boundary, archive_and_checksums and release_notes; binary license groups do not authorize this mode.
+
+### SOURCE-ONLY gate hardening: F01–F04 (technical proposal; not release acceptance)
+
+**Existing two-candidate policy is unchanged.** The acceptance JSON must include
+`candidate_run_ids: [RUN_ID_1, RUN_ID_2]` with **two different integers**, plus
+`review_url` pointing to the actual independently APPROVED acceptance PR review.
+All five original `evidence` fields are retained, not replaced or merged:
+`source_provenance`, `source_license`, `sbom_source_boundary`,
+`archive_and_checksums`, and `release_notes`.
+
+**F01 — actual reproducibility:** At a future authorized tag-publish gate,
+the script fetches both GitHub `workflow_dispatch` runs (main, exact frozen
+source SHA, success), resolves each `r24-source-only-publishable-candidate-<run_id>`
+artifact, downloads its actual ZIP bytes with a read-only Actions token, checks
+artifact ZIP SHA-256, and unpacks the tarball/checksums/notes in a bounded
+temporary directory. Each archive must have `validation_only=false`,
+`mode=source-only`, exact tag/SHA, verified `SHA256SUMS`, and match the archive
+SHA256 reviewed in acceptance. Both MANIFESTs, all archive members including
+the three SBOMs, and release notes must equal the verified publisher archive.
+Any missing run, duplicate ID, different source commit/hash/member, expired
+artifact, API denial, oversized/unreadable ZIP or failed workflow is BLOCKED.
+Rebuilding the extracted SOURCE-ONLY archive without `.git` remains an
+**additional** buildability check, NOT a substitute for the second candidate.
+
+**F02 — acceptance JSON byte integrity:** `verify_independent_review()`
+compares the Git blob object ID of the exact file publisher reads against
+GitHub's file blob ID at independently reviewed PR final HEAD, merged commit
+and current `main`. Review must be `APPROVED` by Yến/Ánh and not authored
+by the reviewed PR's author. Stale, dismissed or unmerged review is rejected.
+
+**F04 — human-auditable evidence:** Each existing evidence URL must be a
+GitHub issue/PR comment permalink authored by an authorized independent
+reviewer and contain one versioned `R24_SOURCE_EVIDENCE_V1` JSON block with
+`kind`, `tag`, `mode=source-only`, `source_sha`, `archive_sha256`,
+`reviewer`, `verdict=PASS`, `checks`, and actual supporting `references`.
+The `source_provenance` and `source_license` comments additionally declare
+`unresolved_distribution_blockers: []` **only after actual clearance**.
+The `archive_and_checksums` comment includes the two exact `candidate_run_ids`
+and both workflow-run URLs. Checklists, even when valid, are not independent
+proof of rights; do not turn `UNKNOWN`/`NOT_RECALLED`/`RIGHTS_PENDING` into
+`CLEARED` without #138 evidence. The required checklist keys are:
+
+| Existing evidence key | Required PASS checks |
+| --- | --- |
+| `source_provenance` | `file_origin`, `contributor_authority`, `third_party_assets`, `independent_origin_review` |
+| `source_license` | `osi_approved_license`, `apache_2_0`, `notice_and_attribution`, `exceptions_disposition`, `independent_license_review` |
+| `sbom_source_boundary` | `backend_sbom`, `portal_bff_sbom`, `frontend_sbom`, `inventory`, `no_binary_or_ghcr_distribution` |
+| `archive_and_checksums` | `two_independent_packaging_runs`, `sha256sums`, `manifest`, `sbom_member_bytes`, `notes_and_notice`, `extracted_source_build`, `independent_archive_review` |
+| `release_notes` | `exact_version_notes`, `source_only_scope`, `rights_limitations`, `independent_notes_review` |
+
+Example **format only**, not an actual rights attestation:
+
+```text
+<!-- R24_SOURCE_EVIDENCE_V1
+{"kind":"source_provenance","tag":"v0.2.0","mode":"source-only",
+ "source_sha":"<actual 40-character frozen SHA>",
+ "archive_sha256":"<actual 64-character archive SHA256>",
+ "reviewer":"phanyen06ym-ien","verdict":"PASS",
+ "checks":{"file_origin":true,"contributor_authority":true,
+ "third_party_assets":true,"independent_origin_review":true},
+ "unresolved_distribution_blockers":[],
+ "references":["https://github.com/tricore-opentrix/opentrix/issues/138"]}
+-->
+```
+
+These are additional verification requirements to review in a **separate
+technical PR**. Neither this draft nor successful PR CI authorizes final R4
+dispatch, source freeze, tag, Release, Docker/JAR/GHCR distribution or
+declaration that #138 rights blockers have been cleared.
 
 **Yến must establish the protected r24-release GitHub Environment with required independent reviewers (Yến and Ánh) plus v* tag protection ruleset BEFORE any tag is created or pushed.** A workflow environment declaration alone does not guarantee protected configuration.
 
