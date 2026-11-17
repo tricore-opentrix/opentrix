@@ -177,6 +177,12 @@ def verify_source_evidence(accepted, pr_author):
     that UNKNOWN/RIGHTS_PENDING code was cleared. A separate #138 disposition
     and the independent acceptance review remain indispensable.
     """
+    run_ids = accepted.get("candidate_run_ids")
+    require(isinstance(run_ids, list) and len(run_ids) == 2
+            and all(isinstance(i, int) and not isinstance(i, bool) and i > 0
+                    for i in run_ids), "exactly two final R4 candidate run IDs required")
+    require(run_ids[0] != run_ids[1],
+            "two final R4 candidate run IDs must be distinct")
     evidence = accepted.get("evidence")
     require(isinstance(evidence, dict), "source-only release evidence object is missing")
     for kind, checklist in EVIDENCE_CHECKS.items():
