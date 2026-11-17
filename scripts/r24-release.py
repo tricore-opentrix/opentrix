@@ -8,7 +8,8 @@ import io
 import json
 import os
 from urllib.error import URLError
-from urllib.request import Request, urlopen
+from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
+from urllib.parse import urlsplit
 import re
 import sys
 import subprocess
@@ -246,6 +247,18 @@ def verify_source_evidence(accepted, pr_author):
                         "independent archive review lacks candidate run references")
 
 
+class _DropArtifactAuthOnRedirect(HTTPRedirectHandler):
+    """Follow only HTTPS signed artifact URLs; do not forward GitHub bearer token."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        require(urlsplit(newurl).scheme == "https",
+                "insecure GitHub Actions artifact redirect rejected")
+        moved = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if moved is not None and urlsplit(newurl).hostname != "api.github.com":
+            moved.remove_header("Authorization")
+        return moved
+
+
 def _github_artifact_zip(artifact_id):
     """Download actual GitHub Actions artifact ZIP for independent byte comparison."""
     token = os.environ.get("GITHUB_TOKEN", "")
@@ -256,7 +269,7 @@ def _github_artifact_zip(artifact_id):
                  "Accept": "application/vnd.github+json",
                  "X-GitHub-Api-Version": "2022-11-28"})
     try:
-        with urlopen(req, timeout=60) as response:
+        with build_opener(_DropArtifactAuthOnRedirect()).open(req, timeout=60) as response:
             content = response.read(MAX_ARTIFACT_ZIP_BYTES + 1)
         require(len(content) <= MAX_ARTIFACT_ZIP_BYTES,
                 "candidate artifact too large for bounded independent verification")

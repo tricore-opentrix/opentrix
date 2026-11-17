@@ -581,6 +581,20 @@ class R24ReleaseTests(unittest.TestCase):
                 release, "_github_json", side_effect=altered_metadata):
             self.assert_source_gate_rejected(stable, "archive SHA256 mismatch")
 
+    def test_artifact_redirect_never_leaks_github_bearer_token(self):
+        req = release.Request(
+            "https://api.github.com/repos/tricore-opentrix/opentrix/actions/artifacts/10/zip",
+            headers={"Authorization": "Bearer secret-token"})
+        h = release._DropArtifactAuthOnRedirect()
+        redirected = h.redirect_request(
+            req, None, 302, "Found", {},
+            "https://pipelines.actions.githubusercontent.com/download/signed")
+        self.assertIsNotNone(redirected)
+        self.assertFalse(redirected.has_header("Authorization"))
+        with self.assertRaisesRegex(ValueError, "insecure"):
+            h.redirect_request(req, None, 302, "Found", {},
+                               "http://untrusted.example/download")
+
     def test_f01_unavailable_actual_archive_download_blocks(self):
         _, stable = self.make_accepted_source_case()
         with mock.patch.object(release, "_github_artifact_zip",
