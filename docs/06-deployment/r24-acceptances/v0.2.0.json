@@ -1,0 +1,22 @@
+{
+  "tag": "v0.2.0",
+  "source_sha": "7bbae999c41dfe6d558b7ddcdae2cd4af8793593",
+  "mode": "source-only",
+  "archive_sha256": "50ee6a5e66ba6de8d914e7cc83b592152b93c0c62b43440dd311ee696cbaf986",
+  "reviewed_by": [
+    "phanyen06ym-ien",
+    "ngang02012007-crypto"
+  ],
+  "acceptance_pr": 254,
+  "candidate_run_ids": [
+    44046039471,
+    44046132614
+  ],
+  "evidence": {
+    "source_provenance": "https://github.com/tricore-opentrix/opentrix/issues/190#issuecomment-6942913841",
+    "source_license": "https://github.com/tricore-opentrix/opentrix/issues/190#issuecomment-6942918684",
+    "sbom_source_boundary": "https://github.com/tricore-opentrix/opentrix/issues/190#issuecomment-6942923494",
+    "archive_and_checksums": "https://github.com/tricore-opentrix/opentrix/issues/190#issuecomment-6942928329",
+    "release_notes": "https://github.com/tricore-opentrix/opentrix/issues/190#issuecomment-6942987053"
+  }
+}
