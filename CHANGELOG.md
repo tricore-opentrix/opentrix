@@ -18,7 +18,7 @@ _All notable user-visible changes to OpenTrix are recorded here, following Keep 
 _Chưa có thay đổi mới sau bản ứng viên v0.2.0._
 _No new changes have been recorded after the v0.2.0 release candidate._
 
-## [0.2.0]
+## [0.2.0] - 2026-11-17
 
 > **Phạm vi / Scope:** v0.2.0 chỉ phân phối gói mã nguồn và tài liệu/bằng chứng phát hành đi kèm; không bao gồm JAR dựng sẵn, frontend `dist` hoặc Docker/GHCR images.
 >
