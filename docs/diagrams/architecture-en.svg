@@ -33,7 +33,7 @@
 <text x="312.5" y="482.5" class="t">Identity</text>
 <rect x="385" y="450" width="115" height="55" class="n"/>
 <text x="442.5" y="473.0" class="t">Workflow</text>
-<text x="442.5" y="492.0" class="t">Flowable</text>
+<text x="442.5" y="492.0" class="t">internal</text>
 <rect x="515" y="450" width="115" height="55" class="n"/>
 <text x="572.5" y="482.5" class="t">Data</text>
 <rect x="645" y="450" width="115" height="55" class="n"/>
@@ -43,8 +43,8 @@
 <text x="335.0" y="671.5" class="t">PostgreSQL</text>
 <path d="M450,630 A85.0,9 0 0 1 620,630 L620,695 A85.0,9 0 0 1 450,695 Z" class="n"/>
 <path d="M450,630 A85.0,9 0 0 0 620,630" class="n" fill="none"/>
-<text x="535.0" y="662.0" class="t">S3-compatible</text>
-<text x="535.0" y="681.0" class="t">object storage</text>
+<text x="535.0" y="662.0" class="t">S3 port only</text>
+<text x="535.0" y="681.0" class="t">adapter not shipped</text>
 <rect x="650" y="635" width="120" height="55" class="n"/>
 <text x="710.0" y="667.5" class="t">Keycloak</text>
 <path d="M355,95 L355,175" class="e" marker-end="url(#a)"/>
@@ -52,6 +52,6 @@
 <path d="M355,230 L355,243 L600,243 L600,255" class="e" marker-end="url(#a)"/>
 <path d="M655,310 L655,400" class="e" marker-end="url(#a)"/>
 <path d="M335,530 L335,621" class="e" marker-end="url(#a)"/>
-<path d="M535,530 L535,621" class="e" marker-end="url(#a)"/>
+<path d="M535,530 L535,621" class="e" stroke-dasharray="5 5"/>
 <path d="M710,530 L710,635" class="e" marker-end="url(#a)"/>
 </svg>
