@@ -103,6 +103,21 @@ tests/                           Playwright suites
 scripts/check-security.mjs       Scans source and build output for credential patterns
 ```
 
+### UI preview
+
+`npm run ui:preview` builds the integration-local bundle, serves it on `127.0.0.1:4176` and opens a
+Chromium window at `https://localhost:9443/mvp/helpdesk`. Playwright answers the BFF and sign-in
+requests with simulated data and blocks every other request. The preview needs no Docker, backend or
+Keycloak. Open the pages only in the Chromium window that the command opens; a normal browser cannot
+reach the simulated origin.
+
+The preview covers sign-in and sign-out, the request list, request details, creating a request, and
+401, 403 and 409 responses. Data created in the preview is kept in memory until the window closes.
+It does not check real authentication, authorization, the database or the full workflow.
+
+`npm run test:ui-preview` runs the same preview without a window and checks the interaction flow and
+the request blocking. The two commands use the same port; close the preview before running the check.
+
 ### Tests
 
 | Command | What it checks |
@@ -216,6 +231,21 @@ src/
 tests/                           Bộ test Playwright
 scripts/check-security.mjs       Quét mã nguồn và bản build tìm mẫu thông tin đăng nhập
 ```
+
+### Xem trước giao diện
+
+`npm run ui:preview` build bản integration-local, phục vụ tại `127.0.0.1:4176` và mở một cửa sổ
+Chromium tại `https://localhost:9443/mvp/helpdesk`. Playwright trả lời các request tới BFF và đăng nhập
+bằng dữ liệu giả lập, đồng thời chặn mọi request khác. Bản xem trước không cần Docker, backend hay
+Keycloak. Chỉ mở các trang trong cửa sổ Chromium do lệnh này mở; trình duyệt thông thường không truy
+cập được origin giả lập.
+
+Bản xem trước bao gồm đăng nhập và đăng xuất, danh sách yêu cầu, chi tiết yêu cầu, tạo yêu cầu, và các
+phản hồi 401, 403, 409. Dữ liệu tạo trong bản xem trước được giữ trong bộ nhớ cho đến khi đóng cửa sổ.
+Bản xem trước không kiểm tra xác thực, phân quyền thật, database hay toàn bộ workflow.
+
+`npm run test:ui-preview` chạy cùng bản xem trước mà không mở cửa sổ, và kiểm tra luồng tương tác cùng
+việc chặn request. Hai lệnh dùng chung một cổng; đóng bản xem trước trước khi chạy lệnh kiểm tra.
 
 ### Kiểm thử
 
