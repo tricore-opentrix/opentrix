@@ -3,101 +3,180 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# OpenTrix — Changelog
+# Changelog
 
-> **Ngôn ngữ / Language:** mỗi mục ghi tiếng Việt trước, tiếng Anh in nghiêng ngay dưới. ·
-> _Each entry is written in Vietnamese first, with the English text in italics below._
+> **Language / Ngôn ngữ:** [English](#en) · [Tiếng Việt](#vi)
 
-Mọi thay đổi người dùng nhìn thấy được của OpenTrix được ghi tại đây, theo
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) và
-[Semantic Versioning](https://semver.org/).
-_All notable user-visible changes to OpenTrix are recorded here, following Keep a Changelog and Semantic Versioning._
+---
+
+<a id="en"></a>
 
 ## [Unreleased]
 
-_Chưa có thay đổi mới sau bản ứng viên v0.2.0._
-_No new changes have been recorded after the v0.2.0 release candidate._
+### Changed
+
+- GitHub-generated source archives no longer include `backend/gradle/wrapper/gradle-wrapper.jar`.
+  To build from an extracted archive, use an external Gradle 8.14.3 installation ([#256](https://github.com/tricore-opentrix/opentrix/pull/256)).
 
 ## [0.2.0] - 2026-11-17
 
-> **Phạm vi / Scope:** v0.2.0 chỉ phân phối gói mã nguồn và tài liệu/bằng chứng phát hành đi kèm; không bao gồm JAR dựng sẵn, frontend `dist` hoặc Docker/GHCR images.
->
-> _Version 0.2.0 distributes source code and accompanying release documentation/evidence only; it excludes prebuilt JARs, frontend `dist`, and Docker/GHCR images._
+This release is distributed as source code only. It does not include prebuilt JAR files, a
+frontend `dist` bundle or container images.
 
-### Added · Thêm mới
+### Added
 
-- Theme đăng nhập Keycloak OpenTrix IT Helpdesk cho môi trường integration-local: bố cục hai cột, tiếng Việt, logo và hình minh họa nội bộ; kế thừa form gốc `keycloak.v2`, giữ nguyên Authorization Code + PKCE (#225: #243).
-  _OpenTrix IT Helpdesk Keycloak login theme for integration-local: two-column layout, Vietnamese locale, local logo and illustration; inherits the stock `keycloak.v2` form and keeps Authorization Code + PKCE._
-- Chạy thử toàn bộ hệ thống bằng một lệnh (`infra/demo/demo-up` / `demo-down`, PowerShell 7 và Bash): build image từ mã nguồn, ingress HTTPS bằng Caddy, sinh bí mật cục bộ và kiểm tra sức khỏe từng thành phần (#119: #229, #234, #237).
-  _One-command integration-local demo stack (`infra/demo/demo-up` / `demo-down`, PowerShell 7 and Bash) with source-built images, Caddy HTTPS ingress, generated local secrets and health checks._
-- Cổng API APISIX chạy độc lập: kiểm token qua JWKS, giới hạn tần suất, chuẩn hóa header chuyển tiếp; bật bằng `demo-up -Gateway` / `--gateway` (#116: #232).
-  _Standalone APISIX gateway overlay with JWKS token validation, rate limiting and forwarded-header rewrite, enabled with `demo-up -Gateway` / `--gateway`._
-- Realm Keycloak `tricore` có phiên bản cho môi trường demo, cùng cấu hình mạng dùng chung cho PostgreSQL, Keycloak và Backend (#226, #227).
-  _Versioned `tricore` Keycloak demo realm and a shared-network demo setup for PostgreSQL, Keycloak and Backend._
-- Chuẩn bị đóng gói và nghiệm thu bản phát hành SOURCE-ONLY: gói mã nguồn, SBOM và NOTICE, SHA256SUMS, ghi chú phát hành và cổng phê duyệt trước công bố. Không phân phối JAR, frontend `dist` hoặc Docker/GHCR images trong v0.2.0.
-  _Prepare SOURCE-ONLY release packaging and acceptance: source archive, SBOM and NOTICE, SHA256SUMS, release notes, and a publication approval gate. Version 0.2.0 does not distribute JARs, frontend `dist`, or Docker/GHCR images._
-- Quyết định kiến trúc ADR-009, ADR-016, ADR-017, ADR-018 và mục lục tài liệu kiến trúc tương ứng (#221).
-  _Architecture decisions ADR-009, ADR-016, ADR-017 and ADR-018 with aligned architecture and documentation indexes._
+- One-command local deployment with `infra/demo/demo-up` and `demo-down` (PowerShell 7 and Bash):
+  images are built from source and served behind a Caddy HTTPS ingress, with generated local
+  secrets and per-service health checks ([#229](https://github.com/tricore-opentrix/opentrix/pull/229), [#234](https://github.com/tricore-opentrix/opentrix/pull/234), [#237](https://github.com/tricore-opentrix/opentrix/pull/237)).
+- Optional Apache APISIX API gateway with JWKS token validation, rate limiting and
+  forwarded-header normalization, enabled with `-Gateway` / `--gateway` ([#232](https://github.com/tricore-opentrix/opentrix/pull/232)).
+- Versioned Keycloak realm `tricore` and a shared network configuration for PostgreSQL, Keycloak
+  and the backend ([#226](https://github.com/tricore-opentrix/opentrix/pull/226), [#227](https://github.com/tricore-opentrix/opentrix/pull/227)).
+- OpenTrix Keycloak login theme with a Vietnamese locale, based on the standard `keycloak.v2`
+  theme; the Authorization Code + PKCE flow is unchanged ([#243](https://github.com/tricore-opentrix/opentrix/pull/243)).
+- Source release packaging: source archive, SBOM, NOTICE, `SHA256SUMS` and release notes, with an
+  approval step before publication.
+- Architecture decision records ADR-009, ADR-016, ADR-017 and ADR-018, with updated architecture
+  and documentation indexes ([#221](https://github.com/tricore-opentrix/opentrix/pull/221)).
 
-### Changed · Thay đổi
+### Changed
 
-- Portal: nhận diện OpenTrix · IT Helpdesk, khung đăng nhập cho integration-local và đăng xuất qua BFF có chống CSRF (#233).
-  _Portal: OpenTrix · IT Helpdesk branding, an integration-local login panel and CSRF-protected logout through the BFF._
-- Portal: nhãn trạng thái quy trình bằng tiếng Việt với huy hiệu riêng; giá trị API giữ nguyên, trạng thái lạ có hiển thị dự phòng (#106, #233).
-  _Portal: Vietnamese workflow state labels with distinct badges; API values are unchanged and unknown states fall back safely._
-- Portal: gắn nhãn chế độ MOCK và integration-local; Facility chỉ có trong MOCK (#224: #230).
-  _Portal: label MOCK and integration-local demo modes and keep Facility MOCK-only._
-- Đổi tên repository thành `tricore-opentrix/opentrix`; cập nhật đường dẫn, tài liệu và giá trị cài đặt mặc định (#136).
-  _Repository renamed to `tricore-opentrix/opentrix`; links, documentation and setup defaults updated._
-- Đồng bộ định nghĩa label và milestone GitHub với các quyết định kiến trúc đã chốt (#223).
-  _GitHub label and milestone definitions aligned with the accepted architecture decisions._
-- Viết lại README, CONTRIBUTING và thông tin giấy phép thành tài liệu song ngữ Việt – Anh (#228).
-  _README, CONTRIBUTING and license information rewritten as bilingual Vietnamese–English project documentation._
+- Portal: OpenTrix IT Helpdesk branding, a sign-in page for the integrated mode and logout through
+  the BFF with CSRF protection ([#238](https://github.com/tricore-opentrix/opentrix/pull/238)).
+- Portal: workflow states are shown with Vietnamese labels and distinct badges; API values are
+  unchanged and unknown states fall back to a default label ([#238](https://github.com/tricore-opentrix/opentrix/pull/238)).
+- Portal: the active mode (MOCK or `integration-local`) is labelled in the interface; the Facility
+  application is available in MOCK mode only ([#230](https://github.com/tricore-opentrix/opentrix/pull/230)).
+- The repository moved to `tricore-opentrix/opentrix`; links, documentation and default settings
+  were updated ([#136](https://github.com/tricore-opentrix/opentrix/pull/136)).
+- GitHub labels and milestones aligned with the accepted architecture decisions ([#223](https://github.com/tricore-opentrix/opentrix/pull/223)).
+- README, contribution guide and licensing information rewritten as bilingual documentation ([#239](https://github.com/tricore-opentrix/opentrix/pull/239)).
 
-### Fixed · Sửa lỗi
+### Fixed
 
-- Mã yêu cầu Helpdesk không còn tràn sang tiêu đề trong danh sách integration-local; giữ nguyên mã đầy đủ và đường dẫn (#225: #242).
-  _Helpdesk request IDs no longer overflow into request titles in the integration-local list; full identifiers and links are preserved._
+- Request identifiers no longer overlap request titles in the Helpdesk request list; full
+  identifiers and links are preserved ([#242](https://github.com/tricore-opentrix/opentrix/pull/242)).
 
 ## [0.1.0] - 2026-11-04
 
-### Added · Thêm mới
+### Added
 
-- API HTTP Backend IT Helpdesk (chín route ứng dụng), phân quyền theo tổ chức và tài nguyên, lưu trữ PostgreSQL 17, lịch sử chuyển trạng thái quy trình.
-  _IT Helpdesk Backend HTTP API (nine application routes) with tenant/resource-scoped authorization, PostgreSQL 17 persistence and audited workflow transitions._
-- Portal BFF với OIDC Authorization Code + PKCE, phiên trình duyệt phía server và chống CSRF.
-  _Portal BFF with OIDC Authorization Code + PKCE, server-side browser session and CSRF protection._
-- Portal React IT Helpdesk với chế độ MOCK độc lập và chế độ build `integration-local`.
-  _React IT Helpdesk Portal with a standalone MOCK mode and an `integration-local` build mode._
-- File `LICENSE` Apache-2.0 và `NOTICE` ở thư mục gốc.
-  _Apache-2.0 root `LICENSE` and `NOTICE` files._
-- Quy tắc phụ thuộc Core bằng ArchUnit và test kiểm chứng phản ví dụ.
-  _ArchUnit Core dependency rules and negative canary tests._
-- Hướng dẫn đóng góp, mẫu Issue và pull request, CODEOWNERS.
-  _Contribution guidelines, issue and pull request templates, and CODEOWNERS._
-- CI dùng chung cho pull request vào `main`: build và test backend, build ứng dụng, kiểm tra repository và hồi quy bảo mật Identity–Gateway.
-  _Shared CI for pull requests to `main`: backend build and tests, application builds, repository checks and Identity–Gateway security regressions._
+- IT Helpdesk HTTP API with nine operations, tenant- and resource-scoped authorization,
+  PostgreSQL 17 persistence and an audited workflow history.
+- Portal BFF with OpenID Connect Authorization Code + PKCE, server-side sessions and CSRF
+  protection.
+- React IT Helpdesk Portal with a standalone MOCK mode and an `integration-local` build mode.
+- Apache License 2.0 `LICENSE` and `NOTICE` files.
+- Core dependency rules enforced with ArchUnit, including negative tests.
+- Contribution guide, issue and pull request templates, and `CODEOWNERS`.
+- Continuous integration for pull requests to `main`: backend build and tests, application builds,
+  repository checks and identity/gateway security regression tests.
 
-### Changed · Thay đổi
+### Changed
+
+- `backend/gradlew` is now executable on Linux and macOS.
+- The Helpdesk API returns HTTP 404 `NOT_FOUND` for both hidden and missing resources; the generic
+  Workflow API keeps the distinct `DEFINITION_NOT_FOUND` and `INSTANCE_NOT_FOUND` codes.
+
+### Fixed
+
+- Backend build and tests on Linux: restored three SQL test fixtures, pinned the manifest hash to
+  LF line endings and limited a PowerShell-specific test to Windows.
+- Request creation is rejected early when required technical permissions are missing. When the
+  outcome of a workflow commit is unknown, the API returns HTTP 503 `COMMIT_OUTCOME_UNKNOWN`;
+  clients must not retry such requests automatically.
+
+### Removed
+
+- The legacy `com.tricore.dxos.request` prototype and the `/api/v1/requests/*` routes. Existing
+  Flyway migrations V1 and V2 are preserved; the Helpdesk API remains at `/api/v1/mvp/requests`.
+- The standalone security CI workflow; its checks now run in the shared CI pipeline.
+
+---
+
+<a id="vi"></a>
+
+# Nhật ký thay đổi
+
+## [Unreleased]
+
+### Thay đổi
+
+- Gói mã nguồn do GitHub tự sinh không còn chứa `backend/gradle/wrapper/gradle-wrapper.jar`. Khi
+  build từ gói đã giải nén, dùng Gradle 8.14.3 cài đặt riêng ([#256](https://github.com/tricore-opentrix/opentrix/pull/256)).
+
+## [0.2.0] - 2026-11-17
+
+Bản phát hành này chỉ phân phối mã nguồn, không kèm tệp JAR dựng sẵn, gói frontend `dist` hay
+container image.
+
+### Thêm mới
+
+- Triển khai cục bộ bằng một lệnh với `infra/demo/demo-up` và `demo-down` (PowerShell 7 và Bash):
+  image được build từ mã nguồn và chạy sau ingress HTTPS Caddy, tự sinh bí mật cục bộ và kiểm tra
+  tình trạng từng dịch vụ ([#229](https://github.com/tricore-opentrix/opentrix/pull/229), [#234](https://github.com/tricore-opentrix/opentrix/pull/234), [#237](https://github.com/tricore-opentrix/opentrix/pull/237)).
+- Cổng API Apache APISIX tùy chọn: kiểm tra token qua JWKS, giới hạn tần suất, chuẩn hóa header
+  chuyển tiếp; bật bằng `-Gateway` / `--gateway` ([#232](https://github.com/tricore-opentrix/opentrix/pull/232)).
+- Realm Keycloak `tricore` được quản lý phiên bản, cùng cấu hình mạng dùng chung cho PostgreSQL,
+  Keycloak và backend ([#226](https://github.com/tricore-opentrix/opentrix/pull/226), [#227](https://github.com/tricore-opentrix/opentrix/pull/227)).
+- Giao diện đăng nhập Keycloak của OpenTrix có bản địa hóa tiếng Việt, kế thừa theme chuẩn
+  `keycloak.v2`; luồng Authorization Code + PKCE giữ nguyên ([#243](https://github.com/tricore-opentrix/opentrix/pull/243)).
+- Đóng gói bản phát hành mã nguồn: gói mã nguồn, SBOM, NOTICE, `SHA256SUMS` và ghi chú phát hành,
+  có bước phê duyệt trước khi công bố.
+- Các bản ghi quyết định kiến trúc ADR-009, ADR-016, ADR-017, ADR-018 và mục lục tài liệu kiến trúc
+  tương ứng ([#221](https://github.com/tricore-opentrix/opentrix/pull/221)).
+
+### Thay đổi
+
+- Portal: nhận diện OpenTrix IT Helpdesk, trang đăng nhập cho chế độ tích hợp và đăng xuất qua BFF
+  có chống CSRF ([#238](https://github.com/tricore-opentrix/opentrix/pull/238)).
+- Portal: trạng thái quy trình hiển thị bằng nhãn tiếng Việt với huy hiệu riêng; giá trị API giữ
+  nguyên, trạng thái không xác định dùng nhãn mặc định ([#238](https://github.com/tricore-opentrix/opentrix/pull/238)).
+- Portal: giao diện ghi rõ chế độ đang chạy (MOCK hoặc `integration-local`); ứng dụng Facility chỉ
+  có trong chế độ MOCK ([#230](https://github.com/tricore-opentrix/opentrix/pull/230)).
+- Repository chuyển sang `tricore-opentrix/opentrix`; đường dẫn, tài liệu và cấu hình mặc định được
+  cập nhật ([#136](https://github.com/tricore-opentrix/opentrix/pull/136)).
+- Nhãn và milestone trên GitHub được đồng bộ với các quyết định kiến trúc đã chấp nhận ([#223](https://github.com/tricore-opentrix/opentrix/pull/223)).
+- README, hướng dẫn đóng góp và thông tin giấy phép được viết lại thành tài liệu song ngữ ([#239](https://github.com/tricore-opentrix/opentrix/pull/239)).
+
+### Sửa lỗi
+
+- Mã yêu cầu không còn đè lên tiêu đề trong danh sách yêu cầu Helpdesk; mã đầy đủ và đường dẫn được
+  giữ nguyên ([#242](https://github.com/tricore-opentrix/opentrix/pull/242)).
+
+## [0.1.0] - 2026-11-04
+
+### Thêm mới
+
+- API HTTP IT Helpdesk với chín thao tác, phân quyền theo tổ chức và theo tài nguyên, lưu trữ
+  PostgreSQL 17 và lịch sử quy trình có ghi vết.
+- Portal BFF dùng OpenID Connect Authorization Code + PKCE, phiên phía máy chủ và chống CSRF.
+- Portal React IT Helpdesk với chế độ MOCK chạy độc lập và chế độ build `integration-local`.
+- Tệp `LICENSE` (Apache License 2.0) và `NOTICE`.
+- Quy tắc phụ thuộc của Core được kiểm tra bằng ArchUnit, kèm test phản ví dụ.
+- Hướng dẫn đóng góp, mẫu issue và pull request, tệp `CODEOWNERS`.
+- Tích hợp liên tục cho pull request vào `main`: build và test backend, build các ứng dụng, kiểm tra
+  repository và test hồi quy bảo mật cho định danh và cổng API.
+
+### Thay đổi
 
 - `backend/gradlew` có quyền thực thi trên Linux và macOS.
-  _`backend/gradlew` is executable on Linux and macOS._
-- API HTTP Helpdesk trả HTTP 404 / `NOT_FOUND` cho tài nguyên bị ẩn hoặc không tồn tại; API Workflow dùng chung giữ mã riêng `DEFINITION_NOT_FOUND` / `INSTANCE_NOT_FOUND` (#105).
-  _The Helpdesk HTTP API returns a scoped HTTP 404 / `NOT_FOUND` for hidden or missing resources; the generic Workflow HTTP API keeps its distinct `DEFINITION_NOT_FOUND` / `INSTANCE_NOT_FOUND` codes._
+- API Helpdesk trả HTTP 404 `NOT_FOUND` cho cả tài nguyên bị ẩn và không tồn tại; API Workflow dùng
+  chung giữ các mã riêng `DEFINITION_NOT_FOUND` và `INSTANCE_NOT_FOUND`.
 
-### Fixed · Sửa lỗi
+### Sửa lỗi
 
-- Build và test backend trên Linux: khôi phục ba fixture SQL, ghim hash manifest theo kết thúc dòng LF, chỉ chạy test riêng của PowerShell trên Windows.
-  _Linux backend build and tests: restored three SQL fixtures, pinned the manifest hash to LF line endings and limited a PowerShell-specific test to Windows._
-- Tạo yêu cầu Helpdesk bị từ chối sớm khi thiếu quyền kỹ thuật bắt buộc; khi không chắc commit Workflow đã thành công, API trả HTTP 503 với `COMMIT_OUTCOME_UNKNOWN` và không được tự động thử lại.
-  _Helpdesk create rejects requests missing the required technical authorities before protected lookups; an uncertain Workflow commit returns HTTP 503 with `COMMIT_OUTCOME_UNKNOWN` and must not be retried automatically._
+- Build và test backend trên Linux: khôi phục ba fixture SQL, cố định hash manifest theo ký tự xuống
+  dòng LF và chỉ chạy test dành cho PowerShell trên Windows.
+- Yêu cầu tạo mới bị từ chối sớm khi thiếu quyền kỹ thuật bắt buộc. Khi không xác định được kết quả
+  commit của quy trình, API trả HTTP 503 `COMMIT_OUTCOME_UNKNOWN`; client không được tự động gửi lại
+  các yêu cầu này.
 
-### Removed · Loại bỏ
+### Loại bỏ
 
-- Gỡ prototype cũ `com.tricore.dxos.request` và các route `/api/v1/requests/*`; giữ nguyên migration Flyway V1/V2, Helpdesk vẫn ở `/api/v1/mvp/requests`.
-  _Legacy `com.tricore.dxos.request` prototype and the `/api/v1/requests/*` routes; historical Flyway V1/V2 migrations are preserved and Helpdesk remains at `/api/v1/mvp/requests`._
-- Gỡ workflow CI riêng của Issue #23; các kiểm tra bảo mật chạy trong CI dùng chung.
-  _The separate Issue #23 workflow; its security checks run in shared CI._
+- Prototype cũ `com.tricore.dxos.request` và các route `/api/v1/requests/*`. Các migration Flyway V1
+  và V2 được giữ nguyên; API Helpdesk vẫn ở `/api/v1/mvp/requests`.
+- Workflow CI bảo mật chạy riêng; các kiểm tra này nay chạy trong pipeline CI dùng chung.
 
 [Unreleased]: https://github.com/tricore-opentrix/opentrix/compare/v0.2.0...HEAD
 [0.2.0]: https://github.com/tricore-opentrix/opentrix/compare/v0.1.0...v0.2.0

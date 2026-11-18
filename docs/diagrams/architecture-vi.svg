@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 745" width="900" height="745" font-family="Arial, Helvetica, sans-serif">
+<!-- SPDX-FileCopyrightText: 2026 TRICORE contributors -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<title>OpenTrix — Kiến trúc tổng quan</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#000"/></marker>
+<style>
+.n{fill:#fff;stroke:#000;stroke-width:1.2}
+.c{fill:none;stroke:#000;stroke-width:1.2}
+.t{font-size:14px;text-anchor:middle;fill:#000}
+.ct{font-size:12.5px;text-anchor:start;fill:#000;font-weight:bold}
+.e{fill:none;stroke:#000;stroke-width:1.2}
+</style></defs>
+<rect width="100%" height="100%" fill="#fff"/>
+<rect x="20" y="10" width="860" height="100" class="c"/>
+<text x="35" y="32" class="ct">NGƯỜI DÙNG</text>
+<rect x="20" y="140" width="860" height="190" class="c"/>
+<text x="35" y="162" class="ct">CỔNG VÀO / CỔNG API</text>
+<rect x="20" y="360" width="860" height="200" class="c"/>
+<text x="35" y="382" class="ct">BACKEND</text>
+<rect x="20" y="590" width="860" height="135" class="c"/>
+<text x="35" y="612" class="ct">DỮ LIỆU VÀ ĐỊNH DANH</text>
+<rect x="240" y="40" width="230" height="55" class="n"/>
+<text x="355.0" y="72.5" class="t">Portal React</text>
+<rect x="540" y="40" width="230" height="55" class="n"/>
+<text x="655.0" y="72.5" class="t">Hệ thống bên ngoài gọi API</text>
+<rect x="240" y="175" width="230" height="55" class="n"/>
+<text x="355.0" y="207.5" class="t">Portal BFF</text>
+<rect x="540" y="255" width="230" height="55" class="n"/>
+<text x="655.0" y="287.5" class="t">Apache APISIX</text>
+<rect x="240" y="400" width="530" height="130" class="n"/>
+<text x="505" y="430" class="t">Backend OpenTrix — Spring Boot modular monolith</text>
+<rect x="255" y="450" width="115" height="55" class="n"/>
+<text x="312.5" y="482.5" class="t">Định danh</text>
+<rect x="385" y="450" width="115" height="55" class="n"/>
+<text x="442.5" y="473.0" class="t">Quy trình</text>
+<text x="442.5" y="492.0" class="t">Flowable nhúng</text>
+<rect x="515" y="450" width="115" height="55" class="n"/>
+<text x="572.5" y="482.5" class="t">Dữ liệu</text>
+<rect x="645" y="450" width="115" height="55" class="n"/>
+<text x="702.5" y="482.5" class="t">IT Helpdesk</text>
+<path d="M250,630 A85.0,9 0 0 1 420,630 L420,695 A85.0,9 0 0 1 250,695 Z" class="n"/>
+<path d="M250,630 A85.0,9 0 0 0 420,630" class="n" fill="none"/>
+<text x="335.0" y="671.5" class="t">PostgreSQL</text>
+<path d="M450,630 A85.0,9 0 0 1 620,630 L620,695 A85.0,9 0 0 1 450,695 Z" class="n"/>
+<path d="M450,630 A85.0,9 0 0 0 620,630" class="n" fill="none"/>
+<text x="535.0" y="662.0" class="t">Lưu trữ đối tượng</text>
+<text x="535.0" y="681.0" class="t">tương thích S3</text>
+<rect x="650" y="635" width="120" height="55" class="n"/>
+<text x="710.0" y="667.5" class="t">Keycloak</text>
+<path d="M355,95 L355,175" class="e" marker-end="url(#a)"/>
+<path d="M720,95 L720,255" class="e" marker-end="url(#a)"/>
+<path d="M355,230 L355,243 L600,243 L600,255" class="e" marker-end="url(#a)"/>
+<path d="M655,310 L655,400" class="e" marker-end="url(#a)"/>
+<path d="M335,530 L335,621" class="e" marker-end="url(#a)"/>
+<path d="M535,530 L535,621" class="e" marker-end="url(#a)"/>
+<path d="M710,530 L710,635" class="e" marker-end="url(#a)"/>
+</svg>
