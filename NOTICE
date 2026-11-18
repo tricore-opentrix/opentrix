@@ -9,10 +9,10 @@ licensed under the Apache License, Version 2.0, to the extent that the
 contributors have the rights to license their respective contributions.
 See the LICENSE file at the repository root for the full license text.
 
-Third-party software and local demo services retain their respective
+Third-party software and local deployment services retain their respective
 licenses, copyright notices, and attribution requirements.
 
-The local demo stack uses the following independently licensed projects:
+The local deployment stack uses the following independently licensed projects:
 
 - Keycloak
   Project license: Apache License, Version 2.0
@@ -40,11 +40,12 @@ Container image contents, third-party dependencies, base images, and
 additional notices must be assessed separately where applicable.
 
 See THIRD-PARTY-NOTICES.md for the generated dependency inventory.
-That inventory is not a complete license assessment of external demo
-container images.
+That inventory is not a complete license assessment of external
+container images used by the local deployment.
 
 The source-only v0.2.0 contributor-rights disposition is documented in
-Issue #138, including its stated limitations concerning AI-assisted
+Issue #138 (https://github.com/tricore-opentrix/opentrix/issues/138),
+including its stated limitations concerning AI-assisted
 development and historical source provenance. This notice does not
 constitute repository-wide legal clearance or release authorization.
 
