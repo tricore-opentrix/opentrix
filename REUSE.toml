@@ -128,3 +128,10 @@ path = [
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 TRICORE contributors"
 SPDX-License-Identifier = "Apache-2.0"
+# Historical audit record kept unchanged. Its inline header is not detected by
+# reuse 6.3; the inline header takes precedence where it is detected.
+[[annotations]]
+path = "docs/09-evidence/phase-2/block-a-architecture.md"
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 TRICORE contributors"
+SPDX-License-Identifier = "Apache-2.0"
