@@ -3,9 +3,43 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Glossary
+# Workflow Authorization Glossary / Thuật ngữ phân quyền Workflow
 
-> **Language / Ngôn ngữ:** [English](#en) · [Tiếng Việt](#vi)
+> **Ngôn ngữ / Language:** [Tiếng Việt](#vi) · [English](#en)
+
+---
+
+
+<a id="vi"></a>
+
+## Truy cập quy trình
+
+Các thuật ngữ dùng để quyết định ai được gắn một tài nguyên vào quy trình hoặc truy cập một phiên
+bản quy trình đã có. Các quy tắc này được hiện thực trong package
+[`application.authorization`](https://github.com/tricore-opentrix/opentrix/tree/main/backend/src/main/java/com/tricore/dxos/application/authorization)
+của backend.
+
+| Thuật ngữ                                            | Định nghĩa                                                                                                                                                                                            | Trong mã                                                                       | Tránh dùng                         |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------- |
+| **Bên gọi đã xác minh** (_Verified caller_)          | Bên gọi có danh tính đã được ranh giới xác thực tin cậy chấp nhận. Danh tính tự khai báo không phải là bên gọi đã xác minh, và việc tạo được một đối tượng principal không có nghĩa là đã xác minh.   | `AuthenticatedPrincipal` lấy qua `CurrentPrincipal.requireVerified()`          | Người dùng tự nhận, cờ đã xác thực |
+| **Quyền thao tác** (_Operation authority_)           | Quyền của bên gọi được yêu cầu một nhóm thao tác quy trình. Quyền này không cho phép truy cập một tài nguyên cụ thể.                                                                                  | `workflow:create`, `workflow:activate`, `workflow:transition`, `workflow:read` | Quyền trên tài nguyên              |
+| **Liên kết tài nguyên** (_Resource binding_)         | Định danh của tài nguyên gắn với một phiên bản quy trình, đọc từ dữ liệu đã lưu chứ không lấy từ yêu cầu gửi lên. Liên kết này không xác lập việc bên gọi thuộc tổ chức (tenant) nào hay có quyền gì. | `ResourceReference`                                                            | Quyền sở hữu tài nguyên            |
+| **Tài nguyên được thấy** (_Visible resource_)        | Tài nguyên mà bên gọi được phép biết là có tồn tại. Được thấy không đồng nghĩa với được gắn hoặc thao tác trên tài nguyên đó.                                                                         | `ALLOWED` hoặc `FORBIDDEN`                                                     | —                                  |
+| **Tài nguyên ẩn** (_Hidden resource_)                | Tài nguyên không được tiết lộ sự tồn tại cho bên gọi. Phản hồi từ chối với tài nguyên ẩn giống hệt phản hồi với tài nguyên không tồn tại.                                                             | `HIDDEN`                                                                       | —                                  |
+| **Chính sách không khả dụng** (_Unavailable policy_) | Chính sách truy cập không thể đưa ra quyết định đáng tin cậy. Khi không chắc chắn, hệ thống không bao giờ cấp quyền truy cập.                                                                         | `UNAVAILABLE`                                                                  | —                                  |
+
+### Các quyết định truy cập
+
+Mỗi lần kiểm tra truy cập quy trình trả về đúng một quyết định. Quyết định về tài nguyên được xét
+trước, nên tài nguyên ẩn không bao giờ lộ ra qua lỗi thiếu quyền; quyền thao tác chỉ được kiểm tra
+sau khi quyết định về tài nguyên là `ALLOWED`.
+
+| Quyết định    | Ý nghĩa                                             | Phản hồi HTTP                   |
+| ------------- | --------------------------------------------------- | ------------------------------- |
+| `ALLOWED`     | Tài nguyên được thấy và thao tác được phép          | Yêu cầu được xử lý tiếp         |
+| `FORBIDDEN`   | Tài nguyên được thấy nhưng thao tác không được phép | `403 FORBIDDEN`                 |
+| `HIDDEN`      | Tài nguyên bị ẩn hoặc không tồn tại                 | `404 NOT_FOUND`                 |
+| `UNAVAILABLE` | Không đưa ra được quyết định đáng tin cậy           | `503 AUTHORIZATION_UNAVAILABLE` |
 
 ---
 
@@ -39,36 +73,3 @@ checked only after the resource decision is `ALLOWED`.
 | `FORBIDDEN`   | The resource is visible but the operation is not permitted | `403 FORBIDDEN`                 |
 | `HIDDEN`      | The resource is hidden or does not exist                   | `404 NOT_FOUND`                 |
 | `UNAVAILABLE` | No trustworthy decision could be made                      | `503 AUTHORIZATION_UNAVAILABLE` |
-
----
-
-<a id="vi"></a>
-
-## Truy cập quy trình
-
-Các thuật ngữ dùng để quyết định ai được gắn một tài nguyên vào quy trình hoặc truy cập một phiên
-bản quy trình đã có. Các quy tắc này được hiện thực trong package
-[`application.authorization`](https://github.com/tricore-opentrix/opentrix/tree/main/backend/src/main/java/com/tricore/dxos/application/authorization)
-của backend.
-
-| Thuật ngữ                                            | Định nghĩa                                                                                                                                                                                            | Trong mã                                                                       | Tránh dùng                         |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------- |
-| **Bên gọi đã xác minh** (_Verified caller_)          | Bên gọi có danh tính đã được ranh giới xác thực tin cậy chấp nhận. Danh tính tự khai báo không phải là bên gọi đã xác minh, và việc tạo được một đối tượng principal không có nghĩa là đã xác minh.   | `AuthenticatedPrincipal` lấy qua `CurrentPrincipal.requireVerified()`          | Người dùng tự nhận, cờ đã xác thực |
-| **Quyền thao tác** (_Operation authority_)           | Quyền của bên gọi được yêu cầu một nhóm thao tác quy trình. Quyền này không cho phép truy cập một tài nguyên cụ thể.                                                                                  | `workflow:create`, `workflow:activate`, `workflow:transition`, `workflow:read` | Quyền trên tài nguyên              |
-| **Liên kết tài nguyên** (_Resource binding_)         | Định danh của tài nguyên gắn với một phiên bản quy trình, đọc từ dữ liệu đã lưu chứ không lấy từ yêu cầu gửi lên. Liên kết này không xác lập việc bên gọi thuộc tổ chức (tenant) nào hay có quyền gì. | `ResourceReference`                                                            | Quyền sở hữu tài nguyên            |
-| **Tài nguyên được thấy** (_Visible resource_)        | Tài nguyên mà bên gọi được phép biết là có tồn tại. Được thấy không đồng nghĩa với được gắn hoặc thao tác trên tài nguyên đó.                                                                         | `ALLOWED` hoặc `FORBIDDEN`                                                     | —                                  |
-| **Tài nguyên ẩn** (_Hidden resource_)                | Tài nguyên không được tiết lộ sự tồn tại cho bên gọi. Phản hồi từ chối với tài nguyên ẩn giống hệt phản hồi với tài nguyên không tồn tại.                                                             | `HIDDEN`                                                                       | —                                  |
-| **Chính sách không khả dụng** (_Unavailable policy_) | Chính sách truy cập không thể đưa ra quyết định đáng tin cậy. Khi không chắc chắn, hệ thống không bao giờ cấp quyền truy cập.                                                                         | `UNAVAILABLE`                                                                  | —                                  |
-
-### Các quyết định truy cập
-
-Mỗi lần kiểm tra truy cập quy trình trả về đúng một quyết định. Quyết định về tài nguyên được xét
-trước, nên tài nguyên ẩn không bao giờ lộ ra qua lỗi thiếu quyền; quyền thao tác chỉ được kiểm tra
-sau khi quyết định về tài nguyên là `ALLOWED`.
-
-| Quyết định    | Ý nghĩa                                             | Phản hồi HTTP                   |
-| ------------- | --------------------------------------------------- | ------------------------------- |
-| `ALLOWED`     | Tài nguyên được thấy và thao tác được phép          | Yêu cầu được xử lý tiếp         |
-| `FORBIDDEN`   | Tài nguyên được thấy nhưng thao tác không được phép | `403 FORBIDDEN`                 |
-| `HIDDEN`      | Tài nguyên bị ẩn hoặc không tồn tại                 | `404 NOT_FOUND`                 |
-| `UNAVAILABLE` | Không đưa ra được quyết định đáng tin cậy           | `503 AUTHORIZATION_UNAVAILABLE` |
