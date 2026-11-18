@@ -41,10 +41,24 @@ class R23Tests(unittest.TestCase):
             self.assertEqual(gateway["release_distribution_status"], "PENDING")
             compose = (SCRIPT.parent.parent / "infra/compose.gateway.yml").read_text()
             self.assertIn("image: apache/apisix:" + gateway["version"], compose)
+            notices = (root / "out" / "THIRD-PARTY-NOTICES.md").read_text(encoding="utf-8")
+            self.assertIn("# Third-Party Notices", notices)
+            self.assertIn("[Apache-2.0](https://spdx.org/licenses/Apache-2.0.html)", notices)
             fill("AGPL-3.0-only")
             self.assertEqual(invoke().returncode, 1)
             fill(None)
             self.assertEqual(invoke().returncode, 1)
+
+    def test_listed_images_match_repository(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("r23_images", SCRIPT)
+        policy = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(policy)
+        root = SCRIPT.parent.parent
+        for image, _url, lic, _use, source in policy.IMAGES:
+            text = (root / source).read_text(encoding="utf-8")
+            self.assertIn(image, text, image + " not found in " + source)
+            self.assertIn(lic, policy.SPDX_IDS)
 
     def test_strict_spdx_expression_grammar(self):
         import importlib.util
