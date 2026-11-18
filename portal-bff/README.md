@@ -1,96 +1,158 @@
 <!--
 SPDX-FileCopyrightText: 2026 TRICORE contributors
-
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# DX-OS Portal BFF / Cổng tích hợp phiên và OAuth
+# Portal BFF
 
-**Trạng thái / Status:** Mã và kiểm thử fixture của BFF có trong source; build Frontend mặc định vẫn **MOCK**. `integration-local` là **opt-in**, không phải triển khai LIVE. **Real browser LIVE E2E: UNVERIFIED** tại [#118](https://github.com/tricore-opentrix/opentrix/issues/118). Không coi CI/unit tests là nghiệm thu trình duyệt hoặc database.
+> **Language / Ngôn ngữ:** [English](#en) · [Tiếng Việt](#vi)
 
-**Điều hướng / Navigation:** [Bộ tài liệu / Docs index](../docs/README.md) · [Phát triển / Development](../docs/DEVELOPMENT.md) · [API](../docs/API.md) · [Tích hợp / Integration](../docs/INTEGRATION.md) · [Kiểm thử / Testing](../docs/TESTING.md) · [Frontend](../frontend/README.md)
+---
 
-## Chế độ và ranh giới / Modes and boundaries
+<a id="en"></a>
 
-| Mode / Chế độ | Hiện trạng có nguồn / Source-grounded meaning | Không được suy diễn / Cannot infer |
+## Overview
+
+The Portal BFF (backend for frontend) is a Spring Boot 3.5 application (Java 21) that sits between the React Portal and the backend. It signs users in with Keycloak, keeps the session on the server and forwards allowed IT Helpdesk requests to the backend. The browser never receives an access token.
+
+```
+Browser ── HTTPS ──> Caddy ingress ──> Portal BFF ── Bearer token ──> Backend
+                          │                 │
+                          └─ Portal (static) └─ Keycloak (OIDC)
+```
+
+Related documentation: [docs/API.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/API.md) · [docs/INTEGRATION.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/INTEGRATION.md) · [frontend/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/frontend/README.md) · [infra/keycloak/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/infra/keycloak/README.md)
+
+### Endpoints
+
+| Path | Method | Access | Purpose |
+| --- | --- | --- | --- |
+| `/oauth2/authorization/keycloak` | GET | Public | Starts the OIDC Authorization Code flow with PKCE (S256) |
+| `/login/oauth2/code/keycloak` | GET | Public | OIDC callback |
+| `/bff/session` | GET | Public | Returns `{"authenticated":false}` or `{"authenticated":true,"csrfToken":"…"}` |
+| `/bff/logout` | POST | Signed in, CSRF | Ends the session and signs out of Keycloak |
+| `/bff/api/v1/mvp/requests` | GET, POST | Signed in, CSRF for POST | Lists and creates Helpdesk requests |
+| `/bff/api/v1/mvp/requests/{id}` | GET | Signed in | Request detail |
+| `/bff/api/v1/mvp/requests/{id}/history` | GET | Signed in | Request history |
+| `/bff/api/v1/mvp/requests/{id}/{action}` | POST | Signed in, CSRF | `action` is one of `triage`, `assign`, `start`, `resolve`, `confirm` |
+
+Any other `/bff/**` path is denied. These nine routes map one to one to the backend Helpdesk API under `/api/v1/mvp/requests`.
+
+### Security behavior
+
+- **Session cookie:** `__Host-DXOS-Portal`, `Secure`, `HttpOnly`, `SameSite=Lax`, path `/`, 30-minute timeout. `SameSite=Lax` lets the top-level OIDC callback carry the login cookie.
+- **CSRF:** enabled. Writes and logout must send the token from `/bff/session` in the `X-CSRF-TOKEN` header.
+- **Tokens:** the access and refresh tokens stay in the server session. Only the access token is sent to the backend, as `Authorization: Bearer`. Browser headers and cookies are not forwarded.
+- **Expired session:** if the token cannot be used or refreshed, the session is invalidated and the API returns `401`.
+- **Backend responses:** redirects are not followed. Request bodies are limited to 32 KB and responses to 2 MB. If the backend cannot be reached during a write, the BFF returns `503` with `COMMIT_OUTCOME_UNKNOWN` and does not retry; the client checks the result by reading the request detail or history.
+- **Startup checks:** the BFF refuses to start unless the Keycloak client is confidential (`client_secret_basic`), is not the backend client `tricore-api`, uses the Authorization Code grant and has the callback `${PORTAL_PUBLIC_ORIGIN}/login/oauth2/code/keycloak`. The public origin must be an HTTPS origin without a path; the backend URL must be HTTPS or `http://127.0.0.1`.
+- The BFF listens on `127.0.0.1` only. It must run behind a trusted HTTPS reverse proxy that serves the Portal on the same origin.
+
+### Configuration
+
+| Environment variable | Example (local deployment) | Description |
 | --- | --- | --- |
-| **MOCK (default)** | `frontend` chạy Vite/fixture giả; không cần BFF/Keycloak/DB. | Real SSO, API ACL, database writes |
-| **integration-local (opt-in)** | `npm.cmd run build:integration-local` chọn Frontend entry có BFF/session/CSRF transport; BFF/Backend/Keycloak/HTTPS ingress/DB phải được cấu hình riêng. | Build hoặc fixture tests PASS không xác nhận browser LIVE |
-| **LIVE E2E acceptance** | Phải có bằng chứng cùng SHA/environment cho login thật, ủy quyền, hành trình Helpdesk, negative paths và persistence. | Hiện vẫn **UNVERIFIED** (#118); không có approval triển khai production qua README này |
+| `SERVER_PORT` | `8081` | HTTP port on `127.0.0.1` |
+| `PORTAL_PUBLIC_ORIGIN` | `https://localhost:8443` | Public HTTPS origin of the Portal |
+| `PORTAL_OIDC_REDIRECT_URI` | `https://localhost:8443/login/oauth2/code/keycloak` | OIDC callback; must equal `${PORTAL_PUBLIC_ORIGIN}/login/oauth2/code/keycloak` |
+| `PORTAL_OIDC_ISSUER_URI` | `http://localhost:8180/realms/tricore` | Keycloak issuer; must match the backend issuer exactly |
+| `PORTAL_OIDC_CLIENT_ID` | `dxos-portal-bff-local` | Confidential Keycloak client |
+| `PORTAL_OIDC_CLIENT_SECRET` | from `infra/.env` | Client secret; supply it from a secret store, never commit it |
+| `PORTAL_BACKEND_BASE_URL` | `http://127.0.0.1:8080` | Backend origin |
 
-**English:** The BFF implements a source-level server-side OAuth/session boundary and controlled integration tests. A dedicated `integration-local` frontend build enables its transport, but it does not demonstrate accepted live authentication or persistence. Consult canonical [API](../docs/API.md), [integration](../docs/INTEGRATION.md), [testing](../docs/TESTING.md) and [development](../docs/DEVELOPMENT.md) guides before attempting a disposable local stack.
+The Keycloak client settings for the local deployment are described in [infra/keycloak/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/infra/keycloak/README.md).
 
-**Lịch sử / Historical context:** The OAuth candidate originated in PR #70 (`d833b363d22c1ad30a1f5d7bdc7b3d7712fb7d27`), with frontend from PR #71 (`c73bbc306a698141169304e5da848ea0686700db`) and Backend baseline PR #74 (`b6e05d080ebb24b54cc4d61dc4e20e2907fd2eaa`). These provenance identifiers explain the old integration candidate; they are **not** claims that the current main branch is unmerged or undeployed.
+### Run locally
 
-## Contract
+The simplest way is the one-command local deployment, which starts the BFF with Keycloak, the backend, PostgreSQL and the Caddy ingress: see [infra/demo/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/infra/demo/README.md).
 
-- Serve the built Portal and this BFF through one HTTPS origin. Route `/bff/**`, `/oauth2/authorization/**`, and `/login/oauth2/code/**` to the BFF. Keep the Backend private to the BFF. The BFF process binds to `127.0.0.1`; the trusted HTTPS reverse proxy must reject unknown Host values and strip untrusted forwarding headers.
-- Set `PORTAL_PUBLIC_ORIGIN` to the exact HTTPS origin and `PORTAL_OIDC_REDIRECT_URI` to `${PORTAL_PUBLIC_ORIGIN}/login/oauth2/code/keycloak`. Register that exact callback with Keycloak. Use a confidential Authorization Code client with a client secret and logout redirect to `${PORTAL_PUBLIC_ORIGIN}/`. PKCE S256 is added to authorization requests.
-- Set `PORTAL_OIDC_ISSUER_URI`, `PORTAL_OIDC_CLIENT_ID`, and `PORTAL_OIDC_CLIENT_SECRET` from a secret manager. The Keycloak access token must contain the Backend's exact issuer, audience, and `resource_access` authority claims; the BFF does not create or rewrite these claims.
-- Set `PORTAL_BACKEND_BASE_URL` to the private HTTPS Backend origin, or a literal `127.0.0.1` HTTP origin for a local disposable test. No request header, cookie, or browser token is forwarded. Only the server-held access token becomes an `Authorization: Bearer` header.
-- `/bff/session` returns `{authenticated:false}` or `{authenticated:true,csrfToken}` with `Cache-Control: no-store`. Browser writes and `POST /bff/logout` must send the token in `X-CSRF-TOKEN`. The cookie is `Secure`, `HttpOnly`, `SameSite=Lax`, host-only, path `/`; Lax permits the top-level OIDC GET callback while CSRF remains enabled.
-- `/bff/api/v1/mvp/requests` accepts the nine Helpdesk candidate routes only. Upstream redirects are rejected. Failed writes return `COMMIT_OUTCOME_UNKNOWN` without retry; reconcile through an authorized detail/history read.
+To run the BFF on its own, set the variables above and start it with the backend Gradle wrapper (the BFF has no wrapper of its own):
 
-## Verification and gates
+```bash
+./backend/gradlew -p portal-bff bootRun
+```
 
-Run `backend/gradlew.bat -p portal-bff test` with JDK 21. Tests cover anonymous/forged-header rejection, the actual CSRF header obtained from `/bff/session`, PKCE, confidential-client enforcement, session response, origin checks, bearer forwarding, hidden 404/409 propagation, redirect refusal, and no write retry. Frontend tests cover the concrete transport and session composition with mocked fetch. These checks do not prove a real Keycloak session, refresh, provider logout, HTTPS ingress, or PostgreSQL persistence.
+[Caddyfile.local](https://github.com/tricore-opentrix/opentrix/blob/main/portal-bff/Caddyfile.local) is a loopback-only HTTPS ingress for this setup: it serves `frontend/dist`, routes `/bff/*`, `/oauth2/authorization/*` and `/login/oauth2/code/*` to port 8081, and returns `404` for `/api/*`. Build the Portal with `npm run build:integration-local` first (see [frontend/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/frontend/README.md)).
 
-## Historical local setup (PowerShell, dedicated disposable integration worktree only)
+### Tests
 
-1. **Historical reproducibility notes only (2026-10-29)**. The specific ports, paths, RunId, installed tools and recorded verification counts below refer to an earlier isolated setup, not prerequisites guaranteed on today's machine. Use a fresh disposable environment; do not restart or reuse the retained Helpdesk/Keycloak data. In this run, reserve PostgreSQL `127.0.0.1:55442`, RunId `browser_20261029`, and a new Keycloak at `127.0.0.1:8182`. The running containers `dxos-stage6-pg17-local` (50835) and `dxos-olp-staging-postgres-1` (55426) are protected and must not be changed. Use `scripts/README-helpdesk-local.md` with the new RunId/port after the real users exist. Keep Java bound to `127.0.0.1:8080`; seed the three actual users' issuer/sub membership and Helpdesk actors in the new database. No Stage6 SQL, Flyway V1–V4, Facility, or MinIO changes are needed here.
+```bash
+./backend/gradlew -p portal-bff test
+```
 
-2. In realm `tricore`, provision a **new** OpenID Connect client `dxos-portal-bff-local`: Client authentication ON, Standard flow ON, PKCE S256 required, implicit/direct access grants/service accounts OFF. Require `client_secret_basic`. Exact redirect URI: `https://localhost:8443/login/oauth2/code/keycloak`; exact post-logout URI: `https://localhost:8443/`. No wildcard redirects or browser CORS origins are needed. Supply the generated secret only to the BFF process through environment/secret storage. The application refuses reuse of `tricore-api` and public authentication methods.
+The tests cover the session endpoint, CSRF, PKCE, the confidential-client and origin checks, bearer forwarding, rejection of redirects and forged headers, error propagation and the no-retry rule for writes. They use a mocked identity provider and backend; a sign-in against a running Keycloak can be checked with the local deployment.
 
-3. The new isolated environment uses exactly **`http://127.0.0.1:8182/realms/tricore`**. After manual admin/realm setup, verify discovery returns that exact string and pin **both** `OIDC_ISSUER_URI` and `PORTAL_OIDC_ISSUER_URI` to it. The earlier #74 Postman issuer was `http://127.0.0.1:8180/realms/tricore`; the older `.env.example` uses `localhost:8180`. These are different issuer/identity keys, and their old tokens/actors must not be reused. As recorded on 2026-10-29, the disposable Keycloak container had been created but not started; manual bootstrap remained pending. If using an existing trusted HTTPS issuer, use its exact discovery value on both sides and provision the disposable actors for those identities first; never bypass certificate validation.
+---
 
-   Set Backend `OIDC_AUDIENCE=tricore-api`, `OIDC_RESOURCE_CLIENT_ID=tricore-api`. Attach a client scope to the new BFF client that adds access-token audience `tricore-api` (Audience mapper, included client audience `tricore-api`, access token ON). Keep the client-role mapper producing **`resource_access.tricore-api.roles`**, not BFF-client roles or realm roles. Limit role scope to the required roles: Employee `workflow:create`, `workflow:activate`, `workflow:read`, `workflow:transition`; Coordinator/Worker `workflow:read`, `workflow:transition`. Their distinct DB actor memberships/ACL decide workflow capabilities. Inspect claims server-side without logging tokens. See [Keycloak administration](https://www.keycloak.org/docs/latest/server_admin/index.html) for client scopes, audience and role mappers.
+<a id="vi"></a>
 
-4. Build the explicit local composition and run its checks:
+## Tổng quan
 
-   ```powershell
-   Push-Location frontend
-   npm.cmd ci --ignore-scripts --no-audit --no-fund
-   npm.cmd test
-   npm.cmd run build:integration-local
-   npm.cmd run check:security
-   Pop-Location
-   ```
+Portal BFF (backend for frontend) là ứng dụng Spring Boot 3.5 (Java 21) đứng giữa Portal React và backend. BFF đăng nhập người dùng qua Keycloak, giữ phiên ở phía máy chủ và chuyển tiếp các yêu cầu IT Helpdesk được phép tới backend. Trình duyệt không bao giờ nhận access token.
 
-   `npm.cmd run build` restores the default MOCK build. Local integration refuses HTTP and non-loopback origins. It reads `/bff/session`, keeps only CSRF in memory, and never reads a demo persona for access. A 401 removes the Helpdesk UI and requires a new login. Unknown writes stay blocked across feature navigation; an authorized detail/history read is for reconciliation, not permission to replay a POST.
+```
+Trình duyệt ── HTTPS ──> Ingress Caddy ──> Portal BFF ── Bearer token ──> Backend
+                              │                 │
+                              └─ Portal (tĩnh)  └─ Keycloak (OIDC)
+```
 
-5. In a dedicated terminal with JDK 21, start the BFF after providing its secret in the process environment:
+Tài liệu liên quan: [docs/API.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/API.md) · [docs/INTEGRATION.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/INTEGRATION.md) · [frontend/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/frontend/README.md) · [infra/keycloak/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/infra/keycloak/README.md)
 
-   ```powershell
-   $env:JAVA_HOME = 'C:\Program Files\Java\jdk-21.0.11'
-   $env:Path = "$env:JAVA_HOME\bin;$env:Path"
-   $env:SERVER_PORT = '8081'
-   $env:PORTAL_PUBLIC_ORIGIN = 'https://localhost:8443'
-   $env:PORTAL_OIDC_REDIRECT_URI = 'https://localhost:8443/login/oauth2/code/keycloak'
-   $env:PORTAL_OIDC_ISSUER_URI = 'http://127.0.0.1:8182/realms/tricore'
-   $env:PORTAL_OIDC_CLIENT_ID = 'dxos-portal-bff-local'
-   $env:PORTAL_BACKEND_BASE_URL = 'http://127.0.0.1:8080'
-   if ([string]::IsNullOrWhiteSpace($env:PORTAL_OIDC_CLIENT_SECRET)) { throw 'Supply the BFF client secret through the process environment first.' }
-   .\backend\gradlew.bat -p portal-bff bootRun --console=plain
-   ```
+### Endpoint
 
-6. Install Caddy from its official distribution if absent. From the worktree root, validate and run the supplied loopback-only HTTPS ingress:
+| Đường dẫn | Phương thức | Quyền truy cập | Mục đích |
+| --- | --- | --- | --- |
+| `/oauth2/authorization/keycloak` | GET | Công khai | Bắt đầu luồng OIDC Authorization Code với PKCE (S256) |
+| `/login/oauth2/code/keycloak` | GET | Công khai | Callback OIDC |
+| `/bff/session` | GET | Công khai | Trả về `{"authenticated":false}` hoặc `{"authenticated":true,"csrfToken":"…"}` |
+| `/bff/logout` | POST | Đã đăng nhập, CSRF | Kết thúc phiên và đăng xuất khỏi Keycloak |
+| `/bff/api/v1/mvp/requests` | GET, POST | Đã đăng nhập, CSRF cho POST | Liệt kê và tạo yêu cầu Helpdesk |
+| `/bff/api/v1/mvp/requests/{id}` | GET | Đã đăng nhập | Chi tiết yêu cầu |
+| `/bff/api/v1/mvp/requests/{id}/history` | GET | Đã đăng nhập | Lịch sử yêu cầu |
+| `/bff/api/v1/mvp/requests/{id}/{action}` | POST | Đã đăng nhập, CSRF | `action` là một trong `triage`, `assign`, `start`, `resolve`, `confirm` |
 
-   ```powershell
-   caddy validate --config .\portal-bff\Caddyfile.local --adapter caddyfile
-   caddy run --config .\portal-bff\Caddyfile.local --adapter caddyfile
-   # In another terminal, after the local CA exists; trust installation may require elevation:
-   caddy trust
-   curl.exe --fail https://localhost:8443/bff/session
-   ```
+Mọi đường dẫn `/bff/**` khác đều bị từ chối. Chín route này tương ứng một-một với API Helpdesk của backend tại `/api/v1/mvp/requests`.
 
-   Verify browser trust with no certificate exception before logging in. Caddy's local CA must be trusted by the browser/OS; Java must also trust any HTTPS issuer/backend CA it contacts. The ingress strips untrusted forwarding values, pins forwarded host/protocol, serves SPA fallback, rejects `/api/*`, and routes only BFF/OIDC paths to port 8081. During the 2026-10-29 historical run, Caddy v2.11.7 was downloaded to the ignored `backend/build/helpdesk-browser-local/tools` directory and checked against its published SHA-512 checksum. Validation succeeded. Verified-CA/hostname HTTPS probes return Portal 200, private `/api/*` 404 and mismatched SNI/Host 421 after adding `strict_sni_host on`. The runtime uses a private CA/storage directory and `install_trust=false`; the user must install its public CA in their browser/OS trust store before browser testing. See [Caddy local TLS/trust](https://caddyserver.com/docs/caddyfile/directives/tls), [proxy headers](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy), and [SNI/Host enforcement](https://caddyserver.com/docs/caddyfile/options).
+### Cơ chế bảo mật
 
-## Real browser acceptance — UNVERIFIED (historical run blocked)
+- **Cookie phiên:** `__Host-DXOS-Portal`, `Secure`, `HttpOnly`, `SameSite=Lax`, path `/`, hết hạn sau 30 phút. `SameSite=Lax` cho phép callback OIDC cấp cao nhất mang theo cookie đăng nhập.
+- **CSRF:** được bật. Các thao tác ghi và đăng xuất phải gửi token lấy từ `/bff/session` trong header `X-CSRF-TOKEN`.
+- **Token:** access token và refresh token nằm trong phiên phía máy chủ. Chỉ access token được gửi tới backend, dưới dạng `Authorization: Bearer`. Header và cookie của trình duyệt không được chuyển tiếp.
+- **Phiên hết hạn:** nếu không dùng hoặc làm mới được token, phiên bị hủy và API trả `401`.
+- **Phản hồi từ backend:** không đi theo redirect. Nội dung yêu cầu giới hạn 32 KB, phản hồi giới hạn 2 MB. Nếu không liên lạc được backend khi đang ghi, BFF trả `503` với `COMMIT_OUTCOME_UNKNOWN` và không thử lại; phía client kiểm tra kết quả bằng cách đọc chi tiết hoặc lịch sử yêu cầu.
+- **Kiểm tra khi khởi động:** BFF không chạy nếu client Keycloak không phải confidential (`client_secret_basic`), trùng với client backend `tricore-api`, không dùng Authorization Code hoặc callback khác `${PORTAL_PUBLIC_ORIGIN}/login/oauth2/code/keycloak`. Origin công khai phải là HTTPS và không có path; URL backend phải là HTTPS hoặc `http://127.0.0.1`.
+- BFF chỉ lắng nghe trên `127.0.0.1`. BFF phải chạy sau một reverse proxy HTTPS tin cậy, phục vụ Portal trên cùng origin.
 
-During the historical 2026-10-29 run, Docker Desktop 29.7.2 was available; its current availability is not verified. Retained containers/data were not reused. In the historical 2026-10-29 run, the disposable Keycloak container `dxos-helpdesk-browser-keycloak-20261029` and its private volume/network had been prepared but had not been started. Bootstrap admin, client provisioning and secrets had been left for manual setup. PostgreSQL demo preflight on port 55442 had passed, while actual demo setup was still awaiting real user subject identifiers and database passwords. HTTPS ingress and the integration-local Portal build had been observed at port 8443, but browser trust installation had not been completed. These observations do not establish the current runtime state. In the historical 2026-10-29 environment, Backend/BFF startup was blocked by missing prerequisites, and `/bff/session` returned HTTP 502. This does not describe the current environment. No real BFF→Backend session, browser login, disposable full-stack request, or its persistence is verified. Local manual scripts/instructions are prepared in the ignored `backend/build/helpdesk-browser-local/MANUAL-SETUP.md`; none of their admin/secret/trust steps were executed. BFF/frontend unit tests are not browser E2E evidence.
+### Cấu hình
 
-Backend `test --no-daemon --rerun-tasks --console=plain` was rerun on two newly owned PostgreSQL 17.11 fixtures, including verified TLS and wrong-CA/hostname negatives: Gradle exit 0, **999 tests / 992 passed / 7 skipped / 0 failures/errors**. All nine Workflow DB suites passed (196 cases); Helpdesk passed 46 of 47 cases. The 7 remaining skips require real Keycloak tokens: 6 Identity/Gateway cases and B06. These tests hardcode `http://localhost:8180/realms/tricore`, so the new 8182 issuer's tokens cannot be substituted. The original 155 class-disabled entries expand into parameterized cases when enabled; their counts are not one-to-one. A wrapper port-selection error caused an intermediate failed run; it was corrected to use Docker's allocated port, with no source-test or guard changes, before the successful rerun. Logs/JUnit XML are under `backend/build`; unit/fixture tokens are not evidence of a real Keycloak/BFF browser session.
+| Biến môi trường | Ví dụ (triển khai cục bộ) | Mô tả |
+| --- | --- | --- |
+| `SERVER_PORT` | `8081` | Cổng HTTP trên `127.0.0.1` |
+| `PORTAL_PUBLIC_ORIGIN` | `https://localhost:8443` | Origin HTTPS công khai của Portal |
+| `PORTAL_OIDC_REDIRECT_URI` | `https://localhost:8443/login/oauth2/code/keycloak` | Callback OIDC; phải bằng `${PORTAL_PUBLIC_ORIGIN}/login/oauth2/code/keycloak` |
+| `PORTAL_OIDC_ISSUER_URI` | `http://localhost:8180/realms/tricore` | Issuer của Keycloak; phải khớp chính xác với issuer của backend |
+| `PORTAL_OIDC_CLIENT_ID` | `dxos-portal-bff-local` | Client Keycloak loại confidential |
+| `PORTAL_OIDC_CLIENT_SECRET` | lấy từ `infra/.env` | Secret của client; cấp qua kho bí mật, không bao giờ commit |
+| `PORTAL_BACKEND_BASE_URL` | `http://127.0.0.1:8080` | Origin của backend |
 
-After setup, use three isolated browser profiles/contexts at `https://localhost:8443/mvp/helpdesk` and genuine Keycloak logins. Create a **new disposable** Employee request; record its returned ID without sensitive data. Coordinator performs Triage then Assign using the server's eligible assignees and current versions. Assigned Worker performs Start then Resolve. Employee performs Confirm. Reload detail and GET history through the BFF: final state `CONFIRMED`, version 4, exactly four transitions `triage`, `start_work`, `resolve`, `confirm`; Assign updates assignmentVersion without adding a workflow transition. Restart Java against the same disposable database and verify detail/history again before claiming persistence.
+Cấu hình client Keycloak cho triển khai cục bộ được mô tả trong [infra/keycloak/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/infra/keycloak/README.md).
 
-Check anonymous/expired session 401; valid-session missing/wrong CSRF 403; insufficient role/action 403; unauthorized actor/resource detail and history hidden 404; stale workflow/assignment versions 409 with unchanged state/history; disconnected reads; lost write response `COMMIT_OUTCOME_UNKNOWN` with no second POST. Inspect browser traffic/storage to ensure no direct Backend calls or bearer tokens. Also verify cookie `__Host-DXOS-Portal` is Secure/HttpOnly/host-only/SameSite=Lax and that an unknown Host cannot reach the app. Do not mark any of these cases PASS until actually run. Do not merge or enable production/LIVE from this local candidate.
+### Chạy cục bộ
+
+Cách đơn giản nhất là triển khai cục bộ bằng một lệnh, dựng BFF cùng Keycloak, backend, PostgreSQL và ingress Caddy: xem [infra/demo/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/infra/demo/README.md).
+
+Để chạy riêng BFF, đặt các biến ở trên rồi khởi động bằng Gradle wrapper của backend (BFF không có wrapper riêng):
+
+```bash
+./backend/gradlew -p portal-bff bootRun
+```
+
+[Caddyfile.local](https://github.com/tricore-opentrix/opentrix/blob/main/portal-bff/Caddyfile.local) là ingress HTTPS chỉ lắng nghe trên loopback cho cách chạy này: phục vụ `frontend/dist`, chuyển `/bff/*`, `/oauth2/authorization/*` và `/login/oauth2/code/*` tới cổng 8081, và trả `404` cho `/api/*`. Build Portal bằng `npm run build:integration-local` trước (xem [frontend/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/frontend/README.md)).
+
+### Kiểm thử
+
+```bash
+./backend/gradlew -p portal-bff test
+```
+
+Các test bao phủ endpoint phiên, CSRF, PKCE, kiểm tra client confidential và origin, chuyển tiếp bearer token, từ chối redirect và header giả mạo, truyền mã lỗi và quy tắc không thử lại khi ghi. Test dùng identity provider và backend giả lập; việc đăng nhập với Keycloak thật có thể kiểm tra bằng triển khai cục bộ.

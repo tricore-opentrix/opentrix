@@ -4,646 +4,302 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# DX-OS Open-Core backend
+# Backend
 
-Nền backend cho Internal Service Portal của TRICORE, theo kiến trúc Modular
-Monolith. Base package: `com.tricore.dxos`. Core cung cấp cơ chế; application
-sở hữu ngữ nghĩa nghiệp vụ. Issue #1 tạo nền dự án và health API;
-Issue #5 bổ sung tạo, danh sách và chi tiết Request; Issue #7 bổ sung workflow IT Support.
+## Overview
+
+The backend is a Spring Boot modular monolith (base package `com.tricore.dxos`). It provides the
+Identity, Workflow and Data cores, and the IT Helpdesk application (`it-helpdesk@1`) built on them.
+The cores provide mechanisms; the application owns business meaning.
+
+| Package | Responsibility |
+| --- | --- |
+| `core.identity` | Authenticated principal, authorities and authorization decisions |
+| `core.workflow` | Workflow definitions, instances, transitions and the persistence port |
+| `core.data` | Object storage port |
+| `application` | Workflow authorization policy and the Helpdesk use-case interface |
+| `gateway` | HTTP adapters for the Helpdesk API |
+| `infrastructure` | JWT validation, the PostgreSQL Workflow adapter and the Helpdesk service |
+| `common` | Health endpoint and the shared error body |
+
+Each core package depends only on the Java standard library (excluding JDBC) and on itself.
+Architecture tests ([`CoreDependencyRulesTest`](https://github.com/tricore-opentrix/opentrix/blob/main/backend/src/test/java/com/tricore/dxos/architecture/CoreDependencyRulesTest.java))
+enforce this rule. See [ARCHITECTURE.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/ARCHITECTURE.md)
+and [dependency-rules.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/01-architecture/dependency-rules.md).
+
+## Requirements
+
+- JDK 21.
+- PostgreSQL 17 to run the application or the integration tests.
+- An OpenID Connect issuer (Keycloak realm `tricore` in the local deployment).
+- Docker, for the local deployment and the local verification script.
+
+The Gradle Wrapper (Gradle 8.14.3) is included. Commands below run from `backend/`.
+
+## Endpoints
+
+| Method and path | Access | Purpose |
+| --- | --- | --- |
+| `GET /api/v1/health` | Public | Returns `{"status":"UP"}`. Does not query the database. |
+| `GET /actuator/health` | Bearer token | Aggregate health, without details or components |
+| `POST /api/v1/mvp/requests` | Bearer token | Create a request: `title` (≤ 200), `description` (≤ 4000), `requestType: "IT_HELPDESK"` |
+| `GET /api/v1/mvp/requests` | Bearer token | List visible requests; cursor `after`, `limit` 1–100 (default 50) |
+| `GET /api/v1/mvp/requests/{id}` | Bearer token | Read one request |
+| `GET /api/v1/mvp/requests/{id}/history` | Bearer token | Read Workflow transition history |
+| `POST /api/v1/mvp/requests/{id}/triage` | Coordinator | `SUBMITTED → TRIAGED`, with `expectedVersion` |
+| `POST /api/v1/mvp/requests/{id}/assign` | Coordinator | Set the assignee while `TRIAGED`, with `assigneeId` and `expectedAssignmentVersion` |
+| `POST /api/v1/mvp/requests/{id}/start` | Assigned worker | `TRIAGED → IN_PROGRESS`, with `expectedVersion` |
+| `POST /api/v1/mvp/requests/{id}/resolve` | Assigned worker | `IN_PROGRESS → RESOLVED`, with `expectedVersion` and `resolution` (≤ 4000) |
+| `POST /api/v1/mvp/requests/{id}/confirm` | Requester (submitter) | `RESOLVED → CONFIRMED`, with `expectedVersion` |
+
+The `/api/v1/mvp/requests` routes are registered only when `dxos.helpdesk.enabled=true`.
+`CONFIRMED` is the final state. Assignment is not a Workflow state; it increments a separate
+`assignment_version`. Request bodies reject unknown fields. The full contract is in
+[API.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/API.md).
+
+The Workflow HTTP adapter (`/api/v1/workflow-instances`) is not registered as a Spring controller.
+It is tested independently and is not reachable in a running application.
+
+## Security behavior
+
+- **Stateless resource server.** Every route except `/api/v1/health` requires a bearer JWT. No HTTP
+  session is created.
+- **Token validation.** Issuer, signature, timestamps, audience (`OIDC_AUDIENCE`), access-token type
+  and a string `sub` claim are checked.
+- **Authorities.** Authorities are read from `resource_access.<OIDC_RESOURCE_CLIENT_ID>.roles`.
+- **Helpdesk authorization.** Every call checks the verified identity, tenant membership, the
+  per-request access list and the actor's role (submitter, coordinator or worker) before any change
+  is committed. Actor roles are provisioned in the database, not taken from the request.
+- **Optimistic concurrency.** A stale `expectedVersion` or `expectedAssignmentVersion` is rejected
+  with a version conflict.
+- **Durable writes.** A write reports success only after PostgreSQL confirms the `COMMIT`. If the
+  outcome of a `COMMIT` is unknown, the backend reports it and does not retry.
+- **Actuator.** Only the `health` endpoint is exposed over HTTP; JMX exposure is disabled.
+
+## Configuration
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Yes, unless `SPRING_DATASOURCE_*` is set | Main datasource (`jdbc:postgresql://DB_HOST:DB_PORT/DB_NAME`). There are no default credentials. |
+| `DXOS_WORKFLOW_SCHEMA` | Yes | Workflow schema: lowercase `[a-z][a-z0-9_]{0,62}`, not `public` or a system schema |
+| `SPRING_FLYWAY_ENABLED` | No | Set to `false` when the schema is provisioned separately (as in the local deployment) |
+| `OIDC_ISSUER_URI` | Yes | Issuer, for example `http://localhost:8180/realms/tricore` |
+| `OIDC_AUDIENCE` | Yes | Required token audience, for example `tricore-api` |
+| `OIDC_RESOURCE_CLIENT_ID` | Yes | Client whose roles are read as authorities, for example `tricore-api` |
+| `DXOS_HELPDESK_ENABLED` | No | `true` registers the Helpdesk API |
+| `DXOS_HELPDESK_JDBCURL`, `DXOS_HELPDESK_USERNAME`, `DXOS_HELPDESK_PASSWORD` | With Helpdesk | Helpdesk database connection |
+| `DXOS_HELPDESK_SCHEMA`, `DXOS_HELPDESK_TENANT` | With Helpdesk | Helpdesk schema and tenant |
+| `SERVER_ADDRESS`, `SERVER_PORT` | No | Bind address and port (default port `8080`) |
+
+The Helpdesk API refuses to start unless all of the following hold: `SERVER_ADDRESS` is `127.0.0.1`,
+the JDBC URL is `jdbc:postgresql://127.0.0.1:<port>/helpdesk_disposable_<name>`, and the login is
+`helpdesk_runtime_<name>`. It is intended for a local, disposable database only.
+
+Spring Boot does not read `.env` files. Do not commit credentials.
+
+## Run locally
+
+The simplest way to run the backend with PostgreSQL, Keycloak, the Portal BFF and the Portal is the
+local deployment in [infra/demo](https://github.com/tricore-opentrix/opentrix/blob/main/infra/demo/README.md).
+It builds the backend from source, provisions the Helpdesk schema and sets every variable above.
+
+To build and run the backend on its own:
+
+```powershell
+.\gradlew.bat build          # Windows
+./gradlew build              # Linux and macOS
+java -jar build/libs/dxos-backend-0.1.0.jar
+```
+
+The application needs the variables from [Configuration](#configuration) at startup.
+
+A source archive from a release does not include `gradle-wrapper.jar`. In that case, install
+Gradle 8.14.3 and run `gradle -p backend build` from the archive root. See
+[RELEASE.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/RELEASE.md).
+
+## Database migrations
+
+| Location | Content |
+| --- | --- |
+| `src/main/resources/db/migration/V1`, `V2` | Earlier request tables. Kept so that `flyway validate` passes on existing databases; no code uses them. |
+| `src/main/resources/db/migration/V3` | Workflow definitions, instances and transition history |
+| `src/main/resources/db/migration/V4` | Seed definitions `document-review@1` and `incident-resolution@1` |
+| `src/main/resources/db/helpdesk/` | Helpdesk tables, the `it-helpdesk@1` definition and runtime grants, applied outside Flyway |
+
+Definitions are immutable once committed; a change needs a new version. Flyway is restricted to the
+configured schema and has `clean` and baseline-on-migrate disabled. The runtime login should not own the
+schema and should have only the grants in
+[runtime-grants.sql](https://github.com/tricore-opentrix/opentrix/blob/main/backend/src/main/resources/db/helpdesk/runtime-grants.sql).
+
+## Tests
+
+| Command | What it runs | Needs |
+| --- | --- | --- |
+| `./gradlew test` | Unit, MVC, security and architecture tests. PostgreSQL tests are skipped. | JDK 21 |
+| `./gradlew workflowIntegrationTest` | Workflow persistence and isolation suites against PostgreSQL | `WORKFLOW_TEST_JDBC_URL`, `WORKFLOW_TEST_DB_USER`, `WORKFLOW_TEST_DB_PASSWORD` (loopback only) |
+| `powershell -File ..\scripts\workflow-verify-local.ps1` | Starts a disposable PostgreSQL 17.11 container with TLS, runs `test build` with every integration suite, then removes the container | Docker, JDK 21, Windows |
+
+The integration fixtures refuse non-loopback database URLs. Do not run them against a shared database.
+
+The `workflowSmoke`, `workflowSchemaBootstrap`, `workflowApprovedMigration` and related Gradle tasks
+are operator tools for a hosted PostgreSQL. They write to a real database only with explicit approval
+variables. See [scripts/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/scripts/README.md)
+before using them.
+
+## Limitations
+
+- The Helpdesk API runs only against a local, disposable database (see [Configuration](#configuration)).
+- The Workflow HTTP adapter is not registered.
+- `core.data` defines the storage port; no production storage adapter is included.
+- The backend is not packaged as a container image or a published JAR.
+
+---
+
+## Tổng quan
+
+Backend là một modular monolith viết bằng Spring Boot (package gốc `com.tricore.dxos`). Backend cung
+cấp các core Identity, Workflow và Data, cùng ứng dụng IT Helpdesk (`it-helpdesk@1`) xây dựng trên các
+core đó. Core cung cấp cơ chế; ứng dụng sở hữu ngữ nghĩa nghiệp vụ.
+
+| Package | Trách nhiệm |
+| --- | --- |
+| `core.identity` | Principal đã xác thực, authority và quyết định phân quyền |
+| `core.workflow` | Định nghĩa, instance, transition của Workflow và cổng lưu trữ |
+| `core.data` | Cổng lưu trữ đối tượng |
+| `application` | Chính sách phân quyền Workflow và giao diện use case Helpdesk |
+| `gateway` | Adapter HTTP cho Helpdesk API |
+| `infrastructure` | Kiểm tra JWT, adapter Workflow cho PostgreSQL và dịch vụ Helpdesk |
+| `common` | Endpoint health và cấu trúc lỗi dùng chung |
+
+Mỗi package core chỉ phụ thuộc vào thư viện chuẩn Java (trừ JDBC) và chính nó. Quy tắc này được kiểm
+tra bằng test kiến trúc ([`CoreDependencyRulesTest`](https://github.com/tricore-opentrix/opentrix/blob/main/backend/src/test/java/com/tricore/dxos/architecture/CoreDependencyRulesTest.java)).
+Xem [ARCHITECTURE.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/ARCHITECTURE.md)
+và [dependency-rules.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/01-architecture/dependency-rules.md).
 
 ## Yêu cầu
 
-- JDK **21**, với `JAVA_HOME` trỏ đến thư mục JDK.
-- PowerShell trên Windows.
-- Internet ở lần build đầu để Gradle Wrapper tải Gradle và dependency.
-- PostgreSQL khả dụng khi chạy toàn bộ ứng dụng; môi trường Docker/PostgreSQL
-  do Issue #3 cung cấp.
+- JDK 21.
+- PostgreSQL 17 để chạy ứng dụng hoặc integration test.
+- Một OpenID Connect issuer (realm Keycloak `tricore` trong bản triển khai cục bộ).
+- Docker, cho bản triển khai cục bộ và script kiểm tra cục bộ.
 
-Dự án sử dụng Spring Boot 3.5.16, Gradle Groovy và Gradle Wrapper 8.14.3.
-**Chỉ với Git checkout:** không cần cài Gradle riêng vì có `gradle-wrapper.jar`; các lệnh `gradlew` bên dưới chạy từ thư mục `backend/`.
+Repository có sẵn Gradle Wrapper (Gradle 8.14.3). Các lệnh bên dưới chạy từ thư mục `backend/`.
 
-**Với SOURCE-ONLY archive đã giải nén:** file bootstrap `gradle-wrapper.jar` không được phân phối, nên `gradlew` không khả dụng. Cài **Gradle 8.14.3 bên ngoài** và JDK 21, chạy từ thư mục `source/`: `gradle -p backend test build`; với Portal BFF: `gradle -p portal-bff test build`. Đây là build verification, không phải phát hành binary. Xem [R24](../docs/06-deployment/r24-release.md).
+## Endpoint
 
-## Build và test trên Windows
+| Phương thức và đường dẫn | Truy cập | Mục đích |
+| --- | --- | --- |
+| `GET /api/v1/health` | Công khai | Trả `{"status":"UP"}`. Không truy vấn database. |
+| `GET /actuator/health` | Bearer token | Health tổng hợp, không hiển thị chi tiết hay thành phần |
+| `POST /api/v1/mvp/requests` | Bearer token | Tạo yêu cầu: `title` (≤ 200), `description` (≤ 4000), `requestType: "IT_HELPDESK"` |
+| `GET /api/v1/mvp/requests` | Bearer token | Liệt kê yêu cầu được phép xem; con trỏ `after`, `limit` 1–100 (mặc định 50) |
+| `GET /api/v1/mvp/requests/{id}` | Bearer token | Đọc một yêu cầu |
+| `GET /api/v1/mvp/requests/{id}/history` | Bearer token | Đọc lịch sử chuyển trạng thái Workflow |
+| `POST /api/v1/mvp/requests/{id}/triage` | Điều phối viên | `SUBMITTED → TRIAGED`, kèm `expectedVersion` |
+| `POST /api/v1/mvp/requests/{id}/assign` | Điều phối viên | Gán người xử lý khi đang `TRIAGED`, kèm `assigneeId` và `expectedAssignmentVersion` |
+| `POST /api/v1/mvp/requests/{id}/start` | Người xử lý được gán | `TRIAGED → IN_PROGRESS`, kèm `expectedVersion` |
+| `POST /api/v1/mvp/requests/{id}/resolve` | Người xử lý được gán | `IN_PROGRESS → RESOLVED`, kèm `expectedVersion` và `resolution` (≤ 4000) |
+| `POST /api/v1/mvp/requests/{id}/confirm` | Người gửi yêu cầu | `RESOLVED → CONFIRMED`, kèm `expectedVersion` |
 
-Ví dụ thiết lập JDK (thay đường dẫn theo máy):
+Các route `/api/v1/mvp/requests` chỉ được đăng ký khi `dxos.helpdesk.enabled=true`.
+`CONFIRMED` là trạng thái cuối. Việc gán người xử lý không phải một trạng thái Workflow; thao tác này
+tăng một giá trị riêng là `assignment_version`. Body của request từ chối trường không xác định. Hợp đồng
+đầy đủ có trong [API.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/API.md).
+
+Adapter HTTP của Workflow (`/api/v1/workflow-instances`) không được đăng ký làm Spring controller.
+Adapter này được kiểm thử độc lập và không thể truy cập trong ứng dụng đang chạy.
+
+## Hành vi bảo mật
+
+- **Resource server không trạng thái.** Mọi route, trừ `/api/v1/health`, yêu cầu bearer JWT. Không
+  tạo HTTP session.
+- **Kiểm tra token.** Kiểm tra issuer, chữ ký, thời gian, audience (`OIDC_AUDIENCE`), loại access
+  token và claim `sub` dạng chuỗi.
+- **Authority.** Authority được đọc từ `resource_access.<OIDC_RESOURCE_CLIENT_ID>.roles`.
+- **Phân quyền Helpdesk.** Mỗi lời gọi kiểm tra danh tính đã xác minh, tư cách thành viên tenant,
+  danh sách quyền của từng yêu cầu và vai trò của người thực hiện (người gửi, điều phối viên hoặc
+  người xử lý) trước khi commit bất kỳ thay đổi nào. Vai trò được cấp sẵn trong database, không lấy
+  từ request.
+- **Kiểm soát đồng thời lạc quan.** `expectedVersion` hoặc `expectedAssignmentVersion` đã cũ bị từ
+  chối với lỗi xung đột phiên bản.
+- **Ghi bền vững.** Thao tác ghi chỉ báo thành công sau khi PostgreSQL xác nhận `COMMIT`. Nếu không
+  xác định được kết quả `COMMIT`, backend báo lại và không thử lại.
+- **Actuator.** Chỉ endpoint `health` được mở qua HTTP; JMX bị tắt.
+
+## Cấu hình
+
+| Biến | Bắt buộc | Mô tả |
+| --- | --- | --- |
+| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Có, trừ khi đặt `SPRING_DATASOURCE_*` | Datasource chính (`jdbc:postgresql://DB_HOST:DB_PORT/DB_NAME`). Không có credentials mặc định. |
+| `DXOS_WORKFLOW_SCHEMA` | Có | Schema Workflow: chữ thường `[a-z][a-z0-9_]{0,62}`, không phải `public` hay schema hệ thống |
+| `SPRING_FLYWAY_ENABLED` | Không | Đặt `false` khi schema được cấp riêng (như trong bản triển khai cục bộ) |
+| `OIDC_ISSUER_URI` | Có | Issuer, ví dụ `http://localhost:8180/realms/tricore` |
+| `OIDC_AUDIENCE` | Có | Audience bắt buộc của token, ví dụ `tricore-api` |
+| `OIDC_RESOURCE_CLIENT_ID` | Có | Client có role được đọc làm authority, ví dụ `tricore-api` |
+| `DXOS_HELPDESK_ENABLED` | Không | `true` để đăng ký Helpdesk API |
+| `DXOS_HELPDESK_JDBCURL`, `DXOS_HELPDESK_USERNAME`, `DXOS_HELPDESK_PASSWORD` | Khi bật Helpdesk | Kết nối database của Helpdesk |
+| `DXOS_HELPDESK_SCHEMA`, `DXOS_HELPDESK_TENANT` | Khi bật Helpdesk | Schema và tenant của Helpdesk |
+| `SERVER_ADDRESS`, `SERVER_PORT` | Không | Địa chỉ và cổng lắng nghe (cổng mặc định `8080`) |
+
+Helpdesk API từ chối khởi động nếu không thỏa đồng thời các điều kiện: `SERVER_ADDRESS` là
+`127.0.0.1`, JDBC URL có dạng `jdbc:postgresql://127.0.0.1:<port>/helpdesk_disposable_<name>`, và
+tài khoản đăng nhập có dạng `helpdesk_runtime_<name>`. API này chỉ dành cho database cục bộ, dùng
+một lần.
+
+Spring Boot không đọc tệp `.env`. Không commit credentials.
+
+## Chạy cục bộ
+
+Cách đơn giản nhất để chạy backend cùng PostgreSQL, Keycloak, Portal BFF và Portal là bản triển khai
+cục bộ trong [infra/demo](https://github.com/tricore-opentrix/opentrix/blob/main/infra/demo/README.md).
+Bản này build backend từ mã nguồn, cấp schema Helpdesk và đặt toàn bộ biến ở trên.
+
+Để build và chạy riêng backend:
 
 ```powershell
-$env:JAVA_HOME = 'C:\Program Files\Java\jdk-21.0.11'
-$env:Path = "$env:JAVA_HOME\bin;$env:Path"
-java -version
-.\gradlew.bat --version
-.\gradlew.bat test
-.\gradlew.bat build
+.\gradlew.bat build          # Windows
+./gradlew build              # Linux và macOS
+java -jar build/libs/dxos-backend-0.1.0.jar
 ```
 
-Build tạo executable JAR tại `build/libs/dxos-backend-0.0.1-SNAPSHOT.jar`.
-Test health dùng `@WebMvcTest`, kiểm tra HTTP 200, Content-Type JSON và chính
-xác body `{"status":"UP"}`. Build và test này không cần PostgreSQL hay biến
-môi trường database. Không có database giả hoặc dependency H2.
+Ứng dụng cần các biến trong phần [Cấu hình](#cấu-hình) khi khởi động.
 
-Chạy riêng test health:
+Archive mã nguồn của bản phát hành không có `gradle-wrapper.jar`. Khi đó, cài Gradle 8.14.3 và chạy
+`gradle -p backend build` từ thư mục gốc của archive. Xem
+[RELEASE.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/RELEASE.md).
 
-```powershell
-.\gradlew.bat test --tests com.tricore.dxos.common.health.HealthControllerTest
-```
+## Migration database
 
-## PostgreSQL và biến môi trường
-
-Cần cung cấp đủ năm biến sau trong process chạy ứng dụng:
-
-| Biến | Ý nghĩa |
+| Vị trí | Nội dung |
 | --- | --- |
-| `DB_HOST` | Host PostgreSQL có thể truy cập từ backend |
-| `DB_PORT` | Cổng PostgreSQL |
-| `DB_NAME` | Database đã được tạo |
-| `DB_USER` | Tài khoản PostgreSQL |
-| `DB_PASSWORD` | Mật khẩu của tài khoản |
-
-Datasource URL: `jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}`.
-Không có credentials mặc định. Hibernate `ddl-auto: none` không tạo hoặc sửa
-schema; `open-in-view: false` giới hạn persistence ngoài HTTP rendering.
-
-Ví dụ PowerShell nhập cấu hình mà không ghi mật khẩu vào source hoặc command
-history:
-
-Adapter Workflow #25 còn cần `DXOS_WORKFLOW_SCHEMA`, datasource có `currentSchema`
-đúng schema riêng và `SPRING_FLYWAY_ENABLED=false` ở runtime. Schema/migrations phải
-có trước khi boot; xem **Chạy backend local từ clone mới** hoặc **Kết nối Supabase
-PostgreSQL mặc định cho Issue #25** bên dưới. Login runtime riêng là yêu cầu cho
-triển khai lâu dài, không phải prerequisite của bước kết nối Supabase ban đầu.
-
-```powershell
-$env:DB_HOST = Read-Host 'DB_HOST (theo môi trường Issue #3)'
-$env:DB_PORT = Read-Host 'DB_PORT'
-$env:DB_NAME = Read-Host 'DB_NAME'
-$env:DB_USER = Read-Host 'DB_USER'
-$env:DB_PASSWORD = Read-Host 'DB_PASSWORD' -MaskInput
-.\gradlew.bat bootRun
-```
-
-`-MaskInput` cần PowerShell 7.1 trở lên. Với Windows PowerShell 5.1, nhập
-mật khẩu bằng cách sau thay cho dòng `DB_PASSWORD` bên trên:
-
-```powershell
-$dbCredential = Get-Credential -UserName $env:DB_USER -Message 'PostgreSQL credentials'
-$env:DB_PASSWORD = $dbCredential.GetNetworkCredential().Password
-.\gradlew.bat bootRun
-```
-
-Cũng có thể chạy JAR đã build, với cùng các biến môi trường:
-
-```powershell
-java -jar .\build\libs\dxos-backend-0.0.1-SNAPSHOT.jar
-```
-
-Spring Boot không tự đọc file `.env`. Nếu dùng file này qua công cụ local,
-không commit nó. `.gitignore` loại trừ `.env`, build output, Gradle cache,
-IDE metadata và file tạm. Sau khi dừng ứng dụng, có thể xóa mật khẩu khỏi
-process PowerShell:
-
-```powershell
-Remove-Item Env:DB_PASSWORD
-```
-
-## Health API
-
-Sau khi ứng dụng khởi động, từ cửa sổ PowerShell khác:
-
-```powershell
-Invoke-RestMethod -Uri 'http://localhost:8080/api/v1/health'
-```
-
-`GET /api/v1/health` trả HTTP 200 với JSON `{"status":"UP"}`. Controller
-không truy vấn database, không có logic nghiệp vụ hoặc phụ thuộc module
-Helpdesk/Workflow. Đây là kiểm tra HTTP của ứng dụng, không chứng minh
-PostgreSQL khả dụng. Toàn bộ ứng dụng vẫn cần cấu hình và kết nối PostgreSQL
-để backend khởi động.
-
-Actuator chỉ expose `/actuator/health` qua HTTP, không hiển thị details hoặc
-components và không expose endpoint qua JMX. Health tổng hợp của Actuator
-có thể kiểm tra database và trả trạng thái khác health API tùy tình trạng
-PostgreSQL. Không expose `env`, `beans`, `metrics` hoặc endpoint quản trị khác.
-
-## Legacy Request prototype (removed in R25)
-
-The historical `/api/v1/requests/*` routes and `com.tricore.dxos.request` JPA prototype are no longer registered or compiled. The supported Helpdesk Application API is `/api/v1/mvp/requests` (see the Helpdesk integration documentation). The historic Flyway V1/V2 scripts and existing tables remain in the migration history to preserve `flyway validate` on databases already initialized with v0.1.0. Removing these historical objects is outside R25.
-
-## Helpdesk Application API (`it-helpdesk@1`)
-
-The supported application entry point is `/api/v1/mvp/requests` when `dxos.helpdesk.enabled=true`. The workflow is:
-
-`SUBMITTED → TRIAGED → IN_PROGRESS → RESOLVED → CONFIRMED`
-
-Assignment is not a Workflow state: `POST /api/v1/mvp/requests/{id}/assign` records the assignee and increments `assignment_version` (guarded by `expectedAssignmentVersion`) while the request is `TRIAGED`; `POST /api/v1/mvp/requests/{id}/start` performs the `start_work` transition to `IN_PROGRESS`.
-
-`CONFIRMED` is terminal; there is **no** `/close` route or `CLOSED` state in the Helpdesk workflow.
-
-| Method and route | Purpose |
-| --- | --- |
-| `POST /api/v1/mvp/requests` | Create a request with `title`, `description`, and `requestType: "IT_HELPDESK"` |
-| `GET /api/v1/mvp/requests` | List authorized requests (cursor pagination) |
-| `GET /api/v1/mvp/requests/{id}` | Read a request visible to the verified caller |
-| `GET /api/v1/mvp/requests/{id}/history` | Read Workflow transition history |
-| `POST /api/v1/mvp/requests/{id}/triage` | Triage, with `expectedVersion` |
-| `POST /api/v1/mvp/requests/{id}/assign` | Assign, with `assigneeId` and `expectedAssignmentVersion` |
-| `POST /api/v1/mvp/requests/{id}/start` | Start work, with `expectedVersion` |
-| `POST /api/v1/mvp/requests/{id}/resolve` | Resolve, with `expectedVersion` and `resolution` |
-| `POST /api/v1/mvp/requests/{id}/confirm` | Requester confirmation, with `expectedVersion` |
-
-Helpdesk enforces verified identity, tenant/resource authorization, eligibility and versions before committing business and Workflow changes. It uses its own `helpdesk_requests` data and Workflow tables in a deliberately provisioned PostgreSQL schema, **not** the retired Request JPA entity/repository. Consult `HelpdeskController`, `HelpdeskService`, and `HelpdeskHttpPostgresTest` for the exact contract and tested behavior.
-
-## Workflow PostgreSQL adapter (Issue #25)
-
-Nghiệm thu cloud ngày 2026-10-15 theo owner: V3/V4 COMMITTED_PASS,
-checksum/inventory/seed PASS; smoke `cloud-20261015-01` COMMITTED_PASS,
-precheck/postcheck/fresh-JVM persistence PASS, 2 instances / 4 history, exit 0.
-Giữ dữ liệu thử; không chạy lại bootstrap, Flyway hoặc smoke. Các hướng dẫn cloud
-phía dưới là hồ sơ đã thực thi, không tự cấp quyền cho lượt ghi mới. `postgres`
-chỉ là ngoại lệ development một lần; deployment lâu dài cần runtime ít quyền.
-
-Adapter JDBC ở `infrastructure.workflow` cung cấp một bean `WorkflowPersistencePort`
-và một `WorkflowRuntime` dùng `Clock.systemUTC()`. Core và Workflow HTTP không thay
-đổi; controller Workflow vẫn không được đăng ký production. Adapter không thực
-hiện resource ACL, không giải quyết revocation/TOCTOU của Issue #23.
-
-V3 tạo bảng riêng cho definitions, instances và history; V1/V2 giữ nguyên. V4
-seed hai definition độc lập: `document-review@1` và `incident-resolution@1`.
-Import definition bằng `PostgresWorkflowPersistence.provisionDefinition` với
-datasource của provisioner: cùng key/cùng nội dung là idempotent, khác nội dung
-bị từ chối. Toàn bộ states/transitions phải được insert trong cùng transaction
-với definition mới; database chặn bổ sung, UPDATE, DELETE và TRUNCATE sau commit.
-Thay đổi nội dung cần version mới. Table owner/superuser vẫn có thể vô hiệu hóa
-trigger, vì vậy runtime login phải khác owner và không có quyền DDL/provisioning.
-
-Thời gian lưu lossless bằng epoch seconds BIGINT và nanos INTEGER, nhận toàn bộ
-miền `Instant.MIN..MAX` của Java, kể cả nanos không chia hết cho 1000. Không cần
-clock làm tròn. Database phải có `fsync=on`, `full_page_writes=on`; mỗi write đặt
-`SET LOCAL synchronous_commit=on`, khóa instance và chỉ trả success sau COMMIT
-được xác nhận. Hạ tầng lưu trữ của PostgreSQL phải đáp ứng durability.
-
-Lỗi trước COMMIT có rollback được xác nhận là `OPERATION_FAILURE`. Mất phản hồi
-COMMIT hoặc không xác nhận được rollback là `COMMIT_OUTCOME_UNKNOWN`; adapter
-không retry. Một rollback sau lỗi COMMIT không chứng minh write trước đó chưa
-commit. Đọc authoritative instance/history để reconcile, nhưng hai lần đọc
-riêng không dùng chung snapshot, dữ liệu cũ hoặc chưa có khi transaction đang
-chưa kết thúc không chứng minh rollback hay xác định writer thắng.
-
-### Cấu hình schema bắt buộc
-
-`DXOS_WORKFLOW_SCHEMA` (property `dxos.workflow.schema`) phải là identifier lowercase
-`[a-z][a-z0-9_]{0,62}`, không phải public/extensions/information_schema/pg_*.
-Không có schema mặc định. Schema phải được provision riêng.
-Mỗi connection phải có currentSchema/search_path bắt đầu bằng schema này, chỉ theo
-sau bởi pg_catalog/pg_temp; JDBC URL không được ghi đè sang schema khác.
-SQL adapter và toàn bộ Workflow objects V3/V4 dùng schema-qualified identifiers.
-Flyway phải đi qua `WorkflowMigrations.configure` hoặc Spring customizer:
-defaultSchema/schemas cùng một schema, createSchemas=false, transaction bắt buộc,
-không clean/repair/baseline. Flyway native defaultSchema placeholder được chèn sau
-khi Java đã xác thực identifier; không chạy SQL bằng cơ chế thay placeholder tùy ý.
-
-### PostgreSQL local có thể tái lập
-
-Cách kiểm tra đầy đủ từ source, không cần Supabase, WARP hoặc credentials nhóm:
-
-```powershell
-# Từ backend/, với Docker đang chạy và JDK 21 trên PATH:
-powershell.exe -NoProfile -File ..\scripts\workflow-verify-local.ps1
-if ($LASTEXITCODE -ne 0) { throw 'Local verification failed' }
-```
-
-Launcher dùng PostgreSQL 17.11 trên cổng loopback ngẫu nhiên, sinh CA đúng/sai
-bằng OpenSSL của Git for Windows và bật toàn bộ TLS/event-trigger/audit fixtures.
-Credentials chỉ ở environment/stdin; private keys nằm ngoài Git trong thư mục
-current user/SYSTEM. Nó chạy `test build`, kiểm tra XML không có FAIL/SKIP và đủ
-chín integration suites, rồi dừng/xóa container của nó và dọn certificates.
-Đây là database disposable; dùng Compose bên dưới khi cần giữ dữ liệu local.
-
-Cần Docker và JDK 21. Compose `infra/compose.workflow-postgres.yml` chạy PostgreSQL
-17.11 trên loopback 55425, giữ named volume riêng cho major 17; không dùng lại volume 16.
-Password chỉ cấp qua môi trường bảo mật,
-không ghi vào source/command line. Giữ password cũ khi dùng lại volume.
-
-Các biến integration: WORKFLOW_TEST_JDBC_URL, WORKFLOW_TEST_DB_USER,
-WORKFLOW_TEST_DB_PASSWORD và tùy chọn WORKFLOW_TEST_MIGRATION_USER,
-WORKFLOW_TEST_MIGRATION_PASSWORD. Test URL phải là loopback với port/database,
-không có query; fixtures từ chối URL cloud. Runtime riêng cần login, không superuser,
-CREATEDB, CREATEROLE hoặc schema ownership; migrator local tạo/xóa schema test.
-Isolation fixture tạo API roles giả trong database disposable, sentinel trong public,
-kiểm tra ACL bên ngoài, rồi xóa đúng objects do fixture tạo.
-
-Từ backend, với môi trường local đã cấu hình:
-
-```powershell
-$env:WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE = 'true'
-.\gradlew.bat workflowIntegrationTest --no-daemon
-.\gradlew.bat test build --no-daemon
-```
-
-Integration gồm regression adapter V1–V4 và isolation suite V3/V4 độc lập.
-Không chạy các suite này trên shared Supabase. Không có database thì task test skip
-integration, còn workflowIntegrationTest fail vì thiếu biến môi trường.
-
-### Chạy backend local từ clone mới
-
-Các lệnh dưới đây chỉ dùng database loopback do Compose tạo. Không dùng tài khoản
-hoặc endpoint Supabase. Mỗi volume mới chỉ provision role/schema một lần; khi dùng
-lại volume, giữ mật khẩu cũ và đọc trạng thái trước, không chạy lại `migrate` nếu
-schema đã có Flyway history.
-
-```powershell
-# Từ backend/:
-$localDb = Get-Credential -UserName workflow_test -Message 'Choose the local PostgreSQL owner password'
-$env:WORKFLOW_LOCAL_DB_PASSWORD = $localDb.GetNetworkCredential().Password
-docker compose -f ..\infra\compose.workflow-postgres.yml up -d --wait
-docker compose -f ..\infra\compose.workflow-postgres.yml exec workflow-postgres psql -U workflow_test -d workflow_test
-```
-
-Trong psql của volume local mới, nhập mật khẩu runtime ở prompt ẩn:
-
-```text
-CREATE ROLE workflow_runtime LOGIN NOINHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
-\password workflow_runtime
-CREATE SCHEMA dxos_wf25_smoke_01 AUTHORIZATION workflow_test;
-GRANT USAGE ON SCHEMA dxos_wf25_smoke_01 TO workflow_runtime;
-\q
-```
-
-Chạy V3/V4 riêng bằng owner local, rồi cấp quyền runtime:
-
-```powershell
-$runtimeDb = Get-Credential -UserName workflow_runtime -Message 'Enter the local runtime password'
-$env:WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE = 'true'
-$env:WORKFLOW_SMOKE_LOCAL_DISPOSABLE = 'true'
-$env:WORKFLOW_SMOKE_JDBC_URL = 'jdbc:postgresql://127.0.0.1:55425/workflow_test'
-$env:WORKFLOW_SMOKE_MIGRATOR_USER = 'workflow_test'
-$env:WORKFLOW_SMOKE_MIGRATOR_PASSWORD = $env:WORKFLOW_LOCAL_DB_PASSWORD
-$env:WORKFLOW_SMOKE_RUNTIME_USER = 'workflow_runtime'
-$env:WORKFLOW_SMOKE_RUNTIME_PASSWORD = $runtimeDb.GetNetworkCredential().Password
-$env:WORKFLOW_SMOKE_BUNDLE = Join-Path (Get-Location) 'build\workflow-smoke-bundle'
-.\gradlew.bat workflowSmokeBundle workflowSmoke --args=migrate --no-daemon
-if ($LASTEXITCODE -ne 0) { throw 'Local migration failed' }
-docker compose -f ..\infra\compose.workflow-postgres.yml exec workflow-postgres psql -U workflow_test -d workflow_test
-```
-
-Trong psql local:
-
-```sql
-GRANT SELECT ON dxos_wf25_smoke_01.workflow_definitions,
-  dxos_wf25_smoke_01.workflow_definition_states, dxos_wf25_smoke_01.workflow_definition_transitions,
-  dxos_wf25_smoke_01.workflow_instances, dxos_wf25_smoke_01.workflow_transition_history TO workflow_runtime;
-GRANT INSERT ON dxos_wf25_smoke_01.workflow_instances,
-  dxos_wf25_smoke_01.workflow_transition_history TO workflow_runtime;
-GRANT UPDATE (current_state, lifecycle, runtime_version, updated_at_seconds, updated_at_nanos)
-  ON dxos_wf25_smoke_01.workflow_instances TO workflow_runtime;
-```
-
-Sau `\q`, kiểm tra dữ liệu và boot với login runtime:
-
-```powershell
-.\gradlew.bat workflowSmoke --args="smoke local-first-run" --no-daemon
-if ($LASTEXITCODE -ne 0) { throw 'Local smoke failed' }
-.\gradlew.bat workflowSmoke --args="read local-first-run" --no-daemon
-if ($LASTEXITCODE -ne 0) { throw 'New-process read failed' }
-$env:DB_HOST = '127.0.0.1'
-$env:DB_PORT = '55425'
-$env:DB_NAME = 'workflow_test'
-$env:DB_USER = 'workflow_runtime'
-$env:DB_PASSWORD = $runtimeDb.GetNetworkCredential().Password
-$env:DXOS_WORKFLOW_SCHEMA = 'dxos_wf25_smoke_01'
-$env:SPRING_DATASOURCE_URL = 'jdbc:postgresql://127.0.0.1:55425/workflow_test?currentSchema=dxos_wf25_smoke_01,pg_catalog,pg_temp'
-$env:SPRING_FLYWAY_ENABLED = 'false'
-.\gradlew.bat bootRun
-```
-
-Health ở `/api/v1/health`. Workflow HTTP controller vẫn chưa đăng ký production
-cho đến khi verified principal/authorization được tích hợp; #25 cung cấp bean
-adapter/runtime và constructor injection, không mở route trước gate bảo mật đó.
-V3/V4 không tạo Request tables; demo Request vẫn cần V1/V2 của quy trình riêng.
-Sau khi dừng backend, `docker compose ... down` giữ named volume; tránh `down -v`
-khi kiểm tra restart. Đọc lại cùng run-id từ process mới để xác minh persistence.
-Không chạy `smoke` lại với run-id cũ: runner từ chối replay trước write.
-
-### Kết nối Supabase PostgreSQL mặc định cho Issue #25
-
-Theo [Issue #25 cập nhật ngày 2026-10-14](https://github.com/tricore-opentrix/opentrix/issues/25),
-dùng Direct Connection của project như pgAdmin: `db.<project-ref>.supabase.co`, port
-`5432`, database `postgres`, tài khoản `postgres` và mật khẩu database hiện có.
-Máy phát triển cần IPv6; PostgreSQL local ở trên vẫn chạy độc lập với Supabase/WARP.
-Không chạy Stage 1A/1B, không cấp SCRAM/LOGIN và không đổi hai custom roles đang
-`NOLOGIN`. Các hồ sơ đó là optional hardening cho triển khai lâu dài.
-
-Trong phiên PowerShell đã có `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
-và `PGSSLROOTCERT` (CA tin cậy lấy từ project), kiểm tra kết nối chỉ đọc từ repo root:
-
-```powershell
-powershell.exe -NoProfile -File .\scripts\workflow-read-only-preflight.ps1
-if ($LASTEXITCODE -ne 0) { throw 'Read-only connection check failed' }
-```
-
-Preflight ép JDBC `sslmode=verify-full`, CA, timeout và transaction READ ONLY, rồi
-rollback/close. Không boot Spring, chạy Flyway hay tạo role/schema. Không đưa secrets
-vào URL, args, source, command history hoặc báo cáo; chỉ nhập bằng secure prompt hay
-secret environment hiện có. Kết quả kiểm tra không phải phê duyệt thao tác ghi.
-
-Cấu hình Spring dùng cùng `DB_*`; URL phải bổ sung schema và TLS trước khi sử dụng:
-
-```powershell
-$env:DXOS_WORKFLOW_SCHEMA = 'dxos_wf25_smoke_01'
-$caPath = [Uri]::EscapeDataString($env:PGSSLROOTCERT)
-$env:SPRING_DATASOURCE_URL = "jdbc:postgresql://$($env:DB_HOST):$($env:DB_PORT)/$($env:DB_NAME)?currentSchema=$($env:DXOS_WORKFLOW_SCHEMA),pg_catalog,pg_temp&sslmode=verify-full&sslrootcert=$caPath"
-$env:SPRING_FLYWAY_ENABLED = 'false'
-```
-
-Đây chỉ là cấu hình chuẩn bị, chưa phải lệnh boot/migrate. Cloud writes cần owner
-phê duyệt riêng schema, chỉ bundle V3/V4, seed và bounded smoke/restart/read, kèm
-postchecks và recovery; không chạy V1/V2 hoặc clean/repair/baseline trên shared DB.
-Không retry khi COMMIT chưa rõ kết quả. Giữ kiểm tra schema isolation, manifest/event
-triggers và quyền API/PUBLIC hiện có; không tắt guard để kết nối dễ hơn.
-
-`postgres` chỉ là ngoại lệ kiểm chứng một lần được phê duyệt, không dùng cho backend
-chạy lâu dài hoặc frontend. Phải có runtime identity tối thiểu trước triển khai
-persistent/shared production. `WorkflowSmokeRunner` vẫn yêu cầu runtime khác owner;
-entrypoint production và constructor mặc định không đọc các cờ development.
-Cloud migration/smoke/restart DoD còn pending, không thay bằng local PASS.
-
-### Development integration một lần bằng postgres
-
-Task riêng `workflowDevelopmentSmoke` gọi `WorkflowDevelopmentSmokeRunner`, không
-được đăng ký Spring bean hay chạy từ bootRun/build hoặc cấu hình production.
-Nó tái sử dụng bounded smoke/check/restart scenario, chỉ mở ngoại lệ owner/runtime
-cho chế độ development đã opt-in. Runner production giữ kiểm tra non-owner và
-least-privilege hiện có. Không tự tạo schema, roles, GRANT, cleanup hoặc retry.
-
-Yêu cầu đồng thời: argument `--development-integration`, opt-in có giá trị chính xác,
-schema duy nhất `dxos_wf25_smoke_01`, DB_USER/DB_NAME là `postgres`, Direct endpoint
-đúng project, CA và verify-full. Mỗi connection xác minh session_user=current_user
-postgres, backend TLS, schema owner postgres, không schema ACL cho PUBLIC/roles
-khác hoặc quyền hiệu lực của API roles, không relation do owner khác sở hữu.
-Guard/manifest, bundle V3/V4 pin, durability, default ACL, history/checksums và
-inventory checks vẫn hoạt động. Chế độ check/read không có quyền gọi migrate/smoke.
-
-Schema đã bootstrap thành công theo report owner; không chạy lại. Sau preflight
-fresh, chỉ chuẩn bị/check từ repo root (chưa đặt write approval):
-
-```powershell
-# DB_* và PGSSLROOTCERT đã có trong secret environment; không in chúng.
-$env:WORKFLOW_DEV_INTEGRATION_OPT_IN = 'issue-25-postgres-development-only'
-$env:WORKFLOW_DEV_APPROVED_SCHEMA = 'dxos_wf25_smoke_01'
-$env:WORKFLOW_DEV_PROJECT_REF = $env:DB_HOST.Split('.')[1]
-Remove-Item Env:WORKFLOW_DEV_WRITE_APPROVAL -ErrorAction SilentlyContinue
-Push-Location backend
-.\gradlew.bat workflowSmokeBundle --no-daemon
-if ($LASTEXITCODE -ne 0) { throw 'Bundle preparation failed' }
-$env:WORKFLOW_DEV_BUNDLE = (Resolve-Path 'build/workflow-smoke-bundle').Path
-.\gradlew.bat workflowDevelopmentSmoke --args="--development-integration check" --no-daemon
-Pop-Location
-```
-
-Không đặt `WORKFLOW_DEV_LOCAL_DISPOSABLE`, `WF25_DISPOSABLE_TEST` hoặc
-`WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE` trên cloud, kể cả giá trị false. Chế độ local
-đòi cả ba cờ fixture cùng marker `dxos.wf25_disposable=on` của login postgres,
-loopback và TLS verify-full; cờ local không thể áp dụng cho endpoint Supabase.
-
-**Owner đã phê duyệt chỉ V3/V4 đã pin sau fresh prechecks PASS.**
-Dùng launcher một mục đích ở phần dưới; không chạy trực tiếp ví dụ Gradle để bỏ qua
-audit/report. Approval không bao gồm smoke, bootstrap hoặc recovery.
-Entry point nội bộ của launcher là mode migration riêng:
-
-~~~powershell
-# Cần explicit WORKFLOW_DEV_WRITE_APPROVAL khớp schema sau approval, không đặt trước.
-# Chạy từ backend; credentials/CA chỉ từ secret environment.
-.\gradlew.bat workflowDevelopmentSmoke --args="--development-integration migrate" --offline --no-daemon --no-configuration-cache --quiet
-~~~
-
-Clear write approval trong finally, kể cả command lỗi. Dừng sau migrate để audit
-qua connection mới READ ONLY. Smoke/read/restart là bước có approval riêng;
-không chạy smoke cùng batch migrate hoặc suy ra approval từ schema bootstrap.
-
-Schema phải đã tồn tại/rỗng và owner postgres; thao tác bootstrap schema là approval
-riêng, không do runner thực hiện. Migrate chỉ V3/V4: 5 tables + Flyway history,
-2 functions/9 explicit triggers (6 row, 3 statement), seed 2 definitions/7 states/5 transitions, 2 success
-history rows/checksums. Smoke tạo tối đa 2 instances/4 history rows cho run-id mới,
-race activation version 0/transition, kiểm tra Instant nanos và replay; read dùng
-process/JVM mới không ghi. Dữ liệu smoke giữ lại. Đây là durability qua JVM mới;
-cloud restart Spring bằng production bean còn cần evidence riêng.
-
-Nếu V3 đã commit/V4 lỗi hoặc `WORKFLOW_DEVELOPMENT_FAIL_COMMIT_OUTCOME_UNKNOWN`,
-dừng, đọc catalog/history/instances bằng connection mới và xin recovery approval;
-không rerun tự động, clean/repair/baseline hay xóa dữ liệu đã commit. Tài khoản admin
-vẫn có thể tác động ngoài schema; guard thu hẹp phạm vi tool, không sandbox quyền
-admin hoặc loại bỏ privileged concurrent DDL.
-
-### Lệnh preflight Supabase chỉ đọc trước cloud migrations
-
-**Cập nhật sau migrations:** owner đã xác nhận V3/V4 `COMMITTED_PASS`, checksum,
-inventory, seed và postcommit audit PASS, `MIGRATIONS_EXIT=0`. Các lệnh migration
-trên/dưới là lịch sử; **không chạy lại bootstrap hoặc Flyway**.
-Owner cũng xác nhận cloud smoke `cloud-20261015-01` COMMITTED_PASS, precheck,
-postcheck và fresh-JVM persistence PASS, 2 instances / 4 history, exit 0.
-Không chạy lại cloud smoke; giữ nguyên dữ liệu thử. Kế hoạch, dữ liệu và recovery ở phần “Cloud smoke sau migrations”
-trong evidence lịch sử của Issue #25; đường dẫn tài liệu cũ chưa có trong phiên bản này.
-
-Từ repo root, Direct host/CA/password đã được cấp qua môi trường bảo mật:
-
-```powershell
-$env:DB_PORT = '5432'
-$env:DB_NAME = 'postgres'
-$env:DB_USER = 'postgres'
-powershell.exe -NoProfile -File .\scripts\workflow-read-only-preflight.ps1
-if ($LASTEXITCODE -ne 0) { throw 'Direct read-only preflight failed' }
-powershell.exe -NoProfile -File .\scripts\workflow-live-guard.ps1
-if ($LASTEXITCODE -ne 0) { throw 'Reviewed catalog guard failed' }
-```
-
-Kiểm tra dự kiến: Direct IPv6, client verify-full/CA, backend SSL=true,
-transaction_read_only=on, session_user=current_user=postgres, đúng database;
-schema absent hoặc owner/ACL/inventory đúng kế hoạch; hai custom roles vẫn NOLOGIN;
-không drift ngoài phạm vi, durability/settings và manifest/bundle pin khớp.
-Owner phải kiểm tra thêm Dashboard API exposed schemas không chứa schema test.
-`LIVE_GUARD=PASS` chỉ xác minh catalog; WRITE_READINESS=BLOCKED không tự cấp approval.
-Target hiện đã bootstrap: nếu preflight fresh báo ABSENT, dừng và báo sai lệch,
-không chạy lại bootstrap. Dev check phải trả EMPTY trước migration. Không chạy Stage 1A/1B hoặc thay credentials/custom roles.
-
-### Schema Bootstrap đã hoàn tất — không chạy lại
-
-Owner báo SCHEMA_BOOTSTRAP=COMMITTED_PASS, POSTCOMMIT_AUDIT=PASS,
-SCHEMA_OWNER=postgres, SCHEMA_EMPTY=YES, FLYWAY_HISTORY=ABSENT,
-OTHER_CLOUD_WRITES=NONE, BOOTSTRAP_EXIT=0.
-Đây là evidence owner cung cấp; Codex không thực thi lại cloud.
-Không chạy workflow-schema-bootstrap.ps1 hoặc CREATE SCHEMA lại.
-
-V3/V4 và cloud smoke đã hoàn tất theo owner report. Phần
-thực thi Flyway V3/V4 (xem issue và bằng chứng kiểm thử liên quan tới #25)
-là hồ sơ lịch sử; không phải bước tiếp theo và không chạy lại.
-Launcher khóa đúng Direct endpoint và schema; tự dừng nếu precheck FAIL.
-Dùng Direct db.zsfctpnitkdztlfhzqgw.supabase.co:5432/postgres, tài khoản postgres,
-TLS verify-full và CA/credentials từ secret environment. Precheck fresh phải xác
-nhận schema PRESENT/rỗng/owner postgres, guard/hash không drift; không dùng
-điều kiện ABSENT từ kế hoạch bootstrap lịch sử.
-
-Approval migration phải gồm V3/V4 pin, Flyway history, V4 seed và V3 object ACL
-revocations chỉ trong target; không gồm smoke, role changes hoặc recovery.
-Không gọi smoke trong cùng batch migrate. Migrate thất bại hoặc mất ACK:
-dừng, clear write approval trong finally, reconcile qua connection READ ONLY mới;
-không retry/clean/repair/baseline/DROP. Postcheck đầy đủ trước khi báo cloud PASS.
-
-### Launcher V3/V4 lịch sử — đã hoàn tất, không chạy lại
-
-Lệnh lưu để review việc đã thực thi; không chạy trong lúc chuẩn bị PR:
-
-~~~powershell
-& 'C:\Users\Admin\AppData\Local\codex-with-chatgpt\worktrees\dxos-data-postgres-adapter\scripts\workflow-approved-migrations.ps1' -ExecuteApprovedMigrations
-~~~
-
-Mặc định dùng PGSSLROOTCERT; nếu chưa có, hỏi đường dẫn CA. Password lấy từ
-DB_PASSWORD đã có hoặc prompt ẩn. Launcher yêu cầu JDK 21, WARP Connected và Direct
-host có IPv6; không tự bật/sửa WARP, CA hay endpoint sai. Environment cũ được khôi
-phục trong finally; Gradle offline, không configuration cache, không log exception.
-Chỉ in report allowlist đầy đủ; child mất/thiếu report sau handoff là COMMIT_UNKNOWN.
-
-Java task workflowApprovedMigration chỉ chạy V3/V4 đã pin, createSchemas=false,
-không baseline/repair/clean/retry/smoke. Precheck READ ONLY xác minh schema rỗng
-owner postgres, history absent, TLS verify-full/backend SSL, PG17.11, NOLOGIN custom
-roles, manifest raw hash và migration SHA/CRC. Guard lặp lại khi mở connection.
-Sau migrate dùng connection mới READ ONLY: history, exact catalog fingerprint,
-seed/0 instances, schema ACL/owner và outside catalog/roles/membership snapshot.
-Fingerprint bao gồm columns/defaults/NOT NULL, indexes, constraints, function
-definitions/ACL, explicit/internal triggers và types; không chỉ so counts.
-Chỉ exit 0 khi COMMITTED_PASS + audit/inventory/seed PASS; lỗi thì dừng, không retry.
-
-Giữ COMMIT_UNKNOWN khi mất ACK dù audit tìm thấy dữ liệu; history và seed được
-đối chiếu riêng, không suy ra thành công chỉ từ một bên. V3 đã commit/V4 lỗi:
-PARTIAL_COMMIT, giữ nguyên để owner duyệt recovery. Catalog drift hoặc fresh audit
-không đọc được không được claim OTHER_CLOUD_WRITES=NONE. Mọi trường hợp đều dừng
-sau migration/audit, NEXT_APPROVAL_REQUIRED=YES cho cloud smoke.
-
-### Optional hardening — Runtime Privilege Audit READ-ONLY trên Supabase
-
-Từ root worktree, với JDK 21 và các biến DB_HOST, DB_PORT, DB_NAME, DB_USER,
-DB_PASSWORD, PGSSLROOTCERT đã có trong phiên PowerShell:
-
-```powershell
-powershell.exe -NoProfile -File .\scripts\workflow-runtime-privilege-audit.ps1
-$LASTEXITCODE
-```
-
-Launcher hỗ trợ Direct Connection hoặc session pooler, port 5432; ép verify-full/CA,
-search_path pg_catalog,pg_temp và transaction_read_only=on. SQL audit được pin SHA-256;
-thay đổi SQL cần review rồi cập nhật pin. Không chạy Spring/Flyway/provisioning/smoke.
-WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE phải không được đặt, kể cả giá trị false.
-Secrets chỉ được kế thừa qua environment; không truyền qua args, in hoặc ghi báo cáo.
-
-AUDIT_REPORT chỉ có role names cố định, statuses, booleans/counts và số quyền true
-theo role/privilege; không chứa host/database/object identifiers, function source,
-passwords hay connection strings. NOT_PROVISIONED nghĩa là chưa có role, không phải
-permission PASS. RUNTIME_PRIVILEGE_AUDIT=PASS chỉ xác nhận catalog audit hoàn tất,
-rollback/close thành công; WRITE_READINESS vẫn BLOCKED và cần reviewer xét ACL/TLS.
-
-### Optional hardening — SECURITY DEFINER metadata và private review
-
-Chạy từ root repo trong phiên PowerShell đã giữ `DB_*` và `PGSSLROOTCERT`:
-
-```powershell
-powershell.exe -NoProfile -File .\scripts\workflow-security-definer-review.ps1
-$LASTEXITCODE
-```
-
-Launcher riêng dùng JDBC `verify-full`, `pg_catalog,pg_temp`, transaction READ ONLY
-và SQL được pin SHA-256. Metadata giữ schema/signature/owner, EXECUTE/schema ACL,
-search_path của function, quyền runtime nullable, membership, dependencies và
-definition/configuration fingerprints. Không trả bodies hoặc các GUC khác.
-`NOT_PROVISIONED` giữ quyền runtime là `null`, không phải `false`.
-
-Chỉ sau khi metadata hợp lệ đã được xem xét, dùng đường dẫn `SHAREABLE_METADATA`
-để lấy bodies/configuration vào một thư mục bảo vệ mới ngoài Git:
-
-```powershell
-powershell.exe -NoProfile -File .\scripts\workflow-security-definer-review.ps1 -MetadataFile '<SHAREABLE_METADATA>'
-```
-
-Baseline phải ở thư mục chỉ current user/SYSTEM truy cập; catalog drift, SQL pin
-sai, rollback/close lỗi hoặc cấu hình TLS sai đều fail closed. Chỉ chia sẻ
-`shareable-metadata.json`; không gửi `private-function-review.json` hay credentials
-vào chat/Git. Helper tìm thấy khi review body cần capture metadata mới bằng
-`-HelperSignature 'schema.helper(argument_types)'`, rồi private capture từ baseline
-mới đó. Catalog dependencies không đầy đủ cho dynamic SQL/string-body routines.
-Mọi routine bắt đầu `NEEDS_REVIEW`; capture thành công không tự cấp PASS bảo mật,
-chấp nhận PUBLIC TEMP, phê duyệt roles hoặc giải quyết TLS backend-hop.
-
-### Optional hardening — runner dùng migrator/runtime riêng
-
-`workflowSmokeBundle` chỉ copy V3/V4. Runner kiểm tra chính xác hai filenames và
-SHA-256 được pin trong `workflow-event-trigger-manifest.json` (chuẩn hóa CRLF thành LF), cùng Flyway checksums/history. Không nạp V1/V2.
-Schema cố định: dxos_wf25_smoke_01; history đặt trong cùng schema.
-Runner không boot Spring, không tự tạo schema/role, không GRANT, không cleanup,
-DROP/TRUNCATE/DELETE hoặc retry khi kết quả commit chưa xác định.
-
-Biến độc lập: WORKFLOW_SMOKE_JDBC_URL (không chứa user/password),
-WORKFLOW_SMOKE_PROJECT_REF (bắt buộc cho cloud),
-WORKFLOW_SMOKE_CA_CERT, WORKFLOW_SMOKE_MIGRATOR_USER/PASSWORD,
-WORKFLOW_SMOKE_RUNTIME_USER/PASSWORD, WORKFLOW_SMOKE_BUNDLE (đường dẫn bundle);
-WORKFLOW_SMOKE_RUN_ID dùng cho smoke/read khi không truyền run-id qua args.
-Cấp secrets bằng secure environment bên ngoài chat. Cloud chỉ chấp nhận Direct
-db.<project-ref>.supabase.co:5432/postgres với đúng project ref, CA file tồn tại và TLS verify-full;
-hai username là tên role PostgreSQL trực tiếp, không có hậu tố project ref.
-URL cloud không có query/fragment; currentSchema và TLS chỉ do runner đặt. Không có CA thì dừng.
-WORKFLOW_SMOKE_LOCAL_DISPOSABLE=true chỉ dùng loopback, không thể hạ TLS cloud.
-
-Migrator là owner của schema riêng, có USAGE/CREATE trong schema và USAGE plpgsql.
-Runtime khác owner, không membership owner, không quyền CREATE schema, không
-superuser/CREATEROLE/CREATEDB/BYPASSRLS. Sau migration, operator cấp runtime:
-USAGE schema, SELECT năm Workflow tables, INSERT instances/history, UPDATE chỉ
-current_state/lifecycle/runtime_version/updated_at_seconds/updated_at_nanos của
-instances. Không cấp DDL, provisioning definitions, DELETE hoặc TRUNCATE.
-Không sửa default privileges, database privileges hay role membership.
-Dùng postgres làm migrator tạo objects do postgres sở hữu; role mạnh có thể tắt
-trigger/sửa history nên chỉ dùng cho bước migration đã duyệt, không dùng runtime.
-Default privileges tùy chỉnh hoặc event triggers lệch manifest khiến runner dừng;
-không tự sửa hoặc tắt triggers. Manifest khóa đúng sáu triggers, function/config hashes,
-owners/ACL và hai helper internal đã review. OID capture chỉ là evidence; helper được
-resolve live theo signature. Remote chỉ nhận bundle filesystem V3/V4 và PostgreSQL 17.11.
-Profile local cần `WORKFLOW_EVENT_GUARD_LOCAL_DISPOSABLE=true`, loopback và inventory
-event triggers hoàn toàn trống; flag không cho phép bỏ qua trigger lạ hoặc cloud.
-Guard đọc hashes/config keys, không tải private bodies/config values; collector riêng
-vẫn giữ private capture ngoài Git. Native binary là giả định tin cậy provider, không
-được attested bằng hash catalog. Các watcher được duyệt có thể gửi NOTIFY reload schema.
-Kiểm tra live chạy trên mỗi connection, trước migration và trước từng migration;
-bundle được kiểm tra lại cả tại connection boundary. Chúng thu hẹp TOCTOU, không
-loại bỏ privileged concurrent DDL hay concurrent filesystem mutation.
-
-```powershell
-.\gradlew.bat workflowSmokeBundle --no-daemon
-.\gradlew.bat workflowSmoke --args=check --no-daemon
-# Các lệnh dưới đây CHỈ sau phê duyệt riêng và bootstrap role/schema phù hợp:
-.\gradlew.bat workflowSmoke --args=migrate --no-daemon
-# Operator cấp các quyền runtime tối thiểu đã duyệt, rồi:
-.\gradlew.bat workflowSmoke --args="smoke unique-run-id" --no-daemon
-.\gradlew.bat workflowSmoke --args="read unique-run-id" --no-daemon
-```
-
-check dùng read-only transactions, xác minh ownership/quyền, mode/durability,
-không có event triggers/default privileges chưa review, schema trống hoặc đúng
-sáu tables, bundle và migration history. migrate chỉ nhận schema đã tồn tại và trống.
-smoke tạo hai instances có prefix issue25/run-id riêng, race activation version 0,
-race transition, hoàn tất cả hai definitions, kiểm tra hai history/instance và
-Instant nanos. Run-id đã dùng bị từ chối. read dùng JVM/connection mới kiểm tra
-snapshots/history; không ghi. Sau lỗi/COMMIT_OUTCOME_UNKNOWN dừng và điều tra,
-không tự chạy lại. Dữ liệu smoke được giữ lại.
-
-## Phụ thuộc Issue #3 và giới hạn xác minh
-
-Issue #3 chịu trách nhiệm Docker/PostgreSQL cho phát triển: database, tài
-khoản, credentials và host/port phù hợp. Issue #1 không tạo container,
-schema nghiệp vụ hoặc cơ chế bỏ qua kết nối database.
-
-Khi môi trường Issue #3 chưa khả dụng, có thể xác minh compilation, test MVC
-và đóng gói JAR; chưa xác minh tích hợp PostgreSQL, toàn bộ startup với JPA,
-hoặc HTTP health trên ứng dụng thực tế kết nối PostgreSQL.
-
-Sau khi Issue #3 hoàn thành, cung cấp đủ biến `DB_*`, chạy `bootRun`, kiểm
-tra startup, `/api/v1/health` và `/actuator/health` với PostgreSQL thực tế.
-
-Kiểm chứng launcher V3/V4 (2026-10-15): full JDK21/PostgreSQL17.11 TLS disposable
-752 PASS, 0 FAIL/SKIP, 9 integration suites, build PASS; bao gồm 38 tests mới.
-Đây chưa là cloud execution; Codex thiếu credentials/CA và chờ owner chạy launcher.
+| `src/main/resources/db/migration/V1`, `V2` | Các bảng request trước đây. Được giữ để `flyway validate` vẫn đạt trên database đã có; không mã nào sử dụng. |
+| `src/main/resources/db/migration/V3` | Định nghĩa, instance và lịch sử chuyển trạng thái của Workflow |
+| `src/main/resources/db/migration/V4` | Dữ liệu mẫu cho định nghĩa `document-review@1` và `incident-resolution@1` |
+| `src/main/resources/db/helpdesk/` | Bảng Helpdesk, định nghĩa `it-helpdesk@1` và quyền runtime, áp dụng ngoài Flyway |
+
+Định nghĩa không thể sửa sau khi đã commit; muốn thay đổi phải tạo phiên bản mới. Flyway bị giới hạn
+trong schema đã cấu hình và tắt `clean` và baseline-on-migrate. Tài khoản runtime
+không nên sở hữu schema và chỉ nên có các quyền trong
+[runtime-grants.sql](https://github.com/tricore-opentrix/opentrix/blob/main/backend/src/main/resources/db/helpdesk/runtime-grants.sql).
+
+## Kiểm thử
+
+| Lệnh | Nội dung chạy | Cần |
+| --- | --- | --- |
+| `./gradlew test` | Unit, MVC, bảo mật và kiến trúc. Bỏ qua các test PostgreSQL. | JDK 21 |
+| `./gradlew workflowIntegrationTest` | Bộ test lưu trữ và cô lập Workflow trên PostgreSQL | `WORKFLOW_TEST_JDBC_URL`, `WORKFLOW_TEST_DB_USER`, `WORKFLOW_TEST_DB_PASSWORD` (chỉ loopback) |
+| `powershell -File ..\scripts\workflow-verify-local.ps1` | Khởi động container PostgreSQL 17.11 dùng một lần có TLS, chạy `test build` với mọi bộ integration test, rồi xóa container | Docker, JDK 21, Windows |
+
+Integration fixture từ chối URL database không phải loopback. Không chạy chúng trên database dùng chung.
+
+Các task Gradle `workflowSmoke`, `workflowSchemaBootstrap`, `workflowApprovedMigration` và các task
+liên quan là công cụ vận hành cho PostgreSQL được lưu trữ từ xa. Chúng chỉ ghi vào database thật khi
+có biến phê duyệt rõ ràng. Đọc [scripts/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/scripts/README.md)
+trước khi sử dụng.
+
+## Giới hạn
+
+- Helpdesk API chỉ chạy với database cục bộ, dùng một lần (xem [Cấu hình](#cấu-hình)).
+- Adapter HTTP của Workflow chưa được đăng ký.
+- `core.data` định nghĩa cổng lưu trữ; chưa có adapter lưu trữ cho môi trường production.
+- Backend chưa được đóng gói thành container image hay JAR phát hành.

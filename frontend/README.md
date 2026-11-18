@@ -1,170 +1,236 @@
 <!--
 SPDX-FileCopyrightText: 2026 TRICORE contributors
-
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# DX-OS Internal Service Portal / Cổng dịch vụ nội bộ
+# Frontend — OpenTrix Portal
 
-**Trạng thái / Status:** Mặc định **MOCK / DEVELOPMENT**. Build **integration-local** là lựa chọn riêng, cần các thành phần chạy thực tế và không tự xác nhận LIVE. **LIVE E2E: UNVERIFIED**; xem [#118](https://github.com/tricore-opentrix/opentrix/issues/118).
+> **Language / Ngôn ngữ:** [English](#en) · [Tiếng Việt](#vi)
 
-**Điều hướng / Navigation:** [Bộ tài liệu / Docs index](../docs/README.md) · [Phát triển / Development](../docs/DEVELOPMENT.md) · [API](../docs/API.md) · [Tích hợp / Integration](../docs/INTEGRATION.md) · [Kiểm thử / Testing](../docs/TESTING.md) · [Portal BFF](../portal-bff/README.md)
+---
 
-## Phân biệt các chế độ / Mode boundaries
+<a id="en"></a>
 
-| Chế độ / Mode | Có gì / What exists | Chưa chứng minh / Not evidence of |
+## Overview
+
+The OpenTrix Portal is the web interface for the IT Helpdesk application. It is built with React 19, TypeScript, Vite 8 and React Router 7, uses Lucide icons and bundles the Be Vietnam Pro font locally; the exact versions are pinned in [package-lock.json](https://github.com/tricore-opentrix/opentrix/blob/main/frontend/package-lock.json). The user interface is in Vietnamese. The Portal loads no fonts, analytics or other resources from third-party servers.
+
+The Portal has two builds:
+
+| Build | Command | Data source |
 | --- | --- | --- |
-| **MOCK / DEVELOPMENT** (mặc định / default) | `npm.cmd run dev` và `npm.cmd run build` dùng fixtures/dữ liệu giả trong bộ nhớ, không cần Keycloak/Backend/PostgreSQL. | SSO, backend ACL, lưu trữ ticket, tích hợp LIVE |
-| **integration-local** (opt-in) | `npm.cmd run build:integration-local` chọn entry tích hợp với BFF; yêu cầu setup Keycloak, BFF, Backend, HTTPS ingress, database riêng; xem [BFF runbook](../portal-bff/README.md). | Build thành công không chứng minh stack đã chạy hoặc browser acceptance đạt |
-| **LIVE E2E** (cổng nghiệm thu / acceptance gate) | Chỉ có thể đánh giá bằng bằng chứng đăng nhập thật, quyền truy cập, workflow và persistence tại SHA/môi trường cụ thể. | **UNVERIFIED** theo [#118](https://github.com/tricore-opentrix/opentrix/issues/118); không phải tên chế độ tự bật từ MOCK |
+| **MOCK** (default) | `npm run dev`, `npm run build` | Synthetic in-memory data. No backend, Keycloak, database or credentials are needed. |
+| **integration-local** | `npm run build:integration-local` | The IT Helpdesk API through the [Portal BFF](https://github.com/tricore-opentrix/opentrix/blob/main/portal-bff/README.md), with sign-in through Keycloak. Used by the [local deployment](https://github.com/tricore-opentrix/opentrix/blob/main/infra/demo/README.md). |
 
-**English:** The default Portal uses synthetic in-memory MOCK data. `integration-local` is a separate opt-in build entry, not a deployed or accepted LIVE stack. Real Keycloak login, authorized Helpdesk transitions and database persistence remain **LIVE E2E UNVERIFIED**. See canonical [API](../docs/API.md), [integration](../docs/INTEGRATION.md), [testing](../docs/TESTING.md), and [development](../docs/DEVELOPMENT.md) guides.
+### Requirements
 
-**Bối cảnh lịch sử / Historical Issue #39:** Prototype UI tiếng Việt trình diễn IT Support và Facility bằng thành phần giao diện dùng chung. Các dữ liệu Facility trong MOCK **không** chứng minh Facility backend đã triển khai hay chứng minh Core tái sử dụng ở hai ứng dụng. Những kết quả lịch sử chỉ áp dụng cho SHA/fixture đã kiểm chứng; không suy ra trạng thái Issue hiện nay.
+Node.js 22.12 or later and npm.
 
-## Chạy localhost
+### Run the MOCK build
 
-**Demo #233:** Tên sản phẩm là **IT Helpdesk · OpenTrix**; bản integration-local giữ badge môi trường và ẩn Workflow version khỏi giao diện. / The product is **IT Helpdesk · OpenTrix**; integration-local keeps its environment badge and hides the workflow version from the UI.
-
-**Phiên integration-local / Integration-local session:** Nút Đăng nhập mở `/oauth2/authorization/keycloak`; Đăng xuất chỉ hiện khi có phiên BFF và POST `/bff/logout` bằng form `_csrf` lấy từ `/bff/session`. Trình duyệt đi theo redirect OIDC; đổi ba tài khoản trên cùng trình duyệt vẫn cần kiểm chứng thực tế. / Login opens `/oauth2/authorization/keycloak`; authenticated logout posts the session CSRF token to `/bff/logout` using a browser form. Real OIDC redirects and three-account switching still require verification.
-
-**Trạng thái #106 / States #106:** `SUBMITTED` → Mới gửi; `TRIAGED` → Đã tiếp nhận; `IN_PROGRESS` → Đang xử lý; `RESOLVED` → Chờ xác nhận; `CONFIRMED` → Hoàn thành. Mã lạ giữ nguyên chữ và dùng badge xám; payload, version và `allowedActions` giữ nguyên. / These Vietnamese labels affect presentation only; unknown codes retain their original text with a gray badge. API values, versions and authorization remain unchanged.
-
-Yêu cầu Node.js >= 22.12 (đã kiểm tra bằng Node 24.19.0), npm và trình duyệt hiện đại.
-
-```powershell
-Set-Location frontend
-npm.cmd ci
-npm.cmd run dev
+```bash
+cd frontend
+npm ci
+npm run dev
 ```
 
-Mở **http://127.0.0.1:5173**. Trên macOS/Linux dùng `npm` thay cho `npm.cmd`. Không cần backend, database, `.env` hoặc credentials.
+Open http://127.0.0.1:5173. On Windows PowerShell, use `npm.cmd` if `npm` is blocked by the execution policy.
 
-```powershell
-npm.cmd run build
-npm.cmd run preview -- --port 4173
+To build and preview the production bundle:
+
+```bash
+npm run build
+npm run preview -- --port 4173
 ```
 
-Production hosting phải có SPA fallback về `index.html` cho các deep links. Không có deployment trong phạm vi này.
+A web server hosting the build must fall back to `index.html` for unknown paths so that deep links work.
 
-## Stack và cấu trúc
+### integration-local build
 
-React 19, Vite 8, TypeScript strict, React Router 7, Lucide, Be Vietnam Pro được phục vụ cục bộ, CSS tokens; phiên bản chính xác nằm trong `package-lock.json`. Stack được người dùng xác nhận sau audit. Không tải font, analytics hoặc tài nguyên bên thứ ba khi sử dụng app.
+`npm run build:integration-local` builds a separate entry point that contains only the IT Helpdesk at `/mvp/helpdesk`:
+
+- **Sign in** opens `/oauth2/authorization/keycloak`. **Sign out** sends `POST /bff/logout` with the CSRF token from `/bff/session`.
+- All API calls go to `/bff/api/v1/mvp/requests` on the same origin. The browser never holds an access token.
+- The build runs only over HTTPS on a loopback host (`localhost`, `127.0.0.1` or `[::1]`).
+
+The local deployment builds and serves this entry automatically. To serve it yourself, see the Caddy setup in [portal-bff/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/portal-bff/README.md).
+
+### Pages (MOCK build)
+
+| Route | Content |
+| --- | --- |
+| `/` | Dashboard with quick access to the IT Support and Facility services |
+| `/requests`, `/requests/new`, `/requests/:id` | Request list with search and filters, request form, request detail with timeline |
+| `/approvals` | Work queue for the simulated handler role |
+| `/history` | Request history, newest first |
+| `/mvp/helpdesk` | IT Helpdesk screens; they are connected in the integration-local build and show a notice in the MOCK build |
+| `/session` | Start or end a demo session, switch the simulated role, simulate session expiry |
+| `/integration` | Status of each capability and simulated failure controls |
+| `/login`, `/register` | Sign-in and registration screens for UI preview only: submitting validates the form and shows "BLOCKED FEATURE"; nothing is sent |
+
+### IT Helpdesk request states
+
+| API state | Label shown |
+| --- | --- |
+| `SUBMITTED` | Mới gửi |
+| `TRIAGED` | Đã tiếp nhận |
+| `IN_PROGRESS` | Đang xử lý |
+| `RESOLVED` | Chờ xác nhận |
+| `CONFIRMED` | Hoàn thành |
+
+An unknown state is shown with its original code and a gray badge. Labels affect presentation only; the backend decides which actions are allowed.
+
+### Behavior
+
+- Writes are protected against double submission and are never retried automatically. If the result of a write is unknown (`COMMIT_OUTCOME_UNKNOWN`), the form stays locked and the user is asked to check the request history.
+- A `401` response ends the session; `403` and hidden `404` responses show a safe message.
+- Signing out, switching roles or a `401` cancel pending results from the previous session.
+- The MOCK build stores only the simulated role in `sessionStorage` (`dxos-demo-role`); this is not authentication. If the user selects "remember email" on `/login`, the email is stored in `localStorage` under `dxos-remembered-email-v1`. Passwords are never stored or sent.
+
+### Project structure
 
 ```text
 src/
-  components/ui.tsx           Shared table, badges, timeline, modal, UI states
-  domain/request.ts          Shared view model, labels, validation, filtering
-  fixtures/requests.ts        Synthetic demo records for both services
-  services/RequestService.ts  UI-facing application service interface
-  services/portalService.ts   Composition root: interface -> mock service
-  services/MockRequestService.ts  In-memory demo responses and fault controls
-  services/HttpApiClient.ts   Closed HTTP boundary; rejects before networking
-  hooks/useRequests.ts        Loading, read errors, expired demo session handling
-  pages/                     Dashboard, list/history/desk, create, detail, system
-  context.tsx                Demo role, success announcements, refresh state
-  tokens.css / styles.css    Palette, typography, responsive and reduced motion
-tests/portal.spec.ts          Browser smoke, WCAG checks and real screenshots
-scripts/check-security.mjs    Source/bundle credential-pattern check
+  App.tsx, main.tsx              Routes; main.tsx selects the MOCK or integration-local entry
+  features/helpdesk/             IT Helpdesk screens and the integration-local entry
+  services/mvp/                  IT Helpdesk service port, commands, state labels
+  services/mvp/http/             HTTP client and same-origin transport to the Portal BFF
+  services/MockRequestService.ts In-memory service for the MOCK build
+  fixtures/requests.ts           Synthetic demo data
+  components/, pages/, hooks/    Shared UI components, pages and hooks
+  tokens.css, styles.css         Design tokens and styles
+tests/                           Playwright suites
+scripts/check-security.mjs       Scans source and build output for credential patterns
 ```
 
-Ở chế độ MOCK, `RequestService` dùng mock fixture qua composition root; `HttpApiClient` của đường MOCK từ chối LIVE với `LIVE_BLOCKED`. Mapper, Assignment Form và typed Helpdesk adapter được kiểm thử với fake transport; đường `integration-local` dùng entry riêng, không biến MOCK mặc định thành LIVE. Không coi view model mock là DTO backend. Xem [API contract](../docs/API.md) và [tài liệu tích hợp](../docs/INTEGRATION.md) để đối chiếu trạng thái hiện hành.
+### Tests
 
-Logout, đổi vai trò và 401 vô hiệu hóa kết quả async của phiên cũ. Response muộn không chuyển trang, phát thông báo hay làm hết hạn phiên mới; 401 của phiên hiện tại vẫn kết thúc phiên sau khi rời màn hình. Assignment không bắt đầu GET Detail sau logout. Lệnh ghi đã gửi không bị hủy/replay; unknown outcome của MVP vẫn khóa để chờ đối soát. Đây là vòng đời phiên demo/fake, chưa phải logout hoặc thu hồi phiên OIDC/BFF.
+| Command | What it checks |
+| --- | --- |
+| `npm test` | Unit and component tests (Vitest) |
+| `npm run test:smoke` | Browser tests (Playwright, Chromium) against the production preview on `127.0.0.1:4173`: request flows, error and empty states, keyboard and dialog use, desktop, tablet and mobile layouts, and accessibility with axe (WCAG 2.0 A/AA and 2.1 AA). Run `npm run build` and `npx playwright install chromium` first. |
+| `npx playwright test --config tests/integration-local.playwright.config.ts` | The integration-local build against a simulated BFF on `https://localhost:9443`, at 1440, 768, 390 and 320 px. Run `npm run build:integration-local` first. |
+| `npm run check:security` | Credential patterns in `src/` and `dist/` |
 
-Hai workflow UX dùng chung form, bảng, metadata, action dialog và timeline. Những phản hồi cố định trong mock chỉ phục vụ demo; **không phải frontend Workflow engine**, không thực thi definition, không có BPMN editor, persistence hay orchestration Core. Các thao tác được cho phép thật phải do backend quyết định sau security gate.
+These tests use simulated data and a simulated BFF. A sign-in with Keycloak and a full IT Helpdesk flow can be checked with the local deployment.
 
-## Các màn hình
+### Limitations
 
-| Route           | Nội dung                                                            |
-| --------------- | ------------------------------------------------------------------- |
-| `/session`      | Vào/kết thúc phiên demo, đổi vai trò, mô phỏng hết hạn; SSO bị chặn |
-| `/login`        | Form email/mật khẩu, ghi nhớ riêng email; submit và khôi phục mật khẩu bị chặn |
-| `/register`     | Form đăng ký Sinh viên/Giảng viên; không tạo tài khoản hoặc cấp quyền |
-| `/`             | Dashboard và truy cập nhanh hai dịch vụ                             |
-| `/requests`     | Search không dấu, filter dịch vụ/trạng thái, phân trang             |
-| `/requests/new` | Form dùng chung, validation, loading, success/error                 |
-| `/approvals`    | Bàn xử lý dành cho vai trò người xử lý mô phỏng                     |
-| `/requests/:id` | Chi tiết, phiên bản mock, thao tác xử lý và timeline                |
-| `/history`      | Lịch sử từng yêu cầu, mới nhất trước                                |
-| `/integration`  | Trạng thái các capability, kiểm tra chặn LIVE và fault controls     |
+- In the MOCK build, requests live in memory in one browser tab; reloading resets the data.
+- The `/login` and `/register` screens do not create accounts or sessions.
+- File attachments are not supported.
+- Browser tests run on Chromium only; axe checks do not replace a full manual accessibility review.
 
-Loading được mô phỏng với độ trễ 350 ms. Không có kết quả: hướng dẫn đổi bộ lọc. Lỗi đọc có nút tải lại do người dùng chủ động. Form giữ nội dung khi lỗi mạng. Ghi có khóa chống double-submit và không tự retry. Khi `COMMIT_OUTCOME_UNKNOWN`, UI vô hiệu hóa gửi tiếp và hướng dẫn kiểm tra lịch sử. Lỗi 401 mô phỏng kết thúc phiên và hiển thị thông báo; 403 và hidden/missing 404 có thông báo an toàn. Đây không phải bằng chứng kiểm quyền backend.
+---
 
-## Ranh giới bảo mật và BLOCKED API
+<a id="vi"></a>
 
-| Capability               | Điều kiện còn thiếu                                                                                                               |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| Identity / SSO           | Verified browser login, OIDC Authorization Code + PKCE, #24                                                                       |
-| Gateway / Workflow HTTP  | Registration, resource ACL, tenant binding và security gate #22/#23/#24; mọi create/activate/transition/snapshot/history đều chặn |
-| Data persistence         | HTTP application contract được duyệt; không nối PostgreSQL hoặc Java trực tiếp                                                    |
-| Attachments              | Backend Storage API có kiểm quyền #26: **BLOCKED FEATURE**, không có file input hoặc upload giả                                   |
-| HTTP DTO / error mapping | OpenAPI và review contract #37                                                                                                    |
+## Tổng quan
 
-Không có secret, admin token, service-role key, database credential hay `X-User`/`X-Role` làm nguồn định danh. Chỉ có tên/vai trò demo trong `sessionStorage`; sửa giá trị này không phải chứng minh authentication/authorization. Fixture visibility (nhân viên xem yêu cầu mẫu của mình; người xử lý xem bộ dữ liệu mẫu) chỉ là hành vi UX.
+OpenTrix Portal là giao diện web của ứng dụng IT Helpdesk, xây dựng bằng React 19, TypeScript, Vite 8 và React Router 7, dùng biểu tượng Lucide và đóng gói sẵn font Be Vietnam Pro; phiên bản chính xác được ghim trong [package-lock.json](https://github.com/tricore-opentrix/opentrix/blob/main/frontend/package-lock.json). Giao diện dùng tiếng Việt. Portal không tải font, analytics hay tài nguyên nào khác từ máy chủ bên thứ ba.
 
-## Kiểm thử
+Portal có hai bản build:
 
-Kiểm tra giao diện integration-local (#233) trên entry production hiện tại:
+| Bản build | Lệnh | Nguồn dữ liệu |
+| --- | --- | --- |
+| **MOCK** (mặc định) | `npm run dev`, `npm run build` | Dữ liệu giả trong bộ nhớ. Không cần backend, Keycloak, cơ sở dữ liệu hay thông tin đăng nhập. |
+| **integration-local** | `npm run build:integration-local` | API IT Helpdesk qua [Portal BFF](https://github.com/tricore-opentrix/opentrix/blob/main/portal-bff/README.md), đăng nhập qua Keycloak. Được dùng trong [triển khai cục bộ](https://github.com/tricore-opentrix/opentrix/blob/main/infra/demo/README.md). |
 
-```powershell
-npm.cmd run build:integration-local
-npx.cmd playwright test --config tests/integration-local.playwright.config.ts
+### Yêu cầu
+
+Node.js 22.12 trở lên và npm.
+
+### Chạy bản MOCK
+
+```bash
+cd frontend
+npm ci
+npm run dev
 ```
 
-Bộ kiểm tra dùng phản hồi BFF giả lập trên origin ảo `https://localhost:9443` (khác stack Docker `https://localhost:8443`), chụp bốn màn hình ở 1440/768/390/320px
-vào `playwright-report/issue-233/`, kiểm tra tràn ngang và axe WCAG.
-Kết quả này không xác nhận đăng nhập/đăng xuất OIDC, đổi ba tài khoản thật hay
-Golden Path. Các bước đó cần stack Docker hoạt động theo runbook #119.
-Chạy lại `npm.cmd run build` trước bộ smoke MOCK dưới đây.
+Mở http://127.0.0.1:5173. Trên Windows PowerShell, dùng `npm.cmd` nếu `npm` bị execution policy chặn.
 
-```powershell
-npm.cmd run build
-npm.cmd test
-npx.cmd playwright install chromium
-npm.cmd run test:smoke
-npm.cmd run check:security
+Để build và xem trước bản production:
+
+```bash
+npm run build
+npm run preview -- --port 4173
 ```
 
-Smoke suite khởi chạy production preview tại `127.0.0.1:4173`, kiểm tra hai luồng UI, lỗi/empty/validation, chặn API, keyboard/modal, desktop/tablet/mobile và axe WCAG 2 A/AA + 2.1 AA. Screenshot được tạo trực tiếp từ localhost tại evidence cục bộ của từng lần chạy (không có đường dẫn ảnh chuẩn được xác minh trên `main`). Không dùng ảnh dựng làm bằng chứng. Script security chỉ là kiểm tra mẫu credentials phổ biến, đi kèm review source và staged diff.
+Máy chủ web phục vụ bản build phải trả về `index.html` cho các đường dẫn không tồn tại để liên kết sâu hoạt động.
 
-Python không có trong môi trường triển khai nên browser suite dùng Playwright TypeScript, có thể chạy bằng dependencies đã khóa của dự án.
+### Bản build integration-local
 
-## Giới hạn
+`npm run build:integration-local` build một entry riêng, chỉ gồm IT Helpdesk tại `/mvp/helpdesk`:
 
-### Email/mật khẩu: chỉ xem trước giao diện
+- **Đăng nhập** mở `/oauth2/authorization/keycloak`. **Đăng xuất** gửi `POST /bff/logout` kèm CSRF token lấy từ `/bff/session`.
+- Mọi lời gọi API đi tới `/bff/api/v1/mvp/requests` trên cùng origin. Trình duyệt không bao giờ giữ access token.
+- Bản build chỉ chạy qua HTTPS trên máy cục bộ (`localhost`, `127.0.0.1` hoặc `[::1]`).
 
-`/login` và `/register` dùng thương hiệu DX-OS, Be Vietnam Pro và Lucide, bố cục
-hai cột trên desktop và một cột trên mobile. Truy cập từ liên kết tại `/session`
-hoặc mở trực tiếp URL. Nút **Vào phiên Demo** luôn mở luồng Demo hiện có riêng.
+Triển khai cục bộ tự build và phục vụ entry này. Để tự phục vụ, xem cấu hình Caddy trong [portal-bff/README.md](https://github.com/tricore-opentrix/opentrix/blob/main/portal-bff/README.md).
 
-Email, họ tên, độ dài mật khẩu (đăng ký: 12–128 ký tự) và xác nhận mật khẩu được
-kiểm tra tại form. Đây là quy tắc UI tạm thời, không phải chính sách Identity đã
-được duyệt. Chỉ dùng dữ liệu giả; không nhập mật khẩu thật để thử nghiệm.
+### Các trang (bản MOCK)
 
-Submit hợp lệ chỉ kiểm tra form cục bộ, xóa các ô mật khẩu rồi hiển thị
-**BLOCKED FEATURE**. Không gửi HTTP, không tạo JWT, không tạo tài khoản, không
-thay đổi vai trò/phiên Demo và không báo đăng nhập thành công. Quên mật khẩu cũng
-hiển thị **BLOCKED FEATURE**. Không có endpoint hoặc công tắc mở authentication.
-Luồng thật phải do backend Identity xử lý qua API được phê duyệt và bảo vệ.
+| Route | Nội dung |
+| --- | --- |
+| `/` | Dashboard và truy cập nhanh hai dịch vụ Hỗ trợ IT và Cơ sở vật chất |
+| `/requests`, `/requests/new`, `/requests/:id` | Danh sách yêu cầu có tìm kiếm và lọc, form tạo yêu cầu, chi tiết yêu cầu kèm timeline |
+| `/approvals` | Bàn xử lý cho vai trò người xử lý mô phỏng |
+| `/history` | Lịch sử yêu cầu, mới nhất trước |
+| `/mvp/helpdesk` | Màn hình IT Helpdesk; được kết nối ở bản integration-local, còn ở bản MOCK chỉ hiện thông báo |
+| `/session` | Bắt đầu hoặc kết thúc phiên demo, đổi vai trò mô phỏng, mô phỏng phiên hết hạn |
+| `/integration` | Trạng thái từng năng lực và công cụ mô phỏng lỗi |
+| `/login`, `/register` | Màn hình đăng nhập và đăng ký chỉ để xem trước giao diện: gửi form chỉ kiểm tra dữ liệu và hiện "BLOCKED FEATURE"; không gửi gì đi |
 
-Chỉ khi người dùng chọn **Ghi nhớ email**, email hợp lệ được lưu trong
-`localStorage` dưới khóa `dxos-remembered-email-v1`; bỏ chọn sẽ xóa ngay. Mật khẩu
-chỉ tồn tại tạm trong ô nhập và bộ nhớ lúc validation, không được lưu vào browser
-storage, fixtures, logs hoặc gửi qua mạng. Đăng ký chỉ có Sinh viên/Giảng viên và
-từ chối giá trị vai trò bị sửa thành admin/processor. Không có quyền thực được cấp.
+### Trạng thái yêu cầu IT Helpdesk
 
-Test mới nằm tại `src/pages/Auth.test.tsx` và `tests/auth.spec.ts`. Xem
-ảnh Login/Register của lần chạy riêng (cần đính kèm log và ảnh ở Issue tương ứng) ở desktop,
-tablet, mobile 390px và 320px. Bộ smoke hiện có tiếp tục kiểm tra tạo yêu cầu,
-phê duyệt, xử lý, timeline và `HttpApiClient` fail-closed. Theme chỉ tăng tương
-phản một số màu chữ phụ để các kiểm tra WCAG hiện có đạt; không đổi bố cục dashboard.
+| Trạng thái API | Nhãn hiển thị |
+| --- | --- |
+| `SUBMITTED` | Mới gửi |
+| `TRIAGED` | Đã tiếp nhận |
+| `IN_PROGRESS` | Đang xử lý |
+| `RESOLVED` | Chờ xác nhận |
+| `CONFIRMED` | Hoàn thành |
 
-- Request và lịch sử chỉ ở bộ nhớ trong **một tab**. Reload hoặc khôi phục demo sẽ reset fixtures; đổi route bằng sidebar giữ dữ liệu.
-- Phiên demo chỉ lưu lựa chọn vai trò trong tab, không có SSO, access token hay quyền thực.
-- Kết quả ghi chưa xác định chỉ là mô phỏng lỗi; mock không xác nhận một commit thật đã xảy ra.
-- Chưa kiểm chứng real 401/403/404, cross-tenant denial, concurrency/persistence hoặc HTTP end-to-end.
-- Browser coverage hiện là Chromium; axe không thay thế audit accessibility thủ công đầy đủ. Bảng cuộn ngang bên trong ở màn hình nhỏ.
-- Chưa upload/read file, chưa gửi thông báo thực, chưa triển khai hosting.
+Trạng thái không xác định được hiển thị bằng mã gốc kèm badge xám. Nhãn chỉ ảnh hưởng hiển thị; backend quyết định thao tác nào được phép.
 
-Xem [hướng dẫn demo](DEMO_GUIDE.md). Refs #39; kết quả local chỉ chứng minh đúng phạm vi, SHA và environment từng lần chạy; không suy ra trạng thái đóng/mở Issue #39 hoặc LIVE E2E.
+### Hành vi
+
+- Thao tác ghi được chặn gửi hai lần và không bao giờ tự thử lại. Nếu không xác định được kết quả ghi (`COMMIT_OUTCOME_UNKNOWN`), form bị khóa và người dùng được hướng dẫn kiểm tra lịch sử yêu cầu.
+- Phản hồi `401` kết thúc phiên; `403` và `404` ẩn hiển thị thông báo an toàn.
+- Đăng xuất, đổi vai trò hoặc nhận `401` sẽ hủy các kết quả đang chờ của phiên trước.
+- Bản MOCK chỉ lưu vai trò mô phỏng trong `sessionStorage` (`dxos-demo-role`); đây không phải xác thực. Nếu người dùng chọn "ghi nhớ email" ở `/login`, email được lưu trong `localStorage` với khóa `dxos-remembered-email-v1`. Mật khẩu không bao giờ được lưu hay gửi đi.
+
+### Cấu trúc mã
+
+```text
+src/
+  App.tsx, main.tsx              Định tuyến; main.tsx chọn entry MOCK hoặc integration-local
+  features/helpdesk/             Màn hình IT Helpdesk và entry integration-local
+  services/mvp/                  Port dịch vụ IT Helpdesk, lệnh, nhãn trạng thái
+  services/mvp/http/             HTTP client và transport cùng origin tới Portal BFF
+  services/MockRequestService.ts Dịch vụ trong bộ nhớ cho bản MOCK
+  fixtures/requests.ts           Dữ liệu demo giả
+  components/, pages/, hooks/    Thành phần giao diện, trang và hook dùng chung
+  tokens.css, styles.css         Design token và style
+tests/                           Bộ test Playwright
+scripts/check-security.mjs       Quét mã nguồn và bản build tìm mẫu thông tin đăng nhập
+```
+
+### Kiểm thử
+
+| Lệnh | Nội dung kiểm tra |
+| --- | --- |
+| `npm test` | Unit test và component test (Vitest) |
+| `npm run test:smoke` | Test trình duyệt (Playwright, Chromium) trên bản preview tại `127.0.0.1:4173`: luồng yêu cầu, trạng thái lỗi và rỗng, thao tác bàn phím và hộp thoại, bố cục desktop, tablet, mobile, và khả năng tiếp cận bằng axe (WCAG 2.0 A/AA và 2.1 AA). Chạy `npm run build` và `npx playwright install chromium` trước. |
+| `npx playwright test --config tests/integration-local.playwright.config.ts` | Bản integration-local với BFF giả lập tại `https://localhost:9443`, ở các độ rộng 1440, 768, 390 và 320 px. Chạy `npm run build:integration-local` trước. |
+| `npm run check:security` | Mẫu thông tin đăng nhập trong `src/` và `dist/` |
+
+Các test này dùng dữ liệu và BFF giả lập. Việc đăng nhập bằng Keycloak và luồng IT Helpdesk đầy đủ có thể kiểm tra bằng triển khai cục bộ.
+
+### Giới hạn
+
+- Ở bản MOCK, yêu cầu chỉ nằm trong bộ nhớ của một tab trình duyệt; tải lại trang sẽ đặt lại dữ liệu.
+- Màn hình `/login` và `/register` không tạo tài khoản hay phiên.
+- Chưa hỗ trợ tệp đính kèm.
+- Test trình duyệt chỉ chạy trên Chromium; kiểm tra axe không thay thế đánh giá khả năng tiếp cận thủ công đầy đủ.
