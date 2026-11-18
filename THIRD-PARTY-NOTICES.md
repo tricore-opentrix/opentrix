@@ -3,155 +3,248 @@ SPDX-FileCopyrightText: 2026 TRICORE contributors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# THIRD-PARTY-NOTICES — generated inventory
+# Third-Party Notices
 
-Generated from resolved CycloneDX SBOMs. This is not a legal
-certification or a substitute for upstream license and NOTICE texts.
+> **Language / Ngôn ngữ:** [English](#en) · [Tiếng Việt](#vi)
 
-| Project | Dependency | Version | Declared licenses | License choice | PURL |
-| --- | --- | --- | --- | --- | --- |
-| backend | classmate | 1.7.3 | Apache-2.0 |  | pkg:maven/com.fasterxml/classmate@1.7.3?type=jar |
-| backend | flyway-core | 11.7.2 | Apache-2.0 |  | pkg:maven/org.flywaydb/flyway-core@11.7.2?type=jar |
-| backend | flyway-database-postgresql | 11.7.2 | Apache-2.0 |  | pkg:maven/org.flywaydb/flyway-database-postgresql@11.7.2?type=jar |
-| backend | HdrHistogram | 2.2.2 | BSD-2-Clause, CC0-1.0 |  | pkg:maven/org.hdrhistogram/HdrHistogram@2.2.2?type=jar |
-| backend | hibernate-validator | 8.0.3.Final | Apache-2.0 |  | pkg:maven/org.hibernate.validator/hibernate-validator@8.0.3.Final?type=jar |
-| backend | HikariCP | 6.3.3 | Apache-2.0 |  | pkg:maven/com.zaxxer/HikariCP@6.3.3?type=jar |
-| backend | jackson-annotations | 2.21 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar |
-| backend | jackson-bom | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson/jackson-bom@2.21.4?type=pom |
-| backend | jackson-core | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.4?type=jar |
-| backend | jackson-databind | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.4?type=jar |
-| backend | jackson-dataformat-toml | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-toml@2.21.4?type=jar |
-| backend | jackson-datatype-jdk8 | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jdk8@2.21.4?type=jar |
-| backend | jackson-datatype-jsr310 | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.21.4?type=jar |
-| backend | jackson-module-parameter-names | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.module/jackson-module-parameter-names@2.21.4?type=jar |
-| backend | jakarta.annotation-api | 2.1.1 | EPL-2.0, GPL-2.0-with-classpath-exception |  | pkg:maven/jakarta.annotation/jakarta.annotation-api@2.1.1?type=jar |
-| backend | jakarta.validation-api | 3.0.2 | Apache-2.0 |  | pkg:maven/jakarta.validation/jakarta.validation-api@3.0.2?type=jar |
-| backend | jboss-logging | 3.6.3.Final | Apache-2.0 |  | pkg:maven/org.jboss.logging/jboss-logging@3.6.3.Final?type=jar |
-| backend | jcip-annotations | 1.0-1 | Apache-2.0 |  | pkg:maven/com.github.stephenc.jcip/jcip-annotations@1.0-1?type=jar |
-| backend | jul-to-slf4j | 2.0.18 | MIT |  | pkg:maven/org.slf4j/jul-to-slf4j@2.0.18?type=jar |
-| backend | LatencyUtils | 2.0.3 | CC0-1.0 |  | pkg:maven/org.latencyutils/LatencyUtils@2.0.3?type=jar |
-| backend | log4j-api | 2.24.3 | Apache-2.0 |  | pkg:maven/org.apache.logging.log4j/log4j-api@2.24.3?type=jar |
-| backend | log4j-to-slf4j | 2.24.3 | Apache-2.0 |  | pkg:maven/org.apache.logging.log4j/log4j-to-slf4j@2.24.3?type=jar |
-| backend | logback-classic | 1.5.34 | EPL-2.0, LGPL-2.1-only | EPL-2.0 | pkg:maven/ch.qos.logback/logback-classic@1.5.34?type=jar |
-| backend | logback-core | 1.5.34 | EPL-2.0, LGPL-2.1-only | EPL-2.0 | pkg:maven/ch.qos.logback/logback-core@1.5.34?type=jar |
-| backend | micrometer-commons | 1.15.12 | Apache-2.0 |  | pkg:maven/io.micrometer/micrometer-commons@1.15.12?type=jar |
-| backend | micrometer-core | 1.15.12 | Apache-2.0 |  | pkg:maven/io.micrometer/micrometer-core@1.15.12?type=jar |
-| backend | micrometer-jakarta9 | 1.15.12 | Apache-2.0 |  | pkg:maven/io.micrometer/micrometer-jakarta9@1.15.12?type=jar |
-| backend | micrometer-observation | 1.15.12 | Apache-2.0 |  | pkg:maven/io.micrometer/micrometer-observation@1.15.12?type=jar |
-| backend | nimbus-jose-jwt | 9.37.4 | Apache-2.0 |  | pkg:maven/com.nimbusds/nimbus-jose-jwt@9.37.4?type=jar |
-| backend | postgresql | 42.7.11 | BSD-2-Clause |  | pkg:maven/org.postgresql/postgresql@42.7.11?type=jar |
-| backend | slf4j-api | 2.0.18 | MIT |  | pkg:maven/org.slf4j/slf4j-api@2.0.18?type=jar |
-| backend | snakeyaml | 2.4 | Apache-2.0 |  | pkg:maven/org.yaml/snakeyaml@2.4?type=jar |
-| backend | spring-aop | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-aop@6.2.19?type=jar |
-| backend | spring-beans | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-beans@6.2.19?type=jar |
-| backend | spring-boot | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot@3.5.16?type=jar |
-| backend | spring-boot-actuator | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-actuator@3.5.16?type=jar |
-| backend | spring-boot-actuator-autoconfigure | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-actuator-autoconfigure@3.5.16?type=jar |
-| backend | spring-boot-autoconfigure | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.5.16?type=jar |
-| backend | spring-boot-dependencies | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-dependencies@3.5.16?type=pom |
-| backend | spring-boot-starter | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter@3.5.16?type=jar |
-| backend | spring-boot-starter-actuator | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-actuator@3.5.16?type=jar |
-| backend | spring-boot-starter-jdbc | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-jdbc@3.5.16?type=jar |
-| backend | spring-boot-starter-json | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-json@3.5.16?type=jar |
-| backend | spring-boot-starter-logging | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-logging@3.5.16?type=jar |
-| backend | spring-boot-starter-oauth2-resource-server | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-oauth2-resource-server@3.5.16?type=jar |
-| backend | spring-boot-starter-security | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-security@3.5.16?type=jar |
-| backend | spring-boot-starter-tomcat | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-tomcat@3.5.16?type=jar |
-| backend | spring-boot-starter-validation | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-validation@3.5.16?type=jar |
-| backend | spring-boot-starter-web | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-web@3.5.16?type=jar |
-| backend | spring-context | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-context@6.2.19?type=jar |
-| backend | spring-core | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-core@6.2.19?type=jar |
-| backend | spring-expression | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-expression@6.2.19?type=jar |
-| backend | spring-jcl | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-jcl@6.2.19?type=jar |
-| backend | spring-jdbc | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-jdbc@6.2.19?type=jar |
-| backend | spring-security-config | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-config@6.5.11?type=jar |
-| backend | spring-security-core | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-core@6.5.11?type=jar |
-| backend | spring-security-crypto | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-crypto@6.5.11?type=jar |
-| backend | spring-security-oauth2-core | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-oauth2-core@6.5.11?type=jar |
-| backend | spring-security-oauth2-jose | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-oauth2-jose@6.5.11?type=jar |
-| backend | spring-security-oauth2-resource-server | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-oauth2-resource-server@6.5.11?type=jar |
-| backend | spring-security-web | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-web@6.5.11?type=jar |
-| backend | spring-tx | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-tx@6.2.19?type=jar |
-| backend | spring-web | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-web@6.2.19?type=jar |
-| backend | spring-webmvc | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-webmvc@6.2.19?type=jar |
-| backend | tomcat-embed-core | 10.1.55 | Apache-2.0 |  | pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.55?type=jar |
-| backend | tomcat-embed-el | 10.1.55 | Apache-2.0 |  | pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.55?type=jar |
-| backend | tomcat-embed-websocket | 10.1.55 | Apache-2.0 |  | pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.55?type=jar |
-| frontend | be-vietnam-pro | 5.3.0 | OFL-1.1 |  | pkg:npm/%40fontsource/be-vietnam-pro@5.3.0 |
-| frontend | cookie | 1.1.1 | MIT |  | pkg:npm/cookie@1.1.1 |
-| frontend | csstype | 3.2.3 | MIT |  | pkg:npm/csstype@3.2.3 |
-| frontend | lucide-react | 1.59.0 | ISC |  | pkg:npm/lucide-react@1.59.0 |
-| frontend | react | 19.3.0 | MIT |  | pkg:npm/%40types/react@19.3.0 |
-| frontend | react | 19.3.1 | MIT |  | pkg:npm/react@19.3.1 |
-| frontend | react-dom | 19.3.1 | MIT |  | pkg:npm/react-dom@19.3.1 |
-| frontend | react-router | 7.18.4 | MIT |  | pkg:npm/react-router@7.18.4 |
-| frontend | react-router-dom | 7.18.4 | MIT |  | pkg:npm/react-router-dom@7.18.4 |
-| frontend | scheduler | 0.28.0 | MIT |  | pkg:npm/scheduler@0.28.0 |
-| frontend | set-cookie-parser | 2.7.2 | MIT |  | pkg:npm/set-cookie-parser@2.7.2 |
-| gateway | apisix | 3.13.0-debian | Apache-2.0 |  | pkg:oci/apisix@sha256:c5c7a55ebb5c07abc210dbb963a37f41030e12c91d23bacedbaa168fec633bd7?repository_url=docker.io/apache/apisix&tag=3.13.0-debian |
-| portal-bff | accessors-smart | 2.5.2 | Apache-2.0 |  | pkg:maven/net.minidev/accessors-smart@2.5.2?type=jar |
-| portal-bff | asm | 9.7.1 | BSD-3-Clause |  | pkg:maven/org.ow2.asm/asm@9.7.1?type=jar |
-| portal-bff | content-type | 2.2 | Apache-2.0 |  | pkg:maven/com.nimbusds/content-type@2.2?type=jar |
-| portal-bff | jackson-annotations | 2.21 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar |
-| portal-bff | jackson-bom | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson/jackson-bom@2.21.4?type=pom |
-| portal-bff | jackson-core | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.4?type=jar |
-| portal-bff | jackson-databind | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.4?type=jar |
-| portal-bff | jackson-datatype-jdk8 | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jdk8@2.21.4?type=jar |
-| portal-bff | jackson-datatype-jsr310 | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.21.4?type=jar |
-| portal-bff | jackson-module-parameter-names | 2.21.4 | Apache-2.0 |  | pkg:maven/com.fasterxml.jackson.module/jackson-module-parameter-names@2.21.4?type=jar |
-| portal-bff | jakarta.annotation-api | 2.1.1 | EPL-2.0, GPL-2.0-with-classpath-exception |  | pkg:maven/jakarta.annotation/jakarta.annotation-api@2.1.1?type=jar |
-| portal-bff | jcip-annotations | 1.0-1 | Apache-2.0 |  | pkg:maven/com.github.stephenc.jcip/jcip-annotations@1.0-1?type=jar |
-| portal-bff | json-smart | 2.5.2 | Apache-2.0 |  | pkg:maven/net.minidev/json-smart@2.5.2?type=jar |
-| portal-bff | jul-to-slf4j | 2.0.18 | MIT |  | pkg:maven/org.slf4j/jul-to-slf4j@2.0.18?type=jar |
-| portal-bff | lang-tag | 1.7 | Apache-2.0 |  | pkg:maven/com.nimbusds/lang-tag@1.7?type=jar |
-| portal-bff | log4j-api | 2.24.3 | Apache-2.0 |  | pkg:maven/org.apache.logging.log4j/log4j-api@2.24.3?type=jar |
-| portal-bff | log4j-to-slf4j | 2.24.3 | Apache-2.0 |  | pkg:maven/org.apache.logging.log4j/log4j-to-slf4j@2.24.3?type=jar |
-| portal-bff | logback-classic | 1.5.34 | EPL-2.0, LGPL-2.1-only | EPL-2.0 | pkg:maven/ch.qos.logback/logback-classic@1.5.34?type=jar |
-| portal-bff | logback-core | 1.5.34 | EPL-2.0, LGPL-2.1-only | EPL-2.0 | pkg:maven/ch.qos.logback/logback-core@1.5.34?type=jar |
-| portal-bff | micrometer-commons | 1.15.12 | Apache-2.0 |  | pkg:maven/io.micrometer/micrometer-commons@1.15.12?type=jar |
-| portal-bff | micrometer-observation | 1.15.12 | Apache-2.0 |  | pkg:maven/io.micrometer/micrometer-observation@1.15.12?type=jar |
-| portal-bff | nimbus-jose-jwt | 9.37.4 | Apache-2.0 |  | pkg:maven/com.nimbusds/nimbus-jose-jwt@9.37.4?type=jar |
-| portal-bff | oauth2-oidc-sdk | 9.43.6 | Apache-2.0 |  | pkg:maven/com.nimbusds/oauth2-oidc-sdk@9.43.6?type=jar |
-| portal-bff | slf4j-api | 2.0.18 | MIT |  | pkg:maven/org.slf4j/slf4j-api@2.0.18?type=jar |
-| portal-bff | snakeyaml | 2.4 | Apache-2.0 |  | pkg:maven/org.yaml/snakeyaml@2.4?type=jar |
-| portal-bff | spring-aop | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-aop@6.2.19?type=jar |
-| portal-bff | spring-beans | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-beans@6.2.19?type=jar |
-| portal-bff | spring-boot | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot@3.5.16?type=jar |
-| portal-bff | spring-boot-autoconfigure | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.5.16?type=jar |
-| portal-bff | spring-boot-dependencies | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-dependencies@3.5.16?type=pom |
-| portal-bff | spring-boot-starter | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter@3.5.16?type=jar |
-| portal-bff | spring-boot-starter-json | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-json@3.5.16?type=jar |
-| portal-bff | spring-boot-starter-logging | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-logging@3.5.16?type=jar |
-| portal-bff | spring-boot-starter-oauth2-client | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-oauth2-client@3.5.16?type=jar |
-| portal-bff | spring-boot-starter-security | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-security@3.5.16?type=jar |
-| portal-bff | spring-boot-starter-tomcat | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-tomcat@3.5.16?type=jar |
-| portal-bff | spring-boot-starter-web | 3.5.16 | Apache-2.0 |  | pkg:maven/org.springframework.boot/spring-boot-starter-web@3.5.16?type=jar |
-| portal-bff | spring-context | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-context@6.2.19?type=jar |
-| portal-bff | spring-core | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-core@6.2.19?type=jar |
-| portal-bff | spring-expression | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-expression@6.2.19?type=jar |
-| portal-bff | spring-jcl | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-jcl@6.2.19?type=jar |
-| portal-bff | spring-security-config | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-config@6.5.11?type=jar |
-| portal-bff | spring-security-core | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-core@6.5.11?type=jar |
-| portal-bff | spring-security-crypto | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-crypto@6.5.11?type=jar |
-| portal-bff | spring-security-oauth2-client | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-oauth2-client@6.5.11?type=jar |
-| portal-bff | spring-security-oauth2-core | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-oauth2-core@6.5.11?type=jar |
-| portal-bff | spring-security-oauth2-jose | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-oauth2-jose@6.5.11?type=jar |
-| portal-bff | spring-security-web | 6.5.11 | Apache-2.0 |  | pkg:maven/org.springframework.security/spring-security-web@6.5.11?type=jar |
-| portal-bff | spring-web | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-web@6.2.19?type=jar |
-| portal-bff | spring-webmvc | 6.2.19 | Apache-2.0 |  | pkg:maven/org.springframework/spring-webmvc@6.2.19?type=jar |
-| portal-bff | tomcat-embed-core | 10.1.55 | Apache-2.0 |  | pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.55?type=jar |
-| portal-bff | tomcat-embed-el | 10.1.55 | Apache-2.0 |  | pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.55?type=jar |
-| portal-bff | tomcat-embed-websocket | 10.1.55 | Apache-2.0 |  | pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.55?type=jar |
+Generated by [`scripts/r23-compliance.py`](https://github.com/tricore-opentrix/opentrix/blob/main/scripts/r23-compliance.py) from the CycloneDX SBOMs of the backend, Portal BFF and frontend. Do not edit by hand.
 
-## Gateway image scope
+---
 
-`apache/apisix:3.13.0-debian` is the unmodified upstream APISIX gateway image
-(Apache-2.0): [LICENSE](https://github.com/apache/apisix/blob/3.13.0/LICENSE),
-[NOTICE](https://github.com/apache/apisix/blob/3.13.0/NOTICE).
-Its top-level record comes from `infra/apisix/bom.json`; image OS packages and
-transitive dependencies still require a separate distribution review under R24.
+<a id="en"></a>
 
-## Open compliance work
+## Overview
 
-Validate upstream required notice texts, bundled services,
-copyright provenance and release packaging separately under R24.
+OpenTrix is licensed under the Apache License 2.0 ([LICENSE](https://github.com/tricore-opentrix/opentrix/blob/main/LICENSE), [NOTICE](https://github.com/tricore-opentrix/opentrix/blob/main/NOTICE)). This file lists the 131 third-party packages that OpenTrix uses at runtime and the upstream container images used by the local deployment, with their declared licenses.
+
+- Java packages are the runtime dependencies of the backend and the Portal BFF.
+- npm packages are the runtime dependencies of the frontend; development-only packages are not included.
+- Container images are used as published upstream and are not modified.
+
+This file is an inventory. It is not a legal certification and does not replace the license and NOTICE texts published by each upstream project.
+
+Where a package is offered under more than one license, the Elected column shows the license under which OpenTrix uses it.
+
+## License summary
+
+A package that declares more than one license is counted under each license.
+
+| License | Packages |
+| --- | --- |
+| [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | 106 |
+| [MIT](https://spdx.org/licenses/MIT.html) | 13 |
+| [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html) | 6 |
+| [LGPL-2.1-only](https://spdx.org/licenses/LGPL-2.1-only.html) | 4 |
+| [BSD-2-Clause](https://spdx.org/licenses/BSD-2-Clause.html) | 2 |
+| [CC0-1.0](https://spdx.org/licenses/CC0-1.0.html) | 2 |
+| [GPL-2.0-with-classpath-exception](https://spdx.org/licenses/GPL-2.0-with-classpath-exception.html) | 2 |
+| [BSD-3-Clause](https://spdx.org/licenses/BSD-3-Clause.html) | 1 |
+| [ISC](https://spdx.org/licenses/ISC.html) | 1 |
+| [OFL-1.1](https://spdx.org/licenses/OFL-1.1.html) | 1 |
+
+## Scope and limitations
+
+- Operating-system packages and other contents of container images are not listed and require a separate review before distribution.
+- Before each release, upstream notice texts, bundled services, copyright provenance and release packaging are reviewed as described in [docs/RELEASE.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/RELEASE.md).
+
+---
+
+<a id="vi"></a>
+
+## Tổng quan
+
+OpenTrix được cấp phép theo Apache License 2.0 ([LICENSE](https://github.com/tricore-opentrix/opentrix/blob/main/LICENSE), [NOTICE](https://github.com/tricore-opentrix/opentrix/blob/main/NOTICE)). Tệp này liệt kê 131 gói bên thứ ba mà OpenTrix sử dụng khi chạy và các image container gốc dùng cho triển khai cục bộ, kèm giấy phép được khai báo.
+
+- Gói Java là phụ thuộc lúc chạy của backend và Portal BFF.
+- Gói npm là phụ thuộc lúc chạy của frontend; không gồm các gói chỉ dùng khi phát triển.
+- Image container được dùng nguyên bản như upstream phát hành, không chỉnh sửa.
+
+Tệp này là bản kiểm kê, không phải xác nhận pháp lý và không thay thế văn bản giấy phép, NOTICE do từng dự án upstream công bố.
+
+Khi một gói được cung cấp theo nhiều giấy phép, cột Giấy phép áp dụng ghi giấy phép mà OpenTrix sử dụng.
+
+## Tóm tắt giấy phép
+
+Gói khai báo nhiều giấy phép được tính ở từng giấy phép.
+
+| Giấy phép | Số gói |
+| --- | --- |
+| [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | 106 |
+| [MIT](https://spdx.org/licenses/MIT.html) | 13 |
+| [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html) | 6 |
+| [LGPL-2.1-only](https://spdx.org/licenses/LGPL-2.1-only.html) | 4 |
+| [BSD-2-Clause](https://spdx.org/licenses/BSD-2-Clause.html) | 2 |
+| [CC0-1.0](https://spdx.org/licenses/CC0-1.0.html) | 2 |
+| [GPL-2.0-with-classpath-exception](https://spdx.org/licenses/GPL-2.0-with-classpath-exception.html) | 2 |
+| [BSD-3-Clause](https://spdx.org/licenses/BSD-3-Clause.html) | 1 |
+| [ISC](https://spdx.org/licenses/ISC.html) | 1 |
+| [OFL-1.1](https://spdx.org/licenses/OFL-1.1.html) | 1 |
+
+## Phạm vi và giới hạn
+
+- Gói hệ điều hành và các nội dung khác bên trong image container không được liệt kê và cần rà soát riêng trước khi phân phối.
+- Trước mỗi bản phát hành, văn bản notice của upstream, dịch vụ đi kèm, nguồn gốc bản quyền và gói phát hành được rà soát theo [docs/RELEASE.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/RELEASE.md).
+
+---
+
+## Component inventory / Danh mục thành phần
+
+Each package links to its page on Maven Central or npm; each license links to its SPDX page. / Mỗi gói liên kết tới trang trên Maven Central hoặc npm; mỗi giấy phép liên kết tới trang SPDX.
+
+### Backend (Java)
+
+| Package / Gói | Version / Phiên bản | Declared licenses / Giấy phép khai báo | Elected / Giấy phép áp dụng |
+| --- | --- | --- | --- |
+| [com.fasterxml:classmate](https://central.sonatype.com/artifact/com.fasterxml/classmate/1.7.3) | 1.7.3 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.flywaydb:flyway-core](https://central.sonatype.com/artifact/org.flywaydb/flyway-core/11.7.2) | 11.7.2 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.flywaydb:flyway-database-postgresql](https://central.sonatype.com/artifact/org.flywaydb/flyway-database-postgresql/11.7.2) | 11.7.2 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.hdrhistogram:HdrHistogram](https://central.sonatype.com/artifact/org.hdrhistogram/HdrHistogram/2.2.2) | 2.2.2 | [BSD-2-Clause](https://spdx.org/licenses/BSD-2-Clause.html), [CC0-1.0](https://spdx.org/licenses/CC0-1.0.html) | — |
+| [org.hibernate.validator:hibernate-validator](https://central.sonatype.com/artifact/org.hibernate.validator/hibernate-validator/8.0.3.Final) | 8.0.3.Final | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.zaxxer:HikariCP](https://central.sonatype.com/artifact/com.zaxxer/HikariCP/6.3.3) | 6.3.3 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.core:jackson-annotations](https://central.sonatype.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.21) | 2.21 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson:jackson-bom](https://central.sonatype.com/artifact/com.fasterxml.jackson/jackson-bom/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.core:jackson-core](https://central.sonatype.com/artifact/com.fasterxml.jackson.core/jackson-core/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.core:jackson-databind](https://central.sonatype.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.dataformat:jackson-dataformat-toml](https://central.sonatype.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-toml/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.datatype:jackson-datatype-jdk8](https://central.sonatype.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.datatype:jackson-datatype-jsr310](https://central.sonatype.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.module:jackson-module-parameter-names](https://central.sonatype.com/artifact/com.fasterxml.jackson.module/jackson-module-parameter-names/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [jakarta.annotation:jakarta.annotation-api](https://central.sonatype.com/artifact/jakarta.annotation/jakarta.annotation-api/2.1.1) | 2.1.1 | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html), [GPL-2.0-with-classpath-exception](https://spdx.org/licenses/GPL-2.0-with-classpath-exception.html) | — |
+| [jakarta.validation:jakarta.validation-api](https://central.sonatype.com/artifact/jakarta.validation/jakarta.validation-api/3.0.2) | 3.0.2 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.jboss.logging:jboss-logging](https://central.sonatype.com/artifact/org.jboss.logging/jboss-logging/3.6.3.Final) | 3.6.3.Final | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.github.stephenc.jcip:jcip-annotations](https://central.sonatype.com/artifact/com.github.stephenc.jcip/jcip-annotations/1.0-1) | 1.0-1 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.slf4j:jul-to-slf4j](https://central.sonatype.com/artifact/org.slf4j/jul-to-slf4j/2.0.18) | 2.0.18 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [org.latencyutils:LatencyUtils](https://central.sonatype.com/artifact/org.latencyutils/LatencyUtils/2.0.3) | 2.0.3 | [CC0-1.0](https://spdx.org/licenses/CC0-1.0.html) | — |
+| [org.apache.logging.log4j:log4j-api](https://central.sonatype.com/artifact/org.apache.logging.log4j/log4j-api/2.24.3) | 2.24.3 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.apache.logging.log4j:log4j-to-slf4j](https://central.sonatype.com/artifact/org.apache.logging.log4j/log4j-to-slf4j/2.24.3) | 2.24.3 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [ch.qos.logback:logback-classic](https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/1.5.34) | 1.5.34 | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html), [LGPL-2.1-only](https://spdx.org/licenses/LGPL-2.1-only.html) | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html) |
+| [ch.qos.logback:logback-core](https://central.sonatype.com/artifact/ch.qos.logback/logback-core/1.5.34) | 1.5.34 | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html), [LGPL-2.1-only](https://spdx.org/licenses/LGPL-2.1-only.html) | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html) |
+| [io.micrometer:micrometer-commons](https://central.sonatype.com/artifact/io.micrometer/micrometer-commons/1.15.12) | 1.15.12 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [io.micrometer:micrometer-core](https://central.sonatype.com/artifact/io.micrometer/micrometer-core/1.15.12) | 1.15.12 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [io.micrometer:micrometer-jakarta9](https://central.sonatype.com/artifact/io.micrometer/micrometer-jakarta9/1.15.12) | 1.15.12 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [io.micrometer:micrometer-observation](https://central.sonatype.com/artifact/io.micrometer/micrometer-observation/1.15.12) | 1.15.12 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.nimbusds:nimbus-jose-jwt](https://central.sonatype.com/artifact/com.nimbusds/nimbus-jose-jwt/9.37.4) | 9.37.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.postgresql:postgresql](https://central.sonatype.com/artifact/org.postgresql/postgresql/42.7.11) | 42.7.11 | [BSD-2-Clause](https://spdx.org/licenses/BSD-2-Clause.html) | — |
+| [org.slf4j:slf4j-api](https://central.sonatype.com/artifact/org.slf4j/slf4j-api/2.0.18) | 2.0.18 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [org.yaml:snakeyaml](https://central.sonatype.com/artifact/org.yaml/snakeyaml/2.4) | 2.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-aop](https://central.sonatype.com/artifact/org.springframework/spring-aop/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-beans](https://central.sonatype.com/artifact/org.springframework/spring-beans/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-actuator](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-actuator/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-actuator-autoconfigure](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-actuator-autoconfigure/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-autoconfigure](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-autoconfigure/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-dependencies](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-dependencies/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-actuator](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-actuator/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-jdbc](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-jdbc/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-json](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-json/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-logging](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-logging/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-oauth2-resource-server](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-resource-server/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-security](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-security/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-tomcat](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-tomcat/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-validation](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-validation/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-web](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-web/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-context](https://central.sonatype.com/artifact/org.springframework/spring-context/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-core](https://central.sonatype.com/artifact/org.springframework/spring-core/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-expression](https://central.sonatype.com/artifact/org.springframework/spring-expression/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-jcl](https://central.sonatype.com/artifact/org.springframework/spring-jcl/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-jdbc](https://central.sonatype.com/artifact/org.springframework/spring-jdbc/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-config](https://central.sonatype.com/artifact/org.springframework.security/spring-security-config/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-core](https://central.sonatype.com/artifact/org.springframework.security/spring-security-core/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-crypto](https://central.sonatype.com/artifact/org.springframework.security/spring-security-crypto/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-oauth2-core](https://central.sonatype.com/artifact/org.springframework.security/spring-security-oauth2-core/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-oauth2-jose](https://central.sonatype.com/artifact/org.springframework.security/spring-security-oauth2-jose/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-oauth2-resource-server](https://central.sonatype.com/artifact/org.springframework.security/spring-security-oauth2-resource-server/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-web](https://central.sonatype.com/artifact/org.springframework.security/spring-security-web/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-tx](https://central.sonatype.com/artifact/org.springframework/spring-tx/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-web](https://central.sonatype.com/artifact/org.springframework/spring-web/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-webmvc](https://central.sonatype.com/artifact/org.springframework/spring-webmvc/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.apache.tomcat.embed:tomcat-embed-core](https://central.sonatype.com/artifact/org.apache.tomcat.embed/tomcat-embed-core/10.1.55) | 10.1.55 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.apache.tomcat.embed:tomcat-embed-el](https://central.sonatype.com/artifact/org.apache.tomcat.embed/tomcat-embed-el/10.1.55) | 10.1.55 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.apache.tomcat.embed:tomcat-embed-websocket](https://central.sonatype.com/artifact/org.apache.tomcat.embed/tomcat-embed-websocket/10.1.55) | 10.1.55 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+
+### Portal BFF (Java)
+
+| Package / Gói | Version / Phiên bản | Declared licenses / Giấy phép khai báo | Elected / Giấy phép áp dụng |
+| --- | --- | --- | --- |
+| [net.minidev:accessors-smart](https://central.sonatype.com/artifact/net.minidev/accessors-smart/2.5.2) | 2.5.2 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.ow2.asm:asm](https://central.sonatype.com/artifact/org.ow2.asm/asm/9.7.1) | 9.7.1 | [BSD-3-Clause](https://spdx.org/licenses/BSD-3-Clause.html) | — |
+| [com.nimbusds:content-type](https://central.sonatype.com/artifact/com.nimbusds/content-type/2.2) | 2.2 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.core:jackson-annotations](https://central.sonatype.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.21) | 2.21 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson:jackson-bom](https://central.sonatype.com/artifact/com.fasterxml.jackson/jackson-bom/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.core:jackson-core](https://central.sonatype.com/artifact/com.fasterxml.jackson.core/jackson-core/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.core:jackson-databind](https://central.sonatype.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.datatype:jackson-datatype-jdk8](https://central.sonatype.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.datatype:jackson-datatype-jsr310](https://central.sonatype.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.fasterxml.jackson.module:jackson-module-parameter-names](https://central.sonatype.com/artifact/com.fasterxml.jackson.module/jackson-module-parameter-names/2.21.4) | 2.21.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [jakarta.annotation:jakarta.annotation-api](https://central.sonatype.com/artifact/jakarta.annotation/jakarta.annotation-api/2.1.1) | 2.1.1 | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html), [GPL-2.0-with-classpath-exception](https://spdx.org/licenses/GPL-2.0-with-classpath-exception.html) | — |
+| [com.github.stephenc.jcip:jcip-annotations](https://central.sonatype.com/artifact/com.github.stephenc.jcip/jcip-annotations/1.0-1) | 1.0-1 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [net.minidev:json-smart](https://central.sonatype.com/artifact/net.minidev/json-smart/2.5.2) | 2.5.2 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.slf4j:jul-to-slf4j](https://central.sonatype.com/artifact/org.slf4j/jul-to-slf4j/2.0.18) | 2.0.18 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [com.nimbusds:lang-tag](https://central.sonatype.com/artifact/com.nimbusds/lang-tag/1.7) | 1.7 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.apache.logging.log4j:log4j-api](https://central.sonatype.com/artifact/org.apache.logging.log4j/log4j-api/2.24.3) | 2.24.3 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.apache.logging.log4j:log4j-to-slf4j](https://central.sonatype.com/artifact/org.apache.logging.log4j/log4j-to-slf4j/2.24.3) | 2.24.3 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [ch.qos.logback:logback-classic](https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/1.5.34) | 1.5.34 | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html), [LGPL-2.1-only](https://spdx.org/licenses/LGPL-2.1-only.html) | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html) |
+| [ch.qos.logback:logback-core](https://central.sonatype.com/artifact/ch.qos.logback/logback-core/1.5.34) | 1.5.34 | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html), [LGPL-2.1-only](https://spdx.org/licenses/LGPL-2.1-only.html) | [EPL-2.0](https://spdx.org/licenses/EPL-2.0.html) |
+| [io.micrometer:micrometer-commons](https://central.sonatype.com/artifact/io.micrometer/micrometer-commons/1.15.12) | 1.15.12 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [io.micrometer:micrometer-observation](https://central.sonatype.com/artifact/io.micrometer/micrometer-observation/1.15.12) | 1.15.12 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.nimbusds:nimbus-jose-jwt](https://central.sonatype.com/artifact/com.nimbusds/nimbus-jose-jwt/9.37.4) | 9.37.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [com.nimbusds:oauth2-oidc-sdk](https://central.sonatype.com/artifact/com.nimbusds/oauth2-oidc-sdk/9.43.6) | 9.43.6 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.slf4j:slf4j-api](https://central.sonatype.com/artifact/org.slf4j/slf4j-api/2.0.18) | 2.0.18 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [org.yaml:snakeyaml](https://central.sonatype.com/artifact/org.yaml/snakeyaml/2.4) | 2.4 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-aop](https://central.sonatype.com/artifact/org.springframework/spring-aop/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-beans](https://central.sonatype.com/artifact/org.springframework/spring-beans/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-autoconfigure](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-autoconfigure/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-dependencies](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-dependencies/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-json](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-json/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-logging](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-logging/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-oauth2-client](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-client/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-security](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-security/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-tomcat](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-tomcat/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.boot:spring-boot-starter-web](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-web/3.5.16) | 3.5.16 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-context](https://central.sonatype.com/artifact/org.springframework/spring-context/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-core](https://central.sonatype.com/artifact/org.springframework/spring-core/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-expression](https://central.sonatype.com/artifact/org.springframework/spring-expression/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-jcl](https://central.sonatype.com/artifact/org.springframework/spring-jcl/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-config](https://central.sonatype.com/artifact/org.springframework.security/spring-security-config/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-core](https://central.sonatype.com/artifact/org.springframework.security/spring-security-core/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-crypto](https://central.sonatype.com/artifact/org.springframework.security/spring-security-crypto/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-oauth2-client](https://central.sonatype.com/artifact/org.springframework.security/spring-security-oauth2-client/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-oauth2-core](https://central.sonatype.com/artifact/org.springframework.security/spring-security-oauth2-core/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-oauth2-jose](https://central.sonatype.com/artifact/org.springframework.security/spring-security-oauth2-jose/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework.security:spring-security-web](https://central.sonatype.com/artifact/org.springframework.security/spring-security-web/6.5.11) | 6.5.11 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-web](https://central.sonatype.com/artifact/org.springframework/spring-web/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.springframework:spring-webmvc](https://central.sonatype.com/artifact/org.springframework/spring-webmvc/6.2.19) | 6.2.19 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.apache.tomcat.embed:tomcat-embed-core](https://central.sonatype.com/artifact/org.apache.tomcat.embed/tomcat-embed-core/10.1.55) | 10.1.55 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.apache.tomcat.embed:tomcat-embed-el](https://central.sonatype.com/artifact/org.apache.tomcat.embed/tomcat-embed-el/10.1.55) | 10.1.55 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+| [org.apache.tomcat.embed:tomcat-embed-websocket](https://central.sonatype.com/artifact/org.apache.tomcat.embed/tomcat-embed-websocket/10.1.55) | 10.1.55 | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | — |
+
+### Frontend (npm)
+
+| Package / Gói | Version / Phiên bản | Declared licenses / Giấy phép khai báo | Elected / Giấy phép áp dụng |
+| --- | --- | --- | --- |
+| [@fontsource/be-vietnam-pro](https://www.npmjs.com/package/@fontsource/be-vietnam-pro/v/5.3.0) | 5.3.0 | [OFL-1.1](https://spdx.org/licenses/OFL-1.1.html) | — |
+| [cookie](https://www.npmjs.com/package/cookie/v/1.1.1) | 1.1.1 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [csstype](https://www.npmjs.com/package/csstype/v/3.2.3) | 3.2.3 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [lucide-react](https://www.npmjs.com/package/lucide-react/v/1.59.0) | 1.59.0 | [ISC](https://spdx.org/licenses/ISC.html) | — |
+| [@types/react](https://www.npmjs.com/package/@types/react/v/19.3.0) | 19.3.0 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [react](https://www.npmjs.com/package/react/v/19.3.1) | 19.3.1 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [react-dom](https://www.npmjs.com/package/react-dom/v/19.3.1) | 19.3.1 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [react-router](https://www.npmjs.com/package/react-router/v/7.18.4) | 7.18.4 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [react-router-dom](https://www.npmjs.com/package/react-router-dom/v/7.18.4) | 7.18.4 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [scheduler](https://www.npmjs.com/package/scheduler/v/0.28.0) | 0.28.0 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+| [set-cookie-parser](https://www.npmjs.com/package/set-cookie-parser/v/2.7.2) | 2.7.2 | [MIT](https://spdx.org/licenses/MIT.html) | — |
+
+### Container images / Image container
+
+| Image | License / Giấy phép | Use / Mục đích |
+| --- | --- | --- |
+| [`apache/apisix:3.13.0-debian`](https://hub.docker.com/r/apache/apisix) | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | API gateway (optional) / Cổng API (tùy chọn) |
+| [`postgres:17.11-alpine`](https://hub.docker.com/_/postgres) | [PostgreSQL](https://spdx.org/licenses/PostgreSQL.html) | Database / Cơ sở dữ liệu |
+| [`quay.io/keycloak/keycloak:26.8.0`](https://quay.io/repository/keycloak/keycloak) | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | Identity provider / Quản lý định danh |
+| [`caddy:2.10.2-alpine`](https://hub.docker.com/_/caddy) | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | HTTPS ingress serving the Portal / Ingress HTTPS phục vụ Portal |
+| [`eclipse-temurin:21-jre`](https://hub.docker.com/_/eclipse-temurin) | [GPL-2.0-with-classpath-exception](https://spdx.org/licenses/GPL-2.0-with-classpath-exception.html) | Java runtime of the locally built backend and Portal BFF images / Môi trường chạy Java của image backend và Portal BFF build cục bộ |
+| [`gradle:8.14.3-jdk21`](https://hub.docker.com/_/gradle) | [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) | Build stage only; not in the final image / Chỉ dùng khi build, không có trong image cuối |
+| [`node:22.20.0-alpine`](https://hub.docker.com/_/node) | [MIT](https://spdx.org/licenses/MIT.html) | Build stage only; not in the final image / Chỉ dùng khi build, không có trong image cuối |
