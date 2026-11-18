@@ -21,6 +21,11 @@ Start with [running it locally](#run-locally), then read the [architecture](http
 > and existing configuration keys intentionally keep their current names; this does not change
 > any integration contract.
 
+## Releases and roadmap
+
+- **v0.2.0 — released on 17 November 2026:** [stable GitHub release](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.2.0), distributed **source-only**. The release includes the source archive and checksums, not prebuilt backend JARs, frontend `dist`, or Docker/GHCR images. Docker images for the local demo are built from source.
+- **v0.3.0 — planned, not released:** follow-up integration and verification work. Flowable BPMN ([ADR-009](https://github.com/tricore-opentrix/opentrix/blob/main/docs/08-decisions/ADR-009-modular-monolith-flowable.md)) and S3-compatible storage ([ADR-016](https://github.com/tricore-opentrix/opentrix/blob/main/docs/08-decisions/ADR-016-s3-compatible-storage.md)) remain unshipped; the ADRs describe decisions, not deployed functionality. Scope and readiness depend on their implementation and test gates.
+
 ## Current scope
 
 | Area             | Available in the source                                                                                                                                                                                                                                                                                                                                                 |
@@ -29,7 +34,7 @@ Start with [running it locally](#run-locally), then read the [architecture](http
 | Identity         | Keycloak OIDC; Portal BFF with Authorization Code + PKCE, server-side session and CSRF protection; the backend validates JWT issuer, audience and signature                                                                                                                                                                                                             |
 | Authorization    | Scoped per tenant and per request; business roles are stored in the database, never taken from client headers                                                                                                                                                                                                                                                           |
 | Workflow         | Shared definitions, versions, transitions and history; optimistic version checks prevent lost updates                                                                                                                                                                                                                                                                   |
-| API gateway      | Apache APISIX at the edge: JWKS token validation, rate limiting, forwarded-header normalization                                                                                                                                                                                                                                                                         |
+| API gateway      | Optional Apache APISIX gateway overlay for the local demo (`--gateway` / `-Gateway`): JWKS token validation, rate limiting, forwarded-header normalization                                                                                                                                                                                                                                                                         |
 | Data             | PostgreSQL 17, Flyway migrations, least-privilege schemas and roles                                                                                                                                                                                                                                                                                                     |
 | User interface   | Vietnamese React Portal for three roles; a MOCK mode for UI work without a backend                                                                                                                                                                                                                                                                                      |
 | Local deployment | One command builds and starts the whole stack from source with Docker on Windows, Linux and macOS                                                                                                                                                                                                                                                                       |
@@ -68,7 +73,8 @@ Request lifecycle: **Submitted → Triaged → In progress → Awaiting confirma
 
 The backend is a **modular monolith**: core and application modules run in one Spring Boot
 process, with dependency boundaries enforced by ArchUnit. The browser never holds an access token;
-the Portal BFF keeps tokens server-side and calls the backend through the APISIX gateway. Embedded
+the Portal BFF keeps tokens server-side and calls the backend through the optional APISIX gateway
+in the documented `--gateway` / `-Gateway` demo mode. The current workflow engine is `internal`. Embedded
 Flowable ([ADR-009](https://github.com/tricore-opentrix/opentrix/blob/main/docs/08-decisions/ADR-009-modular-monolith-flowable.md)) and S3-compatible
 object storage ([ADR-016](https://github.com/tricore-opentrix/opentrix/blob/main/docs/08-decisions/ADR-016-s3-compatible-storage.md)) are being
 integrated and are not yet in the current release. Details: [ARCHITECTURE.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/ARCHITECTURE.md).
@@ -169,6 +175,11 @@ Bắt đầu từ [chạy cục bộ](#chạy-cục-bộ), sau đó xem [kiến 
 > OpenTrix là tên sản phẩm. Các định danh nội bộ như package Java `com.tricore.dxos` và các khóa
 > cấu hình hiện có được cố ý giữ nguyên; điều này không thay đổi hợp đồng tích hợp nào.
 
+## Phiên bản và lộ trình
+
+- **v0.2.0 — đã phát hành ngày 17/11/2026:** [GitHub Release chính thức, không phải pre-release](https://github.com/tricore-opentrix/opentrix/releases/tag/v0.2.0), phạm vi **SOURCE-ONLY**. Bản phát hành gồm gói mã nguồn và checksum; không phân phối JAR backend dựng sẵn, frontend `dist`, hoặc Docker/GHCR image. Image demo cục bộ được build từ mã nguồn.
+- **v0.3.0 — dự kiến, chưa phát hành:** công việc tích hợp và kiểm chứng tiếp theo. Flowable BPMN ([ADR-009](https://github.com/tricore-opentrix/opentrix/blob/main/docs/08-decisions/ADR-009-modular-monolith-flowable.md)) và lưu trữ tương thích S3 ([ADR-016](https://github.com/tricore-opentrix/opentrix/blob/main/docs/08-decisions/ADR-016-s3-compatible-storage.md)) chưa được phát hành; ADR mô tả quyết định kiến trúc, không phải bằng chứng đã triển khai. Phạm vi và mức sẵn sàng còn phụ thuộc các bước hiện thực và kiểm thử.
+
 ## Phạm vi hiện tại
 
 | Lĩnh vực          | Đã có trong mã nguồn                                                                                                                                                                                                                                                                                                                                         |
@@ -177,7 +188,7 @@ Bắt đầu từ [chạy cục bộ](#chạy-cục-bộ), sau đó xem [kiến 
 | Định danh         | Keycloak OIDC; Portal BFF dùng Authorization Code + PKCE, phiên phía server, chống CSRF; backend kiểm JWT (issuer, audience, chữ ký)                                                                                                                                                                                                                         |
 | Phân quyền        | Theo tổ chức (tenant) và từng yêu cầu; vai trò nghiệp vụ lưu trong cơ sở dữ liệu, không lấy từ header do client gửi                                                                                                                                                                                                                                          |
 | Quy trình         | Định nghĩa, phiên bản, chuyển trạng thái và lịch sử dùng chung cho mọi ứng dụng; chặn ghi đè đồng thời bằng phiên bản                                                                                                                                                                                                                                        |
-| Cổng API          | Apache APISIX ở biên: kiểm token qua JWKS, giới hạn tần suất, chuẩn hóa header chuyển tiếp                                                                                                                                                                                                                                                                   |
+| Cổng API          | Apache APISIX tùy chọn trong demo cục bộ (`--gateway` / `-Gateway`): kiểm token qua JWKS, giới hạn tần suất, chuẩn hóa header chuyển tiếp                                                                                                                                                                                                                                                                   |
 | Dữ liệu           | PostgreSQL 17, migration Flyway, tách schema và tài khoản theo quyền tối thiểu                                                                                                                                                                                                                                                                               |
 | Giao diện         | Portal React tiếng Việt cho ba vai trò; chế độ MOCK để làm giao diện không cần backend                                                                                                                                                                                                                                                                       |
 | Triển khai cục bộ | Một lệnh dựng toàn bộ hệ thống từ mã nguồn bằng Docker trên Windows, Linux, macOS                                                                                                                                                                                                                                                                            |
@@ -216,7 +227,8 @@ Vòng đời yêu cầu: **Mới gửi → Đã tiếp nhận → Đang xử lý
 
 Backend là một **modular monolith**: các mô-đun lõi và ứng dụng chạy chung một tiến trình Spring
 Boot, ranh giới phụ thuộc được kiểm bằng ArchUnit. Trình duyệt không giữ access token; Portal BFF
-giữ token phía server và gọi backend qua cổng APISIX. Flowable nhúng
+giữ token phía server và gọi backend qua APISIX khi bật tùy chọn demo `--gateway` / `-Gateway`.
+Workflow hiện sử dụng engine `internal`. Flowable nhúng
 ([ADR-009](https://github.com/tricore-opentrix/opentrix/blob/main/docs/08-decisions/ADR-009-modular-monolith-flowable.md)) và lưu trữ đối tượng tương thích
 S3 ([ADR-016](https://github.com/tricore-opentrix/opentrix/blob/main/docs/08-decisions/ADR-016-s3-compatible-storage.md)) đang được tích hợp, chưa có trong
 bản phát hành hiện tại. Chi tiết: [ARCHITECTURE.md](https://github.com/tricore-opentrix/opentrix/blob/main/docs/ARCHITECTURE.md).
