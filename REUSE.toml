@@ -135,3 +135,15 @@ path = "docs/09-evidence/phase-2/block-a-architecture.md"
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 TRICORE contributors"
 SPDX-License-Identifier = "Apache-2.0"
+
+# Application manifest JSON Schema and test manifests.
+# JSON does not allow comments; preserve valid JSON syntax.
+
+[[annotations]]
+path = [
+  "schemas/app-manifest/v1/app-manifest.schema.json",
+  "backend/src/test/resources/manifests/**"
+]
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 TRICORE contributors"
+SPDX-License-Identifier = "Apache-2.0"
