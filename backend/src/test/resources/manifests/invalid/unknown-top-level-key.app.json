@@ -1,0 +1,9 @@
+{
+  "id": "it-helpdesk",
+  "version": "1.0.0",
+  "name": { "en": "IT Helpdesk" },
+  "entities": {
+    "supportRequest": { "type": "object", "properties": { "title": { "type": "string" } } }
+  },
+  "states": ["NEW", "DONE"]
+}

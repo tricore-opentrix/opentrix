@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/tricore-opentrix/opentrix/main/schemas/app-manifest/v1/app-manifest.schema.json",
+  "title": "OpenTrix application manifest (format v1)",
+  "description": "Describes one OpenTrix application as apps/<app-id>/app.json. Only the outer frame is defined here; each entity is a JSON Schema 2020-12 document and the workflow is a BPMN 2.0 file referenced by path.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "name", "entities"],
+  "properties": {
+    "id": {
+      "description": "Application identifier: lowercase letters, digits and hyphens, starting with a letter.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "version": {
+      "description": "Application version, a Semantic Versioning 2.0.0 string. The pattern is the official regular expression published at https://semver.org (section 'Is there a suggested regular expression (RegEx) to check a SemVer string?').",
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "license": {
+      "description": "SPDX License Identifier of the application (https://spdx.org/licenses/). Checked by pattern only; membership in the SPDX License List is not verified.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9.+-]*$"
+    },
+    "name": {
+      "description": "Display name per language. The key is a BCP 47 language tag; 'en' is required.",
+      "$ref": "#/$defs/localizedText"
+    },
+    "description": {
+      "description": "Description per language. The key is a BCP 47 language tag; 'en' is required.",
+      "$ref": "#/$defs/localizedText"
+    },
+    "entities": {
+      "description": "Data entities of the application. The key is the entity name; the value is a JSON Schema 2020-12 document describing one record.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "https://json-schema.org/draft/2020-12/schema"
+      }
+    },
+    "roles": {
+      "description": "Roles of the application. The key is the role name.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "$ref": "#/$defs/localizedText"
+          }
+        }
+      }
+    },
+    "workflow": {
+      "description": "Workflow of the application. States and transitions are defined in the BPMN 2.0 file (ISO/IEC 19510:2013), not in this manifest.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bpmn", "processKey"],
+      "properties": {
+        "bpmn": {
+          "description": "Relative path to the .bpmn file, resolved against the directory that contains the manifest.",
+          "type": "string",
+          "pattern": "^(?!/)(?!.*\\.\\.)[^\\:]+\\.bpmn$"
+        },
+        "processKey": {
+          "description": "The id attribute of the BPMN process element to run.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  },
+  "$defs": {
+    "localizedText": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+      },
+      "additionalProperties": {
+        "type": "string"
+      },
+      "required": ["en"]
+    }
+  }
+}

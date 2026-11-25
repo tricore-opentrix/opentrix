@@ -1,0 +1,26 @@
+{
+  "id": "it-helpdesk",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "name": { "en": "IT Helpdesk", "vi": "Hỗ trợ CNTT" },
+  "description": { "en": "Internal IT support requests." },
+  "entities": {
+    "supportRequest": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": ["title", "priority"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "description": { "type": "string" },
+        "priority": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
+        "dueDate": { "type": "string", "format": "date" }
+      }
+    }
+  },
+  "roles": {
+    "coordinator": { "name": { "en": "Coordinator", "vi": "Điều phối viên" } },
+    "staff": { "name": { "en": "Staff", "vi": "Nhân viên" } },
+    "technician": { "name": { "en": "Technician", "vi": "Kỹ thuật viên" } }
+  },
+  "workflow": { "bpmn": "it-helpdesk.bpmn", "processKey": "itHelpdeskRequest" }
+}
